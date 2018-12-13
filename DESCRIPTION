@@ -1,0 +1,22 @@
+Package: AnVIL
+Title: Bioconductor on the AnVIL compute environment
+Version: 0.0.1
+Authors@R: 
+    c(person(
+        "Martin", "Morgan", role = c("aut", "cre"),
+        email = "Martin.Morgan@RoswellPark.org"
+     ), person(
+        "Nitesh", "Turaga", role = "aut",
+        email = "Nitesh.Turaga@RoswellPark.org"
+    ), person(
+       "Valerie", "Obenchain", role = "aut",
+       email = "Valerie.Obenchain@RoswellPark.org"
+    ))
+Description: This package stub provides functionality to support
+    Bioconductor use on the US NHGRI AnVIL compute cloud. Possiblities
+    include authentication, data access, distributed computing,
+    specialized package management, and algorithm development.
+License: Artistic-2.0
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 6.1.1
