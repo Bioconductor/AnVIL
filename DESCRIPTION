@@ -18,5 +18,10 @@ Description: This package stub provides functionality to support
     specialized package management, and algorithm development.
 License: Artistic-2.0
 Encoding: UTF-8
+Imports:
+    curl,
+    jsonlite,
+    httr,
+    tibble
 LazyData: true
 RoxygenNote: 6.1.1
