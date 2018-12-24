@@ -39,12 +39,6 @@ anvil_options <- local({
     delayedAssign(
         "leonardo_access", .anvil_leonardo_access(), assign.env = options
     )
-    options[["leonardo_scope"]] <-
-        list(
-            profile = "https://www.googleapis.com/auth/userinfo.profile",
-            email = "https://www.googleapis.com/auth/userinfo.email",
-            openid = "https://www.googleapis.com/auth/plus.me"
-        )
         
     function(key, value) {
         if (missing(key) && missing(value)) {
@@ -70,7 +64,7 @@ anvil_options <- local({
         package="AnVIL", "extdata", "leonardo_access.json"
     )
     if (!nzchar(leonardo_access))
-        stop("AnVIL installation incomplete; see ?anvil")
+        stop("AnVIL installation incomplete; see ?anvil_options")
     read_json(leonardo_access)$installed
 }
 

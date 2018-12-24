@@ -3,6 +3,7 @@
 \name{api_clusters}
 \alias{api_clusters}
 \alias{api_cluster}
+\alias{notebooks_invalidate_token}
 \alias{status}
 \alias{ping}
 \title{Interact with Leonardo REST API}
@@ -12,6 +13,8 @@ api_clusters(googleProject = NULL, ..., includeDeleted = FALSE,
 
 api_cluster(googleProject = "anvil-leo-dev", clusterName,
   verbose = FALSE)
+
+notebooks_invalidate_token(verbose = FALSE)
 
 status(verbose = FALSE)
 
@@ -40,6 +43,9 @@ details. Names are from `api_clusters()$labels.clusterName)`.}
 `api_cluster()` returns a list-of-lists describing a single
     cluster.
 
+`notebooks_invalidate_token()` returns "OK" when the token
+    is successfully invalidated.
+
 `status()` returns a JSON list-of-lists describing the status of
     the system. It raises a warning of the status is not 'ok'.
 
@@ -55,6 +61,12 @@ Functions on this page interact with Leonardo's REST
 `api_clusters()` lists all active clusters.
 
 `api_cluster()` gets details of a single Dataproc cluster.
+
+`notebooks_invalidate_token()` queries the leonardo
+    service when a user's Google token is invalidated (e.g. when
+    logging out of the application). This ensures that the token is
+    also invalidated in Leo and that the user's proxied notebook
+    connections stop working.
 
 `status()` queries the leonardo service for status of all
     system components.

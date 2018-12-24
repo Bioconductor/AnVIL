@@ -95,6 +95,31 @@ api_cluster <-
     fromJSON(response)
 }
 
+
+##
+## Notebooks
+##
+
+#' @rdname leonardo
+#'
+#' @details `notebooks_invalidate_token()` queries the leonardo
+#'     service when a user's Google token is invalidated (e.g. when
+#'     logging out of the application). This ensures that the token is
+#'     also invalidated in Leo and that the user's proxied notebook
+#'     connections stop working.
+#'
+#' @return `notebooks_invalidate_token()` returns "OK" when the token
+#'     is successfully invalidated.
+#'
+#' @export
+notebooks_invalidate_token <-
+    function(verbose = FALSE)
+{
+    path  <- "/notebooks/invalidateToken"
+    token <- authenticate()
+    .get(path, config(token = token), verbose)
+}
+
 #' @rdname leonardo
 #'
 #' @details `status()` queries the leonardo service for status of all
