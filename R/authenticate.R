@@ -16,8 +16,8 @@ authenticate <-
 {
     app <- oauth_app(
         "Leonardo",
-        key = anvil("leonardo_access")$client_id,
-        secret = anvil("leonardo_access")$client_secret
+        key = anvil_options("leonardo_access")$client_id,
+        secret = anvil_options("leonardo_access")$client_secret
     )
 
     token <- oauth2.0_token(

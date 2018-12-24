@@ -1,5 +1,5 @@
-.onAttach <-
+.onLoad <-
     function(...)
 {
-    tryCatch(anvil("leonardo_access"), error = warning)
+    tryCatch(anvil_options("leonardo_access"), error = warning)
 }

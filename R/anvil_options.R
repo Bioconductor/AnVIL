@@ -1,9 +1,9 @@
 #' @title Get or set AnVIL options
 #'
 #' @description View available options and current values with
-#'     `anvil()`.  Retrieve specific option with, e.g.,
-#'     `anvil("leonardo_host")`.  Set anvil with
-#'     `anvil("leonardo_host", <value>)`.
+#'     `anvil_options()`.  Retrieve specific option with, e.g.,
+#'     `anvil_options("leonardo_host")`.  Set anvil with
+#'     `anvil_options("leonardo_host", <value>)`.
 #'
 #' @details AnVIL requires OAuth 2.0 credentials identifying the
 #'     application. These must be added to the package source before
@@ -16,20 +16,20 @@
 #'
 #' @param value ANY value associated with key.
 #'
-#' @return `AnVIL::anvil()` returns a named list of key-value
+#' @return `anvil_options()` returns a named list of key-value
 #'     pairs.
 #'
-#'     `AnVIL::anvil("leonardo_host")` returns the value of option
+#'     `anvil_options("leonardo_host")` returns the value of option
 #'     `"leonardo_host"`.
 #'
-#'     `AnVIL::anvil("key", "value")` updates the option `key` to
+#'     `anvil_options("key", "value")` updates the option `key` to
 #'     `value`, returning the previous value invisibly.
 #'
 #' @examples
-#' anvil("leonardo_host")
+#' anvil_options("leonardo_host")
 #' @importFrom jsonlite read_json
 #' @export
-anvil <- local({
+anvil_options <- local({
 
     options <- new.env(parent=emptyenv())
 

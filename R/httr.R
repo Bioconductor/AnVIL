@@ -9,10 +9,10 @@
         .is_scalar_logical(verbose),
         .is_scalar_logical(content_only)
     )
-    url <- paste0(anvil("leonardo_host"), path)
+    url <- paste0(anvil_options("leonardo_host"), path)
 
     response <- GET(
-        url, anvil("leonardo_config"), accept_json(), authorization,
+        url, anvil_options("leonardo_config"), accept_json(), authorization,
         if (verbose) verbose()
     )
     check(response)

@@ -11,7 +11,7 @@ public.
 Current functionality includes:
 
 - OAuth 2.0 authentication against the `anvil-leo-dev` google cloud app.
-- Proof-of-concept implementation of [REST endpoints][1]
+- Proof-of-concept implementation of [REST endpoints][1].
 
 See the [demo script][3] for a short tour.
 
