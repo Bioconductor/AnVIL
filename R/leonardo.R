@@ -1,3 +1,7 @@
+##
+## Clusters
+##
+
 #' @importFrom curl curl_escape
 #' @importFrom httr config accept_json verbose add_headers
 #' @importFrom jsonlite fromJSON
@@ -95,10 +99,60 @@ api_cluster <-
     fromJSON(response)
 }
 
+##
+## notebooks
+##
 
-##
-## Notebooks
-##
+#' @rdname leonardo
+#'
+#' @details `notebooks_cluster_name()` proxies all requests through
+#'     the jupyter notebook server running on a cluster
+#'
+#' @param googleProject character(1) name of google project, e.g,
+#'     `"anvil-leo-dev"`
+#'
+#' @param clusterName character(1) name of a cluster to query for
+#'     details. Names are from `api_clusters()$labels.clusterName)`.
+#'
+#' @return
+#'
+#' @export
+notebooks_cluster_name <-
+    function(googleProject, clusterName)
+{
+
+    path <- sprintf("/notebooks/%s/%s", googleProject, clusterName)
+    token <- authenticate()
+    response <- .get(path, config(token=token), verbose)
+    fromJSON(response)
+}
+
+
+
+#' @rdname leonardo
+#'
+#' @details `notebooks_set_cookie()`facilitates setting a cookie
+#'     containing the Google token.
+#'
+#' @param googleProject character(1) name of google project, e.g,
+#'     `"anvil-leo-dev"`
+#'
+#' @param clusterName character(1) name of a cluster to query for
+#'     details. Names are from `api_clusters()$labels.clusterName)`.
+#'
+#' @return
+#'
+#' @export
+notebooks_set_cookie <-
+    function(googleProject, clusterName)
+{
+
+    path <- sprintf("/notebooks/%s/%s/setCookie", googleProject, clusterName)
+    token <- authenticate()
+    response <- .get(path, config(token=token), verbose)
+    fromJSON(response)
+}
+
 
 #' @rdname leonardo
 #'
@@ -120,6 +174,12 @@ notebooks_invalidate_token <-
     .get(path, config(token = token), verbose)
 }
 
+
+
+##
+## status
+##
+
 #' @rdname leonardo
 #'
 #' @details `status()` queries the leonardo service for status of all
@@ -136,6 +196,11 @@ status <-
     response <- .get(path, verbose = verbose, check = warn_for_status)
     fromJSON(response)
 }
+
+##
+## test
+##
+
 
 #' @rdname leonardo
 #'

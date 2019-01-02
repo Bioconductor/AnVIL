@@ -3,6 +3,8 @@
 \name{api_clusters}
 \alias{api_clusters}
 \alias{api_cluster}
+\alias{notebooks_cluster_name}
+\alias{notebooks_set_cookie}
 \alias{notebooks_invalidate_token}
 \alias{status}
 \alias{ping}
@@ -13,6 +15,10 @@ api_clusters(googleProject = NULL, ..., includeDeleted = FALSE,
 
 api_cluster(googleProject = "anvil-leo-dev", clusterName,
   verbose = FALSE)
+
+notebooks_cluster_name(googleProject, clusterName)
+
+notebooks_set_cookie(googleProject, clusterName)
 
 notebooks_invalidate_token(verbose = FALSE)
 
@@ -35,6 +41,18 @@ project, e.g., `"anvil-leo-dev"`}
 
 \item{clusterName}{character(1) name of a cluster to query for
 details. Names are from `api_clusters()$labels.clusterName)`.}
+
+\item{googleProject}{character(1) name of google project, e.g,
+`"anvil-leo-dev"`}
+
+\item{clusterName}{character(1) name of a cluster to query for
+details. Names are from `api_clusters()$labels.clusterName)`.}
+
+\item{googleProject}{character(1) name of google project, e.g,
+`"anvil-leo-dev"`}
+
+\item{clusterName}{character(1) name of a cluster to query for
+details. Names are from `api_clusters()$labels.clusterName)`.}
 }
 \value{
 `api_clusters()` returns a tibble of running (or running
@@ -42,6 +60,10 @@ details. Names are from `api_clusters()$labels.clusterName)`.}
 
 `api_cluster()` returns a list-of-lists describing a single
     cluster.
+
+
+
+
 
 `notebooks_invalidate_token()` returns "OK" when the token
     is successfully invalidated.
@@ -61,6 +83,12 @@ Functions on this page interact with Leonardo's REST
 `api_clusters()` lists all active clusters.
 
 `api_cluster()` gets details of a single Dataproc cluster.
+
+`notebooks_cluster_name()` proxies all requests through
+    the jupyter notebook server running on a cluster
+
+`notebooks_set_cookie()`facilitates setting a cookie
+    containing the Google token.
 
 `notebooks_invalidate_token()` queries the leonardo
     service when a user's Google token is invalidated (e.g. when
