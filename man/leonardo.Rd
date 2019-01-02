@@ -3,6 +3,7 @@
 \name{api_clusters}
 \alias{api_clusters}
 \alias{api_cluster}
+\alias{api_create_cluster}
 \alias{notebooks_cluster_name}
 \alias{notebooks_set_cookie}
 \alias{notebooks_invalidate_token}
@@ -14,6 +15,9 @@ api_clusters(googleProject = NULL, ..., includeDeleted = FALSE,
   verbose = FALSE)
 
 api_cluster(googleProject = "anvil-leo-dev", clusterName,
+  verbose = FALSE)
+
+api_create_cluster(googleProject, clusterName, clusterRequest,
   verbose = FALSE)
 
 notebooks_cluster_name(googleProject, clusterName)
@@ -42,6 +46,18 @@ project, e.g., `"anvil-leo-dev"`}
 \item{clusterName}{character(1) name of a cluster to query for
 details. Names are from `api_clusters()$labels.clusterName)`.}
 
+\item{clusterRequest}{list(1) request to a cluster resource in the
+form of list(requestName = clusterRequest). clusterRequest
+needs to be taken from available resources on Google container
+registry eg:
+"us.gcr.io/anvil-leo-dev/anvil_bioc_docker:latest".}
+
+\item{googleProject}{character(1) name of google project, e.g,
+`"anvil-leo-dev"`}
+
+\item{clusterName}{character(1) name of a cluster to query for
+details. Names are from `api_clusters()$labels.clusterName)`.}
+
 \item{googleProject}{character(1) name of google project, e.g,
 `"anvil-leo-dev"`}
 
@@ -60,6 +76,9 @@ details. Names are from `api_clusters()$labels.clusterName)`.}
 
 `api_cluster()` returns a list-of-lists describing a single
     cluster.
+
+`api_create_cluster()` returns a json list-of-lists
+    describing the cluster which was created.
 
 
 
@@ -83,6 +102,10 @@ Functions on this page interact with Leonardo's REST
 `api_clusters()` lists all active clusters.
 
 `api_cluster()` gets details of a single Dataproc cluster.
+
+`api_create_cluster()` creates a new dataproc cluster in
+    the given project with a given cluster name and cluster
+    request.
 
 `notebooks_cluster_name()` proxies all requests through
     the jupyter notebook server running on a cluster

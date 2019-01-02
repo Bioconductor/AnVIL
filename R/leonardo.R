@@ -99,6 +99,47 @@ api_cluster <-
     fromJSON(response)
 }
 
+
+#' @rdname leonardo
+#'
+#' @details `api_create_cluster()` creates a new dataproc cluster in
+#'     the given project with a given cluster name and cluster
+#'     request.
+#'
+#' @param googleProject character(1) name of google project, e.g,
+#'     `"anvil-leo-dev"`
+#'
+#' @param clusterName character(1) name of a cluster to query for
+#'     details. Names are from `api_clusters()$labels.clusterName)`.
+#'
+#' @param clusterRequest list(1) request to a cluster resource in the
+#'     form of list(requestName = clusterRequest). clusterRequest
+#'     needs to be taken from available resources on Google container
+#'     registry eg:
+#'     "us.gcr.io/anvil-leo-dev/anvil_bioc_docker:latest".
+#'
+#' @return `api_create_cluster()` returns a json list-of-lists
+#'     describing the cluster which was created.
+#'
+#' @export
+api_create_cluster <-
+    function(googleProject, clusterName, clusterRequest,
+             verbose = FALSE)
+{
+    stopifnot(
+        .is_scalar_character(googleProject),
+        .is_scalar_character(clusterName),
+        is.list(clusterRequest)
+    )
+
+    path <- sprintf("/api/cluster/v2/%s/%s", googleProject, clusterName)
+    token  <- authenticate()
+    response <- .put(path, config(token = token), body = clusterRequest, verbose)
+    fromJSON(response)
+}
+
+
+
 ##
 ## notebooks
 ##
@@ -120,7 +161,6 @@ api_cluster <-
 notebooks_cluster_name <-
     function(googleProject, clusterName)
 {
-
     path <- sprintf("/notebooks/%s/%s", googleProject, clusterName)
     token <- authenticate()
     response <- .get(path, config(token=token), verbose)
@@ -147,10 +187,11 @@ notebooks_set_cookie <-
     function(googleProject, clusterName)
 {
 
-    path <- sprintf("/notebooks/%s/%s/setCookie", googleProject, clusterName)
+    path <- sprintf("/notebooks/%s/%s/setCookie", googleProject,
+                    clusterName)
     token <- authenticate()
     response <- .get(path, config(token=token), verbose)
-    fromJSON(response)
+    invisible(response)
 }
 
 

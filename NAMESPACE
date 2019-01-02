@@ -3,6 +3,7 @@
 export(anvil_options)
 export(api_cluster)
 export(api_clusters)
+export(api_create_cluster)
 export(authenticate)
 export(notebooks_cluster_name)
 export(notebooks_invalidate_token)
