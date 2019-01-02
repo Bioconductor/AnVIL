@@ -100,6 +100,13 @@ api_cluster <-
 }
 
 
+##
+## This implements only the v2 of the API which creates the dataproc
+## cluster in a given project with a given name. Doesn't implement
+## https://leonardo.dev.anvilproject.org/#!/cluster/createCluster,
+## because the standalone doc doesn't use it.
+##
+
 #' @rdname leonardo
 #'
 #' @details `api_create_cluster()` creates a new dataproc cluster in
