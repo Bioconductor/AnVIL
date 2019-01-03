@@ -429,6 +429,7 @@ status <-
 #'     error.
 #'
 #' @importFrom httr headers
+#'
 #' @export
 ping <-
     function(verbose = FALSE)

@@ -57,7 +57,7 @@
 
 .put <-
     function(path, authorization = NULL, body = NULL, verbose = FALSE,
-             content_only = TRUE, check = stop_for_status)
+             content_only = TRUE, check = stop_for_status, ...)
 {
     .request_method(PUT, path, authorization, body, verbose,
                     content_only, check, ...)
