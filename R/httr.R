@@ -60,15 +60,44 @@
 }
 
 
-.post <-
-    function()
+.post_or_patch <-
+    function(FUN, path, authorization = NULL, body = NULL, verbose = FALSE,
+             content_only = TRUE, check = stop_for_status, ...)
 {
+    ## Validate args
+    stopifnot(
+        .is_scalar_logical(verbose),
+        .is_scalar_logical(content_only)
+    )
+    
+    ## compose request
+    url <- paste0(anvil_options("leonardo_host"), path)
+    response <- FUN(url, anvil_options("leonardo_config"), body = body,
+                    encode = "json", authorization, if (verbose) verbose(), ...)
+    check(response)
+    
+    ## Process and return result
+    if (content_only) {
+        content(response, "text")
+    } else response
+}
+
+.post <-
+    function(path, authorization = NULL, body = NULL, verbose = FALSE,
+             content_only = TRUE, check = stop_for_status, ...)
+{
+    .post_or_patch(POST, path, authorization, body, verbose,
+             content_only, check, ...) 
 }
 
 .patch <-
-    function()
+    function(path, authorization = NULL, body = NULL, verbose = FALSE,
+             content_only = TRUE, check = stop_for_status, ...)
 {
-}
+    .post_or_patch(PATCH, path, authorization, body, verbose,
+             content_only, check, ...) 
+}   
+
 
 .delete <-
     function()
