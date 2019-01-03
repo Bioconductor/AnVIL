@@ -3,8 +3,13 @@
 \name{api_clusters}
 \alias{api_clusters}
 \alias{api_cluster}
+\alias{api_update_cluster}
+\alias{api_delete_cluster}
 \alias{api_create_cluster}
+\alias{api_cluster_start}
+\alias{api_cluster_stop}
 \alias{notebooks_cluster_name}
+\alias{notebooks_api_localize}
 \alias{notebooks_set_cookie}
 \alias{notebooks_invalidate_token}
 \alias{status}
@@ -17,10 +22,21 @@ api_clusters(googleProject = NULL, ..., includeDeleted = FALSE,
 api_cluster(googleProject = "anvil-leo-dev", clusterName,
   verbose = FALSE)
 
+api_update_cluster(googleProject, clusterName, updateClusterRequest)
+
+api_delete_cluster(googleProject, clusterName)
+
 api_create_cluster(googleProject, clusterName, clusterRequest,
   verbose = FALSE)
 
-notebooks_cluster_name(googleProject, clusterName)
+api_cluster_start(googleProject, clusterName, verbose = FALSE)
+
+api_cluster_stop(googleProject, clusterName, verbose = FALSE)
+
+notebooks_cluster_name(googleProject, clusterName, verbose = FALSE)
+
+notebooks_api_localize(googleProject, clusterName, async = FALSE,
+  filesToLocalize)
 
 notebooks_set_cookie(googleProject, clusterName)
 
@@ -46,11 +62,56 @@ project, e.g., `"anvil-leo-dev"`}
 \item{clusterName}{character(1) name of a cluster to query for
 details. Names are from `api_clusters()$labels.clusterName)`.}
 
+\item{updateClusterRequest}{list(1) request to a cluster resource in the
+form of list(requestName = updateClusterRequest).
+Eg: list("machineConfig" = list("numberOfWorkers" = 0,
+                                "numberOfPreemptibleWorkers" = 0),
+         "autopause" = true,
+         "autopauseThreshold" = 0)}
+
 \item{clusterRequest}{list(1) request to a cluster resource in the
 form of list(requestName = clusterRequest). clusterRequest
 needs to be taken from available resources on Google container
 registry eg:
 "us.gcr.io/anvil-leo-dev/anvil_bioc_docker:latest".}
+
+\item{async}{logical(1) if TRUE, the copy will happen
+asynchronously to the request and the API will always return
+200. If FALSE (the default), the copy will happen synchronously
+and the response will reflect any errors encountered during the
+copy.}
+
+\item{filesToLocalize}{list(1)}
+
+\item{googleProject}{character(1) name of google project, e.g,
+`"anvil-leo-dev"`}
+
+\item{clusterName}{character(1) name of a cluster to query for
+details. Names are from `api_clusters()$labels.clusterName)`.}
+
+\item{googleProject}{character(1) name of google project, e.g,
+`"anvil-leo-dev"`}
+
+\item{clusterName}{character(1) name of a cluster to query for
+details. Names are from `api_clusters()$labels.clusterName)`.}
+
+\item{googleProject}{character(1) name of google project, e.g,
+`"anvil-leo-dev"`}
+
+\item{clusterName}{character(1) name of a cluster to query for
+details. Names are from `api_clusters()$labels.clusterName)`.}
+
+\item{googleProject}{character(1) name of google project, e.g,
+`"anvil-leo-dev"`}
+
+\item{clusterName}{character(1) name of a cluster to query for
+details. Names are from `api_clusters()$labels.clusterName)`.}
+
+\item{googleProject}{character(1) name of google project, e.g,
+`"anvil-leo-dev"`}
+
+\item{clusterName}{character(1) name of a cluster to query for
+details. Names are from `api_clusters()$labels.clusterName)`.}
 
 \item{googleProject}{character(1) name of google project, e.g,
 `"anvil-leo-dev"`}
@@ -78,7 +139,18 @@ details. Names are from `api_clusters()$labels.clusterName)`.}
     cluster.
 
 `api_create_cluster()` returns a json list-of-lists
+    describing the updated cluster.
+
+character(1) response body is a string.
+
+`api_create_cluster()` returns a json list-of-lists
     describing the cluster which was created.
+
+
+
+
+
+
 
 
 
@@ -103,12 +175,35 @@ Functions on this page interact with Leonardo's REST
 
 `api_cluster()` gets details of a single Dataproc cluster.
 
+`api_update_cluster()` updates the configuration of a
+    cluster. In order to update the configuration of a cluster, it
+    must first be running, check with `api_clustes()`.
+
+`api_delete_cluster()` deletes an existing Dataproc
+    cluster in the given project
+
 `api_create_cluster()` creates a new dataproc cluster in
     the given project with a given cluster name and cluster
     request.
 
+`api_cluster_start()` starts a Dataproc cluster
+
+`api_cluster_stop()` stops a Dataproc cluster .The
+    cluster may be restarted with the `api_cluster_start()` endpoint
+
 `notebooks_cluster_name()` proxies all requests through
     the jupyter notebook server running on a cluster
+
+`notebooks_api_localize()` localize files to/from a
+    Jupyter notebook server.Sends a command to a Jupyter notebook
+    server to localize files to/from the server. Supports GCS paths
+    and Data URIs. Output, including any errors, will appear in
+    localization.log in the working directory of the Jupyter
+    notebook server. By default this operation will happen
+    synchronously and the response status will reflect any errors
+    encountered in the copy. However, if the async parameter is
+    specfied then the localization will happen asynchronously to
+    the request, and the API will always return 200.
 
 `notebooks_set_cookie()`facilitates setting a cookie
     containing the Google token.
