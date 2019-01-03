@@ -8,8 +8,9 @@
 #' @details AnVIL requires OAuth 2.0 credentials identifying the
 #'     application. These must be added to the package source before
 #'     installation. Do this by visiting
-#'     `https://console.cloud.google.com/apis/credentials?authuser=1&project=anvil-leo-dev` and
-#'     downloading the "Bioconductor-AnVIL" credentials to a file
+#'     `https://console.cloud.google.com/apis/credentials?authuser=1&project=anvil-leo-dev`
+#'     and downloading (click on the downward-facing arrow to the
+#'     right) the "Bioconductor-AnVIL" credentials to a file
 #'     `inst/extdata/leonardo_access.json`.
 #'
 #' @param key character(1) name of option.
