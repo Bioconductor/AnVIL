@@ -95,7 +95,7 @@ api_cluster <-
 
     path <- sprintf("/api/cluster/%s/%s", googleProject, clusterName)
     token <- authenticate()
-    response <- .get(path, config(token = token), verbose)
+    response <- .get(path, config(token = token), verbose = verbose)
     fromJSON(response)
 }
 
@@ -124,7 +124,8 @@ api_cluster <-
 #'
 #' @export
 api_update_cluster <-
-    function(googleProject, clusterName, updateClusterRequest)
+    function(googleProject, clusterName, updateClusterRequest,
+             verbose = FALSE)
 {
     stopifnot(
         .is_scalar_character(googleProject),
@@ -154,7 +155,7 @@ api_update_cluster <-
 #'
 #' @export
 api_delete_cluster <-
-    function(googleProject, clusterName)
+    function(googleProject, clusterName, verbose = FALSE)
 {
     stopifnot(
         .is_scalar_character(googleProject),

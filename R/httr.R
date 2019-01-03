@@ -81,7 +81,8 @@
 
 
 .delete <-
-    function()
+    function(path, authorization = NULL, body = NULL, verbose = FALSE,
+             content_only = TRUE, check = stop_for_status, ...)
 {
     .request_method(DELETE, path, authorization, body, verbose,
                     content_only, check, ...)
