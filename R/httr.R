@@ -6,10 +6,7 @@
              check = stop_for_status)
 {
     ## Validate args
-    stopifnot(
-        .is_scalar_logical(verbose),
-        .is_scalar_logical(content_only)
-    )
+    stopifnot(.is_scalar_logical(content_only))
 
     ## Compose request
     url <- paste0(anvil_options("leonardo_host"), path)
@@ -27,22 +24,69 @@
     } else response
 }
 
-.put <-
-    function()
+
+## example PUT call,
+## PUT(url, anvil_options("leonardo_config"), body = list(biocImage =
+## "us.gcr.io/anvil-leo-dev/anvil_bioc_docker:latest"), encode="json",
+## config(token=x))
+
+.request_method <-
+    function(FUN, path, authorization = NULL, body = NULL, ...,
+             verbose = FALSE, content_only = TRUE, check = stop_for_status)
 {
+    ## Validate args
+    stopifnot(.is_scalar_logical(content_only))
+
+    ## compose request
+    url <- paste0(anvil_options("leonardo_host"), path)
+    response <- FUN(
+        url, anvil_options("leonardo_config"), body = body, encode = "json",
+        authorization, if (verbose) verbose(), ...
+    )
+    check(response)
+
+    ## Process and return result
+    if (content_only) {
+        content(response, "text")
+    } else response
+}
+
+.put <-
+    function(path, authorization = NULL, body = NULL, ...,
+             verbose = FALSE, content_only = TRUE, check = stop_for_status)
+{
+    .request_method(
+        PUT, path, authorization, body, ...,
+        verbose = verbose, content_only = content_only, check = check
+    )
 }
 
 .post <-
-    function()
+    function(path, authorization = NULL, body = NULL, ...,
+             verbose = FALSE, content_only = TRUE, check = stop_for_status)
 {
+    .request_method(
+        POST, path, authorization, body, ...,
+        verbose = verbose, content_only = content_only, check = check
+    )
 }
 
 .patch <-
-    function()
+    function(path, authorization = NULL, body = NULL, ...,
+             verbose = FALSE, content_only = TRUE, check = stop_for_status)
 {
+    .request_method(
+        PATCH, path, authorization, body, ...,
+        verbose = verbose, content_only = content_only, check = check
+    )
 }
 
 .delete <-
-    function()
+    function(path, authorization = NULL, body = NULL, ...,
+             verbose = FALSE, content_only = TRUE, check = stop_for_status)
 {
+    .request_method(
+        DELETE, path, authorization, body, ...,
+        verbose = verbose, content_only = content_only, check = check
+    )
 }
