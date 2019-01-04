@@ -363,7 +363,7 @@ notebooks_api_localize <-
 #'
 #' @export
 notebooks_set_cookie <-
-    function(googleProject, clusterName)
+    function(googleProject, clusterName, verbose = FALSE)
 {
 
     path <- sprintf("/notebooks/%s/%s/setCookie", googleProject,
