@@ -22,9 +22,10 @@ api_clusters(googleProject = NULL, ..., includeDeleted = FALSE,
 api_cluster(googleProject = "anvil-leo-dev", clusterName,
   verbose = FALSE)
 
-api_update_cluster(googleProject, clusterName, updateClusterRequest)
+api_update_cluster(googleProject, clusterName, updateClusterRequest,
+  verbose = FALSE)
 
-api_delete_cluster(googleProject, clusterName)
+api_delete_cluster(googleProject, clusterName, verbose = FALSE)
 
 api_create_cluster(googleProject, clusterName, clusterRequest,
   verbose = FALSE)
@@ -38,7 +39,7 @@ notebooks_cluster_name(googleProject, clusterName, verbose = FALSE)
 notebooks_api_localize(googleProject, clusterName, async = FALSE,
   filesToLocalize)
 
-notebooks_set_cookie(googleProject, clusterName)
+notebooks_set_cookie(googleProject, clusterName, verbose = FALSE)
 
 notebooks_invalidate_token(verbose = FALSE)
 
@@ -82,54 +83,6 @@ and the response will reflect any errors encountered during the
 copy.}
 
 \item{filesToLocalize}{list(1)}
-
-\item{googleProject}{character(1) name of google project, e.g,
-`"anvil-leo-dev"`}
-
-\item{clusterName}{character(1) name of a cluster to query for
-details. Names are from `api_clusters()$labels.clusterName)`.}
-
-\item{googleProject}{character(1) name of google project, e.g,
-`"anvil-leo-dev"`}
-
-\item{clusterName}{character(1) name of a cluster to query for
-details. Names are from `api_clusters()$labels.clusterName)`.}
-
-\item{googleProject}{character(1) name of google project, e.g,
-`"anvil-leo-dev"`}
-
-\item{clusterName}{character(1) name of a cluster to query for
-details. Names are from `api_clusters()$labels.clusterName)`.}
-
-\item{googleProject}{character(1) name of google project, e.g,
-`"anvil-leo-dev"`}
-
-\item{clusterName}{character(1) name of a cluster to query for
-details. Names are from `api_clusters()$labels.clusterName)`.}
-
-\item{googleProject}{character(1) name of google project, e.g,
-`"anvil-leo-dev"`}
-
-\item{clusterName}{character(1) name of a cluster to query for
-details. Names are from `api_clusters()$labels.clusterName)`.}
-
-\item{googleProject}{character(1) name of google project, e.g,
-`"anvil-leo-dev"`}
-
-\item{clusterName}{character(1) name of a cluster to query for
-details. Names are from `api_clusters()$labels.clusterName)`.}
-
-\item{googleProject}{character(1) name of google project, e.g,
-`"anvil-leo-dev"`}
-
-\item{clusterName}{character(1) name of a cluster to query for
-details. Names are from `api_clusters()$labels.clusterName)`.}
-
-\item{googleProject}{character(1) name of google project, e.g,
-`"anvil-leo-dev"`}
-
-\item{clusterName}{character(1) name of a cluster to query for
-details. Names are from `api_clusters()$labels.clusterName)`.}
 }
 \value{
 `api_clusters()` returns a tibble of running (or running

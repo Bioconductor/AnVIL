@@ -106,12 +106,6 @@ api_cluster <-
 #'     cluster. In order to update the configuration of a cluster, it
 #'     must first be running, check with `api_clustes()`.
 #'
-#' @param googleProject character(1) name of google project, e.g,
-#'     `"anvil-leo-dev"`
-#'
-#' @param clusterName character(1) name of a cluster to query for
-#'     details. Names are from `api_clusters()$labels.clusterName)`.
-#'
 #' @param updateClusterRequest list(1) request to a cluster resource in the
 #'     form of list(requestName = updateClusterRequest).
 #'     Eg: list("machineConfig" = list("numberOfWorkers" = 0,
@@ -145,12 +139,6 @@ api_update_cluster <-
 #' @details `api_delete_cluster()` deletes an existing Dataproc
 #'     cluster in the given project
 #'
-#' @param googleProject character(1) name of google project, e.g,
-#'     `"anvil-leo-dev"`
-#'
-#' @param clusterName character(1) name of a cluster to query for
-#'     details. Names are from `api_clusters()$labels.clusterName)`.
-#'
 #' @return character(1) response body is a string.
 #'
 #' @export
@@ -180,12 +168,6 @@ api_delete_cluster <-
 #' @details `api_create_cluster()` creates a new dataproc cluster in
 #'     the given project with a given cluster name and cluster
 #'     request.
-#'
-#' @param googleProject character(1) name of google project, e.g,
-#'     `"anvil-leo-dev"`
-#'
-#' @param clusterName character(1) name of a cluster to query for
-#'     details. Names are from `api_clusters()$labels.clusterName)`.
 #'
 #' @param clusterRequest list(1) request to a cluster resource in the
 #'     form of list(requestName = clusterRequest). clusterRequest
@@ -218,13 +200,6 @@ api_create_cluster <-
 #'
 #' @details `api_cluster_start()` starts a Dataproc cluster
 #'
-#' @param googleProject character(1) name of google project, e.g,
-#'     `"anvil-leo-dev"`
-#'
-#' @param clusterName character(1) name of a cluster to query for
-#'     details. Names are from `api_clusters()$labels.clusterName)`.
-#'
-#'
 #' @return
 #'
 #' @export
@@ -247,12 +222,6 @@ api_cluster_start <-
 #'
 #' @details `api_cluster_stop()` stops a Dataproc cluster .The
 #'     cluster may be restarted with the `api_cluster_start()` endpoint
-#'
-#' @param googleProject character(1) name of google project, e.g,
-#'     `"anvil-leo-dev"`
-#'
-#' @param clusterName character(1) name of a cluster to query for
-#'     details. Names are from `api_clusters()$labels.clusterName)`.
 #'
 #' @return
 #'
@@ -281,12 +250,6 @@ api_cluster_stop <-
 #' @details `notebooks_cluster_name()` proxies all requests through
 #'     the jupyter notebook server running on a cluster
 #'
-#' @param googleProject character(1) name of google project, e.g,
-#'     `"anvil-leo-dev"`
-#'
-#' @param clusterName character(1) name of a cluster to query for
-#'     details. Names are from `api_clusters()$labels.clusterName)`.
-#'
 #' @return
 #'
 #' @export
@@ -312,12 +275,6 @@ notebooks_cluster_name <-
 #'     encountered in the copy. However, if the async parameter is
 #'     specfied then the localization will happen asynchronously to
 #'     the request, and the API will always return 200.
-#'
-#' @param googleProject character(1) name of google project, e.g,
-#'     `"anvil-leo-dev"`
-#'
-#' @param clusterName character(1) name of a cluster to query for
-#'     details. Names are from `api_clusters()$labels.clusterName)`.
 #'
 #' @param async logical(1) if TRUE, the copy will happen
 #'     asynchronously to the request and the API will always return
@@ -352,12 +309,6 @@ notebooks_api_localize <-
 #'
 #' @details `notebooks_set_cookie()`facilitates setting a cookie
 #'     containing the Google token.
-#'
-#' @param googleProject character(1) name of google project, e.g,
-#'     `"anvil-leo-dev"`
-#'
-#' @param clusterName character(1) name of a cluster to query for
-#'     details. Names are from `api_clusters()$labels.clusterName)`.
 #'
 #' @return
 #'
