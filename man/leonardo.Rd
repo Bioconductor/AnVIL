@@ -64,11 +64,13 @@ project, e.g., `"anvil-leo-dev"`}
 details. Names are from `api_clusters()$labels.clusterName)`.}
 
 \item{updateClusterRequest}{list(1) request to a cluster resource in the
-form of list(requestName = updateClusterRequest).
-Eg: list("machineConfig" = list("numberOfWorkers" = 0,
-                                "numberOfPreemptibleWorkers" = 0),
-         "autopause" = true,
-         "autopauseThreshold" = 0)}
+form of \preformatted{updateClusterRequest = list(
+    "machineConfig" = list(
+        "numberOfWorkers" = 0, "numberOfPreemptibleWorkers" = 0
+     ),
+     "autopause" = true,
+     "autopauseThreshold" = 0
+)}}
 
 \item{clusterRequest}{list(1) request to a cluster resource in the
 form of list(requestName = clusterRequest). clusterRequest

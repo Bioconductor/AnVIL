@@ -49,7 +49,7 @@ api_clusters <-
 
     path <- .api_clusters_path(googleProject, dots, includeDeleted)
     token <- authenticate()
-    response <- .get(path, config(token = token), verbose)
+    response <- .get(path, config(token = token), verbose = verbose)
     df <- fromJSON(response, flatten=TRUE)
     as_tibble(df)
 }
@@ -90,7 +90,8 @@ api_cluster <-
 {
     stopifnot(
         .is_scalar_character(googleProject),
-        .is_scalar_character(clusterName)
+        .is_scalar_character(clusterName),
+        .is_scalar_logical(verbose)
     )
 
     path <- sprintf("/api/cluster/%s/%s", googleProject, clusterName)
@@ -107,30 +108,33 @@ api_cluster <-
 #'     must first be running, check with `api_clustes()`.
 #'
 #' @param updateClusterRequest list(1) request to a cluster resource in the
-#'     form of list(requestName = updateClusterRequest).
-#'     Eg: list("machineConfig" = list("numberOfWorkers" = 0,
-#'                                     "numberOfPreemptibleWorkers" = 0),
-#'              "autopause" = true,
-#'              "autopauseThreshold" = 0)
+#'     form of \preformatted{updateClusterRequest = list(
+#'         "machineConfig" = list(
+#'             "numberOfWorkers" = 0, "numberOfPreemptibleWorkers" = 0
+#'         ),
+#'         "autopause" = true,
+#'         "autopauseThreshold" = 0
+#'     )}
 #'
 #' @return `api_create_cluster()` returns a json list-of-lists
 #'     describing the updated cluster.
 #'
 #' @export
 api_update_cluster <-
-    function(googleProject, clusterName, updateClusterRequest,
-             verbose = FALSE)
+    function(googleProject, clusterName, updateClusterRequest, verbose = FALSE)
 {
     stopifnot(
         .is_scalar_character(googleProject),
         .is_scalar_character(clusterName),
-        is.list(updateClusterRequest)
+        is.list(updateClusterRequest),
+        .is_scalar_logical(verbose)
     )
 
     path <- sprintf("/api/cluster/%s/%s", googleProject, clusterName)
     token <- authenticate()
-    response <- .patch(path, config(token = token), body = updateClusterRequest,
-                       verbose = verbose)
+    response <- .patch(
+        path, config(token = token), updateClusterRequest, verbose = verbose
+    )
     fromJSON(response)
 }
 
@@ -147,7 +151,8 @@ api_delete_cluster <-
 {
     stopifnot(
         .is_scalar_character(googleProject),
-        .is_scalar_character(clusterName)
+        .is_scalar_character(clusterName),
+        .is_scalar_logical(verbose)
     )
 
     path <- sprintf("/api/cluster/%s/%s", googleProject, clusterName)
@@ -180,18 +185,20 @@ api_delete_cluster <-
 #'
 #' @export
 api_create_cluster <-
-    function(googleProject, clusterName, clusterRequest,
-             verbose = FALSE)
+    function(googleProject, clusterName, clusterRequest, verbose = FALSE)
 {
     stopifnot(
         .is_scalar_character(googleProject),
         .is_scalar_character(clusterName),
-        is.list(clusterRequest)
+        is.list(clusterRequest),
+        .is_scalar_logical(verbose)
     )
 
     path <- sprintf("/api/cluster/v2/%s/%s", googleProject, clusterName)
     token  <- authenticate()
-    response <- .put(path, config(token = token), body = clusterRequest, verbose)
+    response <- .put(
+        path, config(token = token), clusterRequest, verbose = verbose
+    )
     fromJSON(response)
 }
 
@@ -208,7 +215,8 @@ api_cluster_start <-
 {
     stopifnot(
         .is_scalar_character(googleProject),
-        .is_scalar_character(clusterName)
+        .is_scalar_character(clusterName),
+        .is_scalar_logical(verbose)
     )
 
     path <- sprintf("/api/cluster/%s/%s/start", googleProject, clusterName)
@@ -231,7 +239,8 @@ api_cluster_stop <-
 {
     stopifnot(
         .is_scalar_character(googleProject),
-        .is_scalar_character(clusterName)
+        .is_scalar_character(clusterName),
+        .is_scalar_logical(verbose)
     )
 
     path <- sprintf("/api/cluster/%s/%s/stop", googleProject, clusterName)
@@ -256,6 +265,11 @@ api_cluster_stop <-
 notebooks_cluster_name <-
     function(googleProject, clusterName, verbose = FALSE)
 {
+    stopifnot(
+        .is_scalar_character(googleProject),
+        .is_scalar_character(clusterName),
+        .is_scalar_logical(verbose)
+    )
     path <- sprintf("/notebooks/%s/%s", googleProject, clusterName)
     token <- authenticate()
     response <- .get(path, config(token=token), verbose = verbose)
@@ -293,14 +307,15 @@ notebooks_api_localize <-
     stopifnot(
         .is_scalar_character(googleProject),
         .is_scalar_character(clusterName),
-        is.logical(async),
+        .is_scalar_logical(async),
         is.list(filesToLocalize)
     )
 
     path <- sprintf("/notebooks/%s/%s/api/localize", googleProject, clusterName)
     token <- authenticate()
-    response <- .post(path, config(token = token), body = filesToLocalize,
-                      verbose = verbose, query = async)
+    response <- .post(
+        path, config(token = token), filesToLocalize, verbose, query = async
+    )
     fromJSON(response)
 }
 
@@ -316,14 +331,16 @@ notebooks_api_localize <-
 notebooks_set_cookie <-
     function(googleProject, clusterName, verbose = FALSE)
 {
-
-    path <- sprintf("/notebooks/%s/%s/setCookie", googleProject,
-                    clusterName)
+    stopifnot(
+        .is_scalar_character(path),
+        .is_scalar_character(clusterName),
+        .is_scalar_logical(verbose)
+    )
+    path <- sprintf("/notebooks/%s/%s/setCookie", googleProject, clusterName)
     token <- authenticate()
-    response <- .get(path, config(token=token), verbose)
+    response <- .get(path, config(token=token), verbose = verbose)
     invisible(response)
 }
-
 
 #' @rdname leonardo
 #'
@@ -340,6 +357,7 @@ notebooks_set_cookie <-
 notebooks_invalidate_token <-
     function(verbose = FALSE)
 {
+    stopifnot(.is_scalar_logical(verbose))
     path  <- "/notebooks/invalidateToken"
     token <- authenticate()
     .get(path, config(token = token), verbose = verbose)
@@ -362,6 +380,7 @@ notebooks_invalidate_token <-
 status <-
     function(verbose = FALSE)
 {
+    stopifnot(.is_scalar_logical(verbose))
     path <- "/status"
     response <- .get(path, verbose = verbose, check = warn_for_status)
     fromJSON(response)
@@ -385,6 +404,7 @@ status <-
 ping <-
     function(verbose = FALSE)
 {
+    stopifnot(.is_scalar_logical(verbose))
     path  <- "/ping"
     response <- .get(
         path, verbose = verbose, content_only = FALSE, check = warn_for_status

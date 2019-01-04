@@ -6,10 +6,7 @@
              check = stop_for_status)
 {
     ## Validate args
-    stopifnot(
-        .is_scalar_logical(verbose),
-        .is_scalar_logical(content_only)
-    )
+    stopifnot(.is_scalar_logical(content_only))
 
     ## Compose request
     url <- paste0(anvil_options("leonardo_host"), path)
@@ -34,19 +31,18 @@
 ## config(token=x))
 
 .request_method <-
-    function(FUN, path, authorization = NULL, body = NULL, verbose = FALSE,
-             content_only = TRUE, check = stop_for_status, ...)
+    function(FUN, path, authorization = NULL, body = NULL, ...,
+             verbose = FALSE, content_only = TRUE, check = stop_for_status)
 {
     ## Validate args
-    stopifnot(
-        .is_scalar_logical(verbose),
-        .is_scalar_logical(content_only)
-    )
+    stopifnot(.is_scalar_logical(content_only))
 
     ## compose request
     url <- paste0(anvil_options("leonardo_host"), path)
-    response <- FUN(url, anvil_options("leonardo_config"), body = body,
-                    encode = "json", authorization, if (verbose) verbose(), ...)
+    response <- FUN(
+        url, anvil_options("leonardo_config"), body = body, encode = "json",
+        authorization, if (verbose) verbose(), ...
+    )
     check(response)
 
     ## Process and return result
@@ -56,34 +52,41 @@
 }
 
 .put <-
-    function(path, authorization = NULL, body = NULL, verbose = FALSE,
-             content_only = TRUE, check = stop_for_status, ...)
+    function(path, authorization = NULL, body = NULL, ...,
+             verbose = FALSE, content_only = TRUE, check = stop_for_status)
 {
-    .request_method(PUT, path, authorization, body, verbose,
-                    content_only, check, ...)
+    .request_method(
+        PUT, path, authorization, body, ...,
+        verbose = verbose, content_only = content_only, check = check
+    )
 }
 
 .post <-
-    function(path, authorization = NULL, body = NULL, verbose = FALSE,
-             content_only = TRUE, check = stop_for_status, ...)
+    function(path, authorization = NULL, body = NULL, ...,
+             verbose = FALSE, content_only = TRUE, check = stop_for_status)
 {
-    .request_method(POST, path, authorization, body, verbose,
-                    content_only, check, ...)
+    .request_method(
+        POST, path, authorization, body, ...,
+        verbose = verbose, content_only = content_only, check = check
+    )
 }
 
 .patch <-
-    function(path, authorization = NULL, body = NULL, verbose = FALSE,
-             content_only = TRUE, check = stop_for_status, ...)
+    function(path, authorization = NULL, body = NULL, ...,
+             verbose = FALSE, content_only = TRUE, check = stop_for_status)
 {
-    .request_method(PATCH, path, authorization, body, verbose,
-                    content_only, check, ...)
+    .request_method(
+        PATCH, path, authorization, body, ...,
+        verbose = verbose, content_only = content_only, check = check
+    )
 }
 
-
 .delete <-
-    function(path, authorization = NULL, body = NULL, verbose = FALSE,
-             content_only = TRUE, check = stop_for_status, ...)
+    function(path, authorization = NULL, body = NULL, ...,
+             verbose = FALSE, content_only = TRUE, check = stop_for_status)
 {
-    .request_method(DELETE, path, authorization, body, verbose,
-                    content_only, check, ...)
+    .request_method(
+        DELETE, path, authorization, body, ...,
+        verbose = verbose, content_only = content_only, check = check
+    )
 }
