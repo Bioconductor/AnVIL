@@ -28,3 +28,10 @@ authenticate <-
 
     invisible(token)
 }
+
+authenticate_config <-
+    function()
+{
+    token <- authenticate()
+    config(token = token)
+}

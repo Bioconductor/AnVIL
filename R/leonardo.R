@@ -48,8 +48,7 @@ api_clusters <-
     )
 
     path <- .api_clusters_path(googleProject, dots, includeDeleted)
-    token <- authenticate()
-    response <- .get(path, config(token = token), verbose = verbose)
+    response <- .get(path, authenticate_config(), verbose = verbose)
     df <- fromJSON(response, flatten=TRUE)
     as_tibble(df)
 }
@@ -95,8 +94,7 @@ api_cluster <-
     )
 
     path <- sprintf("/api/cluster/%s/%s", googleProject, clusterName)
-    token <- authenticate()
-    response <- .get(path, config(token = token), verbose = verbose)
+    response <- .get(path, authenticate_config(), verbose = verbose)
     fromJSON(response)
 }
 
@@ -131,9 +129,8 @@ api_update_cluster <-
     )
 
     path <- sprintf("/api/cluster/%s/%s", googleProject, clusterName)
-    token <- authenticate()
     response <- .patch(
-        path, config(token = token), updateClusterRequest, verbose = verbose
+        path, authenticate_config(), updateClusterRequest, verbose = verbose
     )
     fromJSON(response)
 }
@@ -156,8 +153,7 @@ api_delete_cluster <-
     )
 
     path <- sprintf("/api/cluster/%s/%s", googleProject, clusterName)
-    token <- authenticate()
-    response <- .delete(path, config(token = token), verbose = verbose)
+    response <- .delete(path, authenticate_config(), verbose = verbose)
     response
 }
 
@@ -195,9 +191,8 @@ api_create_cluster <-
     )
 
     path <- sprintf("/api/cluster/v2/%s/%s", googleProject, clusterName)
-    token  <- authenticate()
     response <- .put(
-        path, config(token = token), clusterRequest, verbose = verbose
+        path, authenticate_config(), clusterRequest, verbose = verbose
     )
     fromJSON(response)
 }
@@ -220,8 +215,7 @@ api_cluster_start <-
     )
 
     path <- sprintf("/api/cluster/%s/%s/start", googleProject, clusterName)
-    token <- authenticate()
-    response <- .post(path, config(token = token), verbose = verbose)
+    response <- .post(path, authenticate_config(), verbose = verbose)
     fromJSON(response)
 }
 
@@ -244,8 +238,7 @@ api_cluster_stop <-
     )
 
     path <- sprintf("/api/cluster/%s/%s/stop", googleProject, clusterName)
-    token <- authenticate()
-    response <- .post(path, config(token = token), verbose = verbose)
+    response <- .post(path, authenticate_config(), verbose = verbose)
     fromJSON(response)
 }
 
@@ -271,8 +264,7 @@ notebooks_cluster_name <-
         .is_scalar_logical(verbose)
     )
     path <- sprintf("/notebooks/%s/%s", googleProject, clusterName)
-    token <- authenticate()
-    response <- .get(path, config(token=token), verbose = verbose)
+    response <- .get(path, authenticate_config(), verbose = verbose)
     fromJSON(response)
 }
 
@@ -312,9 +304,8 @@ notebooks_api_localize <-
     )
 
     path <- sprintf("/notebooks/%s/%s/api/localize", googleProject, clusterName)
-    token <- authenticate()
     response <- .post(
-        path, config(token = token), filesToLocalize, verbose, query = async
+        path, authenticate_config(), filesToLocalize, verbose, query = async
     )
     fromJSON(response)
 }
@@ -337,8 +328,7 @@ notebooks_set_cookie <-
         .is_scalar_logical(verbose)
     )
     path <- sprintf("/notebooks/%s/%s/setCookie", googleProject, clusterName)
-    token <- authenticate()
-    response <- .get(path, config(token=token), verbose = verbose)
+    response <- .get(path, authenticate_config(), verbose = verbose)
     invisible(response)
 }
 
@@ -359,8 +349,7 @@ notebooks_invalidate_token <-
 {
     stopifnot(.is_scalar_logical(verbose))
     path  <- "/notebooks/invalidateToken"
-    token <- authenticate()
-    .get(path, config(token = token), verbose = verbose)
+    .get(path, authenticate_config(), verbose = verbose)
 }
 
 

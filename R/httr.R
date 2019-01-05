@@ -1,6 +1,12 @@
 #' @importFrom httr GET PUT POST PATCH DELETE stop_for_status
 #'     warn_for_status content
 
+.leonardo_url <-
+    function(path)
+{
+    paste0(anvil_options("leonardo_host"), path)
+}
+
 .get <-
     function(path, authorization = NULL, verbose = FALSE, content_only = TRUE,
              check = stop_for_status)
@@ -8,13 +14,10 @@
     ## Validate args
     stopifnot(.is_scalar_logical(content_only))
 
-    ## Compose request
-    url <- paste0(anvil_options("leonardo_host"), path)
-
     ## GET and check response
     response <- GET(
-        url, anvil_options("leonardo_config"), accept_json(), authorization,
-        if (verbose) verbose()
+        .leonardo_url(path), anvil_options("leonardo_config"), accept_json(),
+        authorization, if (verbose) verbose()
     )
     check(response)
 
@@ -30,18 +33,17 @@
 ## "us.gcr.io/anvil-leo-dev/anvil_bioc_docker:latest"), encode="json",
 ## config(token=x))
 
-.request_method <-
+.request <-
     function(FUN, path, authorization = NULL, body = NULL, ...,
              verbose = FALSE, content_only = TRUE, check = stop_for_status)
 {
     ## Validate args
     stopifnot(.is_scalar_logical(content_only))
 
-    ## compose request
-    url <- paste0(anvil_options("leonardo_host"), path)
+    ## FUN (PUT / POST / PATCH / DELETE) and check response
     response <- FUN(
-        url, anvil_options("leonardo_config"), body = body, encode = "json",
-        authorization, if (verbose) verbose(), ...
+        .leonardo_url(path), anvil_options("leonardo_config"), body = body,
+        authorization, if (verbose) verbose(), encode = "json", ...
     )
     check(response)
 
@@ -55,7 +57,7 @@
     function(path, authorization = NULL, body = NULL, ...,
              verbose = FALSE, content_only = TRUE, check = stop_for_status)
 {
-    .request_method(
+    .request(
         PUT, path, authorization, body, ...,
         verbose = verbose, content_only = content_only, check = check
     )
@@ -65,7 +67,7 @@
     function(path, authorization = NULL, body = NULL, ...,
              verbose = FALSE, content_only = TRUE, check = stop_for_status)
 {
-    .request_method(
+    .request(
         POST, path, authorization, body, ...,
         verbose = verbose, content_only = content_only, check = check
     )
@@ -75,7 +77,7 @@
     function(path, authorization = NULL, body = NULL, ...,
              verbose = FALSE, content_only = TRUE, check = stop_for_status)
 {
-    .request_method(
+    .request(
         PATCH, path, authorization, body, ...,
         verbose = verbose, content_only = content_only, check = check
     )
@@ -85,7 +87,7 @@
     function(path, authorization = NULL, body = NULL, ...,
              verbose = FALSE, content_only = TRUE, check = stop_for_status)
 {
-    .request_method(
+    .request(
         DELETE, path, authorization, body, ...,
         verbose = verbose, content_only = content_only, check = check
     )
