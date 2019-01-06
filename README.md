@@ -4,11 +4,11 @@ service. The interface was created by scraping the [swagger][1] API
 from the underlying [YAML description][2]
 
 A couple of other alternatives have been
-investigated. [swagger-codegen][3] can parse the yaml to other
-languages, including R. However, the R implementation is not effective
--- there are minor bugs in the translation (e.g., the variable
-`_labels` cannot be used in R), but also parsing the results model
-fails:
+investigated. [swagger-codegen][3a] (or its [online equivalent][3b])
+can parse the yaml to other languages, including R. However, the R
+implementation is not effective -- there are minor bugs in the
+translation (e.g., the variable `_labels` cannot be used in R), but
+also parsing the results model fails:
 
     > apiClient <- ApiClient$new(basePath = "https://leonardo.dev.anvilproject.org")
     > clusterApi <- ClusterApi$new(apiClient = apiClient)
@@ -124,7 +124,8 @@ fork][8]) to allow specification of config arguments on api creation.
 
 [1]: https://leonardo.dev.anvilproject.org/
 [2]: https://leonardo.dev.anvilproject.org/api-docs.yaml
-[3]: https://swagger.io/tools/swagger-codegen/
+[3a]: https://swagger.io/tools/swagger-codegen/
+[3b]: http://editor.swagger.io/#/
 [4]: https://github.com/swagger-api/swagger-codegen
 [5]: https://github.com/swagger-api/swagger-codegen/blob/e15bbc961e028162ad288bec66b2b08d24ef5fd7/modules/swagger-codegen/src/main/java/io/swagger/codegen/languages/RClientCodegen.java#L92
 [6]: https://cran.r-project.org/package=rapiclient
