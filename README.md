@@ -15,10 +15,10 @@ fails:
     > auth <- config(token = authenticate())   # from AnVIL package
     > response <-
     +     clusterApi$list_clusters(NULL, NULL, auth, anvil_options("leonardo_config"))
-    > 
-    Error in returnObject$fromJSON(httr::content(resp, "text", encoding = "UTF-8")) (from Cluster.r#231) : 
+    >
+    Error in returnObject$fromJSON(httr::content(resp, "text", encoding = "UTF-8")) (from Cluster.r#231) :
       object 'TODO_OBJECT_MAPPING' not found
-    > 
+    >
 
 This tool is on [github][4], and it would not be inconievable to
 create a more functional fork, e.g., returning simple json rather than
@@ -28,7 +28,7 @@ above error occurs.
 The package [rapiclient][6] ([github][7]) generates clients from the
 swagger json.  The Leonardo api-docs.yaml file can be transformed to
 JSON using swagger-codegen. So
-    
+
     > library(rapiclient)
     > library(httr)
     > library(tidyverse)
@@ -37,18 +37,18 @@ JSON using swagger-codegen. So
     > api$schemes  <- "https"
     > operations <- get_operations(api)
     > names(operations)
-    
-     [1] "ping"                  "getSystemStatus"       "listClusters"         
-     [4] "listClustersByProject" "createClusterV2"       "getCluster"           
-     [7] "createCluster"         "deleteCluster"         "stopCluster"          
-    [10] "startCluster"          "proxyCluster"          "proxyLocalize"        
-    [13] "setCookie"             "invalidateToken"      
+
+     [1] "ping"                  "getSystemStatus"       "listClusters"
+     [4] "listClustersByProject" "createClusterV2"       "getCluster"
+     [7] "createCluster"         "deleteCluster"         "stopCluster"
+    [10] "startCluster"          "proxyCluster"          "proxyLocalize"
+    [13] "setCookie"             "invalidateToken"
     > operations$listClusters
-    listClusters 
-    List all active clusters 
+    listClusters
+    List all active clusters
     Description:
-       List all active clusters, optionally filtering on a set of labels 
-    
+       List all active clusters, optionally filtering on a set of labels
+
     Parameters:
       my-labels (string)
         Optional label key-value pairs to filter results by. Example: Querying by key1=val1,key2=val2
@@ -56,7 +56,7 @@ JSON using swagger-codegen. So
     Note: this string format is a workaround because Swagger doesn't support free-form
     query string parameters. The recommended way to use this endpoint is to specify the
     labels as top-level query string parameters. For instance: GET /api/clusters?key1=val1&key2=val2.
-    
+
       includeDeleted (boolean)
         Optional filter that includes any clusters with a Deleted status.
     > response <- with_config(c(
@@ -66,21 +66,21 @@ JSON using swagger-codegen. So
     +     operations$listClusters()
     + })
     response
-    > 
+    >
     Response [https://leonardo.dev.anvilproject.org/api/clusters]
       Date: 2019-01-06 10:30
       Status: 200
       Content-Type: application/json
       Size: 13.5 kB
-    
+
     > value <- content(response, as="text")
-    
+
     No encoding supplied: defaulting to UTF-8.
     > fromJSON(value, flatten=TRUE) %>% as_tibble()
-    
+
     # A tibble: 17 x 24
        autopauseThresh… stagingBucket clusterImages scopes instances errors creator
-     *            <int> <chr>         <list>        <list> <list>    <list> <chr>  
+     *            <int> <chr>         <list>        <list> <list>    <list> <chr>
      1               30 leostaging-v… <list [0]>    <list… <list [0… <list… stvjc@…
      2               30 leostaging-n… <list [0]>    <list… <list [0… <list… nitesh…
      3               30 leostaging-r… <list [0]>    <list… <list [0… <list… reshg@…
@@ -104,11 +104,23 @@ JSON using swagger-codegen. So
     #   googleId <chr>, createdDate <chr>, machineConfig.numberOfWorkers <int>,
     #   machineConfig.masterMachineType <chr>, machineConfig.masterDiskSize <int>,
     #   labels.creator <chr>, labels.clusterName <chr>, labels.googleProject <chr>
-    > 
-    
-The implementation of _rapiclient_ could be modified to allow
-specification of config arguments on api creation.
+    >
 
+The implementation of _rapiclient_ could be modified (see [Martin's
+fork][8]) to allow specification of config arguments on api creation.
+
+    api <- get_api(
+        "anvil-leonardo-api.json",
+        config = c(
+            AnVIL::anvil_options("leonardo_config"),
+            config(token = AnVIL::authenticate())
+        )
+    )
+    api$host <- "leonardo.dev.anvilproject.org"
+    api$schemes  <- "https"
+
+    operations <- get_operations(api)
+    operations$listClusters()
 
 [1]: https://leonardo.dev.anvilproject.org/
 [2]: https://leonardo.dev.anvilproject.org/api-docs.yaml
@@ -117,3 +129,4 @@ specification of config arguments on api creation.
 [5]: https://github.com/swagger-api/swagger-codegen/blob/e15bbc961e028162ad288bec66b2b08d24ef5fd7/modules/swagger-codegen/src/main/java/io/swagger/codegen/languages/RClientCodegen.java#L92
 [6]: https://cran.r-project.org/package=rapiclient
 [7]: https://github.com/bergant/rapiclient
+[8]: https://github.com/mtmorgan/rapiclient/tree/httr-config-support
