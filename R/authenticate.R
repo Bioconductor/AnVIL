@@ -2,6 +2,9 @@
 #'
 #' @title Authenticate against the google cloud app `anvil-leo-dev`
 #'
+#' @param service character(1) name of AnVIL service (e.g.,
+#'     "leonardo", "terra") requiring authentication.
+#' 
 #' @param cache (optional) logical(1) or character(1) describing how
 #'     the OAuth 2.0 token will be managed. See
 #'     `?httr:oauth2.0_token`.
@@ -9,15 +12,32 @@
 #' @return An 'R6' token instance containing the authorization,
 #'     invisibly.
 #'
+#' @details AnVIL applications require OAuth 2.0 credentials
+#'     identifying the application. These must be added to the package
+#'     source before installation.
+#'
+#'     For Leonardo, visit
+#'     https://console.cloud.google.com/apis/credentials?authuser=1&project=anvil-leo-dev`
+#'     and download (click on the downward-facing arrow to the
+#'     right) the "Bioconductor-AnVIL" credentials to a file
+#'     `inst/service/leonardo/auth.json`.
+#'
 #' @importFrom httr oauth_app oauth_endpoints oauth2.0_token
+#' @importFrom jsonlite read_json
 #' @export
 authenticate <-
-    function(cache = getOption("httr_oauth_cache"))
+    function(service, cache = getOption("httr_oauth_cache"))
 {
+    stopifnot(.is_scalar_character(service))
+
+    path <- .authenticate_path(service)
+    (interactive() && file.exists(path)) || return(invisible(NULL))
+
+    access <- read_json(path)$installed
     app <- oauth_app(
         "Leonardo",
-        key = anvil_options("leonardo_access")$client_id,
-        secret = anvil_options("leonardo_access")$client_secret
+        key = access$client_id,
+        secret = access$client_secret
     )
 
     token <- oauth2.0_token(
@@ -30,8 +50,8 @@ authenticate <-
 }
 
 authenticate_config <-
-    function()
+    function(service)
 {
-    token <- authenticate()
-    config(token = token)
+    token <- authenticate(service)
+    httr::config(token = token)
 }
