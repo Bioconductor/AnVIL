@@ -1,16 +1,15 @@
 devtools::load_all()
-library(tidyverse)
+library(dplyr)
 
 response <- leonardo$createClusterV2 (
     googleProject = "anvil-leo-dev",
     clusterName = "mtmorganbioc",
     rstudioDockerImage = "us.gcr.io/anvil-leo-dev/anvil_bioc_docker:latest"
-    )
+)
 
-leonardo$listClusters() %>%
-    httr::content(as="text") %>% jsonlite::fromJSON(flatten=TRUE) %>%
-    as_tibble() %>%
-    select(creator, status) %>% filter(grepl("mtm", creator ))
+leonardo$listClusters() %>% flatten() %>%
+    select(creator, status, clusterUrl) %>%
+    filter(grepl("mtm", creator))
 
 
 url <- content(response)$clusterUrl

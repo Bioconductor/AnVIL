@@ -23,8 +23,7 @@
 \alias{gen3_peregrine}
 \alias{dockstore}
 \alias{Dockstore-class}
-\alias{operations,}
-\alias{Dockstore-method}
+\alias{operations,Dockstore-method}
 \title{RESTful services useful for AnVIL developers}
 \format{An object of class \code{Service} of length 1.}
 \usage{
