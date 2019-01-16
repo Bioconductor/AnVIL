@@ -7,7 +7,7 @@
 
 #' @rdname Service
 #'
-#' @aliases Dockstore-class operations, Dockstore-method schemas
+#' @aliases Dockstore-class operations,Dockstore-method
 #'
 #' @return `dockstore` represents the API of the Dockstore platform to
 #'     share Docker-based tools in CWL or WDL or Nextflow at
