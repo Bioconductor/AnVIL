@@ -55,7 +55,17 @@ Service <-
 
     config <- c(authenticate_config(service), config)
 
-    api <- get_api(.api_path(service), config)
+    withCallingHandlers({
+        api <- get_api(.api_path(service), config)
+    }, warning = function(w) {
+        test <- identical(
+            conditionMessage(w),
+            "Missing Swagger Specification version"
+        )
+        if (!test)
+            warning(w)
+        invokeRestart("muffleWarning")
+    })
     api$schemes <- "https"
     api$host <- host
 
