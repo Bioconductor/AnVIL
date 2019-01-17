@@ -1,3 +1,20 @@
+authenticate_path <- function(service)
+    system.file(package="AnVIL", "service", service, "auth.json")
+
+authenticate_ok <-
+    function(service)
+{
+    path <- authenticate_path(service)
+    test <- file.exists(path)
+    if (!test)
+        warning(
+            "'", service, "' requires additional configuration; ",
+            "see `?authenticate`",
+            call. = FALSE
+        )
+    invisible(test)
+}
+
 #' @rdname authenticate
 #'
 #' @title Authenticate against the google cloud app `anvil-leo-dev`
@@ -30,7 +47,7 @@ authenticate <-
 {
     stopifnot(.is_scalar_character(service))
 
-    path <- .authenticate_path(service)
+    path <- authenticate_path(service)
     (interactive() && file.exists(path)) || return(invisible(NULL))
 
     access <- read_json(path)$installed

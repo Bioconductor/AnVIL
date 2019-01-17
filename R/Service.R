@@ -41,9 +41,6 @@ setOldClass("request")
 .api_path <- function(service)
     system.file(package="AnVIL", "service", service, "api.json")
 
-.authenticate_path <- function(service)
-    system.file(package="AnVIL", "service", service, "auth.json")
-
 Service <-
     function(service, host, config = httr::config())
 {

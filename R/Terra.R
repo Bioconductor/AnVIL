@@ -13,7 +13,13 @@
 #'     environemnt at https://api.firecloud.org/.
 #' 
 #' @export
-terra <- .Terra(Service("terra", host = "api.firecloud.org"))
+terra <- NULL
+
+Terra <-
+    function()
+{
+    .Terra(Service("terra", host = "api.firecloud.org"))
+}
 
 ## Some operations seem to have a poorly-defined operationId in the json
 
