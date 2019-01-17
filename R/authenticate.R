@@ -50,7 +50,13 @@ authenticate <-
     path <- authenticate_path(service)
     (interactive() && file.exists(path)) || return(invisible(NULL))
 
-    access <- read_json(path)$installed
+    access <- read_json(path)
+    ## FIXME: auth.json in leonardo has 'installed' element, terra
+    ## does not. Probably this is a mis-understanding about how
+    ## authentication works
+    if ("installed" %in% names(access))
+        access <- access$installed
+
     app <- oauth_app(
         "Leonardo",
         key = access$client_id,
