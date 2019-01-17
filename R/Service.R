@@ -51,6 +51,7 @@ Service <-
         .is_scalar_character(service),
         .is_scalar_character(host)
     )
+    flog.debug("Service(): %s", service)
 
     config <- c(authenticate_config(service), config)
 

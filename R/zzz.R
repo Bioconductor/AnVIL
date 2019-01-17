@@ -1,3 +1,5 @@
+#' @import futile.logger
+
 .onLoad <-
     function(...)
 {
