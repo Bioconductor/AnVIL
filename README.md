@@ -1,36 +1,33 @@
-This archive currently contains an interface to the Leonardo web
-service. The interface was created by scraping the [swagger][1] API
-'by hand'. A better alternative would build the API programmatically
-from the underlying [YAML description][2]
+This archive currently contains an interface to AnVIL web
+services. The interface uses [rapiclient][7] (rather than older
+[CRAN][6] version), and is easily extended. Current implementations
+are for Leonardo and Terra; there are Gen3 stubs but these are not
+complete because I do not know end points.
 
-A version using [rapiclient][7] is available on the [rapiclient branch][9].
+The package provides singleton endpoints with tab completion on
+operations
 
-Another alternatives has been investigated. [swagger-codegen][3a] (or
-its [online equivalent][3b]) can parse the yaml to other languages,
-including R. However, the R implementation is not effective -- there
-are minor bugs in the translation (e.g., the variable `_labels` cannot
-be used in R), but also parsing the results model fails:
+    leonardo
+    terra$getServiceStatus()
+    leonardo$listClusters() %>% content(as = "text") %>% 
+        fromJSON(flatten = TRUE) %>% as_tibble()
+    operations(leonardo)
+    schemas(leonardo)
+    
+The return values all require further processing (`httr::content() %>%
+...`).
 
-    > apiClient <- ApiClient$new(basePath = "https://leonardo.dev.anvilproject.org")
-    > clusterApi <- ClusterApi$new(apiClient = apiClient)
-    > auth <- config(token = authenticate())   # from AnVIL package
-    > response <-
-    +     clusterApi$list_clusters(NULL, NULL, auth, anvil_options("leonardo_config"))
-    >
-    Error in returnObject$fromJSON(httr::content(resp, "text", encoding = "UTF-8")) (from Cluster.r#231) :
-      object 'TODO_OBJECT_MAPPING' not found
-    >
+The api definititions `inst/service/<name>/api.json` needs to be json
+rather than YAML, see [swagger-codegen online][3b]).
 
-This tool is on [github][4], and it would not be inconievable to
-create a more functional fork, e.g., returning simple json rather than
-trying for a complicated object mapping at the [location][5] where the
-above error occurs.
+Some services require client keys, in
+`inst/service/<name>/auth.json`. For Leonardo, visit [here][1] and
+download (click on the downward-facing arrow to the right) the
+"Bioconductor-AnVIL" credentials to a file
+`inst/service/leonardo/auth.json`.
 
-[1]: https://leonardo.dev.anvilproject.org/
-[2]: https://leonardo.dev.anvilproject.org/api-docs.yaml
-[3a]: https://swagger.io/tools/swagger-codegen/
+[1]: https://console.cloud.google.com/apis/credentials?authuser=1&project=anvil-leo-dev
 [3b]: http://editor.swagger.io/#/
-[4]: https://github.com/swagger-api/swagger-codegen
-[5]: https://github.com/swagger-api/swagger-codegen/blob/e15bbc961e028162ad288bec66b2b08d24ef5fd7/modules/swagger-codegen/src/main/java/io/swagger/codegen/languages/RClientCodegen.java#L92
+[6]: https://cran.r-project.org/package=rapiclient
 [7]: https://github.com/bergant/rapiclient
-[9]: https://github.com/Bioconductor/AnVIL/tree/rapiclient
+

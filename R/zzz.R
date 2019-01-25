@@ -1,5 +1,8 @@
+#' @import futile.logger
+
 .onLoad <-
     function(...)
 {
-    tryCatch(anvil_options("leonardo_access"), error = warning)
+    authenticate_ok("leonardo") && { leonardo <<- Leonardo(); TRUE }
+    authenticate_ok("terra") && { terra <<- Terra(); TRUE }
 }

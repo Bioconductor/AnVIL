@@ -4,9 +4,12 @@
 \alias{authenticate}
 \title{Authenticate against the google cloud app `anvil-leo-dev`}
 \usage{
-authenticate(cache = getOption("httr_oauth_cache"))
+authenticate(service, cache = getOption("httr_oauth_cache"))
 }
 \arguments{
+\item{service}{character(1) name of AnVIL service (e.g.,
+"leonardo", "terra") requiring authentication.}
+
 \item{cache}{(optional) logical(1) or character(1) describing how
 the OAuth 2.0 token will be managed. See
 `?httr:oauth2.0_token`.}
@@ -17,4 +20,15 @@ An 'R6' token instance containing the authorization,
 }
 \description{
 Authenticate against the google cloud app `anvil-leo-dev`
+}
+\details{
+AnVIL applications require OAuth 2.0 credentials
+    identifying the application. These must be added to the package
+    source before installation.
+
+    For Leonardo, visit
+    https://console.cloud.google.com/apis/credentials?authuser=1&project=anvil-leo-dev`
+    and download (click on the downward-facing arrow to the
+    right) the "Bioconductor-AnVIL" credentials to a file
+    `inst/service/leonardo/auth.json`.
 }

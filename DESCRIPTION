@@ -19,9 +19,14 @@ Description: This package stub provides functionality to support
 License: Artistic-2.0
 Encoding: UTF-8
 Imports:
-    curl,
-    jsonlite,
-    httr,
+    utils, methods,
+    futile.logger,
+    curl, jsonlite, httr,
+    rapiclient,
     tibble
+Collate:
+    all_generics.R utilities.R authenticate.R
+    Service.R Leonardo.R Terra.R Gen3.R Dockstore.R
+    Response.R zzz.R
 LazyData: true
 RoxygenNote: 6.1.1

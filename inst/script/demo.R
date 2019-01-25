@@ -1,23 +1,22 @@
 devtools::load_all()
-library(tidyverse)
+library(dplyr)
 
-tbl1 <- api_clusters()
-tbl1
+response <- leonardo$createClusterV2 (
+    googleProject = "anvil-leo-dev",
+    clusterName = "mtmorganbioc",
+    rstudioDockerImage = "us.gcr.io/anvil-leo-dev/anvil_bioc_docker:latest"
+)
 
-tbl1 %>% head(1) %>% t()
+leonardo$listClusters() %>% flatten() %>%
+    select(creator, status, clusterUrl) %>%
+    filter(grepl("mtm", creator))
 
-tbl1 %>% select(starts_with("label"))
 
-tbl2 <- api_clusters(creator = "nitesh.turaga@gmail.com")
+url <- content(response)$clusterUrl
+url <- sub("130.211.229.19", "leonardo.dev.anvilproject.org", url)
+url <- paste0(url, "/rstudio")
 
-tbl2
-
-clusterName <- tbl2 %>%
-    select("labels.clusterName") %>%
-    head(1) %>%
-    as.character()
-
-clusterName
-
-api_cluster(clusterName = clusterName) %>%
-    str()
+stop_response <- leonardo$stopCluster(
+             googleProject = "anvil-leo-dev",
+             clusterName = "mtmorganbioc"
+         )
