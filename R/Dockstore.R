@@ -14,7 +14,13 @@
 #'     https://dockstore.org/api/
 #'
 #' @export
-dockstore <- .Dockstore(Service("dockstore", host="dockstore.org"))
+dockstore <- if(file.exists(system.file(package="AnVIL", "service/dockstore/auth.json"))){
+	.Dockstore(Service("dockstore",
+		host="dockstore.org",
+		apiheaders=c(Authorization=paste("Bearer",as.character(fromJSON(system.file(package="AnVIL", "service/dockstore/auth.json"))$token)))))}else{
+	.Dockstore(Service("dockstore",
+		host="dockstore.org"))
+		}
 
 ## Some operations seem to have a poorly defined operationId in the json
 

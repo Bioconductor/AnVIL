@@ -25,7 +25,7 @@
 \alias{Dockstore-class}
 \alias{operations,Dockstore-method}
 \title{RESTful services useful for AnVIL developers}
-\format{An object of class \code{Service} of length 1.}
+\format{An object of class \code{NULL} of length 0.}
 \usage{
 operations(x)
 
@@ -54,6 +54,9 @@ package and documented on this page, e.g., `leonardo` or
 
 \item{name}{A symbol representing a defined operation, e.g.,
 `leonardo$listClusters()`.}
+
+\item{apiheaders}{a character vector representing headers needed for
+the api}
 }
 \value{
 `leonardo` represents the API of the Leonard container

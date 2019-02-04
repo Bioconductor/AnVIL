@@ -11,6 +11,9 @@
 #'     package and documented on this page, e.g., `leonardo` or
 #'     `terra`.
 #'
+#' @param apiheaders a character vector representing headers needed for
+#'	the api
+#'
 #' @param name A symbol representing a defined operation, e.g.,
 #'     `leonardo$listClusters()`.
 #'
@@ -28,7 +31,8 @@ setOldClass("request")
     slots = c(
         service = "character",
         config = "request",
-        api = "rapi_api"
+        api = "rapi_api",
+	apiheaders="character"
     )
 )
 
@@ -38,11 +42,13 @@ setOldClass("request")
 
 .api <- function(x) x@api
 
+.apiheaders<-function(x) x@apiheaders
+
 .api_path <- function(service)
     system.file(package="AnVIL", "service", service, "api.json")
 
 Service <-
-    function(service, host, config = httr::config())
+    function(service, host, config = httr::config(),apiheaders=character(0))
 {
     stopifnot(
         .is_scalar_character(service),
@@ -65,8 +71,7 @@ Service <-
     })
     api$schemes <- "https"
     api$host <- host
-
-    .Service(service = service, config = config, api = api)
+    .Service(service = service, config = config, api = api, apiheaders=apiheaders)
 }
 
 #' @export
@@ -74,7 +79,7 @@ setMethod(
     "operations", "Service",
     function(x)
 {
-    get_operations(.api(x))
+    get_operations(.api(x),.headers=.apiheaders(x))
 })
 
 #' @export
