@@ -27,8 +27,14 @@ AnVIL applications require OAuth 2.0 credentials
     source before installation.
 
     For Leonardo, visit
-    https://console.cloud.google.com/apis/credentials?authuser=1&project=anvil-leo-dev`
+    `https://console.cloud.google.com/apis/credentials?authuser=1&project=anvil-leo-dev`
     and download (click on the downward-facing arrow to the
     right) the "Bioconductor-AnVIL" credentials to a file
     `inst/service/leonardo/auth.json`.
+
+    For Terra, visit
+    `https://console.cloud.google.com/apis/credentials?authuser=1&project=anvil-leo-dev`
+    and download(click on the downward-facing arrow to the
+    right) the "terraRapi" credentials file to a file
+    `inst/service/terra/auth.json`.
 }

@@ -11,24 +11,71 @@
 #'     package and documented on this page, e.g., `leonardo` or
 #'     `terra`.
 #'
+#' @param apiheaders a character vector representing headers needed for
+#'	the api
+#'
 #' @param name A symbol representing a defined operation, e.g.,
 #'     `leonardo$listClusters()`.
 #'
+#' @param op - an api operation from rapiclient::get_operations
+#'
 #' @import methods
 NULL
+
+#' @importFrom rapiclient get_api get_operations
+
+.tagList <- setClass(
+  "tagList",
+  slots = c(tags="list")
+)
+
+.tags <- function(x) {x@tagList}
+
+.getTags<-function(op){
+  temp=attr(op,"definition")
+  return(data.frame(operation=temp$operationId,tag=temp$tags, stringsAsFactors=FALSE))
+}
+
+tagList<-function(service){
+  fpath=.api_path(service)
+  myapi=rapiclient::get_api(fpath)
+  myops=rapiclient::get_operations(myapi)
+  tagDF=do.call("rbind.data.frame",lapply(myops,.getTags))
+  tagList=split(tagDF,tagDF$tag)
+  return(.tagList(tags=tagList))
+}
+
+#' @export
+setMethod(
+  "show", "tagList",
+  function(object)
+{str(object@tags,1)}
+)
+
+#' @export
+setMethod(
+  "$", "tagList",
+  function(x, name)
+  {x@tags[[name]]}
+)
+
+
+#' @export
 
 setOldClass("rapi_api")
 
 setOldClass("request")
 
-#' @importFrom rapiclient get_api get_operations get_schemas
+
 #' @export
 .Service <- setClass(
     "Service",
     slots = c(
         service = "character",
         config = "request",
-        api = "rapi_api"
+        api = "rapi_api",
+	apiheaders="character",
+	tagList="tagList"
     )
 )
 
@@ -38,11 +85,13 @@ setOldClass("request")
 
 .api <- function(x) x@api
 
+.apiheaders<-function(x) x@apiheaders
+
 .api_path <- function(service)
     system.file(package="AnVIL", "service", service, "api.json")
 
 Service <-
-    function(service, host, config = httr::config())
+    function(service, host, config = httr::config(),apiheaders=character(0))
 {
     stopifnot(
         .is_scalar_character(service),
@@ -65,8 +114,8 @@ Service <-
     })
     api$schemes <- "https"
     api$host <- host
-
-    .Service(service = service, config = config, api = api)
+    tempTagList=tagList(service)
+    .Service(service = service, config = config, api = api, apiheaders=apiheaders, tagList=tempTagList)
 }
 
 #' @export
@@ -74,7 +123,7 @@ setMethod(
     "operations", "Service",
     function(x)
 {
-    get_operations(.api(x))
+    get_operations(.api(x),.headers=.apiheaders(x))
 })
 
 #' @export
@@ -116,3 +165,10 @@ setMethod(
         sep=""
     )
 })
+
+#' @export
+setMethod(
+  "tags", "Service",
+  function(x)
+  {x@tagList}
+)

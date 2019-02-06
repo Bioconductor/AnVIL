@@ -27,3 +27,7 @@ setGeneric("schemas", function(x) standardGeneric("schemas"))
 #'
 #' @export
 setGeneric("flatten", function(x) standardGeneric("flatten"))
+
+#' @rdname Service
+#' @export
+setGeneric("tags", function(x,...) standardGeneric("tags"))
