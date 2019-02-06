@@ -56,7 +56,11 @@ setMethod(
 setMethod(
   "$", "tagList",
   function(x, name)
-  {x@tags[[name]]}
+  {
+	temp=x@tags[[name]]$operation
+	names(temp)=c()
+	temp
+	}
 )
 
 
