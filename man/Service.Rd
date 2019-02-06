@@ -5,6 +5,7 @@
 \name{operations}
 \alias{operations}
 \alias{schemas}
+\alias{tags}
 \alias{Service}
 \alias{.DollarNames.Service}
 \alias{operations,Service-method}
@@ -30,6 +31,8 @@
 operations(x)
 
 schemas(x)
+
+tags(x, ...)
 
 \S4method{$}{Service}(x, name)
 
@@ -57,6 +60,8 @@ package and documented on this page, e.g., `leonardo` or
 
 \item{apiheaders}{a character vector representing headers needed for
 the api}
+
+\item{op}{- an api operation from rapiclient::get_operations}
 }
 \value{
 `leonardo` represents the API of the Leonard container

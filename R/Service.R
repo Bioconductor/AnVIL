@@ -22,7 +22,7 @@
 #' @import methods
 NULL
 
-#' @importFrom rapiclient get_api get_operations
+#' @importFrom rapiclient get_api get_operations get_schemas
 
 .tagList <- setClass(
   "tagList",
