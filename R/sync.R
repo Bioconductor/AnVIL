@@ -13,7 +13,7 @@
 #'
 #' @details private helper function to pass arguments to `gsutil`
 #'     command line utility and throw the appropriate errors.
-#' 
+#'
 .gsutil_do <-
     function(args)
 {
@@ -41,14 +41,16 @@
 .gcs_pathify <-
     function(google_bucket)
 {
-    paste0("gs://", google_bucket)
+    ifelse("gs://" %in% google_bucket,
+           google_bucket,
+           paste0("gs://", google_bucket))
 }
 
 
 #' @rdname gsutil_ls
 #'
 #' @title List contents of a gcs bucket
-#' 
+#'
 #' @param google_bucket character, a valid path to a google storage
 #'     bucket
 #'
@@ -58,7 +60,7 @@
 #' @param recursive logical, if the operation should be recursive
 #'
 #' @return Exit status of `gsutil_ls()`, invisibly
-#' 
+#'
 gsutil_ls <-
     function(google_bucket, path="", recursive=TRUE)
 {
@@ -103,7 +105,7 @@ gsutil_cp <-
 #' @rdname gsutil_rm
 #'
 #' @title Remove contents of a gcs bucket
-#' 
+#'
 #' @param google_bucket character, a valid path to a google storage
 #'     bucket
 #'
@@ -130,7 +132,7 @@ gsutil_rm <-
 #' @rdname gsutil_rsync
 #'
 #' @title rsync contents of a gcs bucket
-#' 
+#'
 #' @param source character, a path to a source url. Either a google
 #'     bucket or a local path
 #'
@@ -161,7 +163,7 @@ gsutil_rm <-
 #' `gsutil rsync -d -r gs://mybucket/data data`
 #'
 #' @return Exit status of `gsutil_rsync()`, invisbly
-#' 
+#'
 gsutil_rsync <-
     function(source, destination, match=TRUE, recursive=TRUE)
 {
@@ -172,15 +174,15 @@ gsutil_rsync <-
     if (.is_google_bucket(destination)) {
         destination <- .gcs_pathify(destination)
     }
-             
+
     ## if destination is not a google bucket and doesn't exist
     if (!dir.exists(destination) && (!.is_google_bucket(destination))) {
         dir.create(destination)
     }
-    
+
     args <- c(
         ##  -m option, to perform parallel (multi-threaded/multi-processing)
-        "-m", 
+        "-m",
         "rsync",
         if (match) "-d",
         if (recursive) "-r",
@@ -210,7 +212,7 @@ gsutil_rsync <-
 #' @export
 localize <-
     function(google_bucket, local_path, ...)
-{   
+{
     gsutil_rsync(.gcs_pathify(google_bucket), local_path,...)
 }
 
@@ -232,12 +234,14 @@ localize <-
 #'
 #' @export
 delocalize <-
-    function(local_path, google_bucket, ...)
+    function(local_path, google_bucket, remove_local_volume = TRUE, ...)
 {
     ## First sync
     gsutil_rsync(local_path, .gcs_pathify(google_bucket), ...)
     ## then remove volume
-    unlink(local_path, recursive=TRUE)
+    if (remove_local_volume) {
+        unlink(local_path, recursive=TRUE)
+    }
 }
 
 
@@ -245,9 +249,9 @@ delocalize <-
 #'
 #' @title Add to .libPaths from a local path
 #'
-#' @param local_path charactor, identifying a local path
+#' @param local_path character, identifying a local path
 #'
-#' @return character with latest .libPaths() 
+#' @return character with latest .libPaths()
 #'
 #' @details Add the synced google bucket path(which is now local) to
 #'     the library path .libPaths() so that R can see the hosted
@@ -256,6 +260,101 @@ delocalize <-
 #' @export
 add_libs <-
     function(local_path)
-{       
+{
+    ## Create directory if it doesn't exist
+    ## otherwise .libPaths() doesn't work
+    if (!dir.exists(local_path)) {
+        dir.create(local_path)
+    }
     .libPaths(c(local_path, .libPaths()))
+}
+
+
+#' @rdname sync
+#'
+#' @title Sync libraries from google bucket(source) and
+#'     local_path(destination).
+#'
+#' @param source character, name of google bucket.
+#'
+#' @param destination character, represnting a local path.
+#'
+#' @details The sync function allows the user to sync
+#'
+#' @export
+sync <-
+    function(source, destination)
+{
+    if (.is_google_bucket(source)) {
+        ## No need to .gcs_pathify as "localize" will call it.
+        localize(google_bucket = source, local_path = destination)
+    }
+    ## Do not remove local volume
+    if (.is_google_bucket(destination)) {
+        delocalize(local_path = destination, google_bucket = source,
+                   remove_local_volume = FALSE)
+    }
+}
+
+
+
+#' @rdname install
+#'
+#' @title Install libraries and it's dependencies from a bucket.
+#'
+#' @param packages character, names of packages to install from a
+#'     bucket.
+#'
+#' @param google_bucket character, a valid path to a google storage
+#'     bucket.
+#'
+#' @param lib character, file path to .libPaths()[1], primary location
+#'     to install packages.
+#'
+#' @details Given a pre-existing google bucket with a host of
+#'     bioconductor packages built on a specific matching version of R
+#'     and Bioconductor, the user is able to install packages his
+#'     container using the 'install()` function from the google
+#'     bucket.
+#'
+#' eg:
+#'
+#' add_libs("/tmp/host-site-library")
+#'
+#' install(packages = c('BiocParallel', ='BiocGenerics'),
+#'             google_bucket = "bioc_release_volume",
+#'             lib = .libPaths()[1])
+#'
+#' @return character, location of packages installed invisibly
+#'
+#' @export
+install <-
+    function(packages, google_bucket, lib = .libPaths()[1])
+{
+
+    ## find dependencies
+    db <- available.packages(repos = BiocManager::repositories())
+
+    deps <- unlist(tools::package_dependencies(packages, db))
+    packages <- unique(
+        c(packages, deps[!deps %in% rownames(installed.packages())])
+    )
+
+    packages_w_deps <- c(deps, packages)
+
+    ## copy from bucket to .libPaths()[1]
+    ## Assumes packages are already in the google bucket
+    if (.is_google_bucket(google_bucket)) {
+        bucket_packages <- paste0(
+            .gcs_pathify(google_bucket), "/", packages_w_deps
+        )
+    } else {
+        stop("Not a valid google bucket which exists in the GCP account.")
+    }
+
+    ## if there is more than one "source" i.e package(s)
+    for (source in bucket_packages) {
+        gsutil_rsync(source = source, desination = lib, match = TRUE, recursive = TRUE)
+    }
+    invisible(file.path(lib, basename(packages)))
 }
