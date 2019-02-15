@@ -41,9 +41,10 @@
 .gcs_pathify <-
     function(google_bucket)
 {
-    ifelse("gs://" %in% google_bucket,
-           google_bucket,
-           paste0("gs://", google_bucket))
+    if(startsWith(google_bucket, "gs://"))
+        google_bucket
+    else
+        paste0("gs://", google_bucket)
 }
 
 
