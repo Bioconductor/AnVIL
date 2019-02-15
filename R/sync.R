@@ -41,10 +41,10 @@
 .gcs_pathify <-
     function(google_bucket)
 {
-    if(startsWith(google_bucket, "gs://"))
-        google_bucket
-    else
-        paste0("gs://", google_bucket)
+    idx <- !startsWith(google_bucket, "gs://")
+    if (any(idx))
+        google_bucket[idx] <- paste0("gs://", google_bucket[idx])
+    google_bucket
 }
 
 
@@ -297,7 +297,15 @@ sync <-
     }
 }
 
-
+.install_find_dependencies <-
+    function(packages, lib)
+{
+    ## find dependencies
+    db <- available.packages(repos = BiocManager::repositories())
+    deps <- unlist(tools::package_dependencies(packages, db), use.names=FALSE)
+    installed <- rownames(installed.packages(lib.loc = lib))
+    unique(c(packages, deps[!deps %in% installed]))
+}
 
 #' @rdname install
 #'
@@ -330,32 +338,23 @@ sync <-
 #'
 #' @export
 install <-
-    function(packages, google_bucket, lib = .libPaths()[1])
+    function(packages, google_bucket, lib = .libPaths()[1], lib.loc = NULL)
 {
-
-    ## find dependencies
-    db <- available.packages(repos = BiocManager::repositories())
-
-    deps <- unlist(tools::package_dependencies(packages, db))
-    packages <- unique(
-        c(packages, deps[!deps %in% rownames(installed.packages())])
-    )
-
-    packages_w_deps <- c(deps, packages)
+    packages <- .install_find_dependencies(packages, lib.loc = lib.loc)
 
     ## copy from bucket to .libPaths()[1]
     ## Assumes packages are already in the google bucket
-    if (.is_google_bucket(google_bucket)) {
-        bucket_packages <- paste0(
-            .gcs_pathify(google_bucket), "/", packages_w_deps
-        )
-    } else {
-        stop("Not a valid google bucket which exists in the GCP account.")
-    }
+    if (!.is_google_bucket(google_bucket))
+        stop("not a valid google bucket which exists in the GCP account")
+    packages <- sprintf("%s/%s", .gcs_pathify(google_bucket), packages)
 
     ## if there is more than one "source" i.e package(s)
-    for (source in bucket_packages) {
-        gsutil_rsync(source = source, desination = lib, match = TRUE, recursive = TRUE)
+    ## FIXME: gsutil_rsync should be vectorized, including 0-length source
+    for (source in packages) {
+        gsutil_rsync(
+            source = source, desination = lib, match = TRUE,
+            recursive = TRUE
+        )
     }
     invisible(file.path(lib, basename(packages)))
 }
