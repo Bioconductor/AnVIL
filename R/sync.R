@@ -1,12 +1,3 @@
-##############################################
-## TODO: Notes from martin
-## 3. AnVIL::sync(from, to)
-##     1. Localize from(gs://) to (local/path)
-##     2. Delocalize from(local/path) to (gs)
-## 4. AnVIL::add_libs(from)
-##     1. from(gs://)
-############################################
-
 #' @title helper function to pass arguments to `gsutil`
 #'
 #' @param args arguments to helper function
