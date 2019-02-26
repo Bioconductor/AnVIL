@@ -33,17 +33,11 @@ authenticate_ok <-
 #'     identifying the application. These must be added to the package
 #'     source before installation.
 #'
-#'     For Leonardo, visit
+#'     For Terra and Leonardo, visit
 #'     `https://console.cloud.google.com/apis/credentials?authuser=1&project=anvil-leo-dev`
 #'     and download (click on the downward-facing arrow to the
 #'     right) the "Bioconductor-AnVIL" credentials to a file
-#'     `inst/service/leonardo/auth.json`.
-#'
-#'     For Terra, visit
-#'     `https://console.cloud.google.com/apis/credentials?authuser=1&project=anvil-leo-dev`
-#'     and download(click on the downward-facing arrow to the
-#'     right) the "terraRapi" credentials file to a file
-#'     `inst/service/terra/auth.json`.
+#'     `inst/service/{leonardo,terra}/auth.json`.
 #'
 #' @importFrom httr oauth_app oauth_endpoints oauth2.0_token
 #' @importFrom jsonlite read_json
