@@ -26,14 +26,15 @@ download (click on the downward-facing arrow to the right) the
 "Bioconductor-AnVIL" credentials to a file
 `inst/service/leonardo/auth.json`.
 
-For dockstore, visit here: https://dockstore.org/accounts
+For dockstore, visit [docstore.org/accounts][] and put your token in
+`inst/service/dockstore/auth.json` file like
 
-Then, put your token in an inst/service/dockstore/auth.json file like {"token":"fff"}
-
-
+    {
+        "token" : "fff"
+    }
 
 [1]: https://console.cloud.google.com/apis/credentials?authuser=1&project=anvil-leo-dev
 [3b]: http://editor.swagger.io/#/
 [6]: https://cran.r-project.org/package=rapiclient
 [7]: https://github.com/bergant/rapiclient
-
+[docstore.org/accounts]: https://dockstore.org/accounts

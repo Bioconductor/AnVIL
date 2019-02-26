@@ -11,9 +11,6 @@
 #'     package and documented on this page, e.g., `leonardo` or
 #'     `terra`.
 #'
-#' @param apiheaders a character vector representing headers needed for
-#'	the api
-#'
 #' @param name A symbol representing a defined operation, e.g.,
 #'     `leonardo$listClusters()`.
 #'
@@ -31,8 +28,7 @@ setOldClass("request")
     slots = c(
         service = "character",
         config = "request",
-        api = "rapi_api",
-	apiheaders="character"
+        api = "rapi_api"
     )
 )
 
@@ -42,21 +38,21 @@ setOldClass("request")
 
 .api <- function(x) x@api
 
-.apiheaders<-function(x) x@apiheaders
-
 .api_path <- function(service)
     system.file(package="AnVIL", "service", service, "api.json")
 
 Service <-
-    function(service, host, config = httr::config(),apiheaders=character(0))
+    function(service, host, config = httr::config(), authenticate_config = TRUE)
 {
     stopifnot(
         .is_scalar_character(service),
-        .is_scalar_character(host)
+        .is_scalar_character(host),
+        .is_scalar_logical(authenticate_config)
     )
     flog.debug("Service(): %s", service)
 
-    config <- c(authenticate_config(service), config)
+    if (authenticate_config)
+        config <- c(authenticate_config(service), config)
 
     withCallingHandlers({
         api <- get_api(.api_path(service), config)
@@ -71,7 +67,7 @@ Service <-
     })
     api$schemes <- "https"
     api$host <- host
-    .Service(service = service, config = config, api = api, apiheaders=apiheaders)
+    .Service(service = service, config = config, api = api)
 }
 
 #' @export
@@ -79,7 +75,7 @@ setMethod(
     "operations", "Service",
     function(x)
 {
-    get_operations(.api(x),.headers=.apiheaders(x))
+    get_operations(.api(x))
 })
 
 #' @export
