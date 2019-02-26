@@ -85,6 +85,31 @@ setMethod(
     get_schemas(.api(x))
 })
 
+.operation_field <-
+    function(operations, field)
+{
+    lapply(operations, function(operation) {
+        definition <- attr(operation, "definition")
+        definition[[field]]
+    })
+}
+
+#' @rdname Service
+#'
+#' @importFrom tibble tibble
+#'
+#' @export
+tags <-
+    function(x)
+{
+    operations <- operations(x)
+    tags <- .operation_field(operations, "tags")
+    tibble(
+        tag = unlist(tags, use.names=FALSE),
+        operation = rep(names(tags), lengths(tags))
+    )
+}
+
 #' @rdname Service
 #' @export
 setMethod(
@@ -113,6 +138,8 @@ setMethod(
         .pretty(names(operations(object)), 2, 2), "\n",
         "schemas():\n",
         .pretty(names(schemas(object)), 2, 2), "\n",
+        "tags():\n",
+        .pretty(unique(tags(object)[["tag"]]), 2, 2), "\n",
         sep=""
     )
 })

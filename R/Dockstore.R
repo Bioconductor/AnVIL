@@ -14,7 +14,7 @@
 #'     https://dockstore.org/api/
 #'
 #' @export
-dockstore <- .Dockstore(Service("dockstore", host="dockstore.org/api/"))
+dockstore <- NULL
 
 ## Some operations seem to have a poorly defined operationId in the json
 
