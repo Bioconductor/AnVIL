@@ -6,16 +6,23 @@
 \alias{flatten}
 \alias{flatten,response-method}
 \alias{str,response-method}
+\alias{as.list.response}
 \title{Process service responses to tibble and other data structures.}
 \usage{
 flatten(x)
 
 \S4method{str}{response}(object)
+
+\method{as.list}{response}(x, ..., as = c("text", "raw", "parsed"))
 }
 \arguments{
 \item{x}{A `response` object returned by the service.}
 
 \item{object}{A `response` object returned by the service.}
+
+\item{\dots}{not currently used}
+
+\item{as}{character(1); one of 'raw', 'text', 'parsed'}
 }
 \value{
 `flatten()` returns a `tibble` where each row correseponds
@@ -24,6 +31,9 @@ flatten(x)
 
 `str()` displays a compact representation of the list-like
     JSON response; it returns `NULL`.
+
+`as.list()` retruns the content of the web service request
+    as a list.
 }
 \description{
 Process service responses to tibble and other data structures.
@@ -32,5 +42,7 @@ Process service responses to tibble and other data structures.
 \donttest{leonardo$listClusters() \%>\% flatten()}
 
 \donttest{leonardo$getSystemStatus() \%>\% str()}
+
+\donttest{dockstore$getUser() \%>\% as.list()}
 
 }
