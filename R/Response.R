@@ -38,13 +38,21 @@ setMethod("str", "response",
 })
 
 #' @rdname Response
-#' @param as a character(1); one of 'raw', 'text', 'parsed'
+#'
+#' @param as character(1); one of 'raw', 'text', 'parsed'
+#'
 #' @param \dots not currently used
-#' @return a list with the content of the response
+#'
+#' @return `as.list()` retruns the content of the web service request
+#'     as a list.
+#'
+#' @examples
+#' \donttest{dockstore$getUser() %>% as.list()}
+#'
 #' @export
 as.list.response <-
-    function(x, ..., as="text")
+    function(x, ..., as=c("text", "raw", "parsed"))
 {
-    jsonlite::fromJSON(httr::content(x, as=as))
+    as <- match.arg(as)
+    fromJSON(content(x, as=as))
 }
-

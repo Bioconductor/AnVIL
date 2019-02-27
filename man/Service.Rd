@@ -26,7 +26,7 @@
 \alias{gen3_sheepdog}
 \alias{gen3_peregrine}
 \title{RESTful services useful for AnVIL developers}
-\format{An object of class \code{NULL} of length 0.}
+\format{An object of class \code{Service} of length 1.}
 \usage{
 operations(x)
 

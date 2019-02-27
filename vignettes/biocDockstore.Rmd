@@ -22,10 +22,7 @@ output:
 ```{r setup,echo=FALSE}
 suppressPackageStartupMessages({
 library(AnVIL) # get from https://github.com/Bioconductor/AnVIL
-library(jsonlite)
-library(httr)
 library(dplyr)
-library(magrittr)
 })
 ```
 
@@ -36,14 +33,14 @@ infrastructure by defining APIs for coupling Docker images
 with formalized workflow specifications.
 The application
 of this concept to the PanCancer Analysis of Whole Genomes
-(PCAWG) is described in a 
+(PCAWG) is described in a
 [2017 paper](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5333608/) by
 O'Connor and colleagues.
 
-[Bioconductor](http://www.bioconductor.org) 
+[Bioconductor](http://www.bioconductor.org)
 is a software ecosystem based in the R language
 for the analysis and comprehension of genome-scale experiments.
-[An overview](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4509590/) 
+[An overview](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4509590/)
 was published in 2015.
 
 Bioconductor implemented a ["common workflow"](https://www.bioconductor.org/packages/release/BiocViews.html#___Workflow) concept a number
@@ -106,7 +103,7 @@ introduced to help here, but for now we stick to base R
 methods.
 
 ```{r lku}
-tags(dockstore) %>% filter(tag == "users") %>% 
+tags(dockstore) %>% filter(tag == "users") %>%
     pull(operation) %>% sort()
 ```
 
