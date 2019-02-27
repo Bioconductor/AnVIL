@@ -36,3 +36,15 @@ setMethod("str", "response",
     json <- fromJSON(content(object, as="text", encoding = "UTF-8"))
     str(json)
 })
+
+#' @rdname Response
+#' @param as a character(1); one of 'raw', 'text', 'parsed'
+#' @param \dots not currently used
+#' @return a list with the content of the response
+#' @export
+as.list.response <-
+    function(x, ..., as="text")
+{
+    jsonlite::fromJSON(httr::content(x, as=as))
+}
+

@@ -18,10 +18,11 @@ Description: This package stub provides functionality to support
     specialized package management, and algorithm development.
 License: Artistic-2.0
 Encoding: UTF-8
+Suggests: knitr
 Imports:
     utils, methods,
     futile.logger,
-    curl, jsonlite, httr,
+    jsonlite, httr,
     rapiclient (>= 0.1.2.0002),
     tibble
 Collate:
@@ -29,4 +30,5 @@ Collate:
     Service.R Leonardo.R Terra.R Dockstore.R Gen3.R
     Response.R zzz.R
 LazyData: true
+VignetteBuilder: knitr
 RoxygenNote: 6.1.1
