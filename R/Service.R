@@ -42,15 +42,17 @@ setOldClass("request")
     system.file(package="AnVIL", "service", service, "api.json")
 
 Service <-
-    function(service, host, config = httr::config())
+    function(service, host, config = httr::config(), authenticate_config = TRUE)
 {
     stopifnot(
         .is_scalar_character(service),
-        .is_scalar_character(host)
+        .is_scalar_character(host),
+        .is_scalar_logical(authenticate_config)
     )
     flog.debug("Service(): %s", service)
 
-    config <- c(authenticate_config(service), config)
+    if (authenticate_config)
+        config <- c(authenticate_config(service), config)
 
     withCallingHandlers({
         api <- get_api(.api_path(service), config)
@@ -65,7 +67,6 @@ Service <-
     })
     api$schemes <- "https"
     api$host <- host
-
     .Service(service = service, config = config, api = api)
 }
 
@@ -84,6 +85,31 @@ setMethod(
 {
     get_schemas(.api(x))
 })
+
+.operation_field <-
+    function(operations, field)
+{
+    lapply(operations, function(operation) {
+        definition <- attr(operation, "definition")
+        definition[[field]]
+    })
+}
+
+#' @rdname Service
+#'
+#' @importFrom tibble tibble
+#'
+#' @export
+tags <-
+    function(x)
+{
+    operations <- operations(x)
+    tags <- .operation_field(operations, "tags")
+    tibble(
+        tag = unlist(tags, use.names=FALSE),
+        operation = rep(names(tags), lengths(tags))
+    )
+}
 
 #' @rdname Service
 #' @export
@@ -113,6 +139,8 @@ setMethod(
         .pretty(names(operations(object)), 2, 2), "\n",
         "schemas():\n",
         .pretty(names(schemas(object)), 2, 2), "\n",
+        "tags():\n",
+        .pretty(unique(tags(object)[["tag"]]), 2, 2), "\n",
         sep=""
     )
 })

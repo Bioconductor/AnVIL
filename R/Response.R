@@ -36,3 +36,23 @@ setMethod("str", "response",
     json <- fromJSON(content(object, as="text", encoding = "UTF-8"))
     str(json)
 })
+
+#' @rdname Response
+#'
+#' @param as character(1); one of 'raw', 'text', 'parsed'
+#'
+#' @param \dots not currently used
+#'
+#' @return `as.list()` retruns the content of the web service request
+#'     as a list.
+#'
+#' @examples
+#' \donttest{dockstore$getUser() %>% as.list()}
+#'
+#' @export
+as.list.response <-
+    function(x, ..., as=c("text", "raw", "parsed"))
+{
+    as <- match.arg(as)
+    fromJSON(content(x, as=as))
+}
