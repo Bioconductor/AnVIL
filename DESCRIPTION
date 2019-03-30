@@ -24,7 +24,7 @@ Imports:
     utils, methods,
     futile.logger,
     jsonlite, httr,
-    rapiclient (>= 0.1.2.0002),
+    rapiclient (== 0.1.2.0002-1),
     tibble
 Collate:
     all_generics.R utilities.R authenticate.R
