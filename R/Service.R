@@ -97,18 +97,31 @@ setMethod(
 
 #' @rdname Service
 #'
+#' @param .tags optional character() of tags to use to filter operations.
+#'
+#' @examples
+#' tags(terra)
+#' tags(terra, "Billing")
+#'
 #' @importFrom tibble tibble
+#' @importFrom dplyr filter arrange
 #'
 #' @export
 tags <-
-    function(x)
+    function(x, .tags)
 {
     operations <- operations(x)
     tags <- .operation_field(operations, "tags")
-    tibble(
+    summary <- .operation_field(operations, "summary")
+    summary <-  trimws(unlist(summary, use.names=FALSE))
+    tbl <- tibble(
         tag = unlist(tags, use.names=FALSE),
-        operation = rep(names(tags), lengths(tags))
+        operation = rep(names(tags), lengths(tags)),
+        summary = rep(summary, lengths(tags))
     )
+    if (!missing(.tags))
+        tbl <- filter(tbl, tbl$tag %in% .tags)
+    arrange(tbl, tbl$tag, tbl$operation)
 }
 
 #' @rdname Service
@@ -135,12 +148,16 @@ setMethod(
 {
     cat(
         "service: ", .service(object), "\n",
-        "operations() or ", tolower(class(object)), "$<tab completion> :\n",
-        .pretty(names(operations(object)), 2, 2), "\n",
+        "tags(); use ", tolower(class(object)), "$<tab completion>:\n",
+        sep = ""
+    )
+    tbl <- tags(object)
+    print(tbl)
+    cat(
+        "tag values:\n",
+        .pretty(unique(tbl$tag), 2, 2), "\n",
         "schemas():\n",
-        .pretty(names(schemas(object)), 2, 2), "\n",
-        "tags():\n",
-        .pretty(unique(tags(object)[["tag"]]), 2, 2), "\n",
-        sep=""
+        .pretty(names(schemas(object)), 2, 2, some = TRUE), "\n",
+        sep = ""
     )
 })

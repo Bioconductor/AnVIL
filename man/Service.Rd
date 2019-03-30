@@ -32,7 +32,7 @@ operations(x)
 
 schemas(x)
 
-tags(x)
+tags(x, .tags)
 
 \S4method{$}{Service}(x, name)
 
@@ -54,6 +54,8 @@ gen3_peregrine
 \item{x}{A `Service` instance, usually a singleton provided by the
 package and documented on this page, e.g., `leonardo` or
 `terra`.}
+
+\item{.tags}{optional character() of tags to use to filter operations.}
 
 \item{name}{A symbol representing a defined operation, e.g.,
 `leonardo$listClusters()`.}
@@ -86,5 +88,10 @@ package and documented on this page, e.g., `leonardo` or
 }
 \description{
 RESTful services useful for AnVIL developers
+}
+\examples{
+tags(terra)
+tags(terra, "Billing")
+
 }
 \keyword{datasets}

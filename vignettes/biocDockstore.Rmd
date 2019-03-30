@@ -95,7 +95,7 @@ used to process API requests.  Groups of API components are
 obtained via `tags()`.
 
 ```{r getmeths}
-knitr::kable(tags(dockstore) %>% distinct(tag))
+knitr::kable(tags(dockstore) %>% count(tag))
 ```
 We're interested in
 the 'users' component.  Higher level methods will be
@@ -103,8 +103,7 @@ introduced to help here, but for now we stick to base R
 methods.
 
 ```{r lku}
-tags(dockstore) %>% filter(tag == "users") %>%
-    pull(operation) %>% sort()
+tags(dockstore, "users") %>% print(n = Inf)
 ```
 
 We can use the following to determine our user identifier.
