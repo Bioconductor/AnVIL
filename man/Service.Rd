@@ -59,6 +59,18 @@ package and documented on this page, e.g., `leonardo` or
 
 \item{name}{A symbol representing a defined operation, e.g.,
 `leonardo$listClusters()`.}
+
+\item{service}{The `Service`` class name}
+
+\item{config}{httr::config() curl options}
+
+\item{authenticate_config}{logical(1L) whether to use authentication service
+file 'auth.json' in the specified package}
+
+\item{host}{The host name that provides the API resource}
+
+\item{package}{(default `AnVIL`) The package where 'api.json' yaml and
+(optionally) 'auth.json' files are located}
 }
 \value{
 `leonardo` represents the API of the Leonard container

@@ -11,8 +11,22 @@
 #'     package and documented on this page, e.g., `leonardo` or
 #'     `terra`.
 #'
+#' @param service The `Service`` class name
+#'
 #' @param name A symbol representing a defined operation, e.g.,
 #'     `leonardo$listClusters()`.
+#'
+#' @param config httr::config() curl options
+#'
+#' @param authenticate_config logical(1L) whether to use authentication service
+#'     file 'auth.json' in the specified package
+#'
+#' @param host The host name that provides the API resource
+#'
+#' @param package (default `AnVIL`) The package where 'api.json' yaml and
+#'     (optionally) 'auth.json' files are located
+#'
+#' @format An object of class \code{Service} of length 1.
 #'
 #' @import methods
 NULL
@@ -38,11 +52,13 @@ setOldClass("request")
 
 .api <- function(x) x@api
 
-.api_path <- function(service)
-    system.file(package="AnVIL", "service", service, "api.json")
+.api_path <- function(service, pkg)
+    system.file(package = pkg, "service", service, "api.json", mustWork = TRUE)
 
+#' @export
 Service <-
-    function(service, host, config = httr::config(), authenticate_config = TRUE)
+    function(service, host, config = httr::config(),
+        authenticate_config = TRUE, package = "AnVIL")
 {
     stopifnot(
         .is_scalar_character(service),
@@ -55,7 +71,7 @@ Service <-
         config <- c(authenticate_config(service), config)
 
     withCallingHandlers({
-        api <- get_api(.api_path(service), config)
+        api <- get_api(.api_path(service, pkg = package), config)
     }, warning = function(w) {
         test <- identical(
             conditionMessage(w),
