@@ -5,7 +5,7 @@
 
 ## construct a singleton instance for this service
 
-#' @rdname Service
+#' @rdname Services
 #'
 #' @aliases Terra-class operations,Terra-method schemas,Terra-method
 #'

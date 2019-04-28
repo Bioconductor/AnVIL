@@ -11,7 +11,7 @@
 
 ## construct a singleton instance for this service
 
-#' @rdname Service
+#' @rdname Services
 #'
 #' @aliases Dockstore-class operations,Dockstore-method
 #'
@@ -32,7 +32,7 @@ Dockstore <-
         api_header <- c(Authorization = paste("Bearer", token))
     }
     .Dockstore(
-        Service("dockstore", host="dockstore.org", authenticate_config = FALSE),
+        Service("dockstore", host="dockstore.org", authenticate = FALSE),
         api_header = api_header
     )
 }

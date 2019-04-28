@@ -1,9 +1,9 @@
-#' @rdname Service
+#' @rdname Services
 #'
 #' @export
 setGeneric("operations", function(x) standardGeneric("operations"))
 
-#' @rdname Service
+#' @rdname Services
 #'
 #' @export
 setGeneric("schemas", function(x) standardGeneric("schemas"))
