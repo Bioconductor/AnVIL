@@ -2,6 +2,7 @@
 
 S3method(.DollarNames,Service)
 S3method(as.list,response)
+export(Service)
 export(authenticate)
 export(dockstore)
 export(flatten)
