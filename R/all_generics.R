@@ -1,9 +1,23 @@
-#' @rdname Service
+#' @rdname Services
+#'
+#' @return `empty_object` returns a representation to be used as
+#'     arguments in function calls expecting the empty json object
+#'     `\{\}`.
+#'
+#' @format NULL
+#'
+#' @examples
+#' empty_object
+#'
+#' @export
+empty_object <- setNames(list(), character())
+
+#' @rdname Services
 #'
 #' @export
 setGeneric("operations", function(x) standardGeneric("operations"))
 
-#' @rdname Service
+#' @rdname Services
 #'
 #' @export
 setGeneric("schemas", function(x) standardGeneric("schemas"))
