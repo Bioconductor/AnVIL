@@ -19,6 +19,8 @@
 #'     share Docker-based tools in CWL or WDL or Nextflow at
 #'     https://dockstore.org
 #'
+#' @format NULL
+#'
 #' @export
 dockstore <- NULL
 

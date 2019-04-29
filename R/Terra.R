@@ -12,6 +12,8 @@
 #' @return `terra` represents the API of the Terra cloud computational
 #'     environemnt at https://api.firecloud.org/.
 #' 
+#' @format NULL
+#'
 #' @export
 terra <- NULL
 

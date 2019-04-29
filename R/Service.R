@@ -5,6 +5,7 @@ setOldClass("rapi_api")
 setOldClass("request")
 
 #' @importFrom rapiclient get_api get_operations get_schemas
+#'
 #' @export
 .Service <- setClass(
     "Service",
@@ -135,13 +136,13 @@ setMethod(
 #'
 #' @aliases .DollarNames.Service operations,Service-method
 #'     schemas,Service-method show,Service-method Service-class
+NULL
+
+#' @rdname Services
 #'
 #' @param x A `Service` instance, usually a singleton provided by the
 #'     package and documented on this page, e.g., `leonardo` or
 #'     `terra`.
-#'
-#' @param name A symbol representing a defined operation, e.g.,
-#'     `leonardo$listClusters()`.
 #'
 #' @param .tags optional character() of tags to use to filter operations.
 #'
@@ -171,6 +172,10 @@ tags <-
 }
 
 #' @rdname Services
+#'
+#' @param name A symbol representing a defined operation, e.g.,
+#'     `leonardo$listClusters()`.
+#'
 #' @export
 setMethod(
     "$", "Service",

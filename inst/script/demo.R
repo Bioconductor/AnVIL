@@ -1,10 +1,13 @@
 devtools::load_all()
 library(dplyr)
 
-response <- leonardo$createClusterV2 (
+EmptyObject <- setClass("EmptyObject", contains = "NULL")()
+
+response <- leonardo$createClusterV2(
     googleProject = "anvil-leo-dev",
     clusterName = "mtmorganbioc",
-    rstudioDockerImage = "us.gcr.io/anvil-leo-dev/anvil_bioc_docker:latest"
+    rstudioDockerImage = "us.gcr.io/anvil-leo-dev/anvil_bioc_docker:latest",
+    labels = setNames(list(), character(0))
 )
 
 leonardo$listClusters() %>% flatten() %>%
