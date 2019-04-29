@@ -27,9 +27,9 @@ Imports:
     rapiclient (== 0.1.2.0002-3),
     tibble
 Collate:
-    all_generics.R utilities.R authenticate.R
-    Service.R Leonardo.R Terra.R Dockstore.R Gen3.R
-    Response.R sync.R zzz.R
+    utilities.R authenticate.R
+    Service.R Services.R Leonardo.R Terra.R Dockstore.R Gen3.R
+    Response.R zzz.R
 LazyData: true
 VignetteBuilder: knitr
 RoxygenNote: 6.1.1
