@@ -30,6 +30,7 @@ Collate:
     utilities.R authenticate.R
     Service.R Services.R Leonardo.R Terra.R Dockstore.R Gen3.R
     Response.R zzz.R
+    gsutil.R localize.R
 LazyData: true
 VignetteBuilder: knitr
 RoxygenNote: 6.1.1
