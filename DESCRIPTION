@@ -28,7 +28,7 @@ Imports:
     tibble
 Collate:
     utilities.R authenticate.R
-    Service.R Services.R Leonardo.R Terra.R Dockstore.R Gen3.R
+    Service.R Services.R Leonardo.R Terra.R Dockstore.R Gen3.R Combined.R
     Response.R zzz.R
     gsutil.R localize.R
 LazyData: true

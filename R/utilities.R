@@ -1,5 +1,10 @@
-.is_scalar_character <- function(x, na.ok = FALSE)
-    is.character(x) && length(x) == 1L && (na.ok || !is.na(x)) && nzchar(x)
+.is_scalar_character <- function(x, na.ok = FALSE, zchar = FALSE)
+    is.character(x) && length(x) == 1L &&
+        (na.ok || !is.na(x)) &&
+        (zchar || nzchar(x))
+
+.is_character_0_or_1 <- function(x, na.ok = FALSE)
+    (length(x) == 0L && is.character(x)) || .is_scalar_character(x, na.ok)
 
 .is_scalar_logical <- function(x, na.ok = FALSE)
     is.logical(x) && length(x) == 1L && (na.ok || !is.na(x))

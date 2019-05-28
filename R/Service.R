@@ -25,9 +25,20 @@ setOldClass("request")
 .api_path <-
     function(service, package)
 {
-    system.file(
-        package = package, "service", service, "api.json", mustWork = TRUE
-    )
+    exts <- c("json", "yaml", "yml")
+    for (ext in exts) {
+        fl <- paste("api", ext, sep=".")
+        result <- tryCatch({
+            system.file(
+                package = package, "service", service, fl, mustWork = TRUE
+            )
+        }, error = identity)
+        if (!is(result, "simpleError"))
+            break
+    }
+    if (is(result, "simpleError"))
+        stop(result)
+    paste0("file://", result)
 }
 
 #' @rdname Service

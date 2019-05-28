@@ -15,13 +15,22 @@ NULL
 .gsutil_do <-
     function(args)
 {
-    err <- system2("gsutil", args, wait=TRUE)
-    if (err) {
+    withCallingHandlers(tryCatch({
+        system2("gsutil", args, stdout = TRUE, stderr = TRUE, wait=TRUE)
+    }, error = function(err) {
         stop(
-            "\ngsutil ", paste(args, collapse=" "), " failed",
-            "\n    error code: ", err
+            "'gsutil ", paste(args, collapse = " "), "' failed:",
+            "\n  ", conditionMessage(err),
+            call. = FALSE
         )
-    }
+    }), warning = function(warn) {
+        warning(
+            "'gsutil ", paste(args, collapse=" "), "' warning:",
+            "\n  ", conditionMessage(warn),
+            call. = FALSE
+        )
+        invokeRestart("muffleWarning")
+    })
 }
 
 ## FIXME: How to suppress warnings
@@ -50,16 +59,22 @@ NULL
 #' @title `gsutil_ls()`: list contents of a gcs bucket.
 #'
 #' @param google_bucket character(1), a valid path to a google storage
-#'     bucket
+#'     bucket. When missing, `gsutil_ls()` returns a vector of
+#'     available buckets.
 #'
-#' @param path character(1), a path or regular expression listing files
-#'     of paths.
+#' @param path character(1), a path or regular expression to paths
+#'     within the bucket.
 #'
 #' @param recursive logical(1), should the operation be recursive?
 #'
 gsutil_ls <-
-    function(google_bucket, path="", recursive=TRUE)
+    function(google_bucket = character(0), path = "", recursive = FALSE)
 {
+    stopifnot(
+        .is_character_0_or_1(google_bucket),
+        .is_scalar_character(path, zchar = TRUE),
+        .is_scalar_logical(recursive)
+    )
     args <- c(
         "ls",
         if (recursive) "-r",
@@ -72,19 +87,26 @@ gsutil_ls <-
 
 #' @rdname gsutil
 #'
-#' @title `gsutil_cp()`: copy content from a gcs bucket to a local file.
+#' @title `gsutil_cp()`: copy content between gcs buckets or between a
+#'     bucket and a local file.
 #'
 gsutil_cp <-
-    function(google_bucket, path ,recursive=TRUE)
+    function(source, destination, recursive = FALSE)
 {
+    stopifnot(
+        .is_scalar_character(google_bucket_path),
+        .is_scalar_character(destination, zchar = TRUE),
+        .is_scalar_logical(recursive)
+    )
     args <- c(
         "-m", ## Makes the operations faster
         "cp", ## cp command
         if (recursive) "-r",
-        .gcs_pathify(google_bucket),
-        path
+        .gcs_pathify(google_bucket_path),
+        destination
     )
-    .gsutil_do(args)
+    result <- .gsutil_do(args)
+    invisible(NULL)
 }
 
 
@@ -132,10 +154,10 @@ gsutil_rm <-
 #'
 #' @details
 #'
-#' To make gs://mybucket/data match the contents of the local
-#' directory "data" you could do:
+#' To make `"gs://mybucket/data"` match the contents of the local
+#' directory `"data"` you could do:
 #'
-#' \code{gsutil_rsync(data, "gs://mybucket/data", match = TRUE)}
+#' \code{gsutil_rsync("data", "gs://mybucket/data", match = TRUE)}
 #'
 #' To make the local directory "data" the same as the contents of
 #' gs://mybucket/data:
