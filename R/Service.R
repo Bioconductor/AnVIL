@@ -25,9 +25,12 @@ setOldClass("request")
 .api_path <-
     function(service, package)
 {
-    system.file(
-        package = package, "service", service, "api.json", mustWork = TRUE
-    )
+    fl <- system.file(package = package, "service", service, "api.json")
+    if (!file.exists(fl))
+        fl <- system.file(package = package, "service", service, "api.yaml")
+    if (!file.exists(fl))
+        stop("could not find api.json or api.yaml for service '", service, "'")
+    fl
 }
 
 #' @rdname Service
