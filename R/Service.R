@@ -49,16 +49,19 @@ setOldClass("request")
 #' @param authenticate logical(1) use credentials from authentication
 #'     service file 'auth.json' in the specified package?
 #'
+#' @param api_url optional character(1) url location of OpenAPI
+#'     `.json` or `.yaml` service definition.
+#'
 #' @param package character(1) (default `AnVIL`) The package where
 #'     'api.json' yaml and (optionally) 'auth.json' files are located
 #'
 #' @details This function creates a RESTful interface to a service
 #'     provided by a host, e.g., "api.firecloud.org". The function
-#'     requires an OpenAPI `.json` specifcation as well as an
-#'     (optional) `.json` authentication token. These files are
+#'     requires an OpenAPI `.json` or `.yaml` specifcation as well as
+#'     an (optional) `.json` authentication token. These files are
 #'     located in the source directory of a pacakge, at
 #'     `<package>/inst/service/<service>/api.json` and
-#'     `<package>/inst/service/<service>/auth.json`.
+#'     `<package>/inst/service/<service>/auth.json`, or at `api_url`.
 #'
 #'     The service is usually a singleton, created at the package
 #'     level during `.onLoad()`.
@@ -76,13 +79,15 @@ setOldClass("request")
 #'
 #' @export
 Service <-
-    function(service, host, config = httr::config(), authenticate = TRUE,
-             package = "AnVIL")
+    function(
+        service, host, config = httr::config(), authenticate = TRUE,
+        api_url = character(), package = "AnVIL")
 {
     stopifnot(
         .is_scalar_character(service),
         .is_scalar_character(host),
-        .is_scalar_logical(authenticate)
+        .is_scalar_logical(authenticate),
+        length(api_url) == 0L || .is_scalar_character(api_url)
     )
     flog.debug("Service(): %s", service)
 
@@ -90,7 +95,11 @@ Service <-
         config <- c(authenticate_config(service), config)
 
     withCallingHandlers({
-        path <- .api_path(service, package)
+        if (length(api_url)) {
+            path <- api_url
+        } else {
+            path <- .api_path(service, package)
+        }
         api <- get_api(path, config)
     }, warning = function(w) {
         test <- identical(

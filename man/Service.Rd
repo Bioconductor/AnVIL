@@ -5,7 +5,7 @@
 \title{RESTful service constructor}
 \usage{
 Service(service, host, config = httr::config(), authenticate = TRUE,
-  package = "AnVIL")
+  api_url = character(), package = "AnVIL")
 }
 \arguments{
 \item{service}{character(1) The `Service` class name, e.g., `"terra"`.}
@@ -17,6 +17,9 @@ e.g., `"api.firecloud.org"`.}
 
 \item{authenticate}{logical(1) use credentials from authentication
 service file 'auth.json' in the specified package?}
+
+\item{api_url}{optional character(1) url location of OpenAPI
+`.json` or `.yaml` service definition.}
 
 \item{package}{character(1) (default `AnVIL`) The package where
 'api.json' yaml and (optionally) 'auth.json' files are located}
@@ -30,11 +33,11 @@ RESTful service constructor
 \details{
 This function creates a RESTful interface to a service
     provided by a host, e.g., "api.firecloud.org". The function
-    requires an OpenAPI `.json` specifcation as well as an
-    (optional) `.json` authentication token. These files are
+    requires an OpenAPI `.json` or `.yaml` specifcation as well as
+    an (optional) `.json` authentication token. These files are
     located in the source directory of a pacakge, at
     `<package>/inst/service/<service>/api.json` and
-    `<package>/inst/service/<service>/auth.json`.
+    `<package>/inst/service/<service>/auth.json`, or at `api_url`.
 
     The service is usually a singleton, created at the package
     level during `.onLoad()`.
