@@ -93,6 +93,25 @@ gsutil_cp <-
 }
 
 
+#' @rdname gsutil_stat
+#'
+#' @title Check if a bucket's subdirectory/file is present and get
+#'     information regarding file.
+#'
+#' @param google_bucket character, a valid path to a google storage
+#'     bucket.
+#'
+gsutil_stat <-
+    function(google_bucket, subdirectory)
+{
+    path <- file.path(.gcs_pathify(google_bucket), subdirectory)
+    args <- c(
+        "stat",
+        path
+    )
+    .gsutil_do(args)
+}
+
 
 #' @rdname gsutil_rm
 #'
@@ -298,6 +317,32 @@ sync <-
     unique(c(packages, deps[!deps %in% installed]))
 }
 
+## TODO: write test cases for testing .choose_google_bucket
+.choose_google_bucket <-
+    function()
+{
+    version <- as.character(BiocManager::version())
+    ## If the version is devel
+    if (BiocManager:::isDevel())
+        google_bucket <- "bioconductor-full-devel"
+    else {
+        release_version <- sub(".", "-", version, fixed=TRUE)
+        google_bucket <- paste0(
+            "bioconductor-full-release", release_version
+        )
+    }
+    google_bucket
+}
+
+.package_exists <-
+    function(google_bucket, pkgs = character())
+{
+    for (pkg in pkgs) {
+        gsutil_stat(google_bucket, pkg)
+    }
+}
+
+
 #' @rdname install
 #'
 #' @title Install libraries and it's dependencies from a bucket.
@@ -329,12 +374,21 @@ sync <-
 #'
 #' @export
 install <-
-    function(packages, google_bucket, lib = .libPaths()[1], lib.loc = NULL)
+    function(pkgs = character(), lib = .libPaths()[1], lib.loc = NULL)
 {
-    packages <- .install_find_dependencies(packages, lib.loc = lib.loc)
+    ## Validate arguments
+    stopifnot(is.character(pkgs), !anyNA(pkgs))
 
+    packages <- .install_find_dependencies(pkgs, lib = lib.loc)
     ## copy from bucket to .libPaths()[1]
     ## Assumes packages are already in the google bucket
+
+    google_bucket <- .choose_google_bucket()
+
+    ## TODO: check if the package is in the bucket, if not throw error
+    if (!.package_exists(pkgs))
+        stop("package does not exist")
+
     if (!.is_google_bucket(google_bucket))
         stop("not a valid google bucket which exists in the GCP account")
     packages <- sprintf("%s/%s", .gcs_pathify(google_bucket), packages)
@@ -349,3 +403,12 @@ install <-
     }
     invisible(file.path(lib, basename(packages)))
 }
+
+
+## TODO: Figure out 3.8 or 3.9 from BiocVersion, (what version?)
+
+## No argument to google bucket in AnVIL::install() -- > signature is
+## going to be
+
+## install(packages, lib = .libPaths()[1], lib.loc) (do the right
+## thing if given just 'packages')
