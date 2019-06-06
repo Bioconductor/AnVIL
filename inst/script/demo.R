@@ -1,12 +1,11 @@
 devtools::load_all()
 library(dplyr)
 
-## Test 1
-## Test docker hub hosted container
-response <- leonardo$createClusterV2 (
+response <- leonardo$createClusterV2(
     googleProject = "anvil-leo-dev",
-    clusterName = "nitesh7",
-    rstudioDockerImage = "bioconductor/anvil-rstudio-bioc:3.9"
+    clusterName = "mtmorganbioc",
+    rstudioDockerImage = "us.gcr.io/anvil-leo-dev/anvil_bioc_docker:latest",
+    labels = empty_object
 )
 
 response
@@ -25,6 +24,7 @@ url <- paste0(url, "/rstudio")
 url
 
 stop_response <- leonardo$stopCluster(
+<<<<<<< HEAD
              googleProject = "anvil-leo-dev",
              clusterName = "nitesh6"
          ) %>% content()
@@ -41,4 +41,8 @@ response <- leonardo$createClusterV2 (
     googleProject = "anvil-leo-dev",
     clusterName = "nitesh7",
     rstudioDockerImage = "us.gcr.io/anvil-leo-dev/anvil_bioc_docker:latest"
+=======
+    googleProject = "anvil-leo-dev",
+    clusterName = "mtmorganbioc"
+>>>>>>> master
 )

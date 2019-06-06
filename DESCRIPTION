@@ -1,6 +1,6 @@
 Package: AnVIL
 Title: Bioconductor on the AnVIL compute environment
-Version: 0.0.7
+Version: 0.0.11
 Authors@R: 
     c(person(
         "Martin", "Morgan", role = c("aut", "cre"),
@@ -24,12 +24,13 @@ Imports:
     utils, methods,
     futile.logger,
     jsonlite, httr,
-    rapiclient (>= 0.1.2.0002),
+    rapiclient (== 0.1.2.0002-3),
     tibble
 Collate:
-    all_generics.R utilities.R authenticate.R
-    Service.R Leonardo.R Terra.R Dockstore.R Gen3.R
-    Response.R sync.R zzz.R
+    utilities.R authenticate.R
+    Service.R Services.R Leonardo.R Terra.R Dockstore.R Gen3.R Combined.R
+    Response.R zzz.R
+    gsutil.R localize.R
 LazyData: true
 VignetteBuilder: knitr
 RoxygenNote: 6.1.1

@@ -1,27 +1,11 @@
-#' @rdname Service
-#'
-#' @name Service
-#'
-#' @title RESTful services useful for AnVIL developers
-#'
-#' @aliases .DollarNames.Service operations,Service-method
-#'     schemas,Service-method show,Service-method Service-class
-#'
-#' @param x A `Service` instance, usually a singleton provided by the
-#'     package and documented on this page, e.g., `leonardo` or
-#'     `terra`.
-#'
-#' @param name A symbol representing a defined operation, e.g.,
-#'     `leonardo$listClusters()`.
-#'
 #' @import methods
-NULL
 
 setOldClass("rapi_api")
 
 setOldClass("request")
 
 #' @importFrom rapiclient get_api get_operations get_schemas
+#'
 #' @export
 .Service <- setClass(
     "Service",
@@ -38,24 +22,84 @@ setOldClass("request")
 
 .api <- function(x) x@api
 
-.api_path <- function(service)
-    system.file(package="AnVIL", "service", service, "api.json")
+.api_path <-
+    function(service, package)
+{
+    exts <- c("json", "yaml", "yml")
+    for (ext in exts) {
+        fl <- paste("api", ext, sep=".")
+        result <- tryCatch({
+            system.file(
+                package = package, "service", service, fl, mustWork = TRUE
+            )
+        }, error = identity)
+        if (!is(result, "simpleError"))
+            break
+    }
+    if (is(result, "simpleError"))
+        stop(result)
+    paste0("file://", result)
+}
 
+#' @rdname Service
+#'
+#' @name Service
+#'
+#' @title RESTful service constructor
+#'
+#' @param service character(1) The `Service` class name, e.g., `"terra"`.
+#'
+#' @param host character(1) host name that provides the API resource,
+#'     e.g., `"api.firecloud.org"`.
+#'
+#' @param config httr::config() curl options
+#'
+#' @param authenticate logical(1) use credentials from authentication
+#'     service file 'auth.json' in the specified package?
+#'
+#' @param package character(1) (default `AnVIL`) The package where
+#'     'api.json' yaml and (optionally) 'auth.json' files are located
+#'
+#' @details This function creates a RESTful interface to a service
+#'     provided by a host, e.g., "api.firecloud.org". The function
+#'     requires an OpenAPI `.json` specifcation as well as an
+#'     (optional) `.json` authentication token. These files are
+#'     located in the source directory of a pacakge, at
+#'     `<package>/inst/service/<service>/api.json` and
+#'     `<package>/inst/service/<service>/auth.json`.
+#'
+#'     The service is usually a singleton, created at the package
+#'     level during `.onLoad()`.
+#'
+#' @return An object of class \code{Service}.
+#'
+#' @examples
+#' \dontrun{
+#' .MyService <- setClass("MyService", contains = "Service")
+#'
+#' MyService <- function() {
+#'     .MyService(Service("my_service", host="my.api.org"))
+#' }
+#' }
+#'
+#' @export
 Service <-
-    function(service, host, config = httr::config(), authenticate_config = TRUE)
+    function(service, host, config = httr::config(), authenticate = TRUE,
+             package = "AnVIL")
 {
     stopifnot(
         .is_scalar_character(service),
         .is_scalar_character(host),
-        .is_scalar_logical(authenticate_config)
+        .is_scalar_logical(authenticate)
     )
     flog.debug("Service(): %s", service)
 
-    if (authenticate_config)
+    if (authenticate)
         config <- c(authenticate_config(service), config)
 
     withCallingHandlers({
-        api <- get_api(.api_path(service), config)
+        path <- .api_path(service, package)
+        api <- get_api(path, config)
     }, warning = function(w) {
         test <- identical(
             conditionMessage(w),
@@ -69,56 +113,6 @@ Service <-
     api$host <- host
     .Service(service = service, config = config, api = api)
 }
-
-#' @export
-setMethod(
-    "operations", "Service",
-    function(x)
-{
-    get_operations(.api(x))
-})
-
-#' @export
-setMethod(
-    "schemas", "Service",
-    function(x)
-{
-    get_schemas(.api(x))
-})
-
-.operation_field <-
-    function(operations, field)
-{
-    lapply(operations, function(operation) {
-        definition <- attr(operation, "definition")
-        definition[[field]]
-    })
-}
-
-#' @rdname Service
-#'
-#' @importFrom tibble tibble
-#'
-#' @export
-tags <-
-    function(x)
-{
-    operations <- operations(x)
-    tags <- .operation_field(operations, "tags")
-    tibble(
-        tag = unlist(tags, use.names=FALSE),
-        operation = rep(names(tags), lengths(tags))
-    )
-}
-
-#' @rdname Service
-#' @export
-setMethod(
-    "$", "Service",
-    function(x, name)
-{
-    operations(x)[[name]]
-})
 
 #' @importFrom utils .DollarNames
 #' @export
@@ -135,12 +129,16 @@ setMethod(
 {
     cat(
         "service: ", .service(object), "\n",
-        "operations() or ", tolower(class(object)), "$<tab completion> :\n",
-        .pretty(names(operations(object)), 2, 2), "\n",
+        "tags(); use ", tolower(class(object)), "$<tab completion>:\n",
+        sep = ""
+    )
+    tbl <- tags(object)
+    print(tbl)
+    cat(
+        "tag values:\n",
+        .pretty(unique(tbl$tag), 2, 2), "\n",
         "schemas():\n",
-        .pretty(names(schemas(object)), 2, 2), "\n",
-        "tags():\n",
-        .pretty(unique(tags(object)[["tag"]]), 2, 2), "\n",
-        sep=""
+        .pretty(names(schemas(object)), 2, 2, some = TRUE), "\n",
+        sep = ""
     )
 })

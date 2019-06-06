@@ -1,2 +1,4 @@
 .httr-oauth
 auth.json
+.Rproj.user
+*.Rproj
