@@ -1,3 +1,49 @@
+#' Discover the binary based on a user defined path
+.user_setting <- function(option) {
+    val <- Sys.getenv(option, unset = NA)
+    if (!is.na(val))
+        val
+    else
+        NULL
+}
+
+#' Get gsutil binary
+.get_gsutil_binary <- function() {
+    user_path <- .user_setting('GSUTIL_BINARY_PATH')
+    if (!is.null(user_path))
+        return(normalizePath(user_path))
+    ## Discover binary automatically if user doesn't give path
+    binary_name <- 'gsutil'
+    bin_path <- if (.Platform$OS.type == "windows") {
+                    appdata <- normalizePath(Sys.getenv("localappdata"), winslash = "/")
+                    binary_name <- paste(binary, "cmd", sep = ".")
+                    c(function() file.path(appdata, "Google/Cloud SDK/google-cloud-sdk/bin", binary_name),
+                      function() file.path(Sys.getenv("ProgramFiles"),
+                                           "/Google/Cloud SDK/google-cloud-sdk/bin", binary_name),
+                      function() file.path(Sys.getenv("ProgramFiles(x86)"),
+                                           "/Google/Cloud SDK/google-cloud-sdk/bin", binary_name))
+                } else {
+                    c(function() Sys.which(binary_name),
+                      function() paste("~/google-cloud-sdk/bin", binary_name, sep = "/"),
+                      function() file.path(gcloud_binary_default(), "bin", binary_name))
+                }
+    ## Return appropriate path for 'gsutil'
+    for (path in bin_path) {
+        if (file.exists(path())) {
+            return(normalizePath(path()))
+        }
+    }
+    stop("failed to find 'gsutil' binary")
+}
+
+## ## TODO
+## #' User is supposed to set the GCE_AUTH file
+## .get_option <- function(option) {
+##     gce_auth <- Sys.getenv("GCE_AUTH_FILE", unset=NA)
+##     if (is.na(gce_auth))
+##         stop("missing env variable 'GCE_AUTH_FILE'.")
+## }
+
 #' @title helper function to pass arguments to `gsutil`
 #'
 #' @param args arguments to helper function
@@ -5,10 +51,13 @@
 #' @details private helper function to pass arguments to `gsutil`
 #'     command line utility and throw the appropriate errors.
 #'
+
 .gsutil_do <-
-    function(args)
+    function(args, dry_run = FALSE)
 {
-    err <- system2("gsutil", args, wait=TRUE)
+    gsutil <- .get_gsutil_binary()
+    ## TODO: replace 'gsutil' with gsutil binary
+    err <- system2(gsutil, args, wait=TRUE)
     if (err) {
         stop(
             "\n", sprintf("gsutil %s", paste(args, collapse=" ")),
@@ -17,33 +66,26 @@
     }
 }
 
-## FIXME: How to suppress warnings
-.is_google_bucket <-
-    function(google_bucket)
-{
-    test <- try(
-        gsutil_ls(google_bucket, recursive=FALSE),
-        silent=TRUE
-    )
-    !inherits(test, "try-error")
-}
 
-
-.gcs_pathify <-
-    function(google_bucket)
+#' @rdname is_gsutil_uri
+#'
+#' @title Check if the google bucket has a gs:// prefix
+#'
+#' @param path character, a path to a storage bucket
+is_gsutil_uri <-
+    function(path)
 {
-    idx <- !startsWith(google_bucket, "gs://")
-    if (any(idx))
-        google_bucket[idx] <- paste0("gs://", google_bucket[idx])
-    google_bucket
+    is.character(path) && grepl("^gs://.+$", path)
 }
 
 
 #' @rdname gsutil_ls
 #'
-#' @title List contents of a gcs bucket
+#' @title List contents of a google cloud bucket, or if you run
+#'     'gsutil_ls' without URLs, it lists all of the Cloud Storage
+#'     buckets under your default project ID
 #'
-#' @param google_bucket character, a valid path to a google storage
+#' @param source character, a valid path to a google storage
 #'     bucket
 #'
 #' @param path character, a path or regular expression listing files
@@ -52,42 +94,55 @@
 #' @param recursive logical, if the operation should be recursive
 #'
 #' @return Exit status of `gsutil_ls()`, invisibly
-#'
+
 gsutil_ls <-
-    function(google_bucket, path="", recursive=TRUE)
+    function(source = character(1), path = character(1), recursive = TRUE)
 {
     args <- c(
         "ls",
         if (recursive) "-r",
-        file.path(.gcs_pathify(google_bucket), path)
+        file.path(if (nchar(source) > 0) source,
+                  if (nchar(path) > 0) path)
     )
     .gsutil_do(args)
 }
-
 
 
 #' @rdname gsutil_cp
 #'
 #' @title Copy contents of a gcs bucket
 #'
-#' @param google_bucket character, a valid path to a google storage
-#'     bucket
+#' @param source character, a valid path to a google storage bucket
 #'
-#' @param local_path character vector, representing a local path
+#' @param destination character vector, representing a destination path
 #'
 #' @param recursive logical, if the operation should be recursive
 #'
 #' @return Exit status of `gsutil_cp()`, invisibly
 #'
+#' @examples
+#'
+#' \dontrun{
+#'    # for a single file
+#'    gsutil_cp("gs://anvil-bioc/blah", "/tmp/blah-copy", recursive=FALSE, parallel=FALSE)
+#'
+#'    # for a folder with all contents
+#'    # "/tmp/foobar-copy" must be an existing destination or must be created
+#'    gsutil_cp("gs://anvil-bioc/foobar", "/tmp/foobar-copy", recursive=TRUE, parallel=TRUE)
+#' }
+#'
+#' TODO: Add an argument 'local' which can have one of three values, c(source, destination, NULL)
+#' stopifnot(local == source/destination/NULL) , if !file.exists(local), create.dir(local) to avoid error.
 gsutil_cp <-
-    function(google_bucket, target_path ,recursive=TRUE)
+    function(source, destination,
+             recursive = TRUE, parallel = TRUE)
 {
     args <- c(
-        "-m", ## Makes the operations faster
+        if (parallel) "-m", ## Makes the operations faster
         "cp", ## cp command
         if (recursive) "-r",
-        .gcs_pathify(google_bucket),
-        target_path
+        source,
+        destination
     )
     .gsutil_do(args)
 }
@@ -98,13 +153,39 @@ gsutil_cp <-
 #' @title Check if a bucket's subdirectory/file is present and get
 #'     information regarding file.
 #'
-#' @param google_bucket character, a valid path to a google storage
-#'     bucket.
+#' @param source character, a valid path to a google storage
+#'     bucket. The path, needs the prefix 'gs://'
+#'
+#' @return Exit status of `gsutil_stat()`, invisibly
+#'
+#' @examples
+#'
+#' \dontrun{
+#'   gsutil_stat('gs://anvil-bioc', 'blah')
+#'
+#' gs://anvil-bioc/blah:
+#' Creation time:          Tue, 11 Jun 2019 15:24:56 GMT
+#' Update time:            Tue, 11 Jun 2019 15:24:56 GMT
+#' Storage class:          STANDARD
+#' Content-Language:       en
+#' Content-Length:         7
+#' Content-Type:           application/octet-stream
+#' Metadata:
+#'       goog-reserved-file-mtime:1560266597
+#'   Hash (crc32c):          Ww1IQg==
+#'   Hash (md5):             JGp1Xnjm4whB2lXhL3hziw==
+#'   ETag:                   CInT4bHe4eICEAE=
+#'   Generation:             1560266696845705
+#'   Metageneration:         1
+#' }
 #'
 gsutil_stat <-
-    function(google_bucket, subdirectory)
+    function(source, subdirectory)
 {
-    path <- file.path(.gcs_pathify(google_bucket), subdirectory)
+    ## source needs to be a valid gs uri
+    stopifnot(is_gsutil_uri(source))
+    ## make path
+    path <- file.path(source, subdirectory)
     args <- c(
         "stat",
         path
@@ -115,9 +196,9 @@ gsutil_stat <-
 
 #' @rdname gsutil_rm
 #'
-#' @title Remove contents of a gcs bucket
+#' @title Remove contents of a google cloud  bucket
 #'
-#' @param google_bucket character, a valid path to a google storage
+#' @param source character, a valid path to a google storage
 #'     bucket
 #'
 #' @param sub_directory character vector, representing a sub directory
@@ -127,14 +208,27 @@ gsutil_stat <-
 #'
 #' @return Exit status of `gsutil_rm()`, invisibly
 #'
+#' @examples
+#'
+#' \dontrun{
+#'    ## Remove a single file
+#'    gsutil_rm('gs://anvil-bioc', 'blah', recursive = FALSE)
+#'
+#'    ## Remove a folder
+#'    gsutil_rm('gs://anvil-bioc', 'foo-bar', recursive=TRUE, parallel=TRUE)
+#' }
+#'
 gsutil_rm <-
-    function(google_bucket, sub_directory, recursive=TRUE)
+    function(source, sub_directory, recursive = TRUE, parallel = TRUE)
 {
+    ## make sure source if a google cloud bucket
+    stopifnot(is_gsutil_uri(source))
+    ## remove
     args <- c(
-        "-m",
+        if (parallel) "-m",
         "rm",
         if (recursive) "-r",
-        file.path(.gcs_pathify(google_bucket), subdirectory)
+        file.path(source, sub_directory)
     )
     .gsutil_do(args)
 }
@@ -150,7 +244,7 @@ gsutil_rm <-
 #' @param destination character, a path to a destination url. Either a
 #'     google bucket or a local path.
 #'
-#' @param match logical, a flag which matches the source to the
+#' @param delete logical, a flag which matches the source to the
 #'     destination exactly. (rsync -d)
 #'
 #'     The rsync -d option is very useful and commonly used, because
@@ -162,6 +256,8 @@ gsutil_rm <-
 #'     and destination.
 #'
 #' @param recursive logical, if the operation should be recursive
+#'
+#' @param parallel logical, if the operation should be in parallel
 #'
 #' @details
 #'
@@ -175,27 +271,30 @@ gsutil_rm <-
 #'
 #' @return Exit status of `gsutil_rsync()`, invisbly
 #'
+#' @examples
+#'
+#' \dontrun{
+#'    ## Rsync from google bucket source to local destination
+#'    gsutil_rsync('gs://anvil-bioc', '/tmp/local-copy')
+#'
+#'    ## Rsync from local source to google bucket
+#'    gsutil_rsync('/tmp/local-copy', 'gs://anvil-bioc')
+#' }
+
 gsutil_rsync <-
-    function(source, destination, match=TRUE, recursive=TRUE)
+    function(source, destination, delete = TRUE,
+             recursive = TRUE, parallel = TRUE)
 {
-    if (.is_google_bucket(source)) {
-        source <- .gcs_pathify(source)
-    }
-
-    if (.is_google_bucket(destination)) {
-        destination <- .gcs_pathify(destination)
-    }
-
-    ## if destination is not a google bucket and doesn't exist
-    if (!dir.exists(destination) && (!.is_google_bucket(destination))) {
+    ## if destination is not a google cloud repo, and does not exist
+    if (!is_gsutil_uri(destination) && !dir.exists(destination))
         dir.create(destination)
-    }
 
+    ## rsync operation
     args <- c(
         ##  -m option, to perform parallel (multi-threaded/multi-processing)
-        "-m",
+        if (parallel) "-m",
         "rsync",
-        if (match) "-d",
+        if (delete) "-d",
         if (recursive) "-r",
         source,
         destination
@@ -208,10 +307,10 @@ gsutil_rsync <-
 #'
 #' @title Localize a Google storage bucket to the container.
 #'
-#' @param google_bucket character, a valid path to a google storage
+#' @param source character, a valid path to a google storage
 #'     bucket.
 #'
-#' @param local_path character vector, representing a local path.
+#' @param destination character vector, representing a local path.
 #'
 #' @param ... additional arguments to `gsutil_rsync()`
 #'
@@ -220,21 +319,36 @@ gsutil_rsync <-
 #' @details localize a bucket from the google cloud storage to a local
 #'     path on the machine.
 #'
+#' @examples
+#'
+#' \dontrun{
+#'    localize("gs://anvil-bioc", "/tmp/test-localize")
+#' }
+#'
 #' @export
 localize <-
-    function(google_bucket, local_path, ...)
+    function(source, destination, ...)
 {
-    gsutil_rsync(.gcs_pathify(google_bucket), local_path,...)
+    ## make sure source is valid google
+    if (!is_gsutil_uri(source))
+        stop("'source' must be a google cloud storage location with prefix 'gs://'.")
+    ## rsync
+    gsutil_rsync(source, destination, ...)
 }
 
 #' @rdname delocalize
 #'
 #' @title Delocalize a Google storage bucket from the container.
 #'
-#' @param local_path  character vector, representing a local path
+#' @param source character vector, representing a local path
 #'
-#' @param google_bucket character, a valid path to a google storage
+#' @param destination character, a valid path to a google storage
 #'     bucket.
+#'
+#' @param remove_local_volume logical, remove the local mount volume.
+#'
+#' @param ... arguments for gsutil_rsync like, delete, recursive,
+#'     parallel.
 #'
 #' @return Exit status of function, `gsutil_rsync()`
 #'
@@ -243,15 +357,24 @@ localize <-
 #'     the volume from the directory. Once a path is delocalized, it
 #'     has to be localized again to regain access.
 #'
+#' @examples
+#'
+#' \dontrun{
+#'     delocalize("/tmp/test-localize/", "gs://anvil-bioc")
+#' }
+#'
 #' @export
 delocalize <-
-    function(local_path, google_bucket, remove_local_volume = TRUE, ...)
+    function(source, destination, remove_local_volume = TRUE, ...)
 {
+    ## validate google bucket
+    if (!is_gsutil_uri(destination))
+        stop("'destination' must be a valid google cloud storage location with prefix 'gs://'.")
     ## First sync
-    gsutil_rsync(local_path, .gcs_pathify(google_bucket), ...)
+    gsutil_rsync(source, destination, ...)
     ## then remove volume
     if (remove_local_volume) {
-        unlink(local_path, recursive=TRUE)
+        unlink(source, recursive=TRUE)
     }
 }
 
@@ -260,7 +383,7 @@ delocalize <-
 #'
 #' @title Add to .libPaths from a local path
 #'
-#' @param local_path character, identifying a local path
+#' @param path character, identifying a local path
 #'
 #' @return character with latest .libPaths()
 #'
@@ -268,14 +391,21 @@ delocalize <-
 #'     the library path .libPaths() so that R can see the hosted
 #'     libraries.
 #'
+#' @examples
+#'
+#' \dontrun{
+#'    add_libs('/tmp/my_library')
+#'    localize('gs://bioconductor-full-devel', '/tmp/my_library')
+#' }
+#'
 #' @export
 add_libs <-
-    function(local_path)
+    function(path)
 {
     ## Create directory if it doesn't exist
     ## otherwise .libPaths() doesn't work
-    if (!dir.exists(local_path)) {
-        dir.create(local_path)
+    if (!dir.exists(path)) {
+        dir.create(path)
     }
     .libPaths(c(local_path, .libPaths()))
 }
@@ -290,20 +420,42 @@ add_libs <-
 #'
 #' @param destination character, represnting a local path.
 #'
-#' @details The sync function allows the user to sync
+#' @details The sync function allows the user to sync a source and
+#'     destination between a google bucket and a local directory. The
+#'     'sync' function needs the correct inputs for source and
+#'     destination, to do the right thing.
+#'
+#'     case 1: sync a google bucket to a local directory
+#'
+#'             All the files and folders in the google bucket (source)
+#'             will be sync-ed with a local directory(destination).
+#'
+#'             sync("gs://anvil-bioc", "my-devel-lib")
+#'
+#'     case 2: sync a local directory to a google bucket
+#'
+#'             If you want to upload files from your local
+#'             directory(source) to your google bucket(destination),
+#'             you must use
+#'
+#'             sync("my-devel-lib", "gs://anvil-bioc")
+#'
+#'             If you do not use case 2, and run case 1 again, then
+#'             the sync function will delete the new files which were
+#'             modified in the local directory.
 #'
 #' @export
 sync <-
-    function(source, destination)
+    function(source, destination, ...)
 {
-    if (.is_google_bucket(source)) {
+    if (is_gsutil_uri(source)) {
         ## No need to .gcs_pathify as "localize" will call it.
-        localize(google_bucket = source, local_path = destination)
+        localize(source, destination, ...)
     }
     ## Do not remove local volume
-    if (.is_google_bucket(destination)) {
-        delocalize(local_path = destination, google_bucket = source,
-                   remove_local_volume = FALSE)
+    if (is_gsutil_uri(destination)) {
+        delocalize(source, destination,
+                   remove_local_volume = FALSE, ...)
     }
 }
 
