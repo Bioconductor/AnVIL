@@ -180,12 +180,12 @@ gsutil_cp <-
 #' }
 #'
 gsutil_stat <-
-    function(source, subdirectory)
+    function(source, sub_directory)
 {
     ## source needs to be a valid gs uri
     stopifnot(is_gsutil_uri(source))
     ## make path
-    path <- file.path(source, subdirectory)
+    path <- file.path(source, sub_directory)
     args <- c(
         "stat",
         path
@@ -476,11 +476,11 @@ sync <-
     version <- as.character(BiocManager::version())
     ## If the version is devel
     if (BiocManager:::isDevel())
-        google_bucket <- "bioconductor-full-devel"
+        google_bucket <- "gs://bioconductor-full-devel"
     else {
         release_version <- sub(".", "-", version, fixed=TRUE)
         google_bucket <- paste0(
-            "bioconductor-full-release", release_version
+            "gs://bioconductor-full-release", release_version
         )
     }
     google_bucket
@@ -490,7 +490,7 @@ sync <-
     function(google_bucket, pkgs = character())
 {
     for (pkg in pkgs) {
-        gsutil_stat(google_bucket, pkg)
+        gsutil_stat(source = google_bucket, sub_directory = pkg)
     }
 }
 
@@ -538,18 +538,18 @@ install <-
     google_bucket <- .choose_google_bucket()
 
     ## TODO: check if the package is in the bucket, if not throw error
-    if (!.package_exists(pkgs))
+    if (!.package_exists(google_bucket, pkgs))
         stop("package does not exist")
 
-    if (!.is_google_bucket(google_bucket))
+    if (!is_gsutil_uri(google_bucket))
         stop("not a valid google bucket which exists in the GCP account")
-    packages <- sprintf("%s/%s", .gcs_pathify(google_bucket), packages)
+    packages <- sprintf("%s/%s", google_bucket, packages)
 
     ## if there is more than one "source" i.e package(s)
     ## FIXME: gsutil_rsync should be vectorized, including 0-length source
     for (source in packages) {
         gsutil_rsync(
-            source = source, desination = lib, match = TRUE,
+            source = source, desination = lib, delete = TRUE,
             recursive = TRUE
         )
     }
