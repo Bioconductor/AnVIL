@@ -2,39 +2,44 @@
 % Please edit documentation in R/gsutil.R
 \name{gsutil}
 \alias{gsutil}
+\alias{is_gsutil_uri}
 \alias{gsutil_ls}
 \alias{gsutil_cp}
+\alias{gsutil_stat}
 \alias{gsutil_rm}
 \alias{gsutil_rsync}
 \title{Internal functions to interact with the gsutil command line}
 \usage{
-gsutil_ls(google_bucket, path = "", recursive = TRUE)
+is_gsutil_uri(source)
 
-gsutil_cp(google_bucket, path, recursive = TRUE)
+gsutil_ls(source = character(1), path = character(1),
+  recursive = TRUE)
 
-gsutil_rm(google_bucket, sub_directory, recursive = TRUE)
+gsutil_cp(source, destination, recursive = TRUE, parallel = TRUE)
 
-gsutil_rsync(source, destination, match = TRUE, recursive = TRUE)
+gsutil_stat(source)
+
+gsutil_rm(source, recursive = TRUE, parallel = TRUE)
+
+gsutil_rsync(source, destination, delete = TRUE, recursive = TRUE,
+  parallel = TRUE)
 }
 \arguments{
-\item{google_bucket}{character(1), a valid path to a google storage
-bucket}
+\item{source}{character(1), a valid path to a google storage bucket.}
 
-\item{path}{character(1), a path or regular expression listing files
-of paths.}
+\item{path}{character(1), a path or regular expression listing
+files of paths.}
 
-\item{recursive}{logical(1), should the operation be recursive?}
+\item{recursive}{logical(1), should the operation should be
+recursive?}
 
-\item{sub_directory}{character(1), representing a sub directory
-path inside the google bucket.}
+\item{destination}{character(1), representing a destination local
+path.}
 
-\item{source}{character(1), a path to a source url, either a google
-bucket or a local path}
+\item{parallel}{logical(1), to perform parallel
+multi-threaded/multi-processing (default is TRUE).}
 
-\item{destination}{character(1), a path to a destination url, either a
-google bucket or a local path.}
-
-\item{match}{logical(1), a flag which matches the source to the
+\item{delete}{logical(1), a flag which matches the source to the
     destination exactly. (rsync -d)
 
     The rsync -d option is very useful and commonly used, because
@@ -44,10 +49,45 @@ google bucket or a local path.}
     option: It's possible to delete large amounts of data
     accidentally if, for example, you erroneously reverse source
     and destination.}
+
+\item{source}{character(1), a valid path to a google storage bucket.}
+
+\item{source}{character(1), a valid path to a google storage bucket.}
+
+\item{recursive}{logical(1), should the operation should be
+recursive?}
+
+\item{source}{character(1), a valid path to a google storage bucket.}
+
+\item{source}{character(1), a valid path to a google storage bucket.}
+
+\item{recursive}{logical(1), should the operation should be
+recursive?}
+
+\item{source}{character(1), a path to a source url, either a google
+bucket or a local path.}
+
+\item{destination}{character(1), a path to a destination url,
+either a google bucket or a local path.}
+
+\item{parallel}{logical(1), to perform parallel
+multi-threaded/multi-processing (default is TRUE).}
 }
 \value{
 All functions return the exit status of the corresponding
     `gsutil` command, invisibly.
+
+logical(1), is the source a  valid google cloud storage path?
+
+Exit status of `gsutil_ls()`, invisibly
+
+Exit status of `gsutil_cp()`, invisibly.
+
+Exit status of `gsutil_stat()`, invisibly
+
+Exit status of `gsutil_rm()`, invisibly.
+
+Exit status of `gsutil_rsync()`, invisbly
 }
 \description{
 These are internal (non-exported) helper functions to
@@ -55,13 +95,66 @@ These are internal (non-exported) helper functions to
     either succeed or return the appropriate error.
 }
 \details{
-To make gs://mybucket/data match the contents of the local
-directory "data" you could do:
+To make `"gs://mybucket/data"` match the contents of the local
+directory `"data"` you could do:
 
-\code{gsutil_rsync(data, "gs://mybucket/data", match = TRUE)}
+\code{gsutil_rsync("data", "gs://mybucket/data", match = TRUE)}
 
 To make the local directory "data" the same as the contents of
 gs://mybucket/data:
 
 \code{gsutil_rsync("gs://mybucket/data", "data", match = TRUE)}
+}
+\examples{
+
+\dontrun{
+   # for a single file
+   gsutil_cp("gs://anvil-bioc/blah",
+             "/tmp/blah-copy", recursive=FALSE, parallel=FALSE)
+
+   # for a folder with all contents
+   # "/tmp/foobar-copy" must be an existing destination or must be created
+
+   gsutil_cp("gs://anvil-bioc/foobar",
+             "/tmp/foobar-copy", recursive=TRUE, parallel=TRUE)
+}
+
+
+\dontrun{
+  gsutil_stat('gs://anvil-bioc', 'blah')
+
+gs://anvil-bioc/blah:
+Creation time:          Tue, 11 Jun 2019 15:24:56 GMT
+Update time:            Tue, 11 Jun 2019 15:24:56 GMT
+Storage class:          STANDARD
+Content-Language:       en
+Content-Length:         7
+Content-Type:           application/octet-stream
+Metadata:
+      goog-reserved-file-mtime:1560266597
+  Hash (crc32c):          Ww1IQg==
+  Hash (md5):             JGp1Xnjm4whB2lXhL3hziw==
+  ETag:                   CInT4bHe4eICEAE=
+  Generation:             1560266696845705
+  Metageneration:         1
+}
+
+
+\dontrun{
+   ## Remove a single file
+   gsutil_rm('gs://anvil-bioc', 'blah', recursive = FALSE)
+
+   ## Remove a folder
+   gsutil_rm('gs://anvil-bioc', 'foo-bar', recursive=TRUE, parallel=TRUE)
+}
+
+
+\dontrun{
+   ## Rsync from google bucket source to local destination
+   gsutil_rsync('gs://anvil-bioc', '/tmp/local-copy')
+
+   ## Rsync from local source to google bucket
+   gsutil_rsync('/tmp/local-copy', 'gs://anvil-bioc')
+}
+
 }

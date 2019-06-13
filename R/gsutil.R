@@ -13,7 +13,7 @@
 NULL
 
 
-#' Discover the binary based on a user defined path
+## Discover the binary based on a user defined path
 .user_setting <- function(option) {
     val <- Sys.getenv(option, unset = NA)
     if (!is.na(val))
@@ -22,8 +22,7 @@ NULL
         NULL
 }
 
-#' Get gsutil binary on user's machine
-#' for windows/linux/mac
+## Get gsutil binary on user's machine for windows/linux/mac
 .get_gsutil_binary <- function() {
     ## Path to find gsutil binary
     user_path <- .user_setting('GSUTIL_BINARY_PATH')
@@ -114,14 +113,14 @@ NULL
 #' @title `is_gsutil_uri()`: check if the google bucket has a gs://
 #'     prefix.
 #'
-#' @param path character, a path to a storage bucket
+#' @param source character(1), a valid path to a google storage bucket.
 #'
-#' @return logical(1), if the path is google cloud storage path.
+#' @return logical(1), is the source a  valid google cloud storage path?
 #' 
 is_gsutil_uri <-
-    function(path)
+    function(source)
 {
-    is.character(path) && grepl("^gs://.+$", path)
+    is.character(source) && grepl("^gs://.+$", source)
 }
 
 
@@ -131,8 +130,7 @@ is_gsutil_uri <-
 #'     you run 'gsutil_ls' without URLs, it lists all of the Cloud
 #'     Storage buckets under your default project ID
 #'
-#' @param source character(1), a valid path to a google storage
-#'     bucket.
+#' @param source character(1), a valid path to a google storage bucket.
 #'
 #' @param path character(1), a path or regular expression listing
 #'     files of paths.
@@ -147,11 +145,10 @@ gsutil_ls <-
              recursive = TRUE)
 {
     stopifnot(
-        .is_character_0_or_1(source),
         .is_scalar_character(path, zchar = TRUE),
         .is_scalar_logical(recursive)
     )
-
+    
     args <- c(
         "ls",
         if (recursive) "-r",
@@ -166,15 +163,15 @@ gsutil_ls <-
 #'
 #' @title `gsutil_cp()`: copy contents of a gcs bucket.
 #'
-#' @param source character(1), a valid path to a google storage bucket
+#' @param source character(1), a valid path to a google storage bucket.
 #'
 #' @param destination character(1), representing a destination local
-#'     path
+#'     path.
 #'
 #' @param recursive logical(1), should the operation should be
 #'     recursive?
 #'
-#' @return Exit status of `gsutil_cp()`, invisibly
+#' @return Exit status of `gsutil_cp()`, invisibly.
 #'
 #' @examples
 #'
@@ -201,7 +198,7 @@ gsutil_cp <-
         .is_scalar_logical(parallel)
     )
 
-    ## make sure source is valid google
+    ## make sure source is valid google cloud storage location
     if (!is_gsutil_uri(source))
         stop("'source' must be a google cloud storage location with prefix 'gs://'.")
 
@@ -222,8 +219,7 @@ gsutil_cp <-
 #' @title `gsutil_stat()`: check if a bucket's subdirectory/file is
 #'     present and get information regarding file.
 #'
-#' @param source character(1), a valid path to a google storage
-#'     bucket.
+#' @param source character(1), a valid path to a google storage bucket.
 #'
 #' @return Exit status of `gsutil_stat()`, invisibly
 #'
@@ -269,9 +265,8 @@ gsutil_stat <-
 #'
 #' @title `gsutil_rm()`: remove contents of a google cloud bucket.
 #'
-#' @param source character(1), a valid path to a google storage
-#'     bucket.
-#'
+#' @param source character(1), a valid path to a google storage bucket.
+#' 
 #' @param recursive logical(1), should the operation should be
 #'     recursive?
 #'

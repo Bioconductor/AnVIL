@@ -4,13 +4,18 @@
 \alias{delocalize}
 \title{Delocalize a Google storage bucket from the container.}
 \usage{
-delocalize(local_path, google_bucket, remove_local_volume = TRUE, ...)
+delocalize(source, destination, remove_local_volume = FALSE, ...)
 }
 \arguments{
-\item{local_path}{character vector, representing a local path}
+\item{source}{character vector, representing a local path}
 
-\item{google_bucket}{character, a valid path to a google storage
+\item{destination}{character, a valid path to a google storage
 bucket.}
+
+\item{remove_local_volume}{logical, remove the local mount volume.}
+
+\item{...}{arguments for gsutil_rsync like, delete, recursive,
+parallel.}
 }
 \value{
 Exit status of function, `gsutil_rsync()`
@@ -23,4 +28,11 @@ delocalize the volume which is mounted with the help of
     gsutil. This syncs the library a final time and then removes
     the volume from the directory. Once a path is delocalized, it
     has to be localized again to regain access.
+}
+\examples{
+
+\dontrun{
+    delocalize("/tmp/test-localize/", "gs://anvil-bioc")
+}
+
 }

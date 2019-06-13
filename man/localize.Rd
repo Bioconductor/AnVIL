@@ -4,13 +4,13 @@
 \alias{localize}
 \title{Localize a Google storage bucket to the container.}
 \usage{
-localize(google_bucket, local_path, ...)
+localize(source, destination, ...)
 }
 \arguments{
-\item{google_bucket}{character, a valid path to a google storage
+\item{source}{character, a valid path to a google storage
 bucket.}
 
-\item{local_path}{character vector, representing a local path.}
+\item{destination}{character vector, representing a local path.}
 
 \item{...}{additional arguments to `gsutil_rsync()`}
 }
@@ -23,4 +23,11 @@ Localize a Google storage bucket to the container.
 \details{
 localize a bucket from the google cloud storage to a local
     path on the machine.
+}
+\examples{
+
+\dontrun{
+   localize("gs://anvil-bioc", "/tmp/test-localize")
+}
+
 }

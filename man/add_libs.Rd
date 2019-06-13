@@ -4,10 +4,10 @@
 \alias{add_libs}
 \title{Add to .libPaths from a local path}
 \usage{
-add_libs(local_path)
+add_libs(path)
 }
 \arguments{
-\item{local_path}{character, identifying a local path}
+\item{path}{character, identifying a local path}
 }
 \value{
 character with latest .libPaths()
@@ -19,4 +19,12 @@ Add to .libPaths from a local path
 Add the synced google bucket path(which is now local) to
     the library path .libPaths() so that R can see the hosted
     libraries.
+}
+\examples{
+
+\dontrun{
+   add_libs('/tmp/my_library')
+   localize('gs://bioconductor-full-devel', '/tmp/my_library')
+}
+
 }
