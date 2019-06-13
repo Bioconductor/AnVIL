@@ -20,7 +20,10 @@ terra <- NULL
 Terra <-
     function()
 {
-    .Terra(Service("terra", host = "api.firecloud.org"))
+    .Terra(Service(
+        "terra", host = "api.firecloud.org",
+        api_url = "https://api.firecloud.org/api-docs.yaml"
+    ))
 }
 
 ## Some operations seem to have a poorly-defined operationId in the json

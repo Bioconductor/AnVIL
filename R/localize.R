@@ -365,7 +365,7 @@ localize <-
 #'
 #' @export
 delocalize <-
-    function(source, destination, remove_local_volume = TRUE, ...)
+    function(source, destination, remove_local_volume = FALSE, ...)
 {
     ## validate google bucket
     if (!is_gsutil_uri(destination))
@@ -411,63 +411,17 @@ add_libs <-
 }
 
 
-#' @rdname sync
-#'
-#' @title Sync libraries from google bucket(source) and
-#'     local_path(destination).
-#'
-#' @param source character, name of google bucket.
-#'
-#' @param destination character, represnting a local path.
-#'
-#' @details The sync function allows the user to sync a source and
-#'     destination between a google bucket and a local directory. The
-#'     'sync' function needs the correct inputs for source and
-#'     destination, to do the right thing.
-#'
-#'     case 1: sync a google bucket to a local directory
-#'
-#'             All the files and folders in the google bucket (source)
-#'             will be sync-ed with a local directory(destination).
-#'
-#'             sync("gs://anvil-bioc", "my-devel-lib")
-#'
-#'     case 2: sync a local directory to a google bucket
-#'
-#'             If you want to upload files from your local
-#'             directory(source) to your google bucket(destination),
-#'             you must use
-#'
-#'             sync("my-devel-lib", "gs://anvil-bioc")
-#'
-#'             If you do not use case 2, and run case 1 again, then
-#'             the sync function will delete the new files which were
-#'             modified in the local directory.
-#'
-#' @export
-sync <-
-    function(source, destination, ...)
-{
-    if (is_gsutil_uri(source)) {
-        ## No need to .gcs_pathify as "localize" will call it.
-        localize(source, destination, ...)
-    }
-    ## Do not remove local volume
-    if (is_gsutil_uri(destination)) {
-        delocalize(source, destination,
-                   remove_local_volume = FALSE, ...)
-    }
-}
-
 .install_find_dependencies <-
     function(packages, lib)
 {
     ## find dependencies
     db <- available.packages(repos = BiocManager::repositories())
-    deps <- unlist(tools::package_dependencies(packages, db), use.names=FALSE)
+    deps <- unlist(tools::package_dependencies(packages, db, recursive = TRUE),
+                   use.names=FALSE)
     installed <- rownames(installed.packages(lib.loc = lib))
     unique(c(packages, deps[!deps %in% installed]))
 }
+
 
 ## TODO: write test cases for testing .choose_google_bucket
 .choose_google_bucket <-
@@ -564,3 +518,7 @@ install <-
 
 ## install(packages, lib = .libPaths()[1], lib.loc) (do the right
 ## thing if given just 'packages')
+
+
+## TODO: 1. remove sub_directory/path
+## 2. Make sure install and localize work with buckets

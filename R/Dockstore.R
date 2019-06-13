@@ -34,7 +34,10 @@ Dockstore <-
         api_header <- c(Authorization = paste("Bearer", token))
     }
     .Dockstore(
-        Service("dockstore", host="dockstore.org", authenticate = FALSE),
+        Service(
+            "dockstore", host="dockstore.org", authenticate = FALSE,
+            api_url = "https://dockstore.org/swagger.json"
+        ),
         api_header = api_header
     )
 }

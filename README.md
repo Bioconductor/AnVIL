@@ -24,9 +24,6 @@ operations
 The return values all require further processing (`httr::content() %>%
 ...`).
 
-The api definititions `inst/service/<name>/api.json` needs to be json
-rather than YAML, see [swagger-codegen online][3b]).
-
 Some services require client keys, in
 `inst/service/<name>/auth.json`.
 

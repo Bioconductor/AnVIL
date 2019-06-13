@@ -15,7 +15,8 @@ Leonardo <-
 {
     Service(
         "leonardo",
-        host = "leonardo.dev.anvilproject.org",
-        config = httr::config(ssl_verifypeer = 0L, ssl_verifyhost = 0L)
+        host = "notebooks.firecloud.org",
+        config = httr::config(ssl_verifypeer = 0L, ssl_verifyhost = 0L),
+        api_url = "https://notebooks.firecloud.org/api-docs.yaml"
     )
 }
