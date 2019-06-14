@@ -37,7 +37,7 @@ NULL
             appdata <- normalizePath(
                 Sys.getenv("localappdata"),
                 winslash = "/")
-            binary_name <- paste(binary, "cmd", sep = ".")
+            binary_name <- paste(binary_name, "cmd", sep = ".")
             c(function() {
                 file.path(appdata,
                           "Google/Cloud SDK/google-cloud-sdk/bin",
