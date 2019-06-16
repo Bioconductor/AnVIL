@@ -2,84 +2,120 @@
 % Please edit documentation in R/gsutil.R
 \name{gsutil}
 \alias{gsutil}
-\alias{is_gsutil_uri}
+\alias{gsutil_is_uri}
 \alias{gsutil_ls}
 \alias{gsutil_cp}
 \alias{gsutil_stat}
 \alias{gsutil_rm}
 \alias{gsutil_rsync}
+\alias{gsutil_help}
 \title{Internal functions to interact with the gsutil command line}
 \usage{
-is_gsutil_uri(source)
+gsutil_is_uri(source)
 
-gsutil_ls(source = character(1), path = character(1),
-  recursive = TRUE)
+gsutil_ls(source = character(), recursive = FALSE)
 
-gsutil_cp(source, destination, recursive = TRUE, parallel = TRUE)
+gsutil_cp(source, destination, recursive = FALSE, parallel = TRUE)
 
 gsutil_stat(source)
 
-gsutil_rm(source, recursive = TRUE, parallel = TRUE)
+gsutil_rm(source, recursive = FALSE, parallel = TRUE)
 
-gsutil_rsync(source, destination, delete = TRUE, recursive = TRUE,
+gsutil_rsync(source, destination, delete = FALSE, recursive = FALSE,
   parallel = TRUE)
+
+gsutil_help(cmd = character(0))
 }
 \arguments{
-\item{source}{character(1), a valid path to a google storage bucket.}
+\item{source}{`character(1)`, paths to a google storage bucket,
+possibly with wild-cards for file-level pattern matching.}
 
-\item{path}{character(1), a path or regular expression listing
-files of paths.}
+\item{recursive}{`logical(1)`; perform operation recursively from
+`source`?. Default: `FALSE`.}
 
-\item{recursive}{logical(1), should the operation be recursive?}
+\item{destination}{`character(1)`, google cloud bucket or local
+file system destination path.}
 
-\item{destination}{character(1), representing a destination local
-path.}
+\item{parallel}{`logical(1)`, perform parallel multi-threaded /
+multi-processing (default is `TRUE`).}
 
-\item{parallel}{logical(1), to perform parallel
-multi-threaded / multi-processing (default is `TRUE`).}
+\item{delete}{`logical(1)`, when `TRUE`, remove files in
+`destination` that are not in `source`. Exercise caution when
+you use this option: it's possible to delete large amounts of
+data accidentally if, for example, you erroneously reverse
+source and destination.}
 
-\item{delete}{logical(1), a flag which matches the source to the
-    destination exactly. (rsync -d)
-
-    The rsync -d option is very useful and commonly used, because
-    it provides a means of making the contents of a destination
-    bucket or directory match those of a source bucket or
-    directory. However, please exercise caution when you use this
-    option: It's possible to delete large amounts of data
-    accidentally if, for example, you erroneously reverse source
-    and destination.}
+\item{cmd}{`character()` (optional) command name, e.g.,
+`"ls"` for help.}
 }
 \value{
-All functions return the exit status of the corresponding
-    `gsutil` command, invisibly.
+`gsutil_is_uri()`: a logical vector of length equal to
+    `source`, with `TRUE` values indicating that the `source` is a
+    character vector with corresponding element prefix `gs://`.
 
-logical(1), is the source a  valid google cloud storage path?
+`gsutil_ls()`: exit status of `gsutil_ls()`, invisibly.
 
-Exit status of `gsutil_ls()`, invisibly
+`gsutil_cp()`: exit status of `gsutil_cp()`, invisibly.
 
-Exit status of `gsutil_cp()`, invisibly.
+`gsutil_stat()`: exit status of `gsutil_stat()`, invisibly.
 
-Exit status of `gsutil_stat()`, invisibly
+`gsutil_rm()`: exit status of `gsutil_rm()`, invisibly.
 
-Exit status of `gsutil_rm()`, invisibly.
+`gsutil_rsync()`: exit status of `gsutil_rsync()`, invisbly.
 
-Exit status of `gsutil_rsync()`, invisbly
+`gsutil_help()`: the help text, invisbly.
 }
 \description{
-These are internal (non-exported) helper functions to
-    pass arguments to `gsutil` command line utility. Functions
-    either succeed or return the appropriate error.
+These are internal (non-exported) functions that
+    invoke the `gsutil` command line utility.
+
+`gsutil_is_uri()` returns TRUE if the `source`
+    argument has a `gs://` prefix.
+
+`gsutil_ls()`: List contents of a google cloud bucket
+    or, if `source` is missing, all Cloud Storage buckets under
+    your default project ID
+
+`gsutil_cp()`: copy contents of `source` to
+    `destination`. At least one of `source` or `destination` must
+    be Google cloud bucket; `source` can be a character vector with
+    length greater than 1. Use `gsutil_help("cp")` for `gsutil` help.
+
+`gsutil_stat()`: status of a bucket, directory, or file.
+
+`gsutil_rm()`: remove contents of a google cloud
+    bucket.
+
+`gsutil_rsync()`: synchronize a source and a destination.
+
+`gsutil_help()`: print 'man' page for the `gsutil`
+    command or subcommand. Note that only options documented on the
+    R help page are supported.
 }
 \details{
-To make `"gs://mybucket/data"` match the contents of the local
-directory `"data"` you could do:
+The `gsutil` system command is required.  The search for
+    `gsutil` starts with environment variable `GSUTIL_BINARY_PATH`
+    providing the full path to the binary.  On Windows, the search
+    tries to find `Google\\Cloud
+    SDK\\google-cloud-sdk\\bin\\gsutil.cmd` in the `LOCAL APP
+    DATA`, `Program Files`, and `Program Files (x86)` directories.
+    On linux / macOS, the search continues with `Sys.which()`,
+    followed by `GCLOUD_INSTALL_PATH` (such that `gsutil` is
+    located at `$GCLOUD_INSTALL_PATH/bin/gsutil`), and defaulting
+    to `~/google-cloud-sdk/bin/gsutil`.
 
-\code{gsutil_rsync("data", "gs://mybucket/data", match = TRUE)}
+`gsutil_rsync()': To make `"gs://mybucket/data"` match the contents
+of the local directory `"data"` you could do:
+
+\code{gsutil_rsync("data", "gs://mybucket/data", delete = TRUE)}
 
 To make the local directory "data" the same as the contents of
 gs://mybucket/data:
 
-\code{gsutil_rsync("gs://mybucket/data", "data", match = TRUE)}
+\code{gsutil_rsync("gs://mybucket/data", "data", delete = TRUE)}
+
+If `destination` is a local path and does not exist, it will be
+created.
 }
 \examples{
 
@@ -97,22 +133,7 @@ gs://mybucket/data:
 
 
 \dontrun{
-  gsutil_stat('gs://anvil-bioc', 'blah')
-
-gs://anvil-bioc/blah:
-Creation time:          Tue, 11 Jun 2019 15:24:56 GMT
-Update time:            Tue, 11 Jun 2019 15:24:56 GMT
-Storage class:          STANDARD
-Content-Language:       en
-Content-Length:         7
-Content-Type:           application/octet-stream
-Metadata:
-      goog-reserved-file-mtime:1560266597
-  Hash (crc32c):          Ww1IQg==
-  Hash (md5):             JGp1Xnjm4whB2lXhL3hziw==
-  ETag:                   CInT4bHe4eICEAE=
-  Generation:             1560266696845705
-  Metageneration:         1
+    gsutil_stat('gs://anvil-bioc', 'blah')
 }
 
 

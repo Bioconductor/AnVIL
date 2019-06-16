@@ -27,7 +27,7 @@ localize <-
     function(source, destination)
 {
     stopifnot(
-        is_gsutil_uri(source),
+        gsutil_is_uri(source),
         .is_scalar_character(destination), dir.exists(destination)
     )
 
@@ -60,7 +60,7 @@ delocalize <-
 {
     stopifnot(
         .is_scalar_character(source), file.exists(source),
-        is_gsutil_uri(destination)
+        gsutil_is_uri(destination)
     )
     ## sync and optionally remove source
     result <- gsutil_rsync(
@@ -177,7 +177,7 @@ install <-
             "  '", paste(pkgs[!exist], collapse = "'\n  '" ), "'"
         )
 
-    if (!is_gsutil_uri(google_bucket))
+    if (!gsutil_is_uri(google_bucket))
         stop("not a valid google bucket which exists in the GCP account")
     packages <- sprintf("%s/%s", google_bucket, packages)
 

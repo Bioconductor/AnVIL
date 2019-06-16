@@ -4,72 +4,69 @@
 #'
 #' @title Internal functions to interact with the gsutil command line
 #'
-#' @description These are internal (non-exported) helper functions to
-#'     pass arguments to `gsutil` command line utility. Functions
-#'     either succeed or return the appropriate error.
+#' @description These are internal (non-exported) functions that
+#'     invoke the `gsutil` command line utility.
 #'
-#' @return All functions return the exit status of the corresponding
-#'     `gsutil` command, invisibly.
+#' @details The `gsutil` system command is required.  The search for
+#'     `gsutil` starts with environment variable `GSUTIL_BINARY_PATH`
+#'     providing the full path to the binary.  On Windows, the search
+#'     tries to find `Google\\Cloud
+#'     SDK\\google-cloud-sdk\\bin\\gsutil.cmd` in the `LOCAL APP
+#'     DATA`, `Program Files`, and `Program Files (x86)` directories.
+#'     On linux / macOS, the search continues with `Sys.which()`,
+#'     followed by `GCLOUD_INSTALL_PATH` (such that `gsutil` is
+#'     located at `$GCLOUD_INSTALL_PATH/bin/gsutil`), and defaulting
+#'     to `~/google-cloud-sdk/bin/gsutil`.
 NULL
 
-##
-.gcloud_binary_default <- function () {
-    Sys.getenv("GCLOUD_INSTALL_PATH", "~/google-cloud-sdk")
-}
-
-## Discover the binary based on a user defined path
-.user_setting <- function(option) {
-    val <- Sys.getenv(option, unset = NA)
-    if (!is.na(val))
-        val
-    else
+## environment variable or NULL, allowing for default `unset` value
+.gsutil_getenv <-
+    function(option, unset = NA)
+{
+    value <- Sys.getenv(option, unset = unset)
+    if (is.na(value))
         NULL
+    else
+        value
 }
 
 ## Get gsutil binary on user's machine for windows/linux/mac
-.get_gsutil_binary <- function() {
+.gsutil_find_binary <-
+    function()
+{
     ## Path to find gsutil binary
-    user_path <- .user_setting('GSUTIL_BINARY_PATH')
+    user_path <- .gsutil_getenv('GSUTIL_BINARY_PATH')
     if (!is.null(user_path))
         return(normalizePath(user_path))
     ## hardcode binary name (FIXME)
     binary_name <- 'gsutil'
     ## Discover binary automatically if user doesn't give path
     bin_path <-
-        ## Windows machine
         if (.Platform$OS.type == "windows") {
-            appdata <- normalizePath(
-                Sys.getenv("localappdata"),
-                winslash = "/")
-            binary_name <- paste(binary_name, "cmd", sep = ".")
+            gsk_binary_path <- file.path(
+                "Google", "Cloud SDK", "google-cloud-sdk", "bin",
+                paste(binary_name, "cmd", sep = ".")
+            )
             c(function() {
-                file.path(appdata,
-                          "Google/Cloud SDK/google-cloud-sdk/bin",
-                          binary_name)
+                appdata <- normalizePath(
+                    Sys.getenv("localappdata"), winslash = "/"
+                )
+                file.path(appdata, gsk_binary_path)
             },
             function() {
-                file.path(Sys.getenv("ProgramFiles"),
-                          "/Google/Cloud SDK/google-cloud-sdk/bin",
-                          binary_name)
+                file.path(Sys.getenv("ProgramFiles"), gsk_binary_path)
             },
             function() {
-                file.path(Sys.getenv("ProgramFiles(x86)"),
-                          "/Google/Cloud SDK/google-cloud-sdk/bin",
-                          binary_name)
+                file.path(Sys.getenv("ProgramFiles(x86)"), gsk_binary_path)
             })
-        } else {  ## If linux / mac
+        } else {                        # linux / mac
             c(function() {
                 Sys.which(binary_name)
             },
             function() {
-                paste("~/google-cloud-sdk/bin",
-                      binary_name,
-                      sep = "/")
-            },
-            function() {
-                file.path(.gcloud_binary_default(),
-                                  "bin",
-                          binary_name)
+                gcloud_install_path <-
+                    .gsutil_getenv("GCLOUD_INSTALL_PATH", "~/google-cloud-sdk")
+                file.path(gcloud_install_path, "bin", binary_name)
             })
         }
     ## Return appropriate path for 'gsutil'
@@ -81,93 +78,86 @@ NULL
     stop("failed to find 'gsutil' binary")
 }
 
-
-#' @title helper function to pass arguments to `gsutil`
-#'
-#' @param args arguments to helper function
-#'
-#' @details private helper function to pass arguments to `gsutil`
-#'     command line utility and throw the appropriate errors.
-#'
+## evaluate the gsutil command and arguments in `args`
 .gsutil_do <-
     function(args)
 {
-    gsutil <- .get_gsutil_binary()
+    gsutil <- .gsutil_find_binary()
     withCallingHandlers(tryCatch({
         system2(gsutil, args, stdout = TRUE, stderr = TRUE, wait=TRUE)
     }, error = function(err) {
-        stop(
-            "'gsutil ", paste(args, collapse = " "), "' failed:",
-            "\n  ", conditionMessage(err),
-            call. = FALSE
+        msg <- paste0(
+            "'gsutil ", paste(args, collapse = " "), "' failed:\n",
+            "  ", conditionMessage(err)
         )
+        stop(msg, call. = FALSE)
     }), warning = function(warn) {
-        warning(
-            "'gsutil ", paste(args, collapse=" "), "' warning:",
-            "\n  ", conditionMessage(warn),
-            call. = FALSE
+        msg <- paste0(
+            "'gsutil ", paste(args, collapse=" "), "' warning:\n",
+            "  ", conditionMessage(warn)
         )
+        warning(msg, call. = FALSE)
         invokeRestart("muffleWarning")
     })
 }
 
-
 #' @rdname gsutil
 #' 
-#' @title `is_gsutil_uri()`: check if the google bucket has a gs://
-#'     prefix.
+#' @description `gsutil_is_uri()` returns TRUE if the `source`
+#'     argument has a `gs://` prefix.
 #'
-#' @param source character(1), a valid path to a google storage bucket.
+#' @param source `character(1)`, paths to a google storage bucket,
+#'     possibly with wild-cards for file-level pattern matching.
 #'
-#' @return logical(1), is the source a  valid google cloud storage path?
-#' 
-is_gsutil_uri <-
+#' @return `gsutil_is_uri()`: a logical vector of length equal to
+#'     `source`, with `TRUE` values indicating that the `source` is a
+#'     character vector with corresponding element prefix `gs://`.
+gsutil_is_uri <-
     function(source)
 {
-    is.character(source) && grepl("^gs://.+$", source)
+    is.character(source) & startsWith(source, "gs://")
 }
-
 
 #' @rdname gsutil
 #'
-#' @title `gsutil_ls()`: List contents of a google cloud bucket, or if
-#'     you run 'gsutil_ls' without URLs, it lists all of the Cloud
-#'     Storage buckets under your default project ID
+#' @description `gsutil_ls()`: List contents of a google cloud bucket
+#'     or, if `source` is missing, all Cloud Storage buckets under
+#'     your default project ID
 #'
-#' @param path character(1), a path or regular expression listing
-#'     files of paths.
+#' @param recursive `logical(1)`; perform operation recursively from
+#'     `source`?. Default: `FALSE`.
 #'
-#' @param recursive logical(1), should the operation be recursive?
-#'
-#' @return Exit status of `gsutil_ls()`, invisibly
-#' 
+#' @return `gsutil_ls()`: exit status of `gsutil_ls()`, invisibly.
 gsutil_ls <-
-    function(source = character(1), path = character(1),
-             recursive = TRUE)
+    function(source = character(), recursive = FALSE)
 {
     stopifnot(
-        .is_scalar_character(path, zchar = TRUE),
+        .is_scalar_character(source, zchar = TRUE),
         .is_scalar_logical(recursive)
     )
     
     args <- c(
         "ls",
         if (recursive) "-r",
-        file.path(if (nchar(source) > 0) source,
-                  if (nchar(path) > 0) path)
+        source
     )
     .gsutil_do(args)
 }
 
-
 #' @rdname gsutil
 #'
-#' @title `gsutil_cp()`: copy contents of a gcs bucket.
+#' @description `gsutil_cp()`: copy contents of `source` to
+#'     `destination`. At least one of `source` or `destination` must
+#'     be Google cloud bucket; `source` can be a character vector with
+#'     length greater than 1. Use `gsutil_help("cp")` for `gsutil` help.
 #'
-#' @param destination character(1), representing a destination local
-#'     path.
+#' @param destination `character(1)`, google cloud bucket or local
+#'     file system destination path.
 #'
-#' @return Exit status of `gsutil_cp()`, invisibly.
+#' @param parallel `logical(1)`, perform parallel multi-threaded /
+#'     multi-processing (default is `TRUE`).
+#'
+#' @return `gsutil_cp()`: exit status of `gsutil_cp()`, invisibly.
 #'
 #' @examples
 #'
@@ -184,19 +174,13 @@ gsutil_ls <-
 #' }
 #'
 gsutil_cp <-
-    function(source, destination,
-             recursive = TRUE, parallel = TRUE)
+    function(source, destination, recursive = FALSE, parallel = TRUE)
 {
     stopifnot(
-        .is_scalar_character(source),
-        .is_scalar_character(destination, zchar = TRUE),
-        .is_scalar_logical(recursive),
-        .is_scalar_logical(parallel)
+        .is_scalar_character(source), .is_scalar_character(destination),
+        gsutil_is_uri(source) || gsutil_is_uri(destination),
+        .is_scalar_logical(recursive), .is_scalar_logical(parallel)
     )
-
-    ## make sure source is valid google cloud storage location
-    if (!is_gsutil_uri(source))
-        stop("'source' must be a google cloud storage location with prefix 'gs://'.")
 
     args <- c(
         if (parallel) "-m", ## Makes the operations faster
@@ -206,63 +190,37 @@ gsutil_cp <-
         destination
     )
     .gsutil_do(args)
-    invisible(NULL)
 }
-
 
 #' @rdname gsutil
 #'
-#' @title `gsutil_stat()`: check if a bucket's subdirectory/file is
-#'     present and get information regarding file.
+#' @description `gsutil_stat()`: status of a bucket, directory, or file.
 #'
-#' @return Exit status of `gsutil_stat()`, invisibly
+#' @return `gsutil_stat()`: exit status of `gsutil_stat()`, invisibly.
 #'
 #' @examples
 #'
 #' \dontrun{
-#'   gsutil_stat('gs://anvil-bioc', 'blah')
-#'
-#' gs://anvil-bioc/blah:
-#' Creation time:          Tue, 11 Jun 2019 15:24:56 GMT
-#' Update time:            Tue, 11 Jun 2019 15:24:56 GMT
-#' Storage class:          STANDARD
-#' Content-Language:       en
-#' Content-Length:         7
-#' Content-Type:           application/octet-stream
-#' Metadata:
-#'       goog-reserved-file-mtime:1560266597
-#'   Hash (crc32c):          Ww1IQg==
-#'   Hash (md5):             JGp1Xnjm4whB2lXhL3hziw==
-#'   ETag:                   CInT4bHe4eICEAE=
-#'   Generation:             1560266696845705
-#'   Metageneration:         1
+#'     gsutil_stat('gs://anvil-bioc', 'blah')
 #' }
 #'
 gsutil_stat <-
     function(source)
 {
-    ## make sure source is valid google
-    if (!is_gsutil_uri(source))
-        stop("'source' must be a google cloud storage location with prefix 'gs://'.")
+    stopifnot(gsutil_is_uri(source))
 
     ## make path
     path <- file.path(source)
-    args <- c(
-        "stat",
-        path
-    )
+    args <- c("stat", path)
     .gsutil_do(args)
 }
 
-
 #' @rdname gsutil
 #'
-#' @title `gsutil_rm()`: remove contents of a google cloud bucket.
+#' @description `gsutil_rm()`: remove contents of a google cloud
+#'     bucket.
 #'
-#' @param parallel logical(1), to perform parallel
-#'     multi-threaded / multi-processing (default is `TRUE`).
-#'
-#' @return Exit status of `gsutil_rm()`, invisibly.
+#' @return `gsutil_rm()`: exit status of `gsutil_rm()`, invisibly.
 #'
 #' @examples
 #'
@@ -275,11 +233,9 @@ gsutil_stat <-
 #' }
 #'
 gsutil_rm <-
-    function(source, recursive = TRUE, parallel = TRUE)
+    function(source, recursive = FALSE, parallel = TRUE)
 {
-    ## make sure source is valid google
-    if (!is_gsutil_uri(source))
-        stop("'source' must be a google cloud storage location with prefix 'gs://'.")
+    stopifnot(gsutil_is_uri(source))
 
     ## remove
     args <- c(
@@ -291,35 +247,32 @@ gsutil_rm <-
     .gsutil_do(args)
 }
 
-
 #' @rdname gsutil
 #' 
-#' @title `gsutil_rsync()`: synchronize a source and a destination.
+#' @description `gsutil_rsync()`: synchronize a source and a destination.
 #' 
-#' @param delete logical(1), a flag which matches the source to the
-#'     destination exactly. (rsync -d)
-#'
-#'     The rsync -d option is very useful and commonly used, because
-#'     it provides a means of making the contents of a destination
-#'     bucket or directory match those of a source bucket or
-#'     directory. However, please exercise caution when you use this
-#'     option: It's possible to delete large amounts of data
-#'     accidentally if, for example, you erroneously reverse source
-#'     and destination.
+#' @param delete `logical(1)`, when `TRUE`, remove files in
+#'     `destination` that are not in `source`. Exercise caution when
+#'     you use this option: it's possible to delete large amounts of
+#'     data accidentally if, for example, you erroneously reverse
+#'     source and destination.
 #'
 #' @details
 #'
-#' To make `"gs://mybucket/data"` match the contents of the local
-#' directory `"data"` you could do:
+#' `gsutil_rsync()': To make `"gs://mybucket/data"` match the contents
+#' of the local directory `"data"` you could do:
 #'
-#' \code{gsutil_rsync("data", "gs://mybucket/data", match = TRUE)}
+#' \code{gsutil_rsync("data", "gs://mybucket/data", delete = TRUE)}
 #'
 #' To make the local directory "data" the same as the contents of
 #' gs://mybucket/data:
 #'
-#' \code{gsutil_rsync("gs://mybucket/data", "data", match = TRUE)}
+#' \code{gsutil_rsync("gs://mybucket/data", "data", delete = TRUE)}
 #'
-#' @return Exit status of `gsutil_rsync()`, invisbly
+#' If `destination` is a local path and does not exist, it will be
+#' created.
+#'
+#' @return `gsutil_rsync()`: exit status of `gsutil_rsync()`, invisbly.
 #'
 #' @examples
 #'
@@ -332,12 +285,20 @@ gsutil_rm <-
 #' }
 #' 
 gsutil_rsync <-
-    function(source, destination, delete = TRUE,
-             recursive = TRUE, parallel = TRUE)
+    function(source, destination, delete = FALSE, recursive = FALSE,
+             parallel = TRUE)
 {
+    stopifnot(
+        .is_scalar_character(source), .is_scalar_character(destination),
+        gsutil_is_uri(source) || gsutil_is_uri(destination),
+        .is_scalar_logical(delete),
+        .is_scalar_logical(recursive),
+        .is_scalar_logical(parallel)
+    )
     ## if destination is not a google cloud repo, and does not exist
-    if (!is_gsutil_uri(destination) && !dir.exists(destination))
-        dir.create(destination)
+    if (!gsutil_is_uri(destination) && !dir.exists(destination))
+        if (!dir.create(destination))
+            stop("'gsutil_rsync()' failed to create '", destination, "'")
 
     ## rsync operation
     args <- c(
@@ -350,6 +311,25 @@ gsutil_rsync <-
         destination
     )
     .gsutil_do(args)
+}
+
+#' @rdname gsutil
+#'
+#' @description `gsutil_help()`: print 'man' page for the `gsutil`
+#'     command or subcommand. Note that only options documented on the
+#'     R help page are supported.
+#'
+#' @param cmd `character()` (optional) command name, e.g.,
+#'     `"ls"` for help.
+#'
+#' @return `gsutil_help()`: the help text, invisbly.
+gsutil_help <-
+    function(cmd = character(0))
+{
+    stopifnot(.is_character_0_or_1(cmd))
+    result <- .gsutil_do(c("help", cmd))
+    cat(noquote(result), sep="\n")
+    invisible(result)
 }
 
 ## FIXME: How to suppress warnings

@@ -13,7 +13,7 @@ delocalize(source, destination, unlink = FALSE)
 
 add_libpaths(paths)
 
-install(pkgs = character(), lib = .libPaths()[1], lib.loc = NULL)
+install(pkgs, lib = .libPaths()[1], lib.loc = NULL)
 }
 \arguments{
 \item{source}{`character(1)`, a google storage bucket or local file
@@ -22,8 +22,8 @@ system directory location.}
 \item{destination}{`character(1)`, a google storage bucket or local
 file system directory location.}
 
-\item{unlink}{`logical(1)`, remove (unlink) the file or directory
-in `source`.}
+\item{unlink}{`logical(1)` remove (unlink) the file or directory
+in `source`. Default: `FALSE`.}
 
 \item{paths}{`character()`: vector of directories to add to
 `.libPaths()`. Paths that do not exist will be created.}
@@ -68,7 +68,7 @@ currently installed packages. Default is all paths in
 \examples{
 
 \dontrun{
-localize("gs://anvil-bioc", "/tmp/test-localize")
+   localize("gs://anvil-bioc", "/tmp/test-localize")
 }
 
 
