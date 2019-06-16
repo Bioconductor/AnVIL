@@ -1,18 +1,20 @@
 #' @rdname localize
 #'
-#' @title Localize a Google storage bucket to the container.
+#' @title Copy packages, folders, or files to or from google buckets.
 #'
-#' @param source character, a valid path to a google storage
-#'     bucket.
+#' @description `localize()`: synchronize files from a Google storage
+#'     bucket (`source`) to the local file system
+#'     (`destination`). This command acts recursively on the `source`
+#'     directory, and does not delete files in `destination` that are
+#'     not in `source.
 #'
-#' @param destination character vector, representing a local path.
+#' @param source `character(1)`, a google storage bucket or local file
+#'     system directory location.
 #'
-#' @param ... additional arguments to `gsutil_rsync()`
+#' @param destination `character(1)`, a google storage bucket or local
+#'     file system directory location.
 #'
-#' @return Exit status of function, `gsutil_rsync()`
-#'
-#' @details localize a bucket from the google cloud storage to a local
-#'     path on the machine.
+#' @return `localize()`: exit status of function `gsutil_rsync()`.
 #'
 #' @examples
 #'
@@ -22,28 +24,29 @@
 #'
 #' @export
 localize <-
-    function(source, destination, ...)
+    function(source, destination)
 {
-    ## make sure source is valid google
-    if (!is_gsutil_uri(source))
-        stop("'source' must be a google cloud storage location with prefix 'gs://'.")
-    ## rsync
-    gsutil_rsync(source, destination, ...)
-}
+    stopifnot(
+        is_gsutil_uri(source),
+        .is_scalar_character(destination), dir.exists(destination)
+    )
 
+    ## FIXME: return destination paths of copied files
+    gsutil_rsync(source, destination, delete = FALSE, recursive = TRUE)
+}
 
 #' @rdname localize
 #'
-#' @title Delocalize a Google storage bucket from the container.
+#' @description `delocalize()`: synchronize files from a local file
+#'     system (`source`) to a Google storage bucket
+#'     (`destination`). This command acts recursively on the `source`
+#'     directory, and does not delete files in `destination` that are
+#'     not in `source`.
 #'
-#' @param remove_local_volume logical, remove the local mount volume.
+#' @param unlink `logical(1)` remove (unlink) the file or directory
+#'     in `source`. Default: `FALSE`.
 #'
-#' @return Exit status of function, `gsutil_rsync()`
-#'
-#' @details delocalize the volume which is mounted with the help of
-#'     gsutil. This syncs the library a final time and then removes
-#'     the volume from the directory. Once a path is delocalized, it
-#'     has to be localized again to regain access.
+#' @return `delocalize()`: exit status of function `gsutil_rsync()`
 #'
 #' @examples
 #'
@@ -53,31 +56,30 @@ localize <-
 #'
 #' @export
 delocalize <-
-    function(source, destination, remove_local_volume = FALSE, ...)
+    function(source, destination, unlink = FALSE)
 {
-    ## validate google bucket
-    if (!is_gsutil_uri(destination))
-        stop("'destination' must be a valid google cloud storage location with prefix 'gs://'.")
-    ## First sync
-    gsutil_rsync(source, destination, ...)
-    ## then remove volume
-    if (remove_local_volume) {
+    stopifnot(
+        .is_scalar_character(source), file.exists(source),
+        is_gsutil_uri(destination)
+    )
+    ## sync and optionally remove source
+    result <- gsutil_rsync(
+        source, destination, delete = FALSE, recursive = TRUE
+    )
+    if (unlink)
         unlink(source, recursive=TRUE)
-    }
+    result
 }
-
 
 #' @rdname localize
 #'
-#' @title Add to .libPaths from a local path
+#' @description `add_libpaths()`: Add local library paths to
+#'     `.libPaths()`.
 #'
-#' @param paths character, identifying a local path
+#' @param paths `character()`: vector of directories to add to
+#'     `.libPaths()`. Paths that do not exist will be created.
 #'
-#' @return character with latest .libPaths()
-#'
-#' @details Add the synced google bucket path(which is now local) to
-#'     the library path .libPaths() so that R can see the hosted
-#'     libraries.
+#' @return `add_libpaths()`: updated .libPaths(), invisibly.
 #'
 #' @examples
 #'
@@ -90,15 +92,19 @@ delocalize <-
 add_libpaths <-
     function(paths)
 {
-    ## Create directory if it doesn't exist
-    ## otherwise .libPaths() doesn't work
+    stopifnot(is.character(paths))
+
+    ## make sure all paths exist
     exist <- vapply(paths, dir.exists, logical(1))
-    for (path in paths[!exist])
-        dir.create(path)
+    ok <- vapply(paths[!exist], dir.create, logical(1))
+    if (!all(ok))
+        stop(
+            "'add_libpaths()' failed to create directories:\n",
+            "  '", paste(paths[!exist][!ok], collapse="'\n  '"), "'"
+        )
 
     .libPaths(c(paths, .libPaths()))
 }
-
 
 #' @importFrom utils available.packages installed.packages
 .install_find_dependencies <-
@@ -112,22 +118,13 @@ add_libpaths <-
     unique(c(packages, deps[!deps %in% installed]))
 }
 
-
-## TODO: write test cases for testing .choose_google_bucket
+## FIXME: buckets: don't use 'devel' for buckets, just version
+## numbers; follow git convention for naming, e.g., RELEASE_3_10
 .choose_google_bucket <-
     function()
 {
-    version <- as.character(BiocManager::version())
-    ## If the version is devel
-    if (BiocManager:::isDevel())
-        google_bucket <- "gs://bioconductor-full-devel"
-    else {
-        release_version <- sub(".", "-", version, fixed=TRUE)
-        google_bucket <- paste0(
-            "gs://bioconductor-full-release", release_version
-        )
-    }
-    google_bucket
+    version <- sub(".", "_", BiocManager::version(), fixed=TRUE)
+    paste0("gs://bioconductor-full-RELEASE_", version)
 }
 
 .package_exists <-
@@ -137,35 +134,31 @@ add_libpaths <-
     vapply(pkgs, gsutil_stat, logical(1))
 }
 
-
 #' @rdname localize
 #'
-#' @title Install libraries and it's dependencies from a bucket.
+#' @description `install()`: install packages and their dependencies
+#'     from a bucket.
 #'
-#' @param pkgs character() packages to install from binary repository.
+#' @param pkgs `character()` packages to install from binary repository.
 #'
-#' @param lib character, file path to .libPaths()[1], primary location
-#'     to install packages.
+#' @param lib `character(1)` library path (directory) in which to
+#'     install `pkgs`; defaults to `.libPaths()[1]`.
 #'
-#' @param lib.loc character() library locations to search for
-#'     currently installed packages.
+#' @param lib.loc `character()` library locations to search for
+#'     currently installed packages. Default is all paths in
+#'     `.libPaths()`.
 #'
-#' @details Given a pre-existing google bucket with a host of
-#'     bioconductor packages built on a specific matching version of R
-#'     and Bioconductor, the user is able to install packages his
-#'     container using the 'install()` function from the google
-#'     bucket.
+#' @return `install()`: location of installed packages, invisibly.
 #'
-#' eg:
-#'
+#' @examples
+#' \dontrun{
 #' add_libpaths("/tmp/host-site-library")
-#' install(packages = c('BiocParallel', ='BiocGenerics'), lib = .libPaths()[1])
-#'
-#' @return character, location of packages installed invisibly
+#' install(packages = c('BiocParallel', 'BiocGenerics'))
+#' }
 #'
 #' @export
 install <-
-    function(pkgs = character(), lib = .libPaths()[1], lib.loc = NULL)
+    function(pkgs, lib = .libPaths()[1], lib.loc = NULL)
 {
     ## Validate arguments
     stopifnot(is.character(pkgs), !anyNA(pkgs))

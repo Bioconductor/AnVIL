@@ -5,85 +5,70 @@
 \alias{delocalize}
 \alias{add_libpaths}
 \alias{install}
-\title{Localize a Google storage bucket to the container.}
+\title{Copy packages, folders, or files to or from google buckets.}
 \usage{
-localize(source, destination, ...)
+localize(source, destination)
 
-delocalize(source, destination, remove_local_volume = FALSE, ...)
+delocalize(source, destination, unlink = FALSE)
 
 add_libpaths(paths)
 
 install(pkgs = character(), lib = .libPaths()[1], lib.loc = NULL)
 }
 \arguments{
-\item{source}{character, a valid path to a google storage
-bucket.}
+\item{source}{`character(1)`, a google storage bucket or local file
+system directory location.}
 
-\item{destination}{character vector, representing a local path.}
+\item{destination}{`character(1)`, a google storage bucket or local
+file system directory location.}
 
-\item{...}{additional arguments to `gsutil_rsync()`}
+\item{unlink}{`logical(1)`, remove (unlink) the file or directory
+in `source`.}
 
-\item{remove_local_volume}{logical, remove the local mount volume.}
+\item{paths}{`character()`: vector of directories to add to
+`.libPaths()`. Paths that do not exist will be created.}
 
-\item{paths}{character, identifying a local path}
+\item{pkgs}{`character()` packages to install from binary repository.}
 
-\item{pkgs}{character() packages to install from binary repository.}
+\item{lib}{`character(1)` library path (directory) in which to
+install `pkgs`; defaults to `.libPaths()[1]`.}
 
-\item{lib}{character, file path to .libPaths()[1], primary location
-to install packages.}
-
-\item{lib.loc}{character() library locations to search for
-currently installed packages.}
-
-\item{...}{arguments for gsutil_rsync like, delete, recursive,
-parallel.}
+\item{lib.loc}{`character()` library locations to search for
+currently installed packages. Default is all paths in
+`.libPaths()`.}
 }
 \value{
-Exit status of function, `gsutil_rsync()`
+`localize()`: exit status of function `gsutil_rsync()`.
 
-Exit status of function, `gsutil_rsync()`
+`delocalize()`: exit status of function `gsutil_rsync()`
 
-character with latest .libPaths()
+`add_libpaths()`: updated .libPaths(), invisibly.
 
-character, location of packages installed invisibly
+`install()`: location of installed packages, invisibly.
 }
 \description{
-Localize a Google storage bucket to the container.
+`localize()`: synchronize files from a Google storage
+    bucket (`source`) to the local file system
+    (`destination`). This command acts recursively on the `source`
+    directory, and does not delete files in `destination` that are
+    not in `source.
 
-Delocalize a Google storage bucket from the container.
+`delocalize()`: synchronize files from a local file
+    system (`source`) to a Google storage bucket
+    (`destination`). This command acts recursively on the `source`
+    directory, and does not delete files in `destination` that are
+    not in `source`.
 
-Add to .libPaths from a local path
+`add_libpaths()`: Add local library paths to
+    `.libPaths()`.
 
-Install libraries and it's dependencies from a bucket.
-}
-\details{
-localize a bucket from the google cloud storage to a local
-    path on the machine.
-
-delocalize the volume which is mounted with the help of
-    gsutil. This syncs the library a final time and then removes
-    the volume from the directory. Once a path is delocalized, it
-    has to be localized again to regain access.
-
-Add the synced google bucket path(which is now local) to
-    the library path .libPaths() so that R can see the hosted
-    libraries.
-
-Given a pre-existing google bucket with a host of
-    bioconductor packages built on a specific matching version of R
-    and Bioconductor, the user is able to install packages his
-    container using the 'install()` function from the google
-    bucket.
-
-eg:
-
-add_libpaths("/tmp/host-site-library")
-install(packages = c('BiocParallel', ='BiocGenerics'), lib = .libPaths()[1])
+`install()`: install packages and their dependencies
+    from a bucket.
 }
 \examples{
 
 \dontrun{
-   localize("gs://anvil-bioc", "/tmp/test-localize")
+localize("gs://anvil-bioc", "/tmp/test-localize")
 }
 
 
@@ -95,6 +80,11 @@ install(packages = c('BiocParallel', ='BiocGenerics'), lib = .libPaths()[1])
 \dontrun{
    add_libpaths('/tmp/my_library')
    localize('gs://bioconductor-full-devel', '/tmp/my_library')
+}
+
+\dontrun{
+add_libpaths("/tmp/host-site-library")
+install(packages = c('BiocParallel', 'BiocGenerics'))
 }
 
 }
