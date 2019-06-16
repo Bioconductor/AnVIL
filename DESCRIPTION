@@ -18,14 +18,15 @@ Description: This package stub provides functionality to support
     specialized package management, and algorithm development.
 License: Artistic-2.0
 Encoding: UTF-8
-Suggests: knitr
+Suggests: knitr, testthat
 Depends: dplyr
 Imports:
     utils, methods,
     futile.logger,
     jsonlite, httr,
     rapiclient (== 0.1.2.0002-4),
-    tibble
+    tibble,
+    BiocManager
 Collate:
     utilities.R authenticate.R
     Service.R Services.R Leonardo.R Terra.R Dockstore.R Gen3.R

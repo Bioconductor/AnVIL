@@ -32,19 +32,11 @@ localize <-
 }
 
 
-#' @rdname delocalize
+#' @rdname localize
 #'
 #' @title Delocalize a Google storage bucket from the container.
 #'
-#' @param source character vector, representing a local path
-#'
-#' @param destination character, a valid path to a google storage
-#'     bucket.
-#'
 #' @param remove_local_volume logical, remove the local mount volume.
-#'
-#' @param ... arguments for gsutil_rsync like, delete, recursive,
-#'     parallel.
 #'
 #' @return Exit status of function, `gsutil_rsync()`
 #'
@@ -75,11 +67,11 @@ delocalize <-
 }
 
 
-#' @rdname add_libs
+#' @rdname localize
 #'
 #' @title Add to .libPaths from a local path
 #'
-#' @param path character, identifying a local path
+#' @param paths character, identifying a local path
 #'
 #' @return character with latest .libPaths()
 #'
@@ -90,23 +82,25 @@ delocalize <-
 #' @examples
 #'
 #' \dontrun{
-#'    add_libs('/tmp/my_library')
+#'    add_libpaths('/tmp/my_library')
 #'    localize('gs://bioconductor-full-devel', '/tmp/my_library')
 #' }
 #'
 #' @export
-add_libs <-
-    function(path)
+add_libpaths <-
+    function(paths)
 {
     ## Create directory if it doesn't exist
     ## otherwise .libPaths() doesn't work
-    if (!dir.exists(path)) {
+    exist <- vapply(paths, dir.exists, logical(1))
+    for (path in paths[!exist])
         dir.create(path)
-    }
-    .libPaths(c(local_path, .libPaths()))
+
+    .libPaths(c(paths, .libPaths()))
 }
 
 
+#' @importFrom utils available.packages installed.packages
 .install_find_dependencies <-
     function(packages, lib)
 {
@@ -139,24 +133,22 @@ add_libs <-
 .package_exists <-
     function(google_bucket, pkgs = character())
 {
-    for (pkg in pkgs) {
-        gsutil_stat(source = google_bucket, sub_directory = pkg)
-    }
+    pkgs <- paste0(google_bucket, pkgs, sep="/")
+    vapply(pkgs, gsutil_stat, logical(1))
 }
 
 
-#' @rdname install
+#' @rdname localize
 #'
 #' @title Install libraries and it's dependencies from a bucket.
 #'
-#' @param packages character, names of packages to install from a
-#'     bucket.
-#'
-#' @param google_bucket character, a valid path to a google storage
-#'     bucket.
+#' @param pkgs character() packages to install from binary repository.
 #'
 #' @param lib character, file path to .libPaths()[1], primary location
 #'     to install packages.
+#'
+#' @param lib.loc character() library locations to search for
+#'     currently installed packages.
 #'
 #' @details Given a pre-existing google bucket with a host of
 #'     bioconductor packages built on a specific matching version of R
@@ -166,11 +158,8 @@ add_libs <-
 #'
 #' eg:
 #'
-#' add_libs("/tmp/host-site-library")
-#'
-#' install(packages = c('BiocParallel', ='BiocGenerics'),
-#'             google_bucket = "bioc_release_volume",
-#'             lib = .libPaths()[1])
+#' add_libpaths("/tmp/host-site-library")
+#' install(packages = c('BiocParallel', ='BiocGenerics'), lib = .libPaths()[1])
 #'
 #' @return character, location of packages installed invisibly
 #'
@@ -188,8 +177,12 @@ install <-
     google_bucket <- .choose_google_bucket()
 
     ## TODO: check if the package is in the bucket, if not throw error
-    if (!.package_exists(google_bucket, pkgs))
-        stop("package does not exist")
+    exist <- .package_exists(google_bucket, pkgs)
+    if (!all(exist))
+        stop(
+            "package(s) do not exist:\n",
+            "  '", paste(pkgs[!exist], collapse = "'\n  '" ), "'"
+        )
 
     if (!is_gsutil_uri(google_bucket))
         stop("not a valid google bucket which exists in the GCP account")
@@ -199,7 +192,7 @@ install <-
     ## FIXME: gsutil_rsync should be vectorized, including 0-length source
     for (source in packages) {
         gsutil_rsync(
-            source = source, desination = lib, delete = TRUE,
+            source = source, destination = lib, delete = TRUE,
             recursive = TRUE
         )
     }

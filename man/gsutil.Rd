@@ -30,14 +30,13 @@ gsutil_rsync(source, destination, delete = TRUE, recursive = TRUE,
 \item{path}{character(1), a path or regular expression listing
 files of paths.}
 
-\item{recursive}{logical(1), should the operation should be
-recursive?}
+\item{recursive}{logical(1), should the operation be recursive?}
 
 \item{destination}{character(1), representing a destination local
 path.}
 
 \item{parallel}{logical(1), to perform parallel
-multi-threaded/multi-processing (default is TRUE).}
+multi-threaded / multi-processing (default is `TRUE`).}
 
 \item{delete}{logical(1), a flag which matches the source to the
     destination exactly. (rsync -d)
@@ -49,29 +48,6 @@ multi-threaded/multi-processing (default is TRUE).}
     option: It's possible to delete large amounts of data
     accidentally if, for example, you erroneously reverse source
     and destination.}
-
-\item{source}{character(1), a valid path to a google storage bucket.}
-
-\item{source}{character(1), a valid path to a google storage bucket.}
-
-\item{recursive}{logical(1), should the operation should be
-recursive?}
-
-\item{source}{character(1), a valid path to a google storage bucket.}
-
-\item{source}{character(1), a valid path to a google storage bucket.}
-
-\item{recursive}{logical(1), should the operation should be
-recursive?}
-
-\item{source}{character(1), a path to a source url, either a google
-bucket or a local path.}
-
-\item{destination}{character(1), a path to a destination url,
-either a google bucket or a local path.}
-
-\item{parallel}{logical(1), to perform parallel
-multi-threaded/multi-processing (default is TRUE).}
 }
 \value{
 All functions return the exit status of the corresponding

@@ -12,6 +12,10 @@
 #'     `gsutil` command, invisibly.
 NULL
 
+##
+.gcloud_binary_default <- function () {
+    Sys.getenv("GCLOUD_INSTALL_PATH", "~/google-cloud-sdk")
+}
 
 ## Discover the binary based on a user defined path
 .user_setting <- function(option) {
@@ -63,7 +67,7 @@ NULL
                       sep = "/")
             },
             function() {
-                file.path(gcloud_binary_default(),
+                file.path(.gcloud_binary_default(),
                                   "bin",
                           binary_name)
             })
@@ -130,13 +134,10 @@ is_gsutil_uri <-
 #'     you run 'gsutil_ls' without URLs, it lists all of the Cloud
 #'     Storage buckets under your default project ID
 #'
-#' @param source character(1), a valid path to a google storage bucket.
-#'
 #' @param path character(1), a path or regular expression listing
 #'     files of paths.
 #'
-#' @param recursive logical(1), should the operation should be
-#'     recursive?
+#' @param recursive logical(1), should the operation be recursive?
 #'
 #' @return Exit status of `gsutil_ls()`, invisibly
 #' 
@@ -163,13 +164,8 @@ gsutil_ls <-
 #'
 #' @title `gsutil_cp()`: copy contents of a gcs bucket.
 #'
-#' @param source character(1), a valid path to a google storage bucket.
-#'
 #' @param destination character(1), representing a destination local
 #'     path.
-#'
-#' @param recursive logical(1), should the operation should be
-#'     recursive?
 #'
 #' @return Exit status of `gsutil_cp()`, invisibly.
 #'
@@ -219,8 +215,6 @@ gsutil_cp <-
 #' @title `gsutil_stat()`: check if a bucket's subdirectory/file is
 #'     present and get information regarding file.
 #'
-#' @param source character(1), a valid path to a google storage bucket.
-#'
 #' @return Exit status of `gsutil_stat()`, invisibly
 #'
 #' @examples
@@ -265,13 +259,8 @@ gsutil_stat <-
 #'
 #' @title `gsutil_rm()`: remove contents of a google cloud bucket.
 #'
-#' @param source character(1), a valid path to a google storage bucket.
-#' 
-#' @param recursive logical(1), should the operation should be
-#'     recursive?
-#'
 #' @param parallel logical(1), to perform parallel
-#'     multi-threaded/multi-processing (default is TRUE).
+#'     multi-threaded / multi-processing (default is `TRUE`).
 #'
 #' @return Exit status of `gsutil_rm()`, invisibly.
 #'
@@ -307,12 +296,6 @@ gsutil_rm <-
 #' 
 #' @title `gsutil_rsync()`: synchronize a source and a destination.
 #' 
-#' @param source character(1), a path to a source url, either a google
-#'     bucket or a local path.
-#'
-#' @param destination character(1), a path to a destination url,
-#'     either a google bucket or a local path.
-#'
 #' @param delete logical(1), a flag which matches the source to the
 #'     destination exactly. (rsync -d)
 #'
@@ -323,9 +306,6 @@ gsutil_rm <-
 #'     option: It's possible to delete large amounts of data
 #'     accidentally if, for example, you erroneously reverse source
 #'     and destination.
-#'
-#' @param parallel logical(1), to perform parallel
-#'     multi-threaded/multi-processing (default is TRUE).
 #'
 #' @details
 #'

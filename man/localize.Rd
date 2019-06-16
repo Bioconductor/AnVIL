@@ -2,9 +2,18 @@
 % Please edit documentation in R/localize.R
 \name{localize}
 \alias{localize}
+\alias{delocalize}
+\alias{add_libpaths}
+\alias{install}
 \title{Localize a Google storage bucket to the container.}
 \usage{
 localize(source, destination, ...)
+
+delocalize(source, destination, remove_local_volume = FALSE, ...)
+
+add_libpaths(paths)
+
+install(pkgs = character(), lib = .libPaths()[1], lib.loc = NULL)
 }
 \arguments{
 \item{source}{character, a valid path to a google storage
@@ -13,21 +22,79 @@ bucket.}
 \item{destination}{character vector, representing a local path.}
 
 \item{...}{additional arguments to `gsutil_rsync()`}
+
+\item{remove_local_volume}{logical, remove the local mount volume.}
+
+\item{paths}{character, identifying a local path}
+
+\item{pkgs}{character() packages to install from binary repository.}
+
+\item{lib}{character, file path to .libPaths()[1], primary location
+to install packages.}
+
+\item{lib.loc}{character() library locations to search for
+currently installed packages.}
+
+\item{...}{arguments for gsutil_rsync like, delete, recursive,
+parallel.}
 }
 \value{
 Exit status of function, `gsutil_rsync()`
+
+Exit status of function, `gsutil_rsync()`
+
+character with latest .libPaths()
+
+character, location of packages installed invisibly
 }
 \description{
 Localize a Google storage bucket to the container.
+
+Delocalize a Google storage bucket from the container.
+
+Add to .libPaths from a local path
+
+Install libraries and it's dependencies from a bucket.
 }
 \details{
 localize a bucket from the google cloud storage to a local
     path on the machine.
+
+delocalize the volume which is mounted with the help of
+    gsutil. This syncs the library a final time and then removes
+    the volume from the directory. Once a path is delocalized, it
+    has to be localized again to regain access.
+
+Add the synced google bucket path(which is now local) to
+    the library path .libPaths() so that R can see the hosted
+    libraries.
+
+Given a pre-existing google bucket with a host of
+    bioconductor packages built on a specific matching version of R
+    and Bioconductor, the user is able to install packages his
+    container using the 'install()` function from the google
+    bucket.
+
+eg:
+
+add_libpaths("/tmp/host-site-library")
+install(packages = c('BiocParallel', ='BiocGenerics'), lib = .libPaths()[1])
 }
 \examples{
 
 \dontrun{
    localize("gs://anvil-bioc", "/tmp/test-localize")
+}
+
+
+\dontrun{
+    delocalize("/tmp/test-localize/", "gs://anvil-bioc")
+}
+
+
+\dontrun{
+   add_libpaths('/tmp/my_library')
+   localize('gs://bioconductor-full-devel', '/tmp/my_library')
 }
 
 }
