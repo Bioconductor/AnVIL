@@ -1,19 +1,4 @@
-context("test_sync")
-
-test_that(".gcs_pathify works", {
-    expect_identical(.gcs_pathify("foo"), "gs://foo")
-    expect_identical(.gcs_pathify("gs://foo"), "gs://foo")
-
-    obs <- c("foo", "bar")
-    exp <- paste0("gs://", obs)
-    expect_identical(.gcs_pathify(obs), exp)
-    
-    obs1 <- c("gs://foo", "bar")
-    expect_identical(.gcs_pathify(obs1), exp)
-
-    obs2 <- c("gs://foo", "gs://bar")
-    expect_identical(.gcs_pathify(obs2), exp)
-})
+context("localize")
 
 test_that(".install_find_dependencies works", {
     dir.create(lib <- tempfile())
