@@ -9,6 +9,7 @@
     x
 }
 
+#' @export
 print.gsutil_result <-
     function(x, ...)
 {
@@ -139,6 +140,8 @@ NULL
 #' @return `gsutil_is_uri()`: a logical vector of length equal to
 #'     `source`, with `TRUE` values indicating that the `source` is a
 #'     character vector with corresponding element prefix `gs://`.
+#'
+#' @export
 gsutil_is_uri <-
     function(source)
 {
@@ -157,6 +160,8 @@ gsutil_is_uri <-
 #' @param ... additional arguments passed as-is to the `gsutil` subcommand.
 #'
 #' @return `gsutil_ls()`: `character()` listing of `source` content.
+#'
+#' @export
 gsutil_ls <-
     function(source = character(), ..., recursive = FALSE)
 {
@@ -187,6 +192,8 @@ gsutil_ls <-
 #' \dontrun{
 #'     gsutil_stat('gs://anvil-bioc', 'blah')
 #' }
+#'
+#' @export
 gsutil_stat <-
     function(source)
 {
@@ -228,6 +235,7 @@ gsutil_stat <-
 #'              "/tmp/foobar-copy", recursive=TRUE, parallel=TRUE)
 #' }
 #'
+#' @export
 gsutil_cp <-
     function(source, destination, ..., recursive = FALSE, parallel = TRUE)
 {
@@ -268,6 +276,7 @@ gsutil_cp <-
 #'    gsutil_rm('gs://anvil-bioc', 'foo-bar', recursive=TRUE, parallel=TRUE)
 #' }
 #'
+#' @export
 gsutil_rm <-
     function(source, ..., force = FALSE, recursive = FALSE, parallel = TRUE)
 {
@@ -331,6 +340,7 @@ gsutil_rm <-
 #'    gsutil_rsync('/tmp/local-copy', 'gs://anvil-bioc')
 #' }
 #'
+#' @export
 gsutil_rsync <-
     function(source, destination, ..., dry = TRUE,
              delete = FALSE, recursive = FALSE, parallel = TRUE)
@@ -373,6 +383,8 @@ gsutil_rsync <-
 #'     `"ls"` for help.
 #'
 #' @return `gsutil_help()`: `character()` help text for subcommand `cmd`.
+#'
+#' @export
 gsutil_help <-
     function(cmd = character(0))
 {

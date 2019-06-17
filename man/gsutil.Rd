@@ -4,8 +4,8 @@
 \alias{gsutil}
 \alias{gsutil_is_uri}
 \alias{gsutil_ls}
-\alias{gsutil_cp}
 \alias{gsutil_stat}
+\alias{gsutil_cp}
 \alias{gsutil_rm}
 \alias{gsutil_rsync}
 \alias{gsutil_help}
@@ -13,22 +13,25 @@
 \usage{
 gsutil_is_uri(source)
 
-gsutil_ls(source = character(), recursive = FALSE)
-
-gsutil_cp(source, destination, recursive = FALSE, parallel = TRUE)
+gsutil_ls(source = character(), ..., recursive = FALSE)
 
 gsutil_stat(source)
 
-gsutil_rm(source, recursive = FALSE, parallel = TRUE)
+gsutil_cp(source, destination, ..., recursive = FALSE, parallel = TRUE)
 
-gsutil_rsync(source, destination, delete = FALSE, recursive = FALSE,
+gsutil_rm(source, ..., force = FALSE, recursive = FALSE,
   parallel = TRUE)
+
+gsutil_rsync(source, destination, ..., dry = TRUE, delete = FALSE,
+  recursive = FALSE, parallel = TRUE)
 
 gsutil_help(cmd = character(0))
 }
 \arguments{
 \item{source}{`character(1)`, paths to a google storage bucket,
 possibly with wild-cards for file-level pattern matching.}
+
+\item{...}{additional arguments passed as-is to the `gsutil` subcommand.}
 
 \item{recursive}{`logical(1)`; perform operation recursively from
 `source`?. Default: `FALSE`.}
@@ -38,6 +41,13 @@ file system destination path.}
 
 \item{parallel}{`logical(1)`, perform parallel multi-threaded /
 multi-processing (default is `TRUE`).}
+
+\item{force}{`logical(1)`: continue silently despite errors when
+removing multiple objects. Default: `FALSE`.}
+
+\item{dry}{`logical(1)`, when `TRUE` (default), return the
+consequences of the operation without actually performing the
+operation.}
 
 \item{delete}{`logical(1)`, when `TRUE`, remove files in
 `destination` that are not in `source`. Exercise caution when
@@ -53,17 +63,18 @@ source and destination.}
     `source`, with `TRUE` values indicating that the `source` is a
     character vector with corresponding element prefix `gs://`.
 
-`gsutil_ls()`: exit status of `gsutil_ls()`, invisibly.
+`gsutil_ls()`: `character()` listing of `source` content.
+
+`gsutil_stat()`: `character()` description of status of
+    objects matching `source`.
 
 `gsutil_cp()`: exit status of `gsutil_cp()`, invisibly.
-
-`gsutil_stat()`: exit status of `gsutil_stat()`, invisibly.
 
 `gsutil_rm()`: exit status of `gsutil_rm()`, invisibly.
 
 `gsutil_rsync()`: exit status of `gsutil_rsync()`, invisbly.
 
-`gsutil_help()`: the help text, invisbly.
+`gsutil_help()`: `character()` help text for subcommand `cmd`.
 }
 \description{
 These are internal (non-exported) functions that
@@ -76,12 +87,13 @@ These are internal (non-exported) functions that
     or, if `source` is missing, all Cloud Storage buckets under
     your default project ID
 
+`gsutil_stat()`: print, as a side effect, the status
+    of a bucket, directory, or file.
+
 `gsutil_cp()`: copy contents of `source` to
     `destination`. At least one of `source` or `destination` must
     be Google cloud bucket; `source` can be a character vector with
     length greater than 1. Use `gsutil_help("cp")` for `gsutil` help.
-
-`gsutil_stat()`: status of a bucket, directory, or file.
 
 `gsutil_rm()`: remove contents of a google cloud
     bucket.
@@ -89,7 +101,7 @@ These are internal (non-exported) functions that
 `gsutil_rsync()`: synchronize a source and a destination.
 
 `gsutil_help()`: print 'man' page for the `gsutil`
-    command or subcommand. Note that only options documented on the
+    command or subcommand. Note that only commandes documented on this
     R help page are supported.
 }
 \details{
@@ -120,6 +132,11 @@ created.
 \examples{
 
 \dontrun{
+    gsutil_stat('gs://anvil-bioc', 'blah')
+}
+
+
+\dontrun{
    # for a single file
    gsutil_cp("gs://anvil-bioc/blah",
              "/tmp/blah-copy", recursive=FALSE, parallel=FALSE)
@@ -129,11 +146,6 @@ created.
 
    gsutil_cp("gs://anvil-bioc/foobar",
              "/tmp/foobar-copy", recursive=TRUE, parallel=TRUE)
-}
-
-
-\dontrun{
-    gsutil_stat('gs://anvil-bioc', 'blah')
 }
 
 
