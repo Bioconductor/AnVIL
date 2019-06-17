@@ -129,7 +129,7 @@ NULL
 }
 
 #' @rdname gsutil
-#' 
+#'
 #' @description `gsutil_is_uri()` returns TRUE if the `source`
 #'     argument has a `gs://` prefix.
 #'
@@ -223,13 +223,13 @@ gsutil_stat <-
 #'
 #'    # for a folder with all contents
 #'    # "/tmp/foobar-copy" must be an existing destination or must be created
-#' 
+#'
 #'    gsutil_cp("gs://anvil-bioc/foobar",
 #'              "/tmp/foobar-copy", recursive=TRUE, parallel=TRUE)
 #' }
 #'
 gsutil_cp <-
-    function(source, destination, recursive = FALSE, parallel = TRUE)
+    function(source, destination, ..., recursive = FALSE, parallel = TRUE)
 {
     stopifnot(
         .is_scalar_character(source), .is_scalar_character(destination),
@@ -241,6 +241,7 @@ gsutil_cp <-
         if (parallel) "-m", ## Makes the operations faster
         "cp", ## cp command
         if (recursive) "-r",
+        ...,
         source,
         destination
     )
@@ -251,6 +252,9 @@ gsutil_cp <-
 #'
 #' @description `gsutil_rm()`: remove contents of a google cloud
 #'     bucket.
+#'
+#' @param force `logical(1)`: continue silently despite errors when
+#'     removing multiple objects. Default: `FALSE`.
 #'
 #' @return `gsutil_rm()`: exit status of `gsutil_rm()`, invisibly.
 #'
@@ -265,24 +269,35 @@ gsutil_cp <-
 #' }
 #'
 gsutil_rm <-
-    function(source, recursive = FALSE, parallel = TRUE)
+    function(source, ..., force = FALSE, recursive = FALSE, parallel = TRUE)
 {
-    stopifnot(gsutil_is_uri(source))
+    stopifnot(
+        gsutil_is_uri(source),
+        .is_scalar_logical(force),
+        .is_scalar_logical(recursive),
+        .is_scalar_logical(parallel)
+    )
 
     ## remove
     args <- c(
         if (parallel) "-m",
         "rm",
+        if (force) "-f",
         if (recursive) "-r",
+        ...,
         source
     )
     .gsutil_do(args)
 }
 
 #' @rdname gsutil
-#' 
+#'
 #' @description `gsutil_rsync()`: synchronize a source and a destination.
-#' 
+#'
+#' @param dry `logical(1)`, when `TRUE` (default), return the
+#'     consequences of the operation without actually performing the
+#'     operation.
+#'
 #' @param delete `logical(1)`, when `TRUE`, remove files in
 #'     `destination` that are not in `source`. Exercise caution when
 #'     you use this option: it's possible to delete large amounts of
@@ -315,20 +330,21 @@ gsutil_rm <-
 #'    ## Rsync from local source to google bucket
 #'    gsutil_rsync('/tmp/local-copy', 'gs://anvil-bioc')
 #' }
-#' 
+#'
 gsutil_rsync <-
-    function(source, destination, delete = FALSE, recursive = FALSE,
-             parallel = TRUE)
+    function(source, destination, ..., dry = TRUE,
+             delete = FALSE, recursive = FALSE, parallel = TRUE)
 {
     stopifnot(
         .is_scalar_character(source), .is_scalar_character(destination),
         gsutil_is_uri(source) || gsutil_is_uri(destination),
+        .is_scalar_logical(dry),
         .is_scalar_logical(delete),
         .is_scalar_logical(recursive),
         .is_scalar_logical(parallel)
     )
     ## if destination is not a google cloud repo, and does not exist
-    if (!gsutil_is_uri(destination) && !dir.exists(destination))
+    if (!dry && !gsutil_is_uri(destination) && !dir.exists(destination))
         if (!dir.create(destination))
             stop("'gsutil_rsync()' failed to create '", destination, "'")
 
@@ -337,8 +353,10 @@ gsutil_rsync <-
         ##  -m option, to perform parallel (multi-threaded/multi-processing)
         if (parallel) "-m",
         "rsync",
+        if (dry) "-n",
         if (delete) "-d",
         if (recursive) "-r",
+        ...,
         source,
         destination
     )
