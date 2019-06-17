@@ -1,3 +1,23 @@
+##
+## gsutil_result constructor and methods
+##
+.gsutil_result <-
+    function(x)
+{
+    if (!is.null(x))
+        class(x) <- "gsutil_result"
+    x
+}
+
+print.gsutil_result <-
+    function(x, ...)
+{
+    if (is.null(x))
+        return()
+    cat(noquote(x), sep="\n")
+}
+
+
 #' @rdname gsutil
 #'
 #' @name gsutil
@@ -134,21 +154,49 @@ gsutil_is_uri <-
 #' @param recursive `logical(1)`; perform operation recursively from
 #'     `source`?. Default: `FALSE`.
 #'
-#' @return `gsutil_ls()`: exit status of `gsutil_ls()`, invisibly.
+#' @param ... additional arguments passed as-is to the `gsutil` subcommand.
+#'
+#' @return `gsutil_ls()`: `character()` listing of `source` content.
 gsutil_ls <-
-    function(source = character(), recursive = FALSE)
+    function(source = character(), ..., recursive = FALSE)
 {
     stopifnot(
-        .is_scalar_character(source, zchar = TRUE),
+        .is_character_0_or_1(source, zchar = TRUE),
         .is_scalar_logical(recursive)
     )
-    
+
     args <- c(
         "ls",
         if (recursive) "-r",
+        ...,
         source
     )
     .gsutil_do(args)
+}
+
+#' @rdname gsutil
+#'
+#' @description `gsutil_stat()`: print, as a side effect, the status
+#'     of a bucket, directory, or file.
+#'
+#' @return `gsutil_stat()`: `character()` description of status of
+#'     objects matching `source`.
+#'
+#' @examples
+#'
+#' \dontrun{
+#'     gsutil_stat('gs://anvil-bioc', 'blah')
+#' }
+gsutil_stat <-
+    function(source)
+{
+    stopifnot(gsutil_is_uri(source))
+
+    ## make path
+    path <- file.path(source)
+    args <- c("stat", path)
+    result <- .gsutil_do(args)
+    .gsutil_result(result)
 }
 
 #' @rdname gsutil
@@ -196,29 +244,6 @@ gsutil_cp <-
         source,
         destination
     )
-    .gsutil_do(args)
-}
-
-#' @rdname gsutil
-#'
-#' @description `gsutil_stat()`: status of a bucket, directory, or file.
-#'
-#' @return `gsutil_stat()`: exit status of `gsutil_stat()`, invisibly.
-#'
-#' @examples
-#'
-#' \dontrun{
-#'     gsutil_stat('gs://anvil-bioc', 'blah')
-#' }
-#'
-gsutil_stat <-
-    function(source)
-{
-    stopifnot(gsutil_is_uri(source))
-
-    ## make path
-    path <- file.path(source)
-    args <- c("stat", path)
     .gsutil_do(args)
 }
 
@@ -323,20 +348,19 @@ gsutil_rsync <-
 #' @rdname gsutil
 #'
 #' @description `gsutil_help()`: print 'man' page for the `gsutil`
-#'     command or subcommand. Note that only options documented on the
+#'     command or subcommand. Note that only commandes documented on this
 #'     R help page are supported.
 #'
 #' @param cmd `character()` (optional) command name, e.g.,
 #'     `"ls"` for help.
 #'
-#' @return `gsutil_help()`: the help text, invisbly.
+#' @return `gsutil_help()`: `character()` help text for subcommand `cmd`.
 gsutil_help <-
     function(cmd = character(0))
 {
     stopifnot(.is_character_0_or_1(cmd))
     result <- .gsutil_do(c("help", cmd))
-    cat(noquote(result), sep="\n")
-    invisible(result)
+    .gsutil_result(result)
 }
 
 ## FIXME: How to suppress warnings
