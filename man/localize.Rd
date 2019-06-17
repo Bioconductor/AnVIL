@@ -7,9 +7,9 @@
 \alias{install}
 \title{Copy packages, folders, or files to or from google buckets.}
 \usage{
-localize(source, destination)
+localize(source, destination, dry = TRUE)
 
-delocalize(source, destination, unlink = FALSE)
+delocalize(source, destination, unlink = FALSE, dry = TRUE)
 
 add_libpaths(paths)
 
@@ -21,6 +21,10 @@ system directory location.}
 
 \item{destination}{`character(1)`, a google storage bucket or local
 file system directory location.}
+
+\item{dry}{`logical(1)`, when `TRUE` (default), return the
+consequences of the operation without actually performing the
+operation.}
 
 \item{unlink}{`logical(1)` remove (unlink) the file or directory
 in `source`. Default: `FALSE`.}
@@ -47,8 +51,8 @@ currently installed packages. Default is all paths in
 `install()`: location of installed packages, invisibly.
 }
 \description{
-`localize()`: synchronize files from a Google storage
-    bucket (`source`) to the local file system
+`localize()`: recursively synchronizes files from a
+    Google storage bucket (`source`) to the local file system
     (`destination`). This command acts recursively on the `source`
     directory, and does not delete files in `destination` that are
     not in `source.

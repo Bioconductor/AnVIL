@@ -2,8 +2,8 @@
 #'
 #' @title Copy packages, folders, or files to or from google buckets.
 #'
-#' @description `localize()`: synchronize files from a Google storage
-#'     bucket (`source`) to the local file system
+#' @description `localize()`: recursively synchronizes files from a
+#'     Google storage bucket (`source`) to the local file system
 #'     (`destination`). This command acts recursively on the `source`
 #'     directory, and does not delete files in `destination` that are
 #'     not in `source.
@@ -13,6 +13,10 @@
 #'
 #' @param destination `character(1)`, a google storage bucket or local
 #'     file system directory location.
+#'
+#' @param dry `logical(1)`, when `TRUE` (default), return the
+#'     consequences of the operation without actually performing the
+#'     operation.
 #'
 #' @return `localize()`: exit status of function `gsutil_rsync()`.
 #'
@@ -24,15 +28,18 @@
 #'
 #' @export
 localize <-
-    function(source, destination)
+    function(source, destination, dry = TRUE)
 {
     stopifnot(
         .gsutil_is_uri(source),
-        .is_scalar_character(destination), dir.exists(destination)
+        .is_scalar_character(destination), dir.exists(destination),
+        .is_scalar_logical(dry)
     )
 
     ## FIXME: return destination paths of copied files
-    gsutil_rsync(source, destination, delete = FALSE, recursive = TRUE)
+    gsutil_rsync(
+        source, destination, delete = FALSE, recursive = TRUE, dry = dry
+    )
 }
 
 #' @rdname localize
@@ -56,17 +63,19 @@ localize <-
 #'
 #' @export
 delocalize <-
-    function(source, destination, unlink = FALSE)
+    function(source, destination, unlink = FALSE, dry = TRUE)
 {
     stopifnot(
         .is_scalar_character(source), file.exists(source),
-        .gsutil_is_uri(destination)
+        .gsutil_is_uri(destination),
+        .is_scalar_logical(unlink),
+        .is_scalar_logical(dry)
     )
     ## sync and optionally remove source
     result <- gsutil_rsync(
-        source, destination, delete = FALSE, recursive = TRUE
+        source, destination, delete = FALSE, recursive = TRUE, dry = dry
     )
-    if (unlink)
+    if (!dry && unlink)
         unlink(source, recursive=TRUE)
     result
 }
@@ -120,18 +129,15 @@ add_libpaths <-
 
 ## FIXME: buckets: don't use 'devel' for buckets, just version
 ## numbers; follow git convention for naming, e.g., RELEASE_3_10
-.choose_google_bucket <-
+.install_choose_google_bucket <-
     function()
 {
-    version <- sub(".", "_", BiocManager::version(), fixed=TRUE)
-    paste0("gs://bioconductor-full-RELEASE_", version)
-}
-
-.package_exists <-
-    function(google_bucket, pkgs = character())
-{
-    pkgs <- paste0(google_bucket, pkgs, sep="/")
-    vapply(pkgs, gsutil_stat, logical(1))
+    if (BiocManager:::isDevel()) {
+        "gs://bioconductor-full-devel"
+    } else {
+        version <- sub(".", "-", BiocManager::version(), fixed=TRUE)
+        paste0("gs://bioconductor-full-release-", version)
+    }
 }
 
 #' @rdname localize
@@ -160,34 +166,45 @@ add_libpaths <-
 install <-
     function(pkgs, lib = .libPaths()[1], lib.loc = NULL)
 {
-    ## Validate arguments
-    stopifnot(is.character(pkgs), !anyNA(pkgs))
+    stopifnot(
+        is.character(pkgs), !anyNA(pkgs)
+    )
 
     packages <- .install_find_dependencies(pkgs, lib = lib.loc)
     ## copy from bucket to .libPaths()[1]
     ## Assumes packages are already in the google bucket
 
-    google_bucket <- .choose_google_bucket()
-
-    ## TODO: check if the package is in the bucket, if not throw error
-    exist <- .package_exists(google_bucket, pkgs)
-    if (!all(exist))
-        stop(
-            "package(s) do not exist:\n",
-            "  '", paste(pkgs[!exist], collapse = "'\n  '" ), "'"
-        )
-
-    if (!.gsutil_is_uri(google_bucket))
-        stop("not a valid google bucket which exists in the GCP account")
+    google_bucket <- .install_choose_google_bucket()
     packages <- sprintf("%s/%s", google_bucket, packages)
+    exist <- gsutil_exists(packages)
+    if (!all(exist)) {
+        pkgs <- basename(packages)[!exist]
+        stop(
+            "bucket '", google_bucket, "'\n",
+            "  package(s) do not exist:\n",
+            "    '", paste(pkgs, collapse = "'\n    '" ), "'"
+        )
+    }
 
     ## if there is more than one "source" i.e package(s)
     ## FIXME: gsutil_rsync should be vectorized, including 0-length source
-    for (source in packages) {
-        gsutil_rsync(
-            source = source, destination = lib, delete = TRUE,
-            recursive = TRUE
-        )
-    }
+    message("installing from '", google_bucket, "'")
+    for (package in packages)
+        .install_1_package(package, lib)
+
     invisible(file.path(lib, basename(packages)))
+}
+
+.install_1_package <-
+    function(package, lib)
+{
+    message("  '", basename(package), "'...", appendLF = FALSE)
+    destination <- file.path(lib, basename(package))
+    if (!dir.exists(destination))
+        dir.create(destination)
+    gsutil_rsync(
+        source = package, destination = destination,
+        delete = TRUE, recursive = TRUE, dry = FALSE
+    )
+    message(" DONE")
 }
