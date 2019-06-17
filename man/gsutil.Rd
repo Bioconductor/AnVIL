@@ -2,7 +2,6 @@
 % Please edit documentation in R/gsutil.R
 \name{gsutil}
 \alias{gsutil}
-\alias{gsutil_is_uri}
 \alias{gsutil_ls}
 \alias{gsutil_stat}
 \alias{gsutil_cp}
@@ -11,8 +10,6 @@
 \alias{gsutil_help}
 \title{Internal functions to interact with the gsutil command line}
 \usage{
-gsutil_is_uri(source)
-
 gsutil_ls(source = character(), ..., recursive = FALSE)
 
 gsutil_stat(source)
@@ -59,10 +56,6 @@ source and destination.}
 `"ls"` for help.}
 }
 \value{
-`gsutil_is_uri()`: a logical vector of length equal to
-    `source`, with `TRUE` values indicating that the `source` is a
-    character vector with corresponding element prefix `gs://`.
-
 `gsutil_ls()`: `character()` listing of `source` content.
 
 `gsutil_stat()`: `character()` description of status of
@@ -79,9 +72,6 @@ source and destination.}
 \description{
 These are internal (non-exported) functions that
     invoke the `gsutil` command line utility.
-
-`gsutil_is_uri()` returns TRUE if the `source`
-    argument has a `gs://` prefix.
 
 `gsutil_ls()`: List contents of a google cloud bucket
     or, if `source` is missing, all Cloud Storage buckets under
@@ -107,14 +97,14 @@ These are internal (non-exported) functions that
 \details{
 The `gsutil` system command is required.  The search for
     `gsutil` starts with environment variable `GSUTIL_BINARY_PATH`
-    providing the full path to the binary.  On Windows, the search
+    providing the full path to the binary.  It then tries
+    `GCLOUD_INSTALL_PATH` (such that `gsutil` is located at
+    `$GCLOUD_INSTALL_PATH/bin/gsutil`). On Windows, the search
     tries to find `Google\\Cloud
     SDK\\google-cloud-sdk\\bin\\gsutil.cmd` in the `LOCAL APP
     DATA`, `Program Files`, and `Program Files (x86)` directories.
-    On linux / macOS, the search continues with `Sys.which()`,
-    followed by `GCLOUD_INSTALL_PATH` (such that `gsutil` is
-    located at `$GCLOUD_INSTALL_PATH/bin/gsutil`), and defaulting
-    to `~/google-cloud-sdk/bin/gsutil`.
+    On linux / macOS, the search continues with `Sys.which()` and
+    `~/google-cloud-sdk`.
 
 `gsutil_rsync()': To make `"gs://mybucket/data"` match the contents
 of the local directory `"data"` you could do:

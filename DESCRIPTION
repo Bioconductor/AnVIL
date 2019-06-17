@@ -9,7 +9,7 @@ Authors@R:
         "Nitesh", "Turaga", role = "aut",
         email = "Nitesh.Turaga@RoswellPark.org"
     ), person(
-       "Valerie", "Obenchain", role = "aut",
+       "Valerie", "Obenchain", role = "ctb",
        email = "Valerie.Obenchain@RoswellPark.org"
     ))
 Description: This package stub provides functionality to support
@@ -18,7 +18,6 @@ Description: This package stub provides functionality to support
     specialized package management, and algorithm development.
 License: Artistic-2.0
 Encoding: UTF-8
-Suggests: knitr, testthat
 Depends: dplyr
 Imports:
     utils, methods,
@@ -27,11 +26,13 @@ Imports:
     rapiclient (== 0.1.2.0002-4),
     tibble,
     BiocManager
+Suggests: knitr, testthat, withr
 Collate:
     utilities.R authenticate.R
     Service.R Services.R Leonardo.R Terra.R Dockstore.R Gen3.R
-    Response.R zzz.R
+    Response.R
     gsutil.R localize.R
+    zzz.R
 LazyData: true
 VignetteBuilder: knitr
 RoxygenNote: 6.1.1
