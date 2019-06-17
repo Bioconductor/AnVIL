@@ -83,7 +83,8 @@ NULL
     function(args)
 {
     gsutil <- .gsutil_find_binary()
-    withCallingHandlers(tryCatch({
+    wmsg <- NULL
+    value <- withCallingHandlers(tryCatch({
         system2(gsutil, args, stdout = TRUE, stderr = TRUE, wait=TRUE)
     }, error = function(err) {
         msg <- paste0(
@@ -92,13 +93,19 @@ NULL
         )
         stop(msg, call. = FALSE)
     }), warning = function(warn) {
-        msg <- paste0(
-            "'gsutil ", paste(args, collapse=" "), "' warning:\n",
-            "  ", conditionMessage(warn)
-        )
-        warning(msg, call. = FALSE)
+        wmsg <<- c(wmsg, conditionMessage(warn))
         invokeRestart("muffleWarning")
     })
+    if (!is.null(attr(value, "status"))) {
+        warning(
+            "'gsutil ", paste(args, collapse = " "), "'\n",
+            "  exit status: ", attr(value, "status"), "\n",
+            "  value: ", as.vector(value),
+            call. = FALSE
+        )
+        value <- invisible(NULL)
+    }
+    value
 }
 
 #' @rdname gsutil
