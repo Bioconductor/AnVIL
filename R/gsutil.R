@@ -248,7 +248,8 @@ gsutil_cp <-
         source,
         destination
     )
-    .gsutil_do(args)
+    result <- .gsutil_do(args)
+    .gsutil_result(result)
 }
 
 #' @rdname gsutil
@@ -291,7 +292,8 @@ gsutil_rm <-
         ...,
         source
     )
-    .gsutil_do(args)
+    result <- .gsutil_do(args)
+    .gsutil_result(result)
 }
 
 #' @rdname gsutil
@@ -365,7 +367,8 @@ gsutil_rsync <-
         source,
         destination
     )
-    .gsutil_do(args)
+    result <- .gsutil_do(args)
+    .gsutil_result(result)
 }
 
 #' @rdname gsutil
