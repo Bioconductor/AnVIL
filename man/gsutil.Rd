@@ -9,7 +9,7 @@
 \alias{gsutil_rm}
 \alias{gsutil_rsync}
 \alias{gsutil_help}
-\title{Internal functions to interact with the gsutil command line}
+\title{Interact with the gsutil command line utility}
 \usage{
 gsutil_ls(source = character(), ..., recursive = FALSE)
 
@@ -76,8 +76,9 @@ source and destination.}
 `gsutil_help()`: `character()` help text for subcommand `cmd`.
 }
 \description{
-These are internal (non-exported) functions that
-    invoke the `gsutil` command line utility.
+These functions that invoke the `gsutil` command line
+    utility. See the "Details:" section if you have gsutil
+    installed but the package cannot find it.
 
 `gsutil_ls()`: List contents of a google cloud bucket
     or, if `source` is missing, all Cloud Storage buckets under

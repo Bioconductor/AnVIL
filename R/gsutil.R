@@ -23,10 +23,11 @@ print.gsutil_result <-
 #'
 #' @name gsutil
 #'
-#' @title Internal functions to interact with the gsutil command line
+#' @title Interact with the gsutil command line utility
 #'
-#' @description These are internal (non-exported) functions that
-#'     invoke the `gsutil` command line utility.
+#' @description These functions that invoke the `gsutil` command line
+#'     utility. See the "Details:" section if you have gsutil
+#'     installed but the package cannot find it.
 #'
 #' @details The `gsutil` system command is required.  The search for
 #'     `gsutil` starts with environment variable `GSUTIL_BINARY_PATH`
