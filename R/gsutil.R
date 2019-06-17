@@ -146,8 +146,9 @@ NULL
 #'     your default project ID
 #'
 #'
-#' @param source `character(1)`, paths to a google storage bucket,
-#'     possibly with wild-cards for file-level pattern matching.
+#' @param source `character(1)`, (`character()` for `gsutil_ls()`,
+#'     `gsutil_exists()`) paths to a google storage bucket, possibly
+#'     with wild-cards for file-level pattern matching.
 #'
 #' @param recursive `logical(1)`; perform operation recursively from
 #'     `source`?. Default: `FALSE`.
@@ -161,7 +162,7 @@ gsutil_ls <-
     function(source = character(), ..., recursive = FALSE)
 {
     stopifnot(
-        .is_character_0_or_1(source, zchar = TRUE),
+        is.character(source), !anyNA(source),
         .is_scalar_logical(recursive)
     )
 
@@ -172,6 +173,40 @@ gsutil_ls <-
         source
     )
     .gsutil_do(args)
+}
+
+.gsutil_exists_1 <-
+    function(source, gsutil)
+{
+    args <- c("ls", source)
+    value <- withCallingHandlers({
+        system2(gsutil, args, stdout = TRUE, stderr = TRUE, wait=TRUE)
+    }, warning = function(w) {
+        invokeRestart("muffleWarning")
+    })
+    is.null(attr(value, "status"))
+}
+
+#' @rdname gsutil
+#'
+#' @description `gsutil_exists()`: check if the bucket or object
+#'     exists.
+#'
+#' @return `gsutil_exists()`: logical(1) TRUE if bucket or object exists.
+#'
+#' @export
+gsutil_exists <-
+    function(source)
+{
+    stopifnot(
+        is.character(source), !anyNA(source),
+        .gsutil_is_uri(source)
+    )
+
+    gsutil <- .gsutil_find_binary("gsutil")
+    stopifnot(file.exists(gsutil))      # bad environment variables
+
+    vapply(source, .gsutil_exists_1, logical(1), gsutil)
 }
 
 #' @rdname gsutil
@@ -194,9 +229,7 @@ gsutil_stat <-
 {
     stopifnot(.gsutil_is_uri(source))
 
-    ## make path
-    path <- file.path(source)
-    args <- c("stat", path)
+    args <- c("stat", source)
     result <- .gsutil_do(args)
     .gsutil_result(result)
 }
@@ -389,15 +422,4 @@ gsutil_help <-
     stopifnot(.is_character_0_or_1(cmd))
     result <- .gsutil_do(c("help", cmd))
     .gsutil_result(result)
-}
-
-## FIXME: How to suppress warnings
-.is_google_bucket <-
-    function(google_bucket)
-{
-    test <- try(
-        gsutil_ls(google_bucket, recursive=FALSE),
-        silent=TRUE
-    )
-    !inherits(test, "try-error")
 }

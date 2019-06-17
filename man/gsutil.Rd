@@ -3,6 +3,7 @@
 \name{gsutil}
 \alias{gsutil}
 \alias{gsutil_ls}
+\alias{gsutil_exists}
 \alias{gsutil_stat}
 \alias{gsutil_cp}
 \alias{gsutil_rm}
@@ -11,6 +12,8 @@
 \title{Internal functions to interact with the gsutil command line}
 \usage{
 gsutil_ls(source = character(), ..., recursive = FALSE)
+
+gsutil_exists(source)
 
 gsutil_stat(source)
 
@@ -25,8 +28,9 @@ gsutil_rsync(source, destination, ..., dry = TRUE, delete = FALSE,
 gsutil_help(cmd = character(0))
 }
 \arguments{
-\item{source}{`character(1)`, paths to a google storage bucket,
-possibly with wild-cards for file-level pattern matching.}
+\item{source}{`character(1)`, (`character()` for `gsutil_ls()`,
+`gsutil_exists()`) paths to a google storage bucket, possibly
+with wild-cards for file-level pattern matching.}
 
 \item{...}{additional arguments passed as-is to the `gsutil` subcommand.}
 
@@ -58,6 +62,8 @@ source and destination.}
 \value{
 `gsutil_ls()`: `character()` listing of `source` content.
 
+`gsutil_exists()`: logical(1) TRUE if bucket or object exists.
+
 `gsutil_stat()`: `character()` description of status of
     objects matching `source`.
 
@@ -76,6 +82,9 @@ These are internal (non-exported) functions that
 `gsutil_ls()`: List contents of a google cloud bucket
     or, if `source` is missing, all Cloud Storage buckets under
     your default project ID
+
+`gsutil_exists()`: check if the bucket or object
+    exists.
 
 `gsutil_stat()`: print, as a side effect, the status
     of a bucket, directory, or file.
