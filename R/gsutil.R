@@ -111,7 +111,11 @@ NULL
     args <- c('config', 'list', 'project')
     res <- system2(gcloud, args, stdout = TRUE, stderr=TRUE)[2]
     ## Get project
-    gsub("project = ", "", res)
+    project <- gsub("project = ", "", res)
+    ## stop if project is not available
+    if (!nzchar(project))
+        stop("billing project missing, check 'gcloud config list'.")
+    project
 }
 
 ## evaluate the gsutil command and arguments in `args`
