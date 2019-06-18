@@ -7,13 +7,15 @@
 \alias{install}
 \title{Copy packages, folders, or files to or from google buckets.}
 \usage{
-localize(source, destination, dry = TRUE)
+localize(source, destination, dry = TRUE, requester_pays = FALSE)
 
-delocalize(source, destination, unlink = FALSE, dry = TRUE)
+delocalize(source, destination, unlink = FALSE, dry = TRUE,
+  requester_pays = FALSE)
 
 add_libpaths(paths)
 
-install(pkgs, lib = .libPaths()[1], lib.loc = NULL)
+install(pkgs, lib = .libPaths()[1], lib.loc = NULL,
+  requester_pays = FALSE)
 }
 \arguments{
 \item{source}{`character(1)`, a google storage bucket or local file
@@ -25,6 +27,9 @@ file system directory location.}
 \item{dry}{`logical(1)`, when `TRUE` (default), return the
 consequences of the operation without actually performing the
 operation.}
+
+\item{requester_pays}{`logical(1)`; requester pays for operation
+from `source`. Default: `FALSE`.}
 
 \item{unlink}{`logical(1)` remove (unlink) the file or directory
 in `source`. Default: `FALSE`.}
@@ -89,6 +94,9 @@ currently installed packages. Default is all paths in
 \dontrun{
 add_libpaths("/tmp/host-site-library")
 install(packages = c('BiocParallel', 'BiocGenerics'))
+
+## Pay to use google buckets
+install(packages = c('Biocstrings', 'GenomicRanges'), requester_pays=TRUE)
 }
 
 }

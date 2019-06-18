@@ -102,16 +102,32 @@ NULL
     stop("failed to find 'gsutil' binary")
 }
 
+## Get gsutil billing project
+.gsutil_billing_project <-
+    function()
+{
+    ## Get gcloud binary
+    gcloud <- .gsutil_find_binary('gcloud')
+    args <- c('config', 'list', 'project')
+    res <- system2(gcloud, args, stdout = TRUE, stderr=TRUE)[2]
+    ## Get project
+    gsub("project = ", "", res)
+}
+
 ## evaluate the gsutil command and arguments in `args`
 .gsutil_do <-
-    function(args)
+    function(args, requester_pays = FALSE)
 {
     gsutil <- .gsutil_find_binary("gsutil")
     stopifnot(file.exists(gsutil))      # bad environment variables
 
     wmsg <- NULL
+    if (requester_pays)
+        args <- c("-u", .gsutil_billing_project(), args)
     value <- withCallingHandlers(tryCatch({
-        system2(gsutil, args, stdout = TRUE, stderr = TRUE, wait=TRUE)
+        system2(gsutil,
+                args,
+                stdout = TRUE, stderr = TRUE, wait=TRUE)
     }, error = function(err) {
         msg <- paste0(
             "'gsutil ", paste(args, collapse = " "), "' failed:\n",
@@ -154,13 +170,16 @@ NULL
 #' @param recursive `logical(1)`; perform operation recursively from
 #'     `source`?. Default: `FALSE`.
 #'
+#' @param requester_pays `logical(1)`; requester pays for operation
+#'     from `source`. Default: `FALSE`.
+#'
 #' @param ... additional arguments passed as-is to the `gsutil` subcommand.
 #'
 #' @return `gsutil_ls()`: `character()` listing of `source` content.
 #'
 #' @export
 gsutil_ls <-
-    function(source = character(), ..., recursive = FALSE)
+    function(source = character(), ..., recursive = FALSE, requester_pays = FALSE)
 {
     stopifnot(
         is.character(source), !anyNA(source),
@@ -173,13 +192,15 @@ gsutil_ls <-
         ...,
         source
     )
-    .gsutil_do(args)
+    .gsutil_do(args, requester_pays = requester_pays)
 }
 
 .gsutil_exists_1 <-
-    function(source, gsutil)
+    function(source, gsutil, requester_pays=FALSE)
 {
     args <- c("ls", source)
+    if (requester_pays)
+        args <- c("-u", .gsutil_billing_project(), args)
     value <- withCallingHandlers({
         system2(gsutil, args, stdout = TRUE, stderr = TRUE, wait=TRUE)
     }, warning = function(w) {
@@ -197,7 +218,7 @@ gsutil_ls <-
 #'
 #' @export
 gsutil_exists <-
-    function(source)
+    function(source, requester_pays=FALSE)
 {
     stopifnot(
         is.character(source), !anyNA(source),
@@ -207,7 +228,7 @@ gsutil_exists <-
     gsutil <- .gsutil_find_binary("gsutil")
     stopifnot(file.exists(gsutil))      # bad environment variables
 
-    vapply(source, .gsutil_exists_1, logical(1), gsutil)
+    vapply(source, .gsutil_exists_1, logical(1), gsutil, requester_pays=requester_pays)
 }
 
 #' @rdname gsutil
@@ -226,12 +247,12 @@ gsutil_exists <-
 #'
 #' @export
 gsutil_stat <-
-    function(source)
+    function(source, requester_pays = FALSE)
 {
     stopifnot(.gsutil_is_uri(source))
 
     args <- c("stat", source)
-    result <- .gsutil_do(args)
+    result <- .gsutil_do(args, requester_pays = requester_pays)
     .gsutil_result(result)
 }
 
@@ -266,7 +287,7 @@ gsutil_stat <-
 #'
 #' @export
 gsutil_cp <-
-    function(source, destination, ..., recursive = FALSE, parallel = TRUE)
+    function(source, destination, ..., recursive = FALSE, parallel = TRUE, requester_pays = FALSE)
 {
     stopifnot(
         .is_scalar_character(source), .is_scalar_character(destination),
@@ -282,7 +303,7 @@ gsutil_cp <-
         source,
         destination
     )
-    result <- .gsutil_do(args)
+    result <- .gsutil_do(args, requester_pays = requester_pays)
     .gsutil_result(result)
 }
 
@@ -374,7 +395,7 @@ gsutil_rm <-
 #' @export
 gsutil_rsync <-
     function(source, destination, ..., dry = TRUE,
-             delete = FALSE, recursive = FALSE, parallel = TRUE)
+             delete = FALSE, recursive = FALSE, parallel = TRUE, requester_pays = FALSE)
 {
     stopifnot(
         .is_scalar_character(source), .is_scalar_character(destination),
@@ -401,7 +422,7 @@ gsutil_rsync <-
         source,
         destination
     )
-    result <- .gsutil_do(args)
+    result <- .gsutil_do(args, requester_pays = requester_pays)
     .gsutil_result(result)
 }
 

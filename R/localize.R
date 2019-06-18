@@ -18,6 +18,9 @@
 #'     consequences of the operation without actually performing the
 #'     operation.
 #'
+#' @param requester_pays `logical(1)`; requester pays for operation
+#'     from `source`. Default: `FALSE`.
+#'
 #' @return `localize()`: exit status of function `gsutil_rsync()`.
 #'
 #' @examples
@@ -28,7 +31,7 @@
 #'
 #' @export
 localize <-
-    function(source, destination, dry = TRUE)
+    function(source, destination, dry = TRUE, requester_pays = FALSE)
 {
     stopifnot(
         .gsutil_is_uri(source),
@@ -38,7 +41,8 @@ localize <-
 
     ## FIXME: return destination paths of copied files
     gsutil_rsync(
-        source, destination, delete = FALSE, recursive = TRUE, dry = dry
+        source, destination, delete = FALSE, recursive = TRUE, dry = dry,
+        requester_pays = requester_pays
     )
 }
 
@@ -63,7 +67,7 @@ localize <-
 #'
 #' @export
 delocalize <-
-    function(source, destination, unlink = FALSE, dry = TRUE)
+    function(source, destination, unlink = FALSE, dry = TRUE, requester_pays = FALSE)
 {
     stopifnot(
         .is_scalar_character(source), file.exists(source),
@@ -73,7 +77,8 @@ delocalize <-
     )
     ## sync and optionally remove source
     result <- gsutil_rsync(
-        source, destination, delete = FALSE, recursive = TRUE, dry = dry
+        source, destination, delete = FALSE, recursive = TRUE, dry = dry,
+        requester_pays = requester_pays
     )
     if (!dry && unlink)
         unlink(source, recursive=TRUE)
@@ -160,11 +165,14 @@ add_libpaths <-
 #' \dontrun{
 #' add_libpaths("/tmp/host-site-library")
 #' install(packages = c('BiocParallel', 'BiocGenerics'))
+#'
+#' ## Pay to use google buckets
+#' install(packages = c('Biocstrings', 'GenomicRanges'), requester_pays=TRUE)
 #' }
 #'
 #' @export
 install <-
-    function(pkgs, lib = .libPaths()[1], lib.loc = NULL)
+    function(pkgs, lib = .libPaths()[1], lib.loc = NULL, requester_pays = FALSE)
 {
     stopifnot(
         is.character(pkgs), !anyNA(pkgs)
@@ -176,7 +184,7 @@ install <-
 
     google_bucket <- .install_choose_google_bucket()
     packages <- sprintf("%s/%s", google_bucket, packages)
-    exist <- gsutil_exists(packages)
+    exist <- gsutil_exists(packages, requester_pays=requester_pays)
     if (!all(exist)) {
         pkgs <- basename(packages)[!exist]
         stop(
@@ -190,13 +198,13 @@ install <-
     ## FIXME: gsutil_rsync should be vectorized, including 0-length source
     message("installing from '", google_bucket, "'")
     for (package in packages)
-        .install_1_package(package, lib)
+        .install_1_package(package, lib, requester_pays = requester_pays)
 
     invisible(file.path(lib, basename(packages)))
 }
 
 .install_1_package <-
-    function(package, lib)
+    function(package, lib, requester_pays = FALSE)
 {
     message("  '", basename(package), "'...", appendLF = FALSE)
     destination <- file.path(lib, basename(package))
@@ -204,7 +212,7 @@ install <-
         dir.create(destination)
     gsutil_rsync(
         source = package, destination = destination,
-        delete = TRUE, recursive = TRUE, dry = FALSE
+        delete = TRUE, recursive = TRUE, dry = FALSE, requester_pays = requester_pays
     )
     message(" DONE")
 }

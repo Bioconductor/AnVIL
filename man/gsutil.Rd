@@ -11,19 +11,21 @@
 \alias{gsutil_help}
 \title{Interact with the gsutil command line utility}
 \usage{
-gsutil_ls(source = character(), ..., recursive = FALSE)
+gsutil_ls(source = character(), ..., recursive = FALSE,
+  requester_pays = FALSE)
 
-gsutil_exists(source)
+gsutil_exists(source, requester_pays = FALSE)
 
-gsutil_stat(source)
+gsutil_stat(source, requester_pays = FALSE)
 
-gsutil_cp(source, destination, ..., recursive = FALSE, parallel = TRUE)
+gsutil_cp(source, destination, ..., recursive = FALSE, parallel = TRUE,
+  requester_pays = FALSE)
 
 gsutil_rm(source, ..., force = FALSE, recursive = FALSE,
   parallel = TRUE)
 
 gsutil_rsync(source, destination, ..., dry = TRUE, delete = FALSE,
-  recursive = FALSE, parallel = TRUE)
+  recursive = FALSE, parallel = TRUE, requester_pays = FALSE)
 
 gsutil_help(cmd = character(0))
 }
@@ -36,6 +38,9 @@ with wild-cards for file-level pattern matching.}
 
 \item{recursive}{`logical(1)`; perform operation recursively from
 `source`?. Default: `FALSE`.}
+
+\item{requester_pays}{`logical(1)`; requester pays for operation
+from `source`. Default: `FALSE`.}
 
 \item{destination}{`character(1)`, google cloud bucket or local
 file system destination path.}
