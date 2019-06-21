@@ -52,15 +52,11 @@ NULL
         value
 }
 
+
 ## Get gsutil binary on user's machine for windows/linux/mac
-.gsutil_find_binary <-
+.gcloud_sdk_find_binary <-
     function(binary_name)
 {
-    ## Path to find gsutil binary
-    user_path <- .gsutil_getenv("GSUTIL_BINARY_PATH")
-    if (!is.null(user_path))
-        return(normalizePath(user_path))
-
     user_path <- .gsutil_getenv("GCLOUD_INSTALL_PATH")
     if (!is.null(user_path))
         return(file.path(normalizePath(user_path), "bin", binary_name))
@@ -99,15 +95,16 @@ NULL
             return(normalizePath(path()))
         }
     }
-    stop("failed to find 'gsutil' binary")
+    stop("failed to find '", binary_name, "' binary")
 }
 
+
 ## Get gsutil billing project
-.gsutil_billing_project <-
+.gcloud_billing_project <-
     function()
 {
     ## Get gcloud binary
-    gcloud <- .gsutil_find_binary('gcloud')
+    gcloud <- .gcloud_sdk_find_binary('gcloud')
     args <- c('config', 'list', 'project', '--format=json')
     res <- system2(gcloud, args, stdout = TRUE, stderr=TRUE)
     ## Get project
@@ -122,12 +119,12 @@ NULL
 .gsutil_do <-
     function(args, requester_pays = FALSE)
 {
-    gsutil <- .gsutil_find_binary("gsutil")
+    gsutil <- .gcloud_sdk_find_binary("gsutil")
     stopifnot(file.exists(gsutil))      # bad environment variables
 
     wmsg <- NULL
     if (requester_pays)
-        args <- c("-u", .gsutil_billing_project(), args)
+        args <- c("-u", .gcloud_billing_project(), args)
     value <- withCallingHandlers(tryCatch({
         system2(gsutil, args, stdout = TRUE, stderr = TRUE, wait=TRUE)
     }, error = function(err) {
@@ -203,7 +200,7 @@ gsutil_ls <-
 {
     args <- c("ls", source)
     if (requester_pays)
-        args <- c("-u", .gsutil_billing_project(), args)
+        args <- c("-u", .gcloud_billing_project(), args)
     value <- withCallingHandlers({
         system2(gsutil, args, stdout = TRUE, stderr = TRUE, wait=TRUE)
     }, warning = function(w) {
