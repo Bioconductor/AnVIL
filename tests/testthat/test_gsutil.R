@@ -8,11 +8,24 @@ test_that(".gsutil_find_binary() works", {
         expect_identical(object, normalizePath(tempdir()))
     })
 
+    with_envvar(c(GSUTIL_BINARY_PATH=tempdir()), {
+        object <- .gsutil_find_binary("gcloud")
+        expect_identical(object, normalizePath(tempdir()))
+    })
+
     with_envvar(c(GCLOUD_INSTALL_PATH=tempdir()), {
         object <- .gsutil_find_binary("gsutil")
         expect_identical(
             object,
             file.path(normalizePath(tempdir()), "bin", "gsutil")
+        )
+    })
+
+    with_envvar(c(GCLOUD_INSTALL_PATH=tempdir()), {
+        object <- .gsutil_find_binary("gcloud")
+        expect_identical(
+            object,
+            file.path(normalizePath(tempdir()), "bin", "gcloud")
         )
     })
 })
