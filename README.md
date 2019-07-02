@@ -31,7 +31,7 @@ Some services require client keys, in
   downward-facing arrow to the right) the "Bioconductor-AnVIL"
   credentials to a file `inst/service/{leonardo,terra}/auth.json`.
 
-- For dockstore, visit [docstore.org/accounts][] and put your token in
+- For dockstore, visit [dockstore.org/accounts][] and put your token in
   `inst/service/dockstore/auth.json` file like
 
     ```
