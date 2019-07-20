@@ -1,6 +1,6 @@
 Package: AnVIL
 Title: Bioconductor on the AnVIL compute environment
-Version: 0.0.13
+Version: 0.0.14
 Authors@R: 
     c(person(
         "Martin", "Morgan", role = c("aut", "cre"),
@@ -23,7 +23,7 @@ Imports:
     utils, methods,
     futile.logger,
     jsonlite, httr,
-    rapiclient (== 0.1.2.0002-4),
+    rapiclient (== 0.1.2.3-1),
     tibble,
     BiocManager
 Suggests: knitr, testthat, withr
