@@ -8,10 +8,16 @@
 #' @format NULL
 #'
 #' @export
-gen3_fence <- Service(
-    "gen3/fence", "FIXME:service_path",
-    api_url = "https://raw.githubusercontent.com/uc-cdis/fence/master/openapis/swagger.yaml"
-)
+gen3_fence <- NULL
+
+Gen3Fence <-
+    function()
+{
+    Service(
+        "gen3/fence", "FIXME:service_path",
+        api_url = "https://raw.githubusercontent.com/uc-cdis/fence/master/openapis/swagger.yaml"
+    )
+}
 
 #' @rdname Services
 #'
@@ -20,10 +26,16 @@ gen3_fence <- Service(
 #' @format NULL
 #'
 #' @export
-gen3_indexd <- Service(
-    "gen3/indexd", "FIXME:service_path",
-    api_url = "https://raw.githubusercontent.com/uc-cdis/indexd/master/openapis/swagger.yaml"
-)
+gen3_indexd <- NULL
+
+Gen3Indexd <-
+    function()
+{
+    Service(
+        "gen3/indexd", "FIXME:service_path",
+        api_url = "https://raw.githubusercontent.com/uc-cdis/indexd/master/openapis/swagger.yaml"
+    )
+}
 
 #' @rdname Services
 #'
@@ -33,10 +45,16 @@ gen3_indexd <- Service(
 #' @format NULL
 #'
 #' @export
-gen3_sheepdog <- Service(
-    "gen3/sheepdog", "FIXME:service_path",
-    api_url = "https://raw.githubusercontent.com/uc-cdis/sheepdog/master/openapi/swagger.yml"
-)
+gen3_sheepdog <- NULL
+
+Gen3Sheepdog <-
+    function()
+{
+    Service(
+        "gen3/sheepdog", "FIXME:service_path",
+        api_url = "https://raw.githubusercontent.com/uc-cdis/sheepdog/master/openapi/swagger.yml"
+    )
+}
 
 #' @rdname Services
 #'
@@ -46,7 +64,13 @@ gen3_sheepdog <- Service(
 #' @format NULL
 #'
 #' @export
-gen3_peregrine <- Service(
-    "gen3/peregrine", "FIXME:service_path",
-    api_url = "https://raw.githubusercontent.com/uc-cdis/peregrine/master/openapis/swagger.yaml"
-)
+gen3_peregrine <- NULL
+
+Gen3Peregrine <-
+    function()
+{
+    Service(
+        "gen3/peregrine", "FIXME:service_path",
+        api_url = "https://raw.githubusercontent.com/uc-cdis/peregrine/master/openapis/swagger.yaml"
+    )
+}

@@ -45,17 +45,20 @@ authenticate_ok <-
 authenticate <-
     function(service, cache = getOption("httr_oauth_cache"))
 {
+    interactive() || return(invisible(NULL))
     stopifnot(.is_scalar_character(service))
 
-    path <- authenticate_path(service)
-    (interactive() && file.exists(path)) || return(invisible(NULL))
+    access <- list(
+        client_id = getOption("anvil_client_id"),
+        client_secret = getOption("anvil_client_secret")
+    )
 
-    access <- read_json(path)
-    ## FIXME: auth.json in leonardo has 'installed' element, terra
-    ## does not. Probably this is a mis-understanding about how
-    ## authentication works
-    if ("installed" %in% names(access))
-        access <- access$installed
+    path <- authenticate_path(service)
+    if (file.exists(path)) {
+        access <- read_json(path)
+        if ("installed" %in% names(access))
+            access <- access$installed
+    }
 
     app <- oauth_app(
         "Leonardo",
