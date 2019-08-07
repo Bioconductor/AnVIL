@@ -28,7 +28,7 @@ helper functions `str()` and `flatten()`, as well as
 Some services require client keys, in
 `inst/service/<name>/auth.json`.
 
-- For dockstore, visit [dockstore.org/accounts][] and put your token in
+- For dockstore, visit [dockstore.org/accounts][8] and put your token in
   `inst/service/dockstore/auth.json` file like
 
     ```
@@ -39,4 +39,4 @@ Some services require client keys, in
 
 [6]: https://cran.r-project.org/package=rapiclient
 [7]: https://github.com/Bioconductor/AnVIL_rapiclient
-[docstore.org/accounts]: https://dockstore.org/accounts
+[8]: https://dockstore.org/accounts
