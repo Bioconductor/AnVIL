@@ -5,7 +5,7 @@
 \title{RESTful service constructor}
 \usage{
 Service(service, host, config = httr::config(), authenticate = TRUE,
-  api_url = character(), package = "AnVIL")
+  api_url = character(), package = "AnVIL", schemes = "https")
 }
 \arguments{
 \item{service}{character(1) The `Service` class name, e.g., `"terra"`.}
@@ -23,6 +23,9 @@ service file 'auth.json' in the specified package?}
 
 \item{package}{character(1) (default `AnVIL`) The package where
 'api.json' yaml and (optionally) 'auth.json' files are located}
+
+\item{schemes}{character(1) (default 'https') Specifies the
+transfer protocol supported by the API service}
 }
 \value{
 An object of class \code{Service}.

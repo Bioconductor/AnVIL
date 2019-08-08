@@ -55,6 +55,9 @@ setOldClass("request")
 #' @param package character(1) (default `AnVIL`) The package where
 #'     'api.json' yaml and (optionally) 'auth.json' files are located
 #'
+#' @param schemes character(1) (default 'https') Specifies the
+#'     transfer protocol supported by the API service
+#'
 #' @details This function creates a RESTful interface to a service
 #'     provided by a host, e.g., "api.firecloud.org". The function
 #'     requires an OpenAPI `.json` or `.yaml` specifcation as well as
@@ -81,7 +84,7 @@ setOldClass("request")
 Service <-
     function(
         service, host, config = httr::config(), authenticate = TRUE,
-        api_url = character(), package = "AnVIL")
+        api_url = character(), package = "AnVIL", schemes = "https")
 {
     stopifnot(
         .is_scalar_character(service),
@@ -110,7 +113,7 @@ Service <-
             warning(w)
         invokeRestart("muffleWarning")
     })
-    api$schemes <- "https"
+    api$schemes <- schemes
     api$host <- host
     .Service(service = service, config = config, api = api)
 }
