@@ -1,3 +1,4 @@
 \.httr-oauth$
 ^.*\.Rproj$
 ^\.Rproj\.user$
+^\.httr-oauth$
