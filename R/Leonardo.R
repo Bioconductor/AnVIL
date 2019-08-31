@@ -8,8 +8,6 @@
 #' @format NULL
 #'
 #' @export
-leonardo <- NULL # assigned in .onLoad, when credentials are available
-
 Leonardo <-
     function()
 {

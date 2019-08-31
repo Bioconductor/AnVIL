@@ -9,8 +9,4 @@
     )
     opts <- opts[!names(opts) %in% names(options())]
     options(opts)
-
-    interactive() && { leonardo <<- Leonardo(); TRUE }
-    interactive() && { terra <<- Terra(); TRUE }
-    authenticate_ok("dockstore") && { dockstore <<- Dockstore(); TRUE }
 }

@@ -8,8 +8,6 @@
 #' @format NULL
 #'
 #' @export
-gen3_fence <- NULL
-
 Gen3Fence <-
     function()
 {
@@ -26,8 +24,6 @@ Gen3Fence <-
 #' @format NULL
 #'
 #' @export
-gen3_indexd <- NULL
-
 Gen3Indexd <-
     function()
 {
@@ -45,8 +41,6 @@ Gen3Indexd <-
 #' @format NULL
 #'
 #' @export
-gen3_sheepdog <- NULL
-
 Gen3Sheepdog <-
     function()
 {
@@ -64,8 +58,6 @@ Gen3Sheepdog <-
 #' @format NULL
 #'
 #' @export
-gen3_peregrine <- NULL
-
 Gen3Peregrine <-
     function()
 {

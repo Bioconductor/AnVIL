@@ -14,18 +14,18 @@
 \alias{schemas}
 \alias{tags}
 \alias{$,Service-method}
-\alias{leonardo}
-\alias{terra}
+\alias{Leonardo}
+\alias{Terra}
 \alias{Terra-class}
 \alias{operations,Terra-method}
 \alias{schemas,Terra-method}
-\alias{dockstore}
+\alias{Dockstore}
 \alias{Dockstore-class}
 \alias{operations,Dockstore-method}
-\alias{gen3_fence}
-\alias{gen3_indexd}
-\alias{gen3_sheepdog}
-\alias{gen3_peregrine}
+\alias{Gen3Fence}
+\alias{Gen3Indexd}
+\alias{Gen3Sheepdog}
+\alias{Gen3Peregrine}
 \title{RESTful services useful for AnVIL developers}
 \usage{
 empty_object
@@ -38,19 +38,19 @@ tags(x, .tags)
 
 \S4method{$}{Service}(x, name)
 
-leonardo
+Leonardo()
 
-terra
+Terra()
 
-dockstore
+Dockstore()
 
-gen3_fence
+Gen3Fence()
 
-gen3_indexd
+Gen3Indexd()
 
-gen3_sheepdog
+Gen3Sheepdog()
 
-gen3_peregrine
+Gen3Peregrine()
 }
 \arguments{
 \item{x}{A `Service` instance, usually a singleton provided by the

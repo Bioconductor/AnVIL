@@ -22,8 +22,6 @@
 #' @format NULL
 #'
 #' @export
-dockstore <- NULL
-
 Dockstore <-
     function()
 {
