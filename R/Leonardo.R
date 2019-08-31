@@ -2,7 +2,7 @@
 
 #' @rdname Services
 #'
-#' @return `leonardo` represents the API of the Leonard container
+#' @return `Leonardo()` creates the API of the Leonard container
 #'     deployment service at https://leonardo.dev.anvilproject.org/.
 #'
 #' @format NULL

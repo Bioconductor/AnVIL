@@ -67,29 +67,29 @@ package and documented on this page, e.g., `leonardo` or
     arguments in function calls expecting the empty json object
     `\{\}`.
 
-`leonardo` represents the API of the Leonard container
+`Leonardo()` creates the API of the Leonard container
     deployment service at https://leonardo.dev.anvilproject.org/.
 
-`terra` represents the API of the Terra cloud computational
+`Terra()` creates the API of the Terra cloud computational
     environemnt at https://api.firecloud.org/.
 
-`dockstore` represents the API of the Dockstore platform to
+`Dockstore()` represents the API of the Dockstore platform to
     share Docker-based tools in CWL or WDL or Nextflow at
     https://dockstore.org
 
 `gen3_*` APIs are not fully implemented, because a service
     endpoint has not been identifiied.
 
-    `gen3_fence` provides authentication at
+    `Gen3Fence()` returns the authentication API at
     https://raw.githubusercontent.com/uc-cdis/fence/master/openapis/swagger.yaml
 
-`gen3_indexd` provides an indexing service documented at
+`Gen3Indexd()` returns the indexing service API documented at
     https://raw.githubusercontent.com/uc-cdis/indexd/master/openapis/swagger.yaml
 
-`gen3_sheepdog` provides submission services at
+`Gen3Sheepdog` returns the submission services API at
     https://raw.githubusercontent.com/uc-cdis/sheepdog/master/openapi/swagger.yml
 
-`gen3_peregrine` provides graphQL query services at
+`Gen3Peregrine` returns the graphQL query services API at
     https://raw.githubusercontent.com/uc-cdis/peregrine/master/openapis/swagger.yaml
 }
 \description{

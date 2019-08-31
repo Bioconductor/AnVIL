@@ -9,7 +9,7 @@
 #'
 #' @aliases Terra-class operations,Terra-method schemas,Terra-method
 #'
-#' @return `terra` represents the API of the Terra cloud computational
+#' @return `Terra()` creates the API of the Terra cloud computational
 #'     environemnt at https://api.firecloud.org/.
 #' 
 #' @format NULL

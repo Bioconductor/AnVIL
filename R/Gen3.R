@@ -3,7 +3,7 @@
 #' @return `gen3_*` APIs are not fully implemented, because a service
 #'     endpoint has not been identifiied.
 #'
-#'     `gen3_fence` provides authentication at
+#'     `Gen3Fence()` returns the authentication API at
 #'     https://raw.githubusercontent.com/uc-cdis/fence/master/openapis/swagger.yaml
 #' @format NULL
 #'
@@ -19,7 +19,7 @@ Gen3Fence <-
 
 #' @rdname Services
 #'
-#' @return `gen3_indexd` provides an indexing service documented at
+#' @return `Gen3Indexd()` returns the indexing service API documented at
 #'     https://raw.githubusercontent.com/uc-cdis/indexd/master/openapis/swagger.yaml
 #' @format NULL
 #'
@@ -35,7 +35,7 @@ Gen3Indexd <-
 
 #' @rdname Services
 #'
-#' @return `gen3_sheepdog` provides submission services at
+#' @return `Gen3Sheepdog` returns the submission services API at
 #'     https://raw.githubusercontent.com/uc-cdis/sheepdog/master/openapi/swagger.yml
 #'
 #' @format NULL
@@ -52,7 +52,7 @@ Gen3Sheepdog <-
 
 #' @rdname Services
 #'
-#' @return `gen3_peregrine` provides graphQL query services at
+#' @return `Gen3Peregrine` returns the graphQL query services API at
 #'     https://raw.githubusercontent.com/uc-cdis/peregrine/master/openapis/swagger.yaml
 #'
 #' @format NULL
