@@ -26,7 +26,10 @@ NULL
 #'     are the unlisted second and more-nested elements.
 #'
 #' @examples
-#' \donttest{leonardo$listClusters() %>% flatten()}
+#' \donttest{
+#' leonardo <- Leonardo()
+#' leonardo$listClusters() %>% flatten()
+#' }
 #'
 #' @export
 setGeneric("flatten", function(x) standardGeneric("flatten"))

@@ -66,7 +66,7 @@ setMethod(
 #' @param .tags optional character() of tags to use to filter operations.
 #'
 #' @examples
-#' terra
+#' terra <- Terra()
 #' tags(terra)
 #' tags(terra, "Billing")
 #'

@@ -98,7 +98,7 @@ RESTful services useful for AnVIL developers
 \examples{
 empty_object
 
-terra
+terra <- Terra()
 tags(terra)
 tags(terra, "Billing")
 

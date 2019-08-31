@@ -1,6 +1,6 @@
 Package: AnVIL
 Title: Bioconductor on the AnVIL compute environment
-Version: 0.0.18
+Version: 0.0.19
 Authors@R: 
     c(person(
         "Martin", "Morgan", role = c("aut", "cre"),
@@ -18,7 +18,7 @@ Description: This package stub provides functionality to support
     specialized package management, and algorithm development.
 License: Artistic-2.0
 Encoding: UTF-8
-Depends: dplyr
+Depends: R (>= 3.5.0), dplyr
 Imports:
     utils, methods,
     futile.logger,

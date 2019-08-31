@@ -39,7 +39,10 @@ flatten(x)
 Process service responses to tibble and other data structures.
 }
 \examples{
-\donttest{leonardo$listClusters() \%>\% flatten()}
+\donttest{
+leonardo <- Leonardo()
+leonardo$listClusters() \%>\% flatten()
+}
 
 \donttest{leonardo$getSystemStatus() \%>\% str()}
 
