@@ -90,8 +90,14 @@ cataloguing for the AnVIL project.
 library(AnVIL)
 ```
 
-An object called 'dockstore' is defined and will be
-used to process API requests.  Groups of API components are
+Create an object 'dockstore' representing the service and to be
+used to process API requests.  
+
+```{r dockstore}
+dockstore <- Dockstore()
+```
+
+Groups of API components are
 obtained via `tags()`.
 
 ```{r getmeths}
