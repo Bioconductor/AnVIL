@@ -41,72 +41,65 @@ print.gsutil_result <-
 #'     `~/google-cloud-sdk`.
 NULL
 
-## environment variable or NULL, allowing for default `unset` value
+## option or environment variable or NULL, allowing for default
+## `unset` value
 .gsutil_getenv <-
     function(option, unset = NA)
 {
+    value <- getOption(option, unset)
+    if (!is.na(value))
+        return(value)
+
     value <- Sys.getenv(option, unset = unset)
-    if (is.na(value))
-        NULL
-    else
-        value
+    if (!is.na(value))
+        return(value)
+
+    return(NULL)
 }
 
 ## Get gsutil binary on user's machine for windows/linux/mac
-.gsutil_find_binary <-
+.gcloud_find_binary <-
     function(binary_name)
 {
-    ## Path to find gsutil binary
-    user_path <- .gsutil_getenv("GSUTIL_BINARY_PATH")
+    user_path <- .gsutil_getenv("GCLOUD_SDK_PATH")
     if (!is.null(user_path))
-        return(normalizePath(user_path))
+        return(normalizePath(file.path(user_path, "bin", binary_name)))
 
-    user_path <- .gsutil_getenv("GCLOUD_INSTALL_PATH")
-    if (!is.null(user_path))
-        return(file.path(normalizePath(user_path), "bin", binary_name))
+    bin <- Sys.which(binary_name)
+    if (nzchar(bin))
+        return(bin)
 
     ## Discover binary automatically if user doesn't give path
-    bin_path <-
-        if (.Platform$OS.type == "windows") {
-            gsk_binary_path <- file.path(
-                "Google", "Cloud SDK", "google-cloud-sdk", "bin",
-                paste(binary_name, "cmd", sep = ".")
-            )
-            c(function() {
-                appdata <- normalizePath(
-                    Sys.getenv("localappdata"), winslash = "/"
-                )
-                file.path(appdata, gsk_binary_path)
-            },
-            function() {
-                file.path(Sys.getenv("ProgramFiles"), gsk_binary_path)
-            },
-            function() {
-                file.path(Sys.getenv("ProgramFiles(x86)"), gsk_binary_path)
-            })
-        } else {                        # linux / mac
-            c(function() {
-                Sys.which(binary_name)
-            },
-            function() {
-                gcloud_install_path <- "~/google-cloud-sdk"
-                file.path(gcloud_install_path, "bin", binary_name)
-            })
-        }
-    ## Return appropriate path for 'gsutil'
-    for (path in bin_path) {
-        if (file.exists(path())) {
-            return(normalizePath(path()))
-        }
+    if (.Platform$OS.type == "windows") {
+        appdata <- normalizePath(Sys.getenv("localappdata"), winslash = "/")
+        sdk_path <- file.path("Google", "Cloud SDK", "google-cloud-sdk", "bin")
+        binary_name <- paste(binary, "cmd", sep = ".")
+        bin_paths <- c(
+            file.path(appdata, sdk_path, binary_name),
+            file.path(Sys.getenv("ProgramFiles"), sdk_path, binary_name),
+            file.path(Sys.getenv("ProgramFiles(x86)"), sdk_path, binary_name)
+        )
+    } else {
+        bin_paths <- file.path("~", "google-cloud-sdk", "bin", binary_name)
     }
-    stop("failed to find 'gsutil' binary")
+
+    ## Return appropriate path for 'gsutil'
+    for (path in bin_paths)
+        if (file.exists(path))
+            return(path)
+
+    stop(
+        "failed to find '", binary_name, "' binary; ",
+        "set option or environment variable 'GCLOUD_SDK_PATH'?",
+        call. = FALSE
+    )
 }
 
 ## evaluate the gsutil command and arguments in `args`
 .gsutil_do <-
     function(args)
 {
-    gsutil <- .gsutil_find_binary("gsutil")
+    gsutil <- .gcloud_find_binary("gsutil")
     stopifnot(file.exists(gsutil))      # bad environment variables
 
     wmsg <- NULL
@@ -204,7 +197,7 @@ gsutil_exists <-
         .gsutil_is_uri(source)
     )
 
-    gsutil <- .gsutil_find_binary("gsutil")
+    gsutil <- .gcloud_find_binary("gsutil")
     stopifnot(file.exists(gsutil))      # bad environment variables
 
     vapply(source, .gsutil_exists_1, logical(1), gsutil)
