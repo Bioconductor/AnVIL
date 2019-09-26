@@ -1,7 +1,10 @@
 ## sub-class to allow method dispatch
-
 #' @export
-.Terra <- setClass("Terra", contains = "Service")
+.Terra <- setClass(
+    "Terra",
+    contains = "Service",
+    slots = c(api_header = "character")
+)
 
 ## construct a singleton instance for this service
 
@@ -18,10 +21,17 @@
 Terra <-
     function()
 {
-    .Terra(Service(
-        "terra", host = "api.firecloud.org",
-        api_url = "https://api.firecloud.org/api-docs.yaml"
-    ))
+    bearer_token <- .gcloud_do("auth", "print-access-token")
+    api_header <- c(Authorization = paste("Bearer", bearer_token))
+    .Terra(
+        Service(
+            "terra",
+            host = "api.firecloud.org",
+            api_url = "https://api.firecloud.org/api-docs.yaml",
+            authenticate = FALSE
+        ),
+        api_header = api_header
+    )
 }
 
 ## Some operations seem to have a poorly-defined operationId in the json
@@ -31,7 +41,7 @@ setMethod(
     "operations", "Terra",
     function(x)
 {
-    value <- callNextMethod()
+    value <- callNextMethod(x, .headers = .api_header(x))
     value[grep("[_,]+", names(value), invert = TRUE)]
 })    
 

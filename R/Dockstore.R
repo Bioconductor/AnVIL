@@ -43,10 +43,10 @@ Dockstore <-
 #' @export
 setMethod(
     "operations", "Dockstore",
-    function(x)
+    function(x, ...)
 {
     ## Use .api_header() for authentication.
-    value <- get_operations(.api(x), .headers = .api_header(x))
+    value <- callNextMethod(x, .headers = .api_header(x))
     ## Some operations have a poorly defined operationId in the json
     value[grep("[_,]+", names(value), invert = TRUE)]
 })

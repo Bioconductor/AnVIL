@@ -25,14 +25,14 @@ empty_object <- setNames(list(), character())
 #' @rdname Services
 #'
 #' @export
-setGeneric("operations", function(x) standardGeneric("operations"))
+setGeneric("operations", function(x, ...) standardGeneric("operations"))
 
 #' @export
 setMethod(
     "operations", "Service",
-    function(x)
+    function(x, ...)
 {
-    get_operations(.api(x))
+    get_operations(.api(x), ...)
 })
 
 #' @rdname Services
