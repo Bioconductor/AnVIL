@@ -41,90 +41,11 @@ print.gsutil_result <-
 #'     `~/google-cloud-sdk`.
 NULL
 
-## option or environment variable or NULL, allowing for default
-## `unset` value
-.gsutil_getenv <-
-    function(option, unset = NA)
-{
-    value <- getOption(option, unset)
-    if (!is.na(value))
-        return(value)
-
-    value <- Sys.getenv(option, unset = unset)
-    if (!is.na(value))
-        return(value)
-
-    return(NULL)
-}
-
-## Get gsutil binary on user's machine for windows/linux/mac
-.gcloud_find_binary <-
-    function(binary_name)
-{
-    user_path <- .gsutil_getenv("GCLOUD_SDK_PATH")
-    if (!is.null(user_path))
-        return(normalizePath(file.path(user_path, "bin", binary_name)))
-
-    bin <- Sys.which(binary_name)
-    if (nzchar(bin))
-        return(bin)
-
-    ## Discover binary automatically if user doesn't give path
-    if (.Platform$OS.type == "windows") {
-        appdata <- normalizePath(Sys.getenv("localappdata"), winslash = "/")
-        sdk_path <- file.path("Google", "Cloud SDK", "google-cloud-sdk", "bin")
-        binary_name <- paste(binary, "cmd", sep = ".")
-        bin_paths <- c(
-            file.path(appdata, sdk_path, binary_name),
-            file.path(Sys.getenv("ProgramFiles"), sdk_path, binary_name),
-            file.path(Sys.getenv("ProgramFiles(x86)"), sdk_path, binary_name)
-        )
-    } else {
-        bin_paths <- file.path("~", "google-cloud-sdk", "bin", binary_name)
-    }
-
-    ## Return appropriate path for 'gsutil'
-    for (path in bin_paths)
-        if (file.exists(path))
-            return(path)
-
-    stop(
-        "failed to find '", binary_name, "' binary; ",
-        "set option or environment variable 'GCLOUD_SDK_PATH'?",
-        call. = FALSE
-    )
-}
-
 ## evaluate the gsutil command and arguments in `args`
 .gsutil_do <-
     function(args)
 {
-    gsutil <- .gcloud_find_binary("gsutil")
-    stopifnot(file.exists(gsutil))      # bad environment variables
-
-    wmsg <- NULL
-    value <- withCallingHandlers(tryCatch({
-        system2(gsutil, args, stdout = TRUE, stderr = TRUE, wait=TRUE)
-    }, error = function(err) {
-        msg <- paste0(
-            "'gsutil ", paste(args, collapse = " "), "' failed:\n",
-            "  ", conditionMessage(err)
-        )
-        stop(msg, call. = FALSE)
-    }), warning = function(warn) {
-        wmsg <<- c(wmsg, conditionMessage(warn))
-        invokeRestart("muffleWarning")
-    })
-    if (!is.null(attr(value, "status"))) {
-        warning(
-            "'gsutil ", paste(args, collapse = " "), "'\n",
-            "  exit status: ", attr(value, "status"), "\n",
-            "  value: ", as.vector(value),
-            call. = FALSE
-        )
-        value <- invisible(NULL)
-    }
-    value
+    .gloud_sdk_do("gsutil", args)
 }
 
 .gsutil_is_uri <-
