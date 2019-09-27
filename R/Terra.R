@@ -13,8 +13,15 @@
 #'
 #' @return `Terra()` creates the API of the Terra cloud computational
 #'     environemnt at https://api.firecloud.org/.
-#' 
+#'
 #' @format NULL
+#'
+#' @examples
+#' if (gcloud_exists()) {
+#'     terra <- Terra()
+#'     tags(terra)
+#'     tags(terra, "Billing")
+#' }
 #'
 #' @export
 Terra <-
@@ -42,7 +49,7 @@ setMethod(
 {
     value <- callNextMethod(x, .headers = .api_header(x))
     value[grep("[_,]+", names(value), invert = TRUE)]
-})    
+})
 
 #' @export
 setMethod(

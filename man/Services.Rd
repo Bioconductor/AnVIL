@@ -15,6 +15,8 @@
 \alias{tags}
 \alias{$,Service-method}
 \alias{Leonardo}
+\alias{Leonardo-class}
+\alias{operations,Leonardo-method}
 \alias{Terra}
 \alias{Terra-class}
 \alias{operations,Terra-method}
@@ -30,7 +32,7 @@
 \usage{
 empty_object
 
-operations(x)
+operations(x, ...)
 
 schemas(x)
 
@@ -56,6 +58,10 @@ Gen3Peregrine()
 \item{x}{A `Service` instance, usually a singleton provided by the
 package and documented on this page, e.g., `leonardo` or
 `terra`.}
+
+\item{...}{additional arguments passed to methods or, for
+`operations,Service-method`, to the internal `get_operation()`
+function.}
 
 \item{.tags}{optional character() of tags to use to filter operations.}
 
@@ -98,9 +104,11 @@ RESTful services useful for AnVIL developers
 \examples{
 empty_object
 
-terra <- Terra()
-tags(terra)
-tags(terra, "Billing")
+if (gcloud_exists()) {
+    terra <- Terra()
+    tags(terra)
+    tags(terra, "Billing")
+}
 
 }
 \keyword{datasets}

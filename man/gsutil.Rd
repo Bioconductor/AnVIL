@@ -76,7 +76,7 @@ source and destination.}
 `gsutil_help()`: `character()` help text for subcommand `cmd`.
 }
 \description{
-These functions that invoke the `gsutil` command line
+These functions invoke the `gsutil` command line
     utility. See the "Details:" section if you have gsutil
     installed but the package cannot find it.
 
@@ -106,14 +106,16 @@ These functions that invoke the `gsutil` command line
 }
 \details{
 The `gsutil` system command is required.  The search for
-    `gsutil` starts with environment variable `GSUTIL_BINARY_PATH`
-    providing the full path to the binary.  It then tries
-    `GCLOUD_INSTALL_PATH` (such that `gsutil` is located at
-    `$GCLOUD_INSTALL_PATH/bin/gsutil`). On Windows, the search
-    tries to find `Google\\Cloud
-    SDK\\google-cloud-sdk\\bin\\gsutil.cmd` in the `LOCAL APP
-    DATA`, `Program Files`, and `Program Files (x86)` directories.
-    On linux / macOS, the search continues with `Sys.which()` and
+    `gsutil` starts with environment variable `GCLOUD_SDK_PATH`
+    providing a path to a directory containing a `bin` directory
+    containingin `gsutil`, `gcloud`, etc. The path variable is
+    searched for first as an `option()` and then system
+    variable. If no option or global variable is found,
+    `Sys.which()` is tried. If that fails, `gsutil` is searched for
+    on defined paths. On Windows, the search tries to find
+    `Google\\Cloud SDK\\google-cloud-sdk\\bin\\gsutil.cmd` in the
+    `LOCAL APP DATA`, `Program Files`, and `Program Files (x86)`
+    directories.  On linux / macOS, the search continues with
     `~/google-cloud-sdk`.
 
 `gsutil_rsync()': To make `"gs://mybucket/data"` match the contents

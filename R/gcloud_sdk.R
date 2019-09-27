@@ -20,7 +20,7 @@
 {
     user_path <- .gcloud_sdk_getenv("GCLOUD_SDK_PATH")
     if (!is.null(user_path))
-        return(normalizePath(file.path(user_path, "bin", binary_name)))
+        return(file.path(user_path, "bin", binary_name))
 
     bin <- Sys.which(binary_name)
     if (nzchar(bin))
@@ -30,11 +30,11 @@
     if (.Platform$OS.type == "windows") {
         appdata <- normalizePath(Sys.getenv("localappdata"), winslash = "/")
         sdk_path <- file.path("Google", "Cloud SDK", "google-cloud-sdk", "bin")
-        binary_name <- paste(binary, "cmd", sep = ".")
+        binary_cmd <- paste(binary_name, "cmd", sep = ".")
         bin_paths <- c(
-            file.path(appdata, sdk_path, binary_name),
-            file.path(Sys.getenv("ProgramFiles"), sdk_path, binary_name),
-            file.path(Sys.getenv("ProgramFiles(x86)"), sdk_path, binary_name)
+            file.path(appdata, sdk_path, binary_cmd),
+            file.path(Sys.getenv("ProgramFiles"), sdk_path, binary_cmd),
+            file.path(Sys.getenv("ProgramFiles(x86)"), sdk_path, binary_cmd)
         )
     } else {
         bin_paths <- file.path("~", "google-cloud-sdk", "bin", binary_name)

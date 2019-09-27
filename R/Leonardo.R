@@ -9,6 +9,8 @@
 
 #' @rdname Services
 #'
+#' @aliases Leonardo-class operations,Leonardo-method
+#'
 #' @return `Leonardo()` creates the API of the Leonard container
 #'     deployment service at https://leonardo.dev.anvilproject.org/.
 #'
@@ -18,6 +20,8 @@
 Leonardo <-
     function()
 {
+    access_token <- .gcloud_access_token()
+    api_header <- c(Authorization = paste("Bearer", access_token))
     .Leonardo(
         Service(
             "leonardo",

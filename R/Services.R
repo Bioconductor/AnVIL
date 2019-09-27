@@ -24,6 +24,10 @@ empty_object <- setNames(list(), character())
 
 #' @rdname Services
 #'
+#' @param ... additional arguments passed to methods or, for
+#'     `operations,Service-method`, to the internal `get_operation()`
+#'     function.
+#'
 #' @export
 setGeneric("operations", function(x, ...) standardGeneric("operations"))
 
@@ -64,11 +68,6 @@ setMethod(
 #'     `terra`.
 #'
 #' @param .tags optional character() of tags to use to filter operations.
-#'
-#' @examples
-#' terra <- Terra()
-#' tags(terra)
-#' tags(terra, "Billing")
 #'
 #' @importFrom tibble tibble
 #' @importFrom dplyr filter arrange
