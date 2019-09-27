@@ -45,7 +45,7 @@ NULL
 .gsutil_do <-
     function(args)
 {
-    .gloud_sdk_do("gsutil", args)
+    .gcloud_sdk_do("gsutil", args)
 }
 
 .gsutil_is_uri <-
