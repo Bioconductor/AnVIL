@@ -4,6 +4,15 @@
     .gcloud_sdk_do("gcloud", c(...))
 }        
 
+.gcloud_access_token <-
+    function()
+{
+    app_default <-
+        if (identical(Sys.getenv("USER"), "jupyter-user"))
+            "application-default"
+    .gcloud_do("auth", app_default, "print-access-token")
+}
+
 #' @export
 gcloud_account <- function()
     .gcloud_do("config", "get-value", "account")

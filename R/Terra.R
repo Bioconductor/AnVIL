@@ -1,4 +1,3 @@
-## sub-class to allow method dispatch
 #' @export
 .Terra <- setClass(
     "Terra",
@@ -21,8 +20,8 @@
 Terra <-
     function()
 {
-    bearer_token <- .gcloud_do("auth", "print-access-token")
-    api_header <- c(Authorization = paste("Bearer", bearer_token))
+    access_token <- .gcloud_access_token()
+    api_header <- c(Authorization = paste("Bearer", access_token))
     .Terra(
         Service(
             "terra",
