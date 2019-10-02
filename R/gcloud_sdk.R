@@ -20,11 +20,11 @@
 {
     user_path <- .gcloud_sdk_getenv("GCLOUD_SDK_PATH")
     if (!is.null(user_path))
-        return(file.path(user_path, "bin", binary_name))
+        return(normalizePath(file.path(user_path, "bin", binary_name)))
 
     bin <- Sys.which(binary_name)
     if (nzchar(bin))
-        return(bin)
+        return(normalizePath(bin))
 
     ## Discover binary automatically if user doesn't give path
     if (.Platform$OS.type == "windows") {
@@ -43,7 +43,7 @@
     ## Return appropriate path for 'gsutil'
     for (path in bin_paths)
         if (file.exists(path))
-            return(path)
+            return(normalizePath(path))
 
     stop(
         "failed to find '", binary_name, "' binary; ",
