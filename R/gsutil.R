@@ -53,7 +53,35 @@ NULL
 .gsutil_is_uri <-
     function(source)
 {
-    is.character(source) & startsWith(source, "gs://")
+    .is_character(source) & grepl("gs://[^/]+", source)
+}
+
+#' @rdname gsutil
+#'
+#' @description `gsutil_requesterpays()`: does the google bucket
+#'     require that the requester pay for access?
+#'
+#' @return `gsutil_requesterpays()`: named `logical()` vector TRUE
+#'     when requester-pays is enabled.
+#'
+#' @export
+gsutil_requesterpays <-
+    function(source)
+{
+    stopifnot(all(.gsutil_is_uri(source)))
+    project <- gcloud_project()
+    buckets <- regmatches(source, regexpr("^gs://[^/]+", source))
+    args <- c("-u", project, "requesterpays", "get", buckets)
+    result <- .gsutil_do(args)
+    setNames(endsWith(result, "Enabled"), source)
+}
+
+.gsutil_requesterpays_flag <-
+    function(source)
+{
+    if (any(gsutil_requesterpays(source))) {
+        c("-u", gcloud_project())
+    } else NULL
 }
 
 #' @rdname gsutil
@@ -62,10 +90,10 @@ NULL
 #'     or, if `source` is missing, all Cloud Storage buckets under
 #'     your default project ID
 #'
-#'
-#' @param source `character(1)`, (`character()` for `gsutil_ls()`,
-#'     `gsutil_exists()`) paths to a google storage bucket, possibly
-#'     with wild-cards for file-level pattern matching.
+#' @param source `character(1)`, (`character()` for
+#'     `gsutil_requesterpays()`, `gsutil_ls()`, `gsutil_exists()`)
+#'     paths to a google storage bucket, possibly with wild-cards for
+#'     file-level pattern matching.
 #'
 #' @param recursive `logical(1)`; perform operation recursively from
 #'     `source`?. Default: `FALSE`.
@@ -79,11 +107,12 @@ gsutil_ls <-
     function(source = character(), ..., recursive = FALSE)
 {
     stopifnot(
-        is.character(source), !anyNA(source),
+        .gsutil_is_uri(source),
         .is_scalar_logical(recursive)
     )
 
     args <- c(
+        .gsutil_requesterpays_flag(source),
         "ls",
         if (recursive) "-r",
         ...,
@@ -146,7 +175,7 @@ gsutil_stat <-
 {
     stopifnot(.gsutil_is_uri(source))
 
-    args <- c("stat", source)
+    args <- c(.gsutil_requesterpays_flag(source), "stat", source)
     result <- .gsutil_do(args)
     .gsutil_result(result)
 }
@@ -191,6 +220,7 @@ gsutil_cp <-
     )
 
     args <- c(
+        .gsutil_requesterpays_flag(source),
         if (parallel) "-m", ## Makes the operations faster
         "cp", ## cp command
         if (recursive) "-r",
@@ -235,6 +265,7 @@ gsutil_rm <-
 
     ## remove
     args <- c(
+        .gsutil_requesterpays_flag(source),
         if (parallel) "-m",
         "rm",
         if (force) "-f",
@@ -307,6 +338,7 @@ gsutil_rsync <-
 
     ## rsync operation
     args <- c(
+        .gsutil_requesterpays_flag(source),
         ##  -m option, to perform parallel (multi-threaded/multi-processing)
         if (parallel) "-m",
         "rsync",
