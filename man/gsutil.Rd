@@ -9,7 +9,9 @@
 \alias{gsutil_cp}
 \alias{gsutil_rm}
 \alias{gsutil_rsync}
+\alias{gsutil_cat}
 \alias{gsutil_help}
+\alias{gsutil_pipe}
 \title{Interact with the gsutil command line utility}
 \usage{
 gsutil_requesterpays(source)
@@ -28,7 +30,11 @@ gsutil_rm(source, ..., force = FALSE, recursive = FALSE,
 gsutil_rsync(source, destination, ..., dry = TRUE, delete = FALSE,
   recursive = FALSE, parallel = TRUE)
 
+gsutil_cat(source, ..., header = FALSE, range = integer())
+
 gsutil_help(cmd = character(0))
+
+gsutil_pipe(source, open = "r", ...)
 }
 \arguments{
 \item{source}{`character(1)`, (`character()` for
@@ -60,8 +66,18 @@ you use this option: it's possible to delete large amounts of
 data accidentally if, for example, you erroneously reverse
 source and destination.}
 
+\item{header}{`logical(1)` when `TRUE` annotate each}
+
+\item{range}{(optional) `integer(2)` vector used to form a range
+from-to of bytes to concatenate. `NA` values signify
+concatenation from the start (first position) or to the end
+(second position) of the file.}
+
 \item{cmd}{`character()` (optional) command name, e.g.,
 `"ls"` for help.}
+
+\item{open}{`character(1)` either `"r"` (read) or `"w"` (write)
+from the bucket.}
 }
 \value{
 `gsutil_requesterpays()`: named `logical()` vector TRUE
@@ -80,7 +96,14 @@ source and destination.}
 
 `gsutil_rsync()`: exit status of `gsutil_rsync()`, invisbly.
 
+`gsutil_cat()` returns the content as a character vector.
+
 `gsutil_help()`: `character()` help text for subcommand `cmd`.
+
+`gsutil_pipe()` an unopened R `pipe()`; the mode is
+    \emph{not} specified, and the pipe must be used in the
+    appropriate context (e.g., a pipe created with `open = "r"` for
+    input as `read.csv()`)
 }
 \description{
 These functions invoke the `gsutil` command line
@@ -110,9 +133,14 @@ These functions invoke the `gsutil` command line
 
 `gsutil_rsync()`: synchronize a source and a destination.
 
+`gsutil_cat()`: concatenate bucket objects to standard output
+
 `gsutil_help()`: print 'man' page for the `gsutil`
     command or subcommand. Note that only commandes documented on this
     R help page are supported.
+
+`gsutil_pipe()`: create a pipe to read from or write
+    to a gooogle bucket object.
 }
 \details{
 The `gsutil` system command is required.  The search for
@@ -178,4 +206,10 @@ created.
    gsutil_rsync('/tmp/local-copy', 'gs://anvil-bioc')
 }
 
+\dontrun{
+  src <- "gs://genomics-public-data/1000-genomes/other/sample_info/sample_info.csv"
+  df <- read.csv(gsutil_pipe(src))
+  dim(df)
+  head(t(df[1,]))
+}
 }

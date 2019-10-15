@@ -1,3 +1,24 @@
+##
+## gcloud_sdk_result constructor and methods
+##
+.gcloud_sdk_result <-
+    function(x)
+{
+    if (!is.null(x))
+        class(x) <- "gcloud_sdk_result"
+    x
+}
+
+#' @export
+print.gcloud_sdk_result <-
+    function(x, ...)
+{
+    if (is.null(x))
+        return()
+    cat(noquote(x), sep="\n")
+}
+
+
 ## option or environment variable or NULL, allowing for default
 ## `unset` value
 .gcloud_sdk_getenv <-

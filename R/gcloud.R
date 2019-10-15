@@ -81,7 +81,7 @@ gcloud_project <- function()
 #'
 #' @export
 gcloud_help <- function(...)
-    noquote(.gcloud_do("help", ...))
+    .gcloud_sdk_result(.gcloud_do("help", ...))
 
 #' @rdname gcloud
 #'

@@ -1,24 +1,3 @@
-##
-## gsutil_result constructor and methods
-##
-.gsutil_result <-
-    function(x)
-{
-    if (!is.null(x))
-        class(x) <- "gsutil_result"
-    x
-}
-
-#' @export
-print.gsutil_result <-
-    function(x, ...)
-{
-    if (is.null(x))
-        return()
-    cat(noquote(x), sep="\n")
-}
-
-
 #' @rdname gsutil
 #'
 #' @name gsutil
@@ -177,7 +156,7 @@ gsutil_stat <-
 
     args <- c(.gsutil_requesterpays_flag(source), "stat", source)
     result <- .gsutil_do(args)
-    .gsutil_result(result)
+    .gcloud_sdk_result(result)
 }
 
 #' @rdname gsutil
@@ -213,14 +192,15 @@ gsutil_stat <-
 gsutil_cp <-
     function(source, destination, ..., recursive = FALSE, parallel = TRUE)
 {
+    source_is_uri <- .gsutil_is_uri(source)
     stopifnot(
         .is_scalar_character(source), .is_scalar_character(destination),
-        .gsutil_is_uri(source) || .gsutil_is_uri(destination),
+        source_is_uri || .gsutil_is_uri(destination),
         .is_scalar_logical(recursive), .is_scalar_logical(parallel)
     )
 
     args <- c(
-        .gsutil_requesterpays_flag(source),
+        if (source_is_uri) .gsutil_requesterpays_flag(source),
         if (parallel) "-m", ## Makes the operations faster
         "cp", ## cp command
         if (recursive) "-r",
@@ -229,7 +209,7 @@ gsutil_cp <-
         destination
     )
     result <- .gsutil_do(args)
-    .gsutil_result(result)
+    .gcloud_sdk_result(result)
 }
 
 #' @rdname gsutil
@@ -274,7 +254,7 @@ gsutil_rm <-
         source
     )
     result <- .gsutil_do(args)
-    .gsutil_result(result)
+    .gcloud_sdk_result(result)
 }
 
 #' @rdname gsutil
@@ -350,7 +330,49 @@ gsutil_rsync <-
         destination
     )
     result <- .gsutil_do(args)
-    .gsutil_result(result)
+    .gcloud_sdk_result(result)
+}
+
+#' @rdname gsutil
+#'
+#' @description `gsutil_cat()`: concatenate bucket objects to standard output
+#'
+#' @param header `logical(1)` when `TRUE` annotate each
+#'
+#' @param range (optional) `integer(2)` vector used to form a range
+#'     from-to of bytes to concatenate. `NA` values signify
+#'     concatenation from the start (first position) or to the end
+#'     (second position) of the file.
+#'
+#' @return `gsutil_cat()` returns the content as a character vector.
+#'
+#' @export
+gsutil_cat <-
+    function(source, ..., header = FALSE, range = integer())
+{
+    stopifnot(
+        .is_scalar_character(source),
+        .is_scalar_logical(header),
+        is.numeric(range),
+        all(range[!is.na(range)] >= 0),
+        all(diff(range[!is.na(range)]) > 0L),
+        length(range) == 0L || length(range) == 2L
+    )
+
+    if (length(range)) {
+        range[is.na(range)] <- ""
+        range <- paste(range, collapse="-")
+    }
+
+    args <- c(
+        .gsutil_requesterpays_flag(source),
+        "cat",
+        if (header) "-h",
+        if (length(range)) c("-r", range),
+        source
+    )
+
+    .gsutil_do(args)
 }
 
 #' @rdname gsutil
@@ -370,5 +392,53 @@ gsutil_help <-
 {
     stopifnot(.is_character_0_or_1(cmd))
     result <- .gsutil_do(c("help", cmd))
-    .gsutil_result(result)
+    .gcloud_sdk_result(result)
+}
+
+##
+## higher-level implementations
+##
+
+#' @rdname gsutil
+#'
+#' @description `gsutil_pipe()`: create a pipe to read from or write
+#'     to a gooogle bucket object.
+#'
+#' @param open `character(1)` either `"r"` (read) or `"w"` (write)
+#'     from the bucket.
+#'
+#' @return `gsutil_pipe()` an unopened R `pipe()`; the mode is
+#'     \emph{not} specified, and the pipe must be used in the
+#'     appropriate context (e.g., a pipe created with `open = "r"` for
+#'     input as `read.csv()`)
+#'
+#' @examples
+#' \dontrun{
+#'   src <- "gs://genomics-public-data/1000-genomes/other/sample_info/sample_info.csv"
+#'   df <- read.csv(gsutil_pipe(src))
+#'   dim(df)
+#'   head(t(df[1,]))
+#' }
+#' @export
+gsutil_pipe <-
+    function(source, open = "r", ...)
+{
+    stopifnot(
+        .is_scalar_character(source),
+        open %in% c("r", "w")
+    )
+
+    is_read <- identical(open, "r")
+    args <- c(
+        if (is_read) .gsutil_requesterpays_flag(source),
+        "cp",
+        ...,
+        if(is_read) c(source, "-") else c("-", source)
+    )
+
+    bin <- .gcloud_sdk_find_binary("gsutil")
+    stopifnot(file.exists(bin))
+
+    cmd <- paste(c(bin, args), collapse = " ")
+    pipe(cmd)
 }
