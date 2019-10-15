@@ -25,7 +25,7 @@
 Dockstore <-
     function()
 {
-    api_header <- NULL
+    api_header <- character()
     path <- authenticate_path("dockstore")
     if (file.exists(path)) {
         token <- read_json(path)$token
