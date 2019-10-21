@@ -69,7 +69,7 @@ avtable <-
     entities <- Terra()$getEntities(namespace, name, table)
     tbl <-
         as_tibble(flatten(entities)) %>%
-        select(name, starts_with("attributes"), -ends_with("entityType"))
+        select(starts_with("attributes"), -ends_with("entityType"))
     names(tbl) <- sub("^attributes.", "", names(tbl))
     names(tbl) <- sub(".entityName$", "", names(tbl))
     tbl
