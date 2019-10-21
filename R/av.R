@@ -1,3 +1,21 @@
+#' @importFrom httr status_code http_condition
+.avstop_for_status <-
+    function(response, op)
+{
+    status <- status_code(response)
+    if (status < 400L)
+        return()
+
+    cond <- http_condition(status, "error")
+    msg <- as.list(response)[["message"]]
+    message <- paste0(
+        "'", op, "' failed:\n  ",
+        conditionMessage(cond),
+        if (!is.null(msg)) "\n  ", msg
+    )
+    stop(message, call.=FALSE)
+}
+
 #' Functions for convenient user interaction with AnVIL resources
 #'
 #' @rdname av
@@ -37,6 +55,7 @@ avtables <-
     )
     name <- curl::curl_escape(name)
     types <- Terra()$getEntityTypes(namespace, name)
+    .avstop_for_status(types, "avtables")
     lst <- content(types)
     table <- names(lst)
     count <- vapply(lst, `[[`, integer(1), "count")
@@ -67,6 +86,7 @@ avtable <-
     )
     name = curl::curl_escape(name)
     entities <- Terra()$getEntities(namespace, name, table)
+    .avstop_for_status(entities, "avtable")
     tbl <-
         as_tibble(flatten(entities)) %>%
         select(name, starts_with("attributes"), -ends_with("entityType"))
