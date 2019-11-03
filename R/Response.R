@@ -77,5 +77,5 @@ as.list.response <-
     function(x, ..., as=c("text", "raw", "parsed"))
 {
     as <- match.arg(as)
-    fromJSON(content(x, as=as))
+    fromJSON(content(x, as=as, encoding = "UTF-8"))
 }

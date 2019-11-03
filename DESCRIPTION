@@ -23,7 +23,7 @@ Imports:
     utils, methods,
     futile.logger,
     jsonlite, httr,
-    rapiclient (== 0.1.2.3-3),
+    rapiclient (== 0.1.2.3-4),
     tibble,
     BiocManager
 Suggests: knitr, testthat, withr
