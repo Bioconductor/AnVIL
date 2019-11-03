@@ -19,6 +19,8 @@ NULL
 #' @examples
 #' empty_object
 #'
+#' @importFrom stats setNames
+#'
 #' @export
 empty_object <- setNames(list(), character())
 
