@@ -1,23 +1,23 @@
-This archive currently contains an interface to AnVIL web
-services. The interface uses [Bioconductor/AnVIL_rapiclient][7] (rather 
-than the older [CRAN][6] version), and is easily extended. Current
+This archive contains an interface to AnVIL web services. The
+interface uses [Bioconductor/AnVIL_rapiclient][7] (rather than the
+older [CRAN][6] version), and is easily extended. Current
 implementations are for Leonardo, Terra, and Dockstore; there are Gen3
 stubs but these are not complete because I do not know end points.
 
-Install the dependency with
+Install the dependency and this package with
 
-    BiocManager::install("Bioconductor/AnVIL_rapiclient")
-
-Install the AnVIL package from a clone of this repository, adding
-`inst/service/<name>/auth.json` as described below.
+    pkgs <- ("Bioconductor/AnVIL_rapiclient", "Bioconductor/AnVIL")
+    BiocManager::install(pkgs)
 
 The package provides singleton endpoints with tab completion on
 operations
 
+    terra = Terra()
+    terra$getUserStatus() %>% AnVIL::str()
+
+    leonardo = Leonardo()
     leonardo
-    terra$getUserStatus()
-    leonardo$listClusters() %>% content(as = "text") %>%
-        fromJSON(flatten = TRUE) %>% as_tibble()
+    leonardo$listClusters() %>% AnVIL::flatten()
     operations(leonardo)
     schemas(leonardo)
 
