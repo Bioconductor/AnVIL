@@ -235,7 +235,7 @@ avworkspace_name <- function()
 avworkspace_bucket <-
     function(namespace = avworkspace_namespace(),
              name = avworkspace_name(),
-             as_path = FALSE)
+             as_path = TRUE)
 {
     stopifnot(
         .is_scalar_character(namespace),
