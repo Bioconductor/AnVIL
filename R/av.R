@@ -189,10 +189,9 @@ avtable_delete_values <-
 
 #' @rdname av
 #'
-#' @description `avworkspace_namespace()`, `avworkspace_name()` and
-#'     `avworkspace_bucket()` are utiliity functions to retrieve
-#'     workspace namespace, name, and bucket from environment
-#'     variables available in AnVIL.
+#' @description `avworkspace_namespace()` and `avworkspace_name()` are
+#'     utiliity functions to retrieve workspace namespace and name
+#'     from environment variables or interfaces available in AnVIL.
 #'
 #' @param namespace character(1) AnVIL workspace namespace as returned
 #'     by, e.g., `avworkspace_namespace()`
@@ -200,8 +199,8 @@ avtable_delete_values <-
 #' @param name character(1) AnVIL workspace name as returned by, eg.,
 #'     `avworkspace_name()`.
 #'
-#' @return `avworkspace_namespace()`, `avworkspace_name()` and
-#'     `avworkspace_bucket()` return `character(1)` identifiers.
+#' @return `avworkspace_namespace()`, and `avworkspace_name()` return
+#'     `character(1)` identifiers.
 #'
 #' @export
 avworkspace_namespace <- function()
@@ -213,6 +212,43 @@ avworkspace_name <- function()
     Sys.getenv('WORKSPACE_NAME')
 
 #' @rdname av
+#'
+#' @description `avworkspace_bucket()` retrieves the google bucket
+#'     associated with a workspace.
+#'
+#' @param as_path logical(1) when TRUE (default) return bucket with
+#'     prefix `gs://`.
+#'
+#' @return `avworkspace_bucket()` returns a `character(1)` bucket
+#'     identifier, prefixed with `gs://` if `as_path = TRUE`.
+#'
+#' @examples
+#' \dontrun{
+#' ## From within AnVIL...
+#' bucket <- avworkspace_bucket()
+#' path <- file.path(bucket, "mtcars.tab")
+#' write.table(mtcars, gsutil_pipe(path, "w"))
+#' gsutil_stat(path)
+#' read.table(gsutil_pipe(path, "r"))
+#' }
 #' @export
-avworkspace_bucket <- function()
-    Sys.getenv('WORKSPACE_BUCKET', character(0))
+avworkspace_bucket <-
+    function(namespace = avworkspace_namespace(),
+             name = avworkspace_name(),
+             as_path = FALSE)
+{
+    stopifnot(
+        .is_scalar_character(namespace),
+        .is_scalar_character(name),
+        .is_scalar_logical(as_path)
+    )
+
+    name <- curl_escape(name)
+    response <- Terra()$getWorkspace(namespace, name, "workspace.bucketName")
+    .avstop_for_status(response)
+
+    bucket <- as.list(response)$workspace$bucketName
+    if (as_path)
+        bucket <- paste0("gs://", bucket)
+    bucket
+}

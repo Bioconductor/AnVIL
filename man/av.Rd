@@ -26,7 +26,8 @@ avworkspace_namespace()
 
 avworkspace_name()
 
-avworkspace_bucket()
+avworkspace_bucket(namespace = avworkspace_namespace(),
+  name = avworkspace_name(), as_path = FALSE)
 }
 \arguments{
 \item{namespace}{character(1) AnVIL workspace namespace as returned
@@ -55,6 +56,9 @@ new table with name `entity` and entity values
 `table` to be deleted. A table `sample` has an associated
 entity column with suffix `_id`, e.g., `sample_id`. Rows with
 entity column entries matching `values` are deleted.}
+
+\item{as_path}{logical(1) when TRUE (default) return bucket with
+prefix `gs://`.}
 }
 \value{
 `avtables()`: A tibble with columns identifying the table,
@@ -69,8 +73,11 @@ entity column entries matching `values` are deleted.}
 `avtable_delete_values()` returns a `tibble` representing
     deleted entities, invisibly.
 
-`avworkspace_namespace()`, `avworkspace_name()` and
-    `avworkspace_bucket()` return `character(1)` identifiers.
+`avworkspace_namespace()`, and `avworkspace_name()` return
+    `character(1)` identifiers.
+
+`avworkspace_bucket()` returns a `character(1)` bucket
+    identifier, prefixed with `gs://` if `as_path = TRUE`.
 }
 \description{
 `avtables()` describes tables available in a
@@ -82,8 +89,20 @@ entity column entries matching `values` are deleted.}
 
 `avtable_delete_values()` removes rows from an AnVIL table.
 
-`avworkspace_namespace()`, `avworkspace_name()` and
-    `avworkspace_bucket()` are utiliity functions to retrieve
-    workspace namespace, name, and bucket from environment
-    variables available in AnVIL.
+`avworkspace_namespace()` and `avworkspace_name()` are
+    utiliity functions to retrieve workspace namespace and name
+    from environment variables or interfaces available in AnVIL.
+
+`avworkspace_bucket()` retrieves the google bucket
+    associated with a workspace.
+}
+\examples{
+\dontrun{
+## From within AnVIL...
+bucket <- avworkspace_bucket()
+path <- file.path(bucket, "mtcars.tab")
+write.table(mtcars, gsutil_pipe(path, "w"))
+gsutil_stat(path)
+read.table(gsutil_pipe(path, "r"))
+}
 }
