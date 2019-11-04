@@ -5,9 +5,9 @@
 \alias{avtable}
 \alias{avtable_import}
 \alias{avtable_delete_values}
+\alias{avbucket}
 \alias{avworkspace_namespace}
 \alias{avworkspace_name}
-\alias{avworkspace_bucket}
 \title{Functions for convenient user interaction with AnVIL resources}
 \usage{
 avtables(namespace = avworkspace_namespace(),
@@ -22,12 +22,12 @@ avtable_import(.data, entity = names(.data)[[1]],
 avtable_delete_values(table, values, namespace = avworkspace_namespace(),
   name = avworkspace_name())
 
+avbucket(namespace = avworkspace_namespace(),
+  name = avworkspace_name(), as_path = TRUE)
+
 avworkspace_namespace()
 
 avworkspace_name()
-
-avworkspace_bucket(namespace = avworkspace_namespace(),
-  name = avworkspace_name(), as_path = FALSE)
 }
 \arguments{
 \item{namespace}{character(1) AnVIL workspace namespace as returned
@@ -73,11 +73,11 @@ prefix `gs://`.}
 `avtable_delete_values()` returns a `tibble` representing
     deleted entities, invisibly.
 
+`avbucket()` returns a `character(1)` bucket identifier,
+    prefixed with `gs://` if `as_path = TRUE`.
+
 `avworkspace_namespace()`, and `avworkspace_name()` return
     `character(1)` identifiers.
-
-`avworkspace_bucket()` returns a `character(1)` bucket
-    identifier, prefixed with `gs://` if `as_path = TRUE`.
 }
 \description{
 `avtables()` describes tables available in a
@@ -89,20 +89,21 @@ prefix `gs://`.}
 
 `avtable_delete_values()` removes rows from an AnVIL table.
 
+`avbucket()` retrieves the google bucket associated
+    with a workspace.
+
 `avworkspace_namespace()` and `avworkspace_name()` are
     utiliity functions to retrieve workspace namespace and name
     from environment variables or interfaces available in AnVIL.
-
-`avworkspace_bucket()` retrieves the google bucket
-    associated with a workspace.
 }
 \examples{
 \dontrun{
 ## From within AnVIL...
-bucket <- avworkspace_bucket()
+bucket <- avbucket()                        # discover bucket
 path <- file.path(bucket, "mtcars.tab")
-write.table(mtcars, gsutil_pipe(path, "w"))
-gsutil_stat(path)
-read.table(gsutil_pipe(path, "r"))
+gsutil_ls(dirname(path))                    # no 'mtcars.tab'...
+write.table(mtcars, gsutil_pipe(path, "w")) # write to bucket
+gsutil_stat(path)                           # yep, there!
+read.table(gsutil_pipe(path, "r"))          # read from bucket
 }
 }
