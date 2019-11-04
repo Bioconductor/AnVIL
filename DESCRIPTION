@@ -1,6 +1,6 @@
 Package: AnVIL
 Title: Bioconductor on the AnVIL compute environment
-Version: 0.0.31
+Version: 0.0.32
 Authors@R: 
     c(person(
         "Martin", "Morgan", role = c("aut", "cre"),
@@ -37,3 +37,4 @@ Collate:
 LazyData: true
 VignetteBuilder: knitr
 RoxygenNote: 6.1.1
+Remotes: Bioconductor/AnVIL_rapiclient
