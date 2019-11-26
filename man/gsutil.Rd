@@ -24,11 +24,17 @@ gsutil_stat(source)
 
 gsutil_cp(source, destination, ..., recursive = FALSE, parallel = TRUE)
 
-gsutil_rm(source, ..., force = FALSE, recursive = FALSE,
-  parallel = TRUE)
+gsutil_rm(source, ..., force = FALSE, recursive = FALSE, parallel = TRUE)
 
-gsutil_rsync(source, destination, ..., dry = TRUE, delete = FALSE,
-  recursive = FALSE, parallel = TRUE)
+gsutil_rsync(
+  source,
+  destination,
+  ...,
+  dry = TRUE,
+  delete = FALSE,
+  recursive = FALSE,
+  parallel = TRUE
+)
 
 gsutil_cat(source, ..., header = FALSE, range = integer())
 

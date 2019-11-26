@@ -36,5 +36,5 @@ Collate:
     zzz.R
 LazyData: true
 VignetteBuilder: knitr
-RoxygenNote: 6.1.1
+RoxygenNote: 7.0.0
 Remotes: Bioconductor/AnVIL_rapiclient

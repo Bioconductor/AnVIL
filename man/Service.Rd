@@ -4,8 +4,15 @@
 \alias{Service}
 \title{RESTful service constructor}
 \usage{
-Service(service, host, config = httr::config(), authenticate = TRUE,
-  api_url = character(), package = "AnVIL", schemes = "https")
+Service(
+  service,
+  host,
+  config = httr::config(),
+  authenticate = TRUE,
+  api_url = character(),
+  package = "AnVIL",
+  schemes = "https"
+)
 }
 \arguments{
 \item{service}{character(1) The `Service` class name, e.g., `"terra"`.}

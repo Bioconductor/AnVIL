@@ -5,25 +5,37 @@
 \alias{avtable}
 \alias{avtable_import}
 \alias{avtable_delete_values}
+\alias{avdata}
 \alias{avbucket}
 \alias{avworkspace_namespace}
 \alias{avworkspace_name}
 \title{Functions for convenient user interaction with AnVIL resources}
 \usage{
-avtables(namespace = avworkspace_namespace(),
-  name = avworkspace_name())
+avtables(namespace = avworkspace_namespace(), name = avworkspace_name())
 
-avtable(table, namespace = avworkspace_namespace(),
-  name = avworkspace_name())
+avtable(table, namespace = avworkspace_namespace(), name = avworkspace_name())
 
-avtable_import(.data, entity = names(.data)[[1]],
-  namespace = avworkspace_namespace(), name = avworkspace_name())
+avtable_import(
+  .data,
+  entity = names(.data)[[1]],
+  namespace = avworkspace_namespace(),
+  name = avworkspace_name()
+)
 
-avtable_delete_values(table, values, namespace = avworkspace_namespace(),
-  name = avworkspace_name())
+avtable_delete_values(
+  table,
+  values,
+  namespace = avworkspace_namespace(),
+  name = avworkspace_name()
+)
 
-avbucket(namespace = avworkspace_namespace(),
-  name = avworkspace_name(), as_path = TRUE)
+avdata(namespace = avworkspace_namespace(), name = avworkspace_name())
+
+avbucket(
+  namespace = avworkspace_namespace(),
+  name = avworkspace_name(),
+  as_path = TRUE
+)
 
 avworkspace_namespace()
 
@@ -73,6 +85,14 @@ prefix `gs://`.}
 `avtable_delete_values()` returns a `tibble` representing
     deleted entities, invisibly.
 
+`avdata()` returns a tibble with five columns: `"type"`
+    represents the origin of the data from the 'REFERENCE' or
+    'OTHER' data menus. `"table"` is the table name in the
+    `REFERENCE` menu, or 'workspace' for the table in the 'OTHER'
+    menu, the key used to access the data element, the value label
+    associated with the data element and the value (e.g., google
+    bucket) of the element.
+
 `avbucket()` returns a `character(1)` bucket identifier,
     prefixed with `gs://` if `as_path = TRUE`.
 
@@ -89,6 +109,9 @@ prefix `gs://`.}
 
 `avtable_delete_values()` removes rows from an AnVIL table.
 
+`avdata()` returns the key-value table of 'REFERENCE
+    DATA' and 'OTHER DATA' workspace attributes.
+
 `avbucket()` retrieves the google bucket associated
     with a workspace.
 
@@ -97,6 +120,9 @@ prefix `gs://`.}
     from environment variables or interfaces available in AnVIL.
 }
 \examples{
+\dontrun{
+avdata()
+}
 \dontrun{
 ## From within AnVIL...
 bucket <- avbucket()                        # discover bucket
