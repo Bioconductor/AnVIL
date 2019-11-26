@@ -189,6 +189,58 @@ avtable_delete_values <-
 
 #' @rdname av
 #'
+#' @description `avdata()` returns the key-value table of 'REFERENCE
+#'     DATA' and 'OTHER DATA' workspace attributes.
+#'
+#' @return `avdata()` returns a tibble with five columns: `"type"`
+#'     represents the origin of the data from the 'REFERENCE' or
+#'     'OTHER' data menus. `"table"` is the table name in the
+#'     `REFERENCE` menu, or 'workspace' for the table in the 'OTHER'
+#'     menu, the key used to access the data element, the value label
+#'     associated with the data element and the value (e.g., google
+#'     bucket) of the element.
+#'
+#' @examples
+#' \dontrun{
+#' avdata()
+#' }
+#' @export
+avdata <-
+    function(namespace = avworkspace_namespace(),
+             name = avworkspace_name())
+{
+    stopifnot(
+        .is_scalar_character(namespace),
+        .is_scalar_character(name)
+    )
+
+    name <- curl_escape(name)
+    response <- Terra()$exportAttributesTSV(namespace, name)
+    .avstop_for_status(response, "avworkspace_data")
+
+    content <- content(response)
+    lines <- unlist(strsplit(content, "\n"))
+    fields <- strsplit(lines, "\t")
+
+    field1 <- sub("workspace:", "", fields[[1]])
+    is_referenceData <- startsWith(field1, "referenceData")
+    type <- ifelse(is_referenceData, "reference", "other")
+    table <- rep("workspace", length(field1))
+    table[is_referenceData] <- vapply(
+        strsplit(field1[is_referenceData], "_"), `[[`, character(1), 2L
+    )
+    key <- sub("^referenceData_[^_]+_", "", field1)
+
+    tbl <- tibble(
+        type = type, table = table, key = key,
+        label = basename(fields[[2]]),
+        value = fields[[2]]
+    )
+    arrange(tbl, type, table, key)
+}
+
+#' @rdname av
+#'
 #' @description `avbucket()` retrieves the google bucket associated
 #'     with a workspace.
 #'
@@ -222,7 +274,7 @@ avbucket <-
 
     name <- curl_escape(name)
     response <- Terra()$getWorkspace(namespace, name, "workspace.bucketName")
-    .avstop_for_status(response)
+    .avstop_for_status(response, "avbucket")
 
     bucket <- as.list(response)$workspace$bucketName
     if (as_path)
