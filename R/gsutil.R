@@ -58,9 +58,13 @@ gsutil_requesterpays <-
 .gsutil_requesterpays_flag <-
     function(source)
 {
-    if (any(gsutil_requesterpays(source))) {
-        c("-u", gcloud_project())
-    } else NULL
+    tryCatch({
+        if (any(gsutil_requesterpays(source))) {
+            c("-u", gcloud_project())
+        } else NULL
+    }, error = function(...) {
+        NULL
+    })
 }
 
 #' @rdname gsutil
