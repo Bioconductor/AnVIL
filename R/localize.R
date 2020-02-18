@@ -142,8 +142,7 @@ add_libpaths <-
 
 #' @rdname localize
 #'
-#' @description `install()`: install packages and their dependencies
-#'     from a bucket.
+#' @description `install()`: DEPRECATED; use `install_precompiled()`
 #'
 #' @param pkgs `character()` packages to install from binary repository.
 #'
@@ -166,6 +165,8 @@ add_libpaths <-
 install <-
     function(pkgs, lib = .libPaths()[1], lib.loc = NULL)
 {
+    .Deprecated("install_precompiled()")
+
     stopifnot(
         is.character(pkgs), !anyNA(pkgs)
     )
@@ -207,4 +208,87 @@ install <-
         delete = TRUE, recursive = TRUE, dry = FALSE
     )
     message(" DONE")
+}
+
+.install_precompiled_archive <-
+    function()
+{
+    archive <- file.path(tempdir(), "AnVIL_precompiled_archive")
+    status <- dir.exists(archive) || dir.create(archive)
+    stopifnot("unable to create download archive" = status)
+    archive
+}
+
+.install_precompiled_archive_unlink <-
+    function()
+{
+    unlink(.install_precompiled_archive(), recursive = TRUE)
+}
+
+#' @rdname localize
+#'
+#' @description `install_precompiled()`: install packages and their
+#'     dependencies from pre-compiled versions of the packages,
+#'     archived in a google cloud bucket.
+#'
+#' @return `install_precompiled()`: NULL, invisibly.
+#'
+#' @examples
+#' \dontrun{
+#' add_libpaths("/tmp/host-site-library")
+#' install(packages = c('BiocParallel', 'BiocGenerics'))
+#' }
+#'
+#' @export
+install_precompiled <-
+    function(pkgs, lib = .libPaths()[1], lib.loc = NULL,
+             repos = "gs://biocbbs_2020a/zpacks",
+             verbose = getOption("verbose"))
+{
+    stopifnot(
+        .is_character(pkgs),
+        .is_scalar_character(lib), dir.exists(lib),
+        .is_character(lib.loc) || is.null(lib.loc),
+        .is_scalar_logical(verbose)
+    )
+
+    ## session-specific download package archive
+    archive <- .install_precompiled_archive()
+
+    ## available packages
+    available <- read.dcf(gzcon(gsutil_pipe(paste0(repos, "/PACKAGES.gz"))))
+    available_pkgs <- available[, "Package"]
+    available_vers <- available[, "Version"]
+    if (verbose)
+        message(length(available_pkgs), " precompiled packages available")
+
+    ## packages to install
+    pkgs <- .install_find_dependencies(pkgs, lib = lib.loc)
+    if (verbose)
+        message(length(pkgs), " packages require installation")
+
+    unavailable <- setdiff(pkgs, available_pkgs)
+    if (length(unavailable)) {
+        ## format for copy / paste into standard package install command
+        text <- paste0("'", unavailable, "'", collapse = ", ")
+        warning(
+            length(unavailable), " packages not available for fast install:\n",
+            paste(strwrap(text, indent = 4, exdent = 4), collapse = "\n"),
+            call. = FALSE, immediate. = TRUE
+        )
+    }
+    pkgs <- intersect(pkgs, available_pkgs)
+
+    ## create local copies
+    idx <- match(pkgs, available_pkgs)
+    pkgs <- sprintf("%s/%s_%s.tgz", repos, pkgs, available_vers[idx], ".tgz")
+    pkgs_to_copy <- pkgs[!basename(pkgs) %in% dir(archive)]
+    if (length(pkgs_to_copy)) {
+        message("copying ", length(pkgs_to_copy), " packages to local archive")
+        status <- gsutil_cp(pkgs_to_copy, archive)
+    }
+
+    ## install
+    pkgs <- file.path(archive, basename(pkgs))
+    install.packages(pkgs, lib, repos = NULL, verbose = verbose)
 }
