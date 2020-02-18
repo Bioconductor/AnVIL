@@ -40,7 +40,7 @@ Process service responses to tibble and other data structures.
 \examples{
 \donttest{
 leonardo <- Leonardo()
-leonardo$listClusters() %>% flatten()
+leonardo$listClusters() \%>\% flatten()
 }
 
 \donttest{leonardo$getSystemStatus() \%>\% str()}

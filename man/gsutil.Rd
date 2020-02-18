@@ -44,9 +44,9 @@ gsutil_pipe(source, open = "r", ...)
 }
 \arguments{
 \item{source}{`character(1)`, (`character()` for
-`gsutil_requesterpays()`, `gsutil_ls()`, `gsutil_exists()`)
-paths to a google storage bucket, possibly with wild-cards for
-file-level pattern matching.}
+`gsutil_requesterpays()`, `gsutil_ls()`, `gsutil_exists()`,
+`gsutil_cp()`) paths to a google storage bucket, possibly with
+wild-cards for file-level pattern matching.}
 
 \item{...}{additional arguments passed as-is to the `gsutil` subcommand.}
 

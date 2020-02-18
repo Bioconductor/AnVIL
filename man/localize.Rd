@@ -5,6 +5,7 @@
 \alias{delocalize}
 \alias{add_libpaths}
 \alias{install}
+\alias{install_precompiled}
 \title{Copy packages, folders, or files to or from google buckets.}
 \usage{
 localize(source, destination, dry = TRUE)
@@ -14,6 +15,14 @@ delocalize(source, destination, unlink = FALSE, dry = TRUE)
 add_libpaths(paths)
 
 install(pkgs, lib = .libPaths()[1], lib.loc = NULL)
+
+install_precompiled(
+  pkgs,
+  lib = .libPaths()[1],
+  lib.loc = NULL,
+  repos = "gs://biocbbs_2020a/zpacks",
+  verbose = getOption("verbose")
+)
 }
 \arguments{
 \item{source}{`character(1)`, a google storage bucket or local file
@@ -49,6 +58,8 @@ currently installed packages. Default is all paths in
 `add_libpaths()`: updated .libPaths(), invisibly.
 
 `install()`: location of installed packages, invisibly.
+
+`install_precompiled()`: NULL, invisibly.
 }
 \description{
 `localize()`: recursively synchronizes files from a
@@ -66,8 +77,11 @@ currently installed packages. Default is all paths in
 `add_libpaths()`: Add local library paths to
     `.libPaths()`.
 
-`install()`: install packages and their dependencies
-    from a bucket.
+`install()`: DEPRECATED; use `install_precompiled()`
+
+`install_precompiled()`: install packages and their
+    dependencies from pre-compiled versions of the packages,
+    archived in a google cloud bucket.
 }
 \examples{
 
@@ -84,6 +98,11 @@ currently installed packages. Default is all paths in
 \dontrun{
    add_libpaths('/tmp/my_library')
    localize('gs://bioconductor-full-devel', '/tmp/my_library')
+}
+
+\dontrun{
+add_libpaths("/tmp/host-site-library")
+install(packages = c('BiocParallel', 'BiocGenerics'))
 }
 
 \dontrun{
