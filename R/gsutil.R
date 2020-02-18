@@ -74,9 +74,9 @@ gsutil_requesterpays <-
 #'     your default project ID
 #'
 #' @param source `character(1)`, (`character()` for
-#'     `gsutil_requesterpays()`, `gsutil_ls()`, `gsutil_exists()`)
-#'     paths to a google storage bucket, possibly with wild-cards for
-#'     file-level pattern matching.
+#'     `gsutil_requesterpays()`, `gsutil_ls()`, `gsutil_exists()`,
+#'     `gsutil_cp()`) paths to a google storage bucket, possibly with
+#'     wild-cards for file-level pattern matching.
 #'
 #' @param recursive `logical(1)`; perform operation recursively from
 #'     `source`?. Default: `FALSE`.
@@ -198,13 +198,13 @@ gsutil_cp <-
 {
     source_is_uri <- .gsutil_is_uri(source)
     stopifnot(
-        .is_scalar_character(source), .is_scalar_character(destination),
-        source_is_uri || .gsutil_is_uri(destination),
+        .is_character(source), .is_scalar_character(destination),
+        all(source_is_uri) || .gsutil_is_uri(destination),
         .is_scalar_logical(recursive), .is_scalar_logical(parallel)
     )
 
     args <- c(
-        if (source_is_uri) .gsutil_requesterpays_flag(source),
+        if (any(source_is_uri)) .gsutil_requesterpays_flag(source),
         if (parallel) "-m", ## Makes the operations faster
         "cp", ## cp command
         if (recursive) "-r",
