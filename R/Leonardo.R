@@ -27,7 +27,6 @@ Leonardo <-
             "leonardo",
             host = "notebooks.firecloud.org",
             config = httr::config(ssl_verifypeer = 0L, ssl_verifyhost = 0L),
-            api_url = "https://notebooks.firecloud.org/api-docs.yaml",
             authenticate = FALSE
         ),
         api_header = api_header
