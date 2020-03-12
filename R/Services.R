@@ -83,9 +83,13 @@ tags <-
     null_idx <- vapply(tags, is.null, logical(1))
     tags[null_idx] <- NA_character_
     names(tags) <- trimws(names(tags))
+
     summary <- .operation_field(operations, "summary")
+    null_idx <- vapply(summary, is.null, logical(1))
+    summary[null_idx] <- list(NA_character_)
     summary <-  trimws(unlist(summary, use.names=FALSE))
     summary <- sub("\\\\", "", summary)
+
     tbl <- tibble(
         tag = unlist(tags, use.names=FALSE),
         operation = rep(names(tags), lengths(tags)),
