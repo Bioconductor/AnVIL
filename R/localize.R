@@ -142,18 +142,33 @@ add_libpaths <-
 
 #' @rdname localize
 #'
-#' @description `install()`: DEPRECATED; use `install_precompiled()`
+#' @description `install()`: install R / Bioconductor packages, using
+#'     fast pre-built 'binary' libraries if available.
+#'
+#' @details `install()` prepends an additional repository URI to
+#'     `BiocManager::repositories()`. The URI is formed by
+#'     concatenating `binary_base_url`, the environment variables
+#'     `R_PLATFORM` and the 'major' and 'minor' components of
+#'     `R_PLATFORM_BINARY_VERSION` and `BiocManager::version()`. The
+#'     URI is only prepended if a CRAN-style repostiory exists at that
+#'     location, with binary package tar.gz content described by
+#'     `src/contrib/PACKAGES`.
 #'
 #' @param pkgs `character()` packages to install from binary repository.
 #'
 #' @param lib `character(1)` library path (directory) in which to
 #'     install `pkgs`; defaults to `.libPaths()[1]`.
 #'
-#' @param lib.loc `character()` library locations to search for
-#'     currently installed packages. Default is all paths in
-#'     `.libPaths()`.
+#' @param binary_base_url `character(1)` host and base path for binary
+#'     package 'CRAN-style' repository; not usually required by the
+#'     end-user.
 #'
-#' @return `install()`: location of installed packages, invisibly.
+#' @param verbose `logical(1)` report on package installation
+#'     progress?
+#'
+#' @param ... additional arguments, passed to `install.packages()`.
+#'
+#' @return `install()`: return value of `install.packages()`.
 #'
 #' @examples
 #' \dontrun{
@@ -163,132 +178,42 @@ add_libpaths <-
 #'
 #' @export
 install <-
-    function(pkgs, lib = .libPaths()[1], lib.loc = NULL)
-{
-    .Deprecated("install_precompiled()")
-
-    stopifnot(
-        is.character(pkgs), !anyNA(pkgs)
-    )
-
-    packages <- .install_find_dependencies(pkgs, lib = lib.loc)
-    ## copy from bucket to .libPaths()[1]
-    ## Assumes packages are already in the google bucket
-
-    google_bucket <- .install_choose_google_bucket()
-    packages <- sprintf("%s/%s", google_bucket, packages)
-    exist <- gsutil_exists(packages)
-    if (!all(exist)) {
-        pkgs <- basename(packages)[!exist]
-        stop(
-            "bucket '", google_bucket, "'\n",
-            "  package(s) do not exist:\n",
-            "    '", paste(pkgs, collapse = "'\n    '" ), "'"
-        )
-    }
-
-    ## if there is more than one "source" i.e package(s)
-    ## FIXME: gsutil_rsync should be vectorized, including 0-length source
-    message("installing from '", google_bucket, "'")
-    for (package in packages)
-        .install_1_package(package, lib)
-
-    invisible(file.path(lib, basename(packages)))
-}
-
-.install_1_package <-
-    function(package, lib)
-{
-    message("  '", basename(package), "'...", appendLF = FALSE)
-    destination <- file.path(lib, basename(package))
-    if (!dir.exists(destination))
-        dir.create(destination)
-    gsutil_rsync(
-        source = package, destination = destination,
-        delete = TRUE, recursive = TRUE, dry = FALSE
-    )
-    message(" DONE")
-}
-
-.install_precompiled_archive <-
-    function()
-{
-    archive <- file.path(tempdir(), "AnVIL_precompiled_archive")
-    status <- dir.exists(archive) || dir.create(archive)
-    stopifnot("unable to create download archive" = status)
-    archive
-}
-
-.install_precompiled_archive_unlink <-
-    function()
-{
-    unlink(.install_precompiled_archive(), recursive = TRUE)
-}
-
-#' @rdname localize
-#'
-#' @description `install_precompiled()`: install packages and their
-#'     dependencies from pre-compiled versions of the packages,
-#'     archived in a google cloud bucket.
-#'
-#' @return `install_precompiled()`: NULL, invisibly.
-#'
-#' @examples
-#' \dontrun{
-#' add_libpaths("/tmp/host-site-library")
-#' install(packages = c('BiocParallel', 'BiocGenerics'))
-#' }
-#'
-#' @export
-install_precompiled <-
-    function(pkgs, lib = .libPaths()[1], lib.loc = NULL,
-             repos = "gs://biocbbs_2020a/zpacks",
+    function(pkgs, lib = .libPaths()[1], ...,
+             binary_base_url = "https://storage.googleapis.com",
              verbose = getOption("verbose"))
 {
     stopifnot(
         .is_character(pkgs),
         .is_scalar_character(lib), dir.exists(lib),
-        .is_character(lib.loc) || is.null(lib.loc),
         .is_scalar_logical(verbose)
     )
 
-    ## session-specific download package archive
-    archive <- .install_precompiled_archive()
-
-    ## available packages
-    available <- read.dcf(gzcon(gsutil_pipe(paste0(repos, "/PACKAGES.gz"))))
-    available_pkgs <- available[, "Package"]
-    available_vers <- available[, "Version"]
-    if (verbose)
-        message(length(available_pkgs), " precompiled packages available")
-
-    ## packages to install
-    pkgs <- .install_find_dependencies(pkgs, lib = lib.loc)
-    if (verbose)
-        message(length(pkgs), " packages require installation")
-
-    unavailable <- setdiff(pkgs, available_pkgs)
-    if (length(unavailable)) {
-        ## format for copy / paste into standard package install command
-        text <- paste0("'", unavailable, "'", collapse = ", ")
-        warning(
-            length(unavailable), " packages not available for fast install:\n",
-            paste(strwrap(text, indent = 4, exdent = 4), collapse = "\n"),
-            call. = FALSE, immediate. = TRUE
+    binary_repos <- NULL
+    platform <- Sys.getenv("R_PLATFORM", NA)
+    version_string <- Sys.getenv("R_PLATFORM_BINARY_VERSION", NA)
+    if (!is.na(platform) && !is.na(version_string)) {
+        version <- package_version(version_string)
+        bioconductor_version <- BiocManager::version()
+        ## binary_repos = https://storage.googleapis.com/terra-jupyter-r/0.99"
+        ## binary_repos = https://storage.googleapis.com/terra-rstudio-bioconductor/0.99"
+        ## CRAN-style exetension: src/contrib/PACKAGES
+        binary_repos0 <- paste0(
+            binary_base_url, "/",
+            platform, "/",
+            version$major, ".", version$minor, "/",
+            bioconductor_version$major, ".", bioconductor_version$minor
+            
         )
-    }
-    pkgs <- intersect(pkgs, available_pkgs)
-
-    ## create local copies
-    idx <- match(pkgs, available_pkgs)
-    pkgs <- sprintf("%s/%s_%s.tgz", repos, pkgs, available_vers[idx], ".tgz")
-    pkgs_to_copy <- pkgs[!basename(pkgs) %in% dir(archive)]
-    if (length(pkgs_to_copy)) {
-        message("copying ", length(pkgs_to_copy), " packages to local archive")
-        status <- gsutil_cp(pkgs_to_copy, archive)
+        ## validate binary_repos is available
+        binary_repos <- tryCatch({
+            packages <- paste0(contrib.url(binary_repos0), "/PACKAGES")
+            readLines(packages, 1L)
+            binary_repos0
+        }, error = function(...) {
+            NULL
+        })
     }
 
-    ## install
-    pkgs <- file.path(archive, basename(pkgs))
-    install.packages(pkgs, lib, repos = NULL, verbose = verbose)
+    repos <- c(binary_repos, BiocManager::repositories())
+    install.packages(repos = repos, lib = lib, ..., verbose = verbose)
 }

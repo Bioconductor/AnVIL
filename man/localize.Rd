@@ -5,7 +5,6 @@
 \alias{delocalize}
 \alias{add_libpaths}
 \alias{install}
-\alias{install_precompiled}
 \title{Copy packages, folders, or files to or from google buckets.}
 \usage{
 localize(source, destination, dry = TRUE)
@@ -14,13 +13,11 @@ delocalize(source, destination, unlink = FALSE, dry = TRUE)
 
 add_libpaths(paths)
 
-install(pkgs, lib = .libPaths()[1], lib.loc = NULL)
-
-install_precompiled(
+install(
   pkgs,
   lib = .libPaths()[1],
-  lib.loc = NULL,
-  repos = "gs://biocbbs_2020a/zpacks",
+  ...,
+  binary_base_url = "https://storage.googleapis.com",
   verbose = getOption("verbose")
 )
 }
@@ -46,9 +43,14 @@ in `source`. Default: `FALSE`.}
 \item{lib}{`character(1)` library path (directory) in which to
 install `pkgs`; defaults to `.libPaths()[1]`.}
 
-\item{lib.loc}{`character()` library locations to search for
-currently installed packages. Default is all paths in
-`.libPaths()`.}
+\item{...}{additional arguments, passed to `install.packages()`.}
+
+\item{binary_base_url}{`character(1)` host and base path for binary
+package 'CRAN-style' repository; not usually required by the
+end-user.}
+
+\item{verbose}{`logical(1)` report on package installation
+progress?}
 }
 \value{
 `localize()`: exit status of function `gsutil_rsync()`.
@@ -57,9 +59,7 @@ currently installed packages. Default is all paths in
 
 `add_libpaths()`: updated .libPaths(), invisibly.
 
-`install()`: location of installed packages, invisibly.
-
-`install_precompiled()`: NULL, invisibly.
+`install()`: return value of `install.packages()`.
 }
 \description{
 `localize()`: recursively synchronizes files from a
@@ -77,11 +77,18 @@ currently installed packages. Default is all paths in
 `add_libpaths()`: Add local library paths to
     `.libPaths()`.
 
-`install()`: DEPRECATED; use `install_precompiled()`
-
-`install_precompiled()`: install packages and their
-    dependencies from pre-compiled versions of the packages,
-    archived in a google cloud bucket.
+`install()`: install R / Bioconductor packages, using
+    fast pre-built 'binary' libraries if available.
+}
+\details{
+`install()` prepends an additional repository URI to
+    `BiocManager::repositories()`. The URI is formed by
+    concatenating `binary_base_url`, the environment variables
+    `R_PLATFORM` and the 'major' and 'minor' components of
+    `R_PLATFORM_BINARY_VERSION` and `BiocManager::version()`. The
+    URI is only prepended if a CRAN-style repostiory exists at that
+    location, with binary package tar.gz content described by
+    `src/contrib/PACKAGES`.
 }
 \examples{
 
@@ -98,11 +105,6 @@ currently installed packages. Default is all paths in
 \dontrun{
    add_libpaths('/tmp/my_library')
    localize('gs://bioconductor-full-devel', '/tmp/my_library')
-}
-
-\dontrun{
-add_libpaths("/tmp/host-site-library")
-install(packages = c('BiocParallel', 'BiocGenerics'))
 }
 
 \dontrun{
