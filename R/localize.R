@@ -215,5 +215,5 @@ install <-
     }
 
     repos <- c(binary_repos, BiocManager::repositories())
-    install.packages(repos = repos, lib = lib, ..., verbose = verbose)
+    install.packages(pkgs, repos = repos, lib = lib, ..., verbose = verbose)
 }
