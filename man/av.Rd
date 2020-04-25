@@ -7,6 +7,7 @@
 \alias{avtable_delete_values}
 \alias{avdata}
 \alias{avbucket}
+\alias{.avworkspace}
 \alias{avworkspace_namespace}
 \alias{avworkspace_name}
 \title{Functions for convenient user interaction with AnVIL resources}
@@ -37,9 +38,11 @@ avbucket(
   as_path = TRUE
 )
 
-avworkspace_namespace()
+.avworkspace(key, value)
 
-avworkspace_name()
+avworkspace_namespace(namespace = NULL)
+
+avworkspace_name(name = NULL)
 }
 \arguments{
 \item{namespace}{character(1) AnVIL workspace namespace as returned
@@ -117,7 +120,10 @@ prefix `gs://`.}
 
 `avworkspace_namespace()` and `avworkspace_name()` are
     utiliity functions to retrieve workspace namespace and name
-    from environment variables or interfaces available in AnVIL.
+    from environment variables or interfaces available in
+    AnVIL. Providing arguments to these functions over-rides
+    AnVIL-determined settings with the provided value. Revert to
+    system settings with arguments `NA`.
 }
 \examples{
 \dontrun{

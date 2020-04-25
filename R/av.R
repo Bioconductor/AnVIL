@@ -286,7 +286,10 @@ avbucket <-
 #'
 #' @description `avworkspace_namespace()` and `avworkspace_name()` are
 #'     utiliity functions to retrieve workspace namespace and name
-#'     from environment variables or interfaces available in AnVIL.
+#'     from environment variables or interfaces available in
+#'     AnVIL. Providing arguments to these functions over-rides
+#'     AnVIL-determined settings with the provided value. Revert to
+#'     system settings with arguments `NA`.
 #'
 #' @param namespace character(1) AnVIL workspace namespace as returned
 #'     by, e.g., `avworkspace_namespace()`
@@ -296,12 +299,28 @@ avbucket <-
 #'
 #' @return `avworkspace_namespace()`, and `avworkspace_name()` return
 #'     `character(1)` identifiers.
-#'
-#' @export
-avworkspace_namespace <- function()
-    Sys.getenv('WORKSPACE_NAMESPACE')
+
+.avworkspace <- local({
+    hash <- new.env(parent = emptyenv())
+    function(key, value) {
+        sysvar <- toupper(paste0("WORKSPACE_", key))
+        if (is.null(value)) {
+            if (is.null(hash[[key]]))
+                ## initialize
+                hash[[key]] <- Sys.getenv(sysvar)
+        } else {
+            hash[[key]] <- ifelse(is.na(value), Sys.getenv(sysvar), value)
+        }
+        hash[[key]]
+    }
+})
 
 #' @rdname av
 #' @export
-avworkspace_name <- function()
-    Sys.getenv('WORKSPACE_NAME')
+avworkspace_namespace <- function(namespace = NULL)
+    .avworkspace("namespace", namespace)
+
+#' @rdname av
+#' @export
+avworkspace_name <- function(name = NULL)
+    .avworkspace("name", name)
