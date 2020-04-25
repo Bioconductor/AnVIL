@@ -48,7 +48,7 @@ BiocManager::install("AnVIL")
 
 Once installed, load the package with
 
-```{r, message =FALSE}
+```{r, message =FALSE, eval = TRUE}
 library(AnVIL)
 ```
 
@@ -106,28 +106,47 @@ cloud. For local use, one must
   pointing to the root of the SDK installation, e.g,
 
     ```{r, eval = FALSE}
-    dir(Sys.getenv("GCLOUD_SDK_PATH"))
-    ##  [1] "bin"                 "completion.bash.inc" "completion.zsh.inc" 
-    ##  [4] "data"                "deb"                 "install.bat"        
-    ##  [7] "install.sh"          "lib"                 "LICENSE"            
-    ## [10] "path.bash.inc"       "path.fish.inc"       "path.zsh.inc"       
-    ## [13] "platform"            "properties"          "README"             
-    ## [16] "RELEASE_NOTES"       "rpm"                 "VERSION"            
+    dir(file.path(Sys.getenv("GCLOUD_SDK_PATH"), "bin"), "^(gcloud|gsutil)$")
+    ## [1] "gcloud" "gsutil"
     ```
 
   Test the installation with `gcloud_exists()`
   
     ```{r, eval = TRUE}
-    gcloud_exists() # TRUE when gcloud binaries are available
+    ## the code chunks in this vignette are fully evaluated when
+    ## gcloud_exists() returns TRUE
+    gcloud_exists()
     ```
 
 # For end users
 
 ## Fast binary package installation
 
-- `install()`
+The AnVIL cloud compute environment makes use of docker containers
+with defined installations of binary system software. It is thus
+possible to archive pre-built 'binary' _R_ packages, and to install
+these without requiring compilation. The AnVIL function `install()`
+arranges to install binary packages (when these are available) and
+current; it defaults to installing packages from source using standard
+`BiocManager::install()` facilities.
 
-- `add_libpaths()`
+```{r, eval = FALSE}
+AnVIL::install("GenomicFeatures")
+```
+
+Thus `AnVIL::install()` can be used as an improved method for
+installing _CRAN_ and _Bioconductor_ packages.
+
+Because package installation is fast, it can be convenient to install
+packages into libraries on a project-specific basis, e.g., to create a
+'snapshot' of packages for reproducible analysis. Use
+
+```{r, eval = FALSE}
+add_libpaths("~/my/project")
+```
+
+as a convenient way to prepend a project-specific library path to
+`.libPaths()`. New packages will be installed into this library.
 
 ## Working with Google cloud-based resources
 
