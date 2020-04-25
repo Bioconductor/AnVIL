@@ -113,7 +113,9 @@ tags(dockstore, "users") %>% print(n = Inf)
 ```
 
 We can use the following to determine our user identifier.
-```{r lklk}
-myuid = (dockstore$getUser() %>% as.list)$id
-myuid
+```{r lklk, eval = FALSE}
+myuid <- dockstore$getUser() %>%
+    as.list() %>%
+    pull("id")
 ```
+
