@@ -7,10 +7,14 @@ Authors@R:
         email = "Martin.Morgan@RoswellPark.org"
      ), person(
         "Nitesh", "Turaga", role = "aut",
-        email = "Nitesh.Turaga@RoswellPark.org"
     ), person(
-       "Valerie", "Obenchain", role = "ctb",
-       email = "Valerie.Obenchain@RoswellPark.org"
+       "BJ", "Stubbs", role =  "ctb"
+    ), person(
+       "Vincent", "Carey", role = "ctb"
+    ), person(
+       "Marcel", "Ramos", role = "ctb"
+    ), person(
+       "Valerie", "Obenchain", role = "ctb"
     ))
 Description: This package stub provides functionality to support
     Bioconductor use on the US NHGRI AnVIL compute cloud. Possiblities
@@ -26,7 +30,7 @@ Imports:
     rapiclient (>= 0.1.3),
     tibble,
     BiocManager
-Suggests: knitr, testthat, withr
+Suggests: knitr, testthat, withr, readr
 Collate:
     utilities.R authenticate.R
     Service.R Services.R Leonardo.R Terra.R Dockstore.R Gen3.R
