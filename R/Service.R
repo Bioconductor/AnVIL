@@ -72,14 +72,12 @@ setOldClass("request")
 #' @return An object of class \code{Service}.
 #'
 #' @examples
-#' \dontrun{
 #' .MyService <- setClass("MyService", contains = "Service")
 #'
 #' MyService <- function() {
 #'     .MyService(Service("my_service", host="my.api.org"))
 #' }
-#' }
-#'
+#' 
 #' @export
 Service <-
     function(
@@ -119,6 +117,7 @@ Service <-
 }
 
 #' @importFrom utils .DollarNames
+#'
 #' @export
 .DollarNames.Service <-
     function(x, pattern)

@@ -38,13 +38,15 @@ flatten(x)
 Process service responses to tibble and other data structures.
 }
 \examples{
-\donttest{
-leonardo <- Leonardo()
-leonardo$listClusters() \%>\% flatten()
+if (gcloud_exists()) {
+    leonardo <- Leonardo()
+    leonardo$listClusters() \%>\% flatten()
 }
 
-\donttest{leonardo$getSystemStatus() \%>\% str()}
+if (gcloud_exists())
+   leonardo$getSystemStatus() \%>\% str()
 
-\donttest{dockstore$getUser() \%>\% as.list()}
+if (gcloud_exists())
+    Dockstore()$getUser() \%>\% as.list()
 
 }

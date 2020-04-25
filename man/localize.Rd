@@ -91,22 +91,6 @@ progress?}
     `src/contrib/PACKAGES`.
 }
 \examples{
-
-\dontrun{
-   localize("gs://anvil-bioc", "/tmp/test-localize")
-}
-
-
-\dontrun{
-    delocalize("/tmp/test-localize/", "gs://anvil-bioc")
-}
-
-
-\dontrun{
-   add_libpaths('/tmp/my_library')
-   localize('gs://bioconductor-full-devel', '/tmp/my_library')
-}
-
 \dontrun{
 add_libpaths("/tmp/host-site-library")
 install(packages = c('BiocParallel', 'BiocGenerics'))

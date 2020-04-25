@@ -53,12 +53,10 @@ This function creates a RESTful interface to a service
     level during `.onLoad()`.
 }
 \examples{
-\dontrun{
 .MyService <- setClass("MyService", contains = "Service")
 
 MyService <- function() {
     .MyService(Service("my_service", host="my.api.org"))
-}
 }
 
 }

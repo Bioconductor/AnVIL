@@ -70,3 +70,13 @@ These functions invoke the `gcloud` command line
     execution via `gcloud ...`. Use pre-defined functions in
     preference to this.
 }
+\examples{
+gcloud_exists()
+
+if (gcloud_exists())
+    gcloud_account()
+
+if (gcloud_exists())
+    gcloud_help()
+
+}

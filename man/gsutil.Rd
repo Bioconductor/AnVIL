@@ -176,46 +176,27 @@ If `destination` is a local path and does not exist, it will be
 created.
 }
 \examples{
+    src <- "gs://genomics-public-data/1000-genomes/other/sample_info/sample_info.csv"
+if (gcloud_exists())
+    gsutil_requesterpays(src) # FALSE -- no cost download
 
-\dontrun{
-    gsutil_stat('gs://anvil-bioc', 'blah')
+if (gcloud_exists()) {
+    gsutil_exists(src)
+    gsutil_stat(src)
+    gsutil_ls(dirname(src))
 }
 
+if (gcloud_exists())
+   gsutil_cp(src, tempdir())
 
-\dontrun{
-   # for a single file
-   gsutil_cp("gs://anvil-bioc/blah",
-             "/tmp/blah-copy", recursive=FALSE, parallel=FALSE)
+if (gcloud_exists())
+    gsutil_help("ls")
 
-   # for a folder with all contents
-   # "/tmp/foobar-copy" must be an existing destination or must be created
-
-   gsutil_cp("gs://anvil-bioc/foobar",
-             "/tmp/foobar-copy", recursive=TRUE, parallel=TRUE)
+if (gcloud_exists()) {
+    df <- read.csv(gsutil_pipe(src), 5L)
+    class(df)
+    dim(df)
+    head(df)
 }
 
-
-\dontrun{
-   ## Remove a single file
-   gsutil_rm('gs://anvil-bioc', 'blah', recursive = FALSE)
-
-   ## Remove a folder
-   gsutil_rm('gs://anvil-bioc', 'foo-bar', recursive=TRUE, parallel=TRUE)
-}
-
-
-\dontrun{
-   ## Rsync from google bucket source to local destination
-   gsutil_rsync('gs://anvil-bioc', '/tmp/local-copy')
-
-   ## Rsync from local source to google bucket
-   gsutil_rsync('/tmp/local-copy', 'gs://anvil-bioc')
-}
-
-\dontrun{
-  src <- "gs://genomics-public-data/1000-genomes/other/sample_info/sample_info.csv"
-  df <- read.csv(gsutil_pipe(src))
-  dim(df)
-  head(t(df[1,]))
-}
 }

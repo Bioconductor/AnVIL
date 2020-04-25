@@ -27,10 +27,10 @@
 #'     the number of records, and the column names.
 #'
 #' @importFrom curl curl_escape
+#'
 #' @export
 avtables <-
-    function(namespace = avworkspace_namespace(),
-             name = avworkspace_name())
+    function(namespace = avworkspace_namespace(), name = avworkspace_name())
 {
     stopifnot(
         .is_scalar_character(namespace),
@@ -62,9 +62,8 @@ avtables <-
 #'
 #' @export
 avtable <-
-    function(table,
-             namespace = avworkspace_namespace(),
-             name = avworkspace_name())
+    function(table, namespace = avworkspace_namespace(),
+        name = avworkspace_name())
 {
     stopifnot(
         .is_scalar_character(table),
@@ -129,10 +128,8 @@ avtable <-
 #'
 #' @export
 avtable_import <-
-    function(.data,
-             entity = names(.data)[[1]],
-             namespace = avworkspace_namespace(),
-             name = avworkspace_name())
+    function(.data, entity = names(.data)[[1]],
+        namespace = avworkspace_namespace(), name = avworkspace_name())
 {
     stopifnot(
         is.data.frame(.data),
@@ -169,8 +166,8 @@ avtable_import <-
 #' @export
 avtable_delete_values <-
     function(table, values,
-             namespace = avworkspace_namespace(),
-             name = avworkspace_name())
+        namespace = avworkspace_namespace(),
+        name = avworkspace_name())
 {
     stopifnot(
         .is_scalar_character(table),
@@ -201,13 +198,12 @@ avtable_delete_values <-
 #'     bucket) of the element.
 #'
 #' @examples
-#' \dontrun{
-#' avdata()
-#' }
+#' if (gcloud_exists())
+#'     avdata()
+#'
 #' @export
 avdata <-
-    function(namespace = avworkspace_namespace(),
-             name = avworkspace_name())
+    function(namespace = avworkspace_namespace(), name = avworkspace_name())
 {
     stopifnot(
         .is_scalar_character(namespace),
@@ -251,9 +247,11 @@ avdata <-
 #'     prefixed with `gs://` if `as_path = TRUE`.
 #'
 #' @examples
+#' if (gcloud_exists())
+#'     ## From within AnVIL...
+#'     bucket <- avbucket()                        # discover bucket
+#'
 #' \dontrun{
-#' ## From within AnVIL...
-#' bucket <- avbucket()                        # discover bucket
 #' path <- file.path(bucket, "mtcars.tab")
 #' gsutil_ls(dirname(path))                    # no 'mtcars.tab'...
 #' write.table(mtcars, gsutil_pipe(path, "w")) # write to bucket
@@ -263,8 +261,8 @@ avdata <-
 #' @export
 avbucket <-
     function(namespace = avworkspace_namespace(),
-             name = avworkspace_name(),
-             as_path = TRUE)
+        name = avworkspace_name(),
+        as_path = TRUE)
 {
     stopifnot(
         .is_scalar_character(namespace),
@@ -315,11 +313,17 @@ avbucket <-
 #' @return `avworkspace_namespace()`, and `avworkspace_name()` return
 #'     `character(1)` identifiers.
 #'
+#' @examples
+#' avworkspace_namespace()
+#'
 #' @export
 avworkspace_namespace <- function(namespace = NULL)
     .avworkspace("namespace", namespace)
 
 #' @rdname av
+#'
+#' @examples
+#' avworkspace_name()
 #' @export
 avworkspace_name <- function(name = NULL)
     .avworkspace("name", name)

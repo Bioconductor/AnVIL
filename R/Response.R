@@ -26,9 +26,9 @@ NULL
 #'     are the unlisted second and more-nested elements.
 #'
 #' @examples
-#' \donttest{
-#' leonardo <- Leonardo()
-#' leonardo$listClusters() %>% flatten()
+#' if (gcloud_exists()) {
+#'     leonardo <- Leonardo()
+#'     leonardo$listClusters() %>% flatten()
 #' }
 #'
 #' @export
@@ -50,7 +50,8 @@ setMethod("flatten", "response",
 #'     JSON response; it returns `NULL`.
 #'
 #' @examples
-#' \donttest{leonardo$getSystemStatus() %>% str()}
+#' if (gcloud_exists())
+#'    leonardo$getSystemStatus() %>% str()
 #'
 #' @export
 setMethod("str", "response",
@@ -70,7 +71,8 @@ setMethod("str", "response",
 #'     as a list.
 #'
 #' @examples
-#' \donttest{dockstore$getUser() %>% as.list()}
+#' if (gcloud_exists())
+#'     Dockstore()$getUser() %>% as.list()
 #'
 #' @export
 as.list.response <-

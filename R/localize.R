@@ -20,12 +20,6 @@
 #'
 #' @return `localize()`: exit status of function `gsutil_rsync()`.
 #'
-#' @examples
-#'
-#' \dontrun{
-#'    localize("gs://anvil-bioc", "/tmp/test-localize")
-#' }
-#'
 #' @export
 localize <-
     function(source, destination, dry = TRUE)
@@ -55,12 +49,6 @@ localize <-
 #'
 #' @return `delocalize()`: exit status of function `gsutil_rsync()`
 #'
-#' @examples
-#'
-#' \dontrun{
-#'     delocalize("/tmp/test-localize/", "gs://anvil-bioc")
-#' }
-#'
 #' @export
 delocalize <-
     function(source, destination, unlink = FALSE, dry = TRUE)
@@ -89,13 +77,6 @@ delocalize <-
 #'     `.libPaths()`. Paths that do not exist will be created.
 #'
 #' @return `add_libpaths()`: updated .libPaths(), invisibly.
-#'
-#' @examples
-#'
-#' \dontrun{
-#'    add_libpaths('/tmp/my_library')
-#'    localize('gs://bioconductor-full-devel', '/tmp/my_library')
-#' }
 #'
 #' @export
 add_libpaths <-
@@ -156,8 +137,8 @@ add_libpaths <-
 #' @export
 install <-
     function(pkgs, lib = .libPaths()[1], ...,
-             binary_base_url = "https://storage.googleapis.com",
-             verbose = getOption("verbose"))
+        binary_base_url = "https://storage.googleapis.com",
+        verbose = getOption("verbose"))
 {
     stopifnot(
         .is_character(pkgs),
