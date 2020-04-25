@@ -282,6 +282,21 @@ avbucket <-
     bucket
 }
 
+.avworkspace <- local({
+    hash <- new.env(parent = emptyenv())
+    function(key, value) {
+        sysvar <- toupper(paste0("WORKSPACE_", key))
+        if (is.null(value)) {
+            if (is.null(hash[[key]]))
+                ## initialize
+                hash[[key]] <- Sys.getenv(sysvar)
+        } else {
+            hash[[key]] <- ifelse(is.na(value), Sys.getenv(sysvar), value)
+        }
+        hash[[key]]
+    }
+})
+
 #' @rdname av
 #'
 #' @description `avworkspace_namespace()` and `avworkspace_name()` are
@@ -299,23 +314,7 @@ avbucket <-
 #'
 #' @return `avworkspace_namespace()`, and `avworkspace_name()` return
 #'     `character(1)` identifiers.
-
-.avworkspace <- local({
-    hash <- new.env(parent = emptyenv())
-    function(key, value) {
-        sysvar <- toupper(paste0("WORKSPACE_", key))
-        if (is.null(value)) {
-            if (is.null(hash[[key]]))
-                ## initialize
-                hash[[key]] <- Sys.getenv(sysvar)
-        } else {
-            hash[[key]] <- ifelse(is.na(value), Sys.getenv(sysvar), value)
-        }
-        hash[[key]]
-    }
-})
-
-#' @rdname av
+#'
 #' @export
 avworkspace_namespace <- function(namespace = NULL)
     .avworkspace("namespace", namespace)

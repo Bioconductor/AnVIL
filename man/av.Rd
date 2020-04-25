@@ -7,7 +7,6 @@
 \alias{avtable_delete_values}
 \alias{avdata}
 \alias{avbucket}
-\alias{.avworkspace}
 \alias{avworkspace_namespace}
 \alias{avworkspace_name}
 \title{Functions for convenient user interaction with AnVIL resources}
@@ -37,8 +36,6 @@ avbucket(
   name = avworkspace_name(),
   as_path = TRUE
 )
-
-.avworkspace(key, value)
 
 avworkspace_namespace(namespace = NULL)
 
