@@ -72,7 +72,7 @@ setMethod("str", "response",
 #'
 #' @examples
 #' if (gcloud_exists())
-#'     Dockstore()$getUser() %>% as.list()
+#'     leonardo$getSystemStatus() %>% as.list()
 #'
 #' @export
 as.list.response <-

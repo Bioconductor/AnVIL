@@ -196,9 +196,9 @@ avtable_delete_values <-
 #'     menu, the key used to access the data element, the value label
 #'     associated with the data element and the value (e.g., google
 #'     bucket) of the element.
-#'
 #' @examples
-#' if (gcloud_exists())
+#' if (gcloud_exists() && nzchar(avworkspace_namespace()))
+#'     ## from within AnVIL
 #'     avdata()
 #'
 #' @export
@@ -247,7 +247,7 @@ avdata <-
 #'     prefixed with `gs://` if `as_path = TRUE`.
 #'
 #' @examples
-#' if (gcloud_exists())
+#' if (gcloud_exists() && nzchar(avworkspace_namespace()))
 #'     ## From within AnVIL...
 #'     bucket <- avbucket()                        # discover bucket
 #'
@@ -324,6 +324,7 @@ avworkspace_namespace <- function(namespace = NULL)
 #'
 #' @examples
 #' avworkspace_name()
+#'
 #' @export
 avworkspace_name <- function(name = NULL)
     .avworkspace("name", name)

@@ -123,10 +123,11 @@ prefix `gs://`.}
     system settings with arguments `NA`.
 }
 \examples{
-if (gcloud_exists())
+if (gcloud_exists() && nzchar(avworkspace_namespace()))
+    ## from within AnVIL
     avdata()
 
-if (gcloud_exists())
+if (gcloud_exists() && nzchar(avworkspace_namespace()))
     ## From within AnVIL...
     bucket <- avbucket()                        # discover bucket
 
@@ -140,4 +141,5 @@ read.table(gsutil_pipe(path, "r"))          # read from bucket
 avworkspace_namespace()
 
 avworkspace_name()
+
 }

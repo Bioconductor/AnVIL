@@ -47,6 +47,6 @@ if (gcloud_exists())
    leonardo$getSystemStatus() \%>\% str()
 
 if (gcloud_exists())
-    Dockstore()$getUser() \%>\% as.list()
+    leonardo$getSystemStatus() \%>\% as.list()
 
 }
