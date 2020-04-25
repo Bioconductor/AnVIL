@@ -5,17 +5,13 @@ Authors@R:
     c(person(
         "Martin", "Morgan", role = c("aut", "cre"),
         email = "Martin.Morgan@RoswellPark.org"
-     ), person(
-        "Nitesh", "Turaga", role = "aut",
-    ), person(
-       "BJ", "Stubbs", role =  "ctb"
-    ), person(
-       "Vincent", "Carey", role = "ctb"
-    ), person(
-       "Marcel", "Ramos", role = "ctb"
-    ), person(
-       "Valerie", "Obenchain", role = "ctb"
-    ))
+     ),
+     person("Nitesh", "Turaga", role = "aut"),
+     person("BJ", "Stubbs", role =  "ctb"),
+     person("Vincent", "Carey", role = "ctb"),
+     person("Marcel", "Ramos", role = "ctb"),
+     person("Sweta", "Gopaulakrishnan", role = "ctb"),
+     person("Valerie", "Obenchain", role = "ctb"))
 Description: This package stub provides functionality to support
     Bioconductor use on the US NHGRI AnVIL compute cloud. Possiblities
     include authentication, data access, distributed computing,
