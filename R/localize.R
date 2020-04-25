@@ -115,31 +115,6 @@ add_libpaths <-
     .libPaths(c(paths, .libPaths()))
 }
 
-#' @importFrom utils available.packages installed.packages
-.install_find_dependencies <-
-    function(packages, lib)
-{
-    ## find dependencies
-    db <- available.packages(repos = BiocManager::repositories())
-    deps <- unlist(tools::package_dependencies(packages, db, recursive = TRUE),
-                   use.names=FALSE)
-    installed <- rownames(installed.packages(lib.loc = lib))
-    unique(c(packages, deps[!deps %in% installed]))
-}
-
-## FIXME: buckets: don't use 'devel' for buckets, just version
-## numbers; follow git convention for naming, e.g., RELEASE_3_10
-.install_choose_google_bucket <-
-    function()
-{
-    if (BiocManager:::isDevel()) {
-        "gs://bioconductor-full-devel"
-    } else {
-        version <- sub(".", "-", BiocManager::version(), fixed=TRUE)
-        paste0("gs://bioconductor-full-release-", version)
-    }
-}
-
 #' @rdname localize
 #'
 #' @description `install()`: install R / Bioconductor packages, using
@@ -176,6 +151,8 @@ add_libpaths <-
 #' install(packages = c('BiocParallel', 'BiocGenerics'))
 #' }
 #'
+#' @importFrom utils contrib.url install.packages
+#'
 #' @export
 install <-
     function(pkgs, lib = .libPaths()[1], ...,
@@ -189,8 +166,8 @@ install <-
     )
 
     binary_repos <- NULL
-    platform <- Sys.getenv("R_PLATFORM", NA)
-    version_string <- Sys.getenv("R_PLATFORM_BINARY_VERSION", NA)
+    platform <- Sys.getenv("TERRA_R_PLATFORM", NA)
+    version_string <- Sys.getenv("TERRA_R_PLATFORM_BINARY_VERSION", NA)
     if (!is.na(platform) && !is.na(version_string)) {
         version <- package_version(version_string)
         bioconductor_version <- BiocManager::version()
