@@ -37,7 +37,7 @@ authenticate <-
     }
 
     app <- oauth_app(
-        "Leonardo",
+        "AnVILBiocPackage",
         key = access$client_id,
         secret = access$client_secret
     )
