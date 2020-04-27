@@ -16,7 +16,7 @@ Authors@R:
 Description: The AnVIL is cloud computing resource developed in part
     by the National Human Genome Research Institute. The AnVIL package
     provides end-user and devloper functionality. For the end-user,
-    AnVIL provides faast binary package installation, utitlities for
+    AnVIL provides fast binary package installation, utitlities for
     working with Terra / AnVIL table and data resources, and
     convenient functions for file movement to and from Google cloud
     storage. For developers, AnVIL provides programatic access to the
