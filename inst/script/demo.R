@@ -24,7 +24,6 @@ url <- paste0(url, "/rstudio")
 url
 
 stop_response <- leonardo$stopCluster(
-<<<<<<< HEAD
              googleProject = "anvil-leo-dev",
              clusterName = "nitesh6"
          ) %>% content()
@@ -41,8 +40,4 @@ response <- leonardo$createClusterV2 (
     googleProject = "anvil-leo-dev",
     clusterName = "nitesh7",
     rstudioDockerImage = "us.gcr.io/anvil-leo-dev/anvil_bioc_docker:latest"
-=======
-    googleProject = "anvil-leo-dev",
-    clusterName = "mtmorganbioc"
->>>>>>> master
 )
