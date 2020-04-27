@@ -387,6 +387,13 @@ services. Each service is represented in _R_ as an object. The object
 is created by invoking a constructor, sometimes with arguments. We
 illustrate basic functionality with the `Terra()` service.
 
+Currently, APIs using the OpenAPI Specification (OAS) Version 2
+(formerly known as Swagger) are supported. AnVIL makes use of the
+[rapiclient][] codebase to provide a unified representation of the
+API protocol.
+
+[rapiclient]: https://cran.r-project.org/package=rapiclient
+
 ### Construction {.unnumbered}
 
 Create an instance of the service. This consults a Swagger / OpenAPI
