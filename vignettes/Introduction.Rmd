@@ -15,11 +15,11 @@ output:
 abstract: |
   The AnVIL is cloud computing resource developed in part by the
   National Human Genome Research Institute. The AnVIL package provides
-  end-user and devloper functionality. For the end-user, AnVIL
-  provides faast binary package installation, utitlities for working
+  end-user and developer functionality. For the end-user, AnVIL
+  provides fast binary package installation, utilities for working
   with Terra / AnVIL table and data resources, and convenient
   functions for file movement to and from Google cloud storage. For
-  developers, AnVIL provides programatic access to the Terra,
+  developers, AnVIL provides programmatic access to the Terra,
   Leonardo, Dockstore, and Gen3 RESTful programming interface,
   including helper functions to transform JSON responses to more
   formats more amenable to manipulation in _R_.
@@ -495,7 +495,7 @@ following services:
   in the AnVIL compute cloud.
 
 The _Dockstore_ service (https://dockstore.org/swagger.json,
-`Dockstore()`) is available but has recieved limited
+`Dockstore()`) is available but has received limited
 testing. _Dockstore_ is used to run CWL- or WDL-based work flows,
 including workflows using _R_ / _Bioconductor_. See the separate
 vignette 'Dockstore and _Bioconductor_ for AnVIL' for initial
@@ -555,7 +555,7 @@ maintainer is notified. Ask for developer support on the
 
 Please report bugs as 'issues' on [GitHub][].
 
-Retrieve the source code for this package from it's cannonical location.
+Retrieve the source code for this package from it's canonical location.
 
 ```
 git clone https://git.bioconductor.org/packages/AnVIL
