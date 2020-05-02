@@ -30,15 +30,25 @@ empty_object <- setNames(list(), character())
 #'     `operations,Service-method`, to the internal `get_operation()`
 #'     function.
 #'
+#' @param .deprecated optional logical(1) include deprecated operations?
+#'
 #' @export
-setGeneric("operations", function(x, ...) standardGeneric("operations"))
+setGeneric(
+    "operations",
+    function(x, ..., .deprecated = FALSE)
+        standardGeneric("operations"),
+    signature = "x"
+)
 
 #' @export
 setMethod(
     "operations", "Service",
-    function(x, ...)
+    function(x, ..., .deprecated = FALSE)
 {
-    get_operations(.api(x), ...)
+    operations <- get_operations(.api(x), ...)
+    deprecated <- .operation_field(operations, "deprecated")
+    keep <- .deprecated | !vapply(deprecated, isTRUE, logical(1))
+    operations[keep]
 })
 
 #' @rdname Services
@@ -76,9 +86,10 @@ setMethod(
 #'
 #' @export
 tags <-
-    function(x, .tags)
+    function(x, .tags, .deprecated = FALSE)
 {
-    operations <- operations(x)
+    operations <- operations(x, .deprecated = .deprecated)
+
     tags <- .operation_field(operations, "tags")
     null_idx <- vapply(tags, is.null, logical(1))
     tags[null_idx] <- NA_character_
@@ -110,5 +121,8 @@ setMethod(
     "$", "Service",
     function(x, name)
 {
-    operations(x)[[name]]
+    operation <- operations(x, .deprecated = TRUE)[name]
+    if (isTRUE(.operation_field(operation, "deprecated")[[name]]))
+        warning("'", name, "()' is deprecated")
+    operation[[name]]
 })
