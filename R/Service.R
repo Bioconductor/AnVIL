@@ -33,6 +33,17 @@ setOldClass("request")
     fl
 }
 
+.api_paths_fix <-
+    function(x)
+{
+    ## 'produces' needs to be character(1) for httr 1.4.1
+    if ("produces" %in% names(x))
+        x[["produces"]] <- paste(x[["produces"]], collapse = "; ")
+    else if (is.list(x))
+        x <- lapply(x, .api_paths_fix)
+    x
+}
+
 #' @rdname Service
 #'
 #' @name Service
@@ -113,6 +124,7 @@ Service <-
     })
     api$schemes <- schemes
     api$host <- host
+    api$paths <- .api_paths_fix(api$paths)
     .Service(service = service, config = config, api = api)
 }
 
