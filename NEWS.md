@@ -1,3 +1,10 @@
+# AnVIL 1.2.0
+
+NEW FEATURES
+
+- (v 1.1.3) Intorduce .deprecated flag in operations() / tags(); don't include
+  deprecated APIs by default; warn on use of deprecated APIs.
+
 # AnVIL 1.0.x
 
 BUG FIXES
@@ -27,4 +34,3 @@ USER VISIBLE CHANGES
   create these themselves, e.g., `leonardo <-
 
 - Added a `NEWS.md` file to track changes to the package.
-

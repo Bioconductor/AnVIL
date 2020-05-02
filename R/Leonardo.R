@@ -36,7 +36,7 @@ Leonardo <-
 #' @export
 setMethod(
     "operations", "Leonardo",
-    function(x)
+    function(x, ..., .deprecated = FALSE)
 {
-    callNextMethod(x, .headers = .api_header(x))
+    callNextMethod(x, .headers = .api_header(x), ..., .deprecated = .deprecated)
 })
