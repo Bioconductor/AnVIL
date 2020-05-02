@@ -1,3 +1,14 @@
+# AnVIL 1.0.x
+
+BUG FIXES
+
+- (v 1.0.1) collapse 'produces' vectors to scalars, for httr::accept()
+
+USER VISIBLE CHANGES
+
+- (v 1.0.2) support updated Leonardo `listRuntimes()` and friends
+  (`listClusters()` deprecated)
+
 # AnVIL 1.0.0
 
 - AnVIL is _finally_ on Bioconductor!
@@ -5,10 +16,6 @@
 - `av`, `gcloud`, `gsutil` type functions added to interface with AnVIL
   and the cloud
 - Support `leonardo`, `terra`, `dockstore` and `gen3*` APIs
-
-BUG FIXES
-
-- (v 1.0.1) collapse 'produces' vectors to scalars, for httr::accept()
 
 # AnVIL 0.0.20
 
