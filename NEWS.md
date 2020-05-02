@@ -1,8 +1,13 @@
-# AnVIL 1.2.0
+# AnVIL 1.0.x
 
 BUG FIXES
 
-- (v 1.1.1) collapse 'produces' vectors to scalars, for httr::accept()
+- (v 1.0.1) collapse 'produces' vectors to scalars, for httr::accept()
+
+USER VISIBLE CHANGES
+
+- (v 1.0.2) support updated Leonardo `listRuntimes()` and friends
+  (`listClusters()` deprecated)
 
 # AnVIL 1.0.0
 
