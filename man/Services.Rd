@@ -32,11 +32,11 @@
 \usage{
 empty_object
 
-operations(x, ...)
+operations(x, ..., .deprecated = FALSE)
 
 schemas(x)
 
-tags(x, .tags)
+tags(x, .tags, .deprecated = FALSE)
 
 \S4method{$}{Service}(x, name)
 
@@ -62,6 +62,8 @@ package and documented on this page, e.g., `leonardo` or
 \item{...}{additional arguments passed to methods or, for
 `operations,Service-method`, to the internal `get_operation()`
 function.}
+
+\item{.deprecated}{optional logical(1) include deprecated operations?}
 
 \item{.tags}{optional character() of tags to use to filter operations.}
 

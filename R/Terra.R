@@ -45,9 +45,11 @@ Terra <-
 #' @export
 setMethod(
     "operations", "Terra",
-    function(x)
+    function(x, ..., .deprecated = FALSE)
 {
-    value <- callNextMethod(x, .headers = .api_header(x))
+    value <- callNextMethod(
+        x, .headers = .api_header(x), ..., .deprecated = .deprecated
+    )
     value[grep("[_,]+", names(value), invert = TRUE)]
 })
 

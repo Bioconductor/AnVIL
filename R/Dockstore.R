@@ -43,10 +43,12 @@ Dockstore <-
 #' @export
 setMethod(
     "operations", "Dockstore",
-    function(x, ...)
+    function(x, ..., .deprecated = FALSE)
 {
     ## Use .api_header() for authentication.
-    value <- callNextMethod(x, .headers = .api_header(x))
+    value <- callNextMethod(
+        x, .headers = .api_header(x), ..., .deprecated = .deprecated
+    )
     ## Some operations have a poorly defined operationId in the json
     value[grep("[_,]+", names(value), invert = TRUE)]
 })
