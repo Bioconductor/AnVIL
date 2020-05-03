@@ -150,11 +150,11 @@ repositories <-
     bioconductor_version <- package_version(version)
     platform <- Sys.getenv("TERRA_R_PLATFORM", NA)
     platform_version_string <- Sys.getenv("TERRA_R_PLATFORM_BINARY_VERSION", NA)
-    platform_version <- package_version(platform_version_string)
     if (!is.na(platform) && !is.na(platform_version_string)) {
         ## binary_repos = https://storage.googleapis.com/terra-jupyter-r/0.99"
         ## binary_repos = https://storage.googleapis.com/terra-rstudio-bioconductor/0.99"
         ## CRAN-style exetension: src/contrib/PACKAGES.gz
+        platform_version <- package_version(platform_version_string)
         binary_repos0 <- paste0(
             binary_base_url, "/",
             platform, "/",
