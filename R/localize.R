@@ -104,11 +104,11 @@ add_libpaths <-
 #' @details `install()` prepends an additional repository URI to
 #'     `BiocManager::repositories()`. The URI is formed by
 #'     concatenating `binary_base_url`, the environment variables
-#'     `R_PLATFORM` and the 'major' and 'minor' components of
-#'     `R_PLATFORM_BINARY_VERSION` and `BiocManager::version()`. The
-#'     URI is only prepended if a CRAN-style repostiory exists at that
-#'     location, with binary package tar.gz content described by
-#'     `src/contrib/PACKAGES`.
+#'     `TERRA_R_PLATFORM` and the 'major' and 'minor' components of
+#'     `TERRA_R_PLATFORM_BINARY_VERSION` and
+#'     `BiocManager::version()`. The URI is only prepended if a
+#'     CRAN-style repostiory exists at that location, with binary
+#'     package tar.gz content described by `src/contrib/PACKAGES`.
 #'
 #' @param pkgs `character()` packages to install from binary repository.
 #'
@@ -154,7 +154,7 @@ install <-
         bioconductor_version <- BiocManager::version()
         ## binary_repos = https://storage.googleapis.com/terra-jupyter-r/0.99"
         ## binary_repos = https://storage.googleapis.com/terra-rstudio-bioconductor/0.99"
-        ## CRAN-style exetension: src/contrib/PACKAGES
+        ## CRAN-style exetension: src/contrib/PACKAGES.gz
         binary_repos0 <- paste0(
             binary_base_url, "/",
             platform, "/",
@@ -164,8 +164,12 @@ install <-
         )
         ## validate binary_repos is available
         binary_repos <- tryCatch({
-            packages <- paste0(contrib.url(binary_repos0), "/PACKAGES")
-            readLines(packages, 1L)
+            packages <- paste0(contrib.url(binary_repos0), "/PACKAGES.gz")
+            suppressWarnings({
+                url <- url(packages)
+                open(url, "rb")
+                close(url)
+            })
             binary_repos0
         }, error = function(...) {
             NULL

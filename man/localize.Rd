@@ -84,11 +84,11 @@ progress?}
 `install()` prepends an additional repository URI to
     `BiocManager::repositories()`. The URI is formed by
     concatenating `binary_base_url`, the environment variables
-    `R_PLATFORM` and the 'major' and 'minor' components of
-    `R_PLATFORM_BINARY_VERSION` and `BiocManager::version()`. The
-    URI is only prepended if a CRAN-style repostiory exists at that
-    location, with binary package tar.gz content described by
-    `src/contrib/PACKAGES`.
+    `TERRA_R_PLATFORM` and the 'major' and 'minor' components of
+    `TERRA_R_PLATFORM_BINARY_VERSION` and
+    `BiocManager::version()`. The URI is only prepended if a
+    CRAN-style repostiory exists at that location, with binary
+    package tar.gz content described by `src/contrib/PACKAGES`.
 }
 \examples{
 \dontrun{

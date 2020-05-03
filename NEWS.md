@@ -11,6 +11,8 @@ BUG FIXES
 
 - (v 1.0.1) collapse 'produces' vectors to scalars, for httr::accept()
 
+- (v 1.0.3) access correct binary repository, more robustly
+
 USER VISIBLE CHANGES
 
 - (v 1.0.2) support updated Leonardo `listRuntimes()` and friends
