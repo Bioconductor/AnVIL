@@ -1,6 +1,6 @@
 Package: AnVIL
 Title: Bioconductor on the AnVIL compute environment
-Version: 0.99.7
+Version: 0.99.7-1
 Authors@R: 
     c(person(
         "Martin", "Morgan", role = c("aut", "cre"),
@@ -25,7 +25,7 @@ Description: The AnVIL is cloud computing resource developed in part
     to more formats more amenable to manipulation in R.
 License: Artistic-2.0
 Encoding: UTF-8
-Depends: R (>= 4.0), dplyr
+Depends: R (>= 3.6), dplyr
 Imports:
     stats, utils, methods,
     futile.logger,
