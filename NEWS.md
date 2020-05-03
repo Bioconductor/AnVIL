@@ -4,6 +4,8 @@ BUG FIXES
 
 - (v 1.0.1) collapse 'produces' vectors to scalars, for httr::accept()
 
+- (v 1.0.3) access correct binary repository, more robustly
+
 USER VISIBLE CHANGES
 
 - (v 1.0.2) support updated Leonardo `listRuntimes()` and friends
@@ -27,4 +29,3 @@ USER VISIBLE CHANGES
   create these themselves, e.g., `leonardo <-
 
 - Added a `NEWS.md` file to track changes to the package.
-
