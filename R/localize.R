@@ -165,7 +165,11 @@ install <-
         ## validate binary_repos is available
         binary_repos <- tryCatch({
             packages <- paste0(contrib.url(binary_repos0), "/PACKAGES.gz")
-            readLines(packages, 1L)
+            suppressMessages({
+                url <- url(packages)
+                open(url, "rb")
+                close(url)
+            })
             binary_repos0
         }, error = function(...) {
             NULL
