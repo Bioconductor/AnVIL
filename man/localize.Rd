@@ -16,11 +16,15 @@ install(
   pkgs,
   lib = .libPaths()[1],
   ...,
+  version = BiocManager::version(),
   binary_base_url = "https://storage.googleapis.com",
   verbose = getOption("verbose")
 )
 
-repositories(binary_base_url = "https://storage.googleapis.com")
+repositories(
+  version = BiocManager::version(),
+  binary_base_url = "https://storage.googleapis.com"
+)
 
 add_libpaths(paths)
 }
@@ -44,6 +48,9 @@ in `source`. Default: `FALSE`.}
 install `pkgs`; defaults to `.libPaths()[1]`.}
 
 \item{...}{additional arguments, passed to `install.packages()`.}
+
+\item{version}{`character(1)` or `package_version` Bioconductor
+version, e.g., "3.12".}
 
 \item{binary_base_url}{`character(1)` host and base path for binary
 package 'CRAN-style' repository; not usually required by the
