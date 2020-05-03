@@ -17,11 +17,9 @@
 #' @format NULL
 #'
 #' @examples
-#' if (gcloud_exists()) {
-#'     terra <- Terra()
-#'     tags(terra)
-#'     tags(terra, "Billing")
-#' }
+#' terra <- Terra()
+#' tags(terra)
+#' tags(terra, "Billing")
 #'
 #' @export
 Terra <-
@@ -34,7 +32,8 @@ Terra <-
             "terra",
             host = "api.firecloud.org",
             api_url = "https://api.firecloud.org/api-docs.yaml",
-            authenticate = FALSE
+            authenticate = FALSE,
+            api_reference_md5sum = "1b1fe131446f829cc81359d0026279f9"
         ),
         api_header = api_header
     )

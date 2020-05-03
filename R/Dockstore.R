@@ -21,6 +21,9 @@
 #'
 #' @format NULL
 #'
+#' @examples
+#' Dockstore()
+#'
 #' @export
 Dockstore <-
     function()
@@ -34,7 +37,8 @@ Dockstore <-
     .Dockstore(
         Service(
             "dockstore", host="dockstore.org", authenticate = FALSE,
-            api_url = "https://dockstore.org/swagger.json"
+            api_url = "https://dockstore.org/swagger.json",
+            api_reference_md5sum = "655da75b016e0da29905d0ce498a8acf"
         ),
         api_header = api_header
     )

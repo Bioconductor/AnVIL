@@ -8,6 +8,8 @@ NEW FEATURES
 - (v 1.1.4) add repositories() to return binary (if available),
   Bioconductor, and CRAN repository paths.
 
+- (v 1.1.6) provide md5sum as check on service version.
+
 # AnVIL 1.0.x
 
 BUG FIXES

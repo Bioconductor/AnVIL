@@ -546,6 +546,11 @@ packages,
     }
     ```
 
+Use `api_reference_url` and `api_reference_md5sum` of `Service()` as a
+mechanism to provide some confidence that the service created by the
+user at runtime is consistent with the service intended by the
+developer.
+
 # Support, bug reports, and source code availability
 
 For user support, please ask for help on the _Bioconductor_ [support

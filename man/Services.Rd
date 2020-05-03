@@ -76,7 +76,8 @@ function.}
     `\{\}`.
 
 `Leonardo()` creates the API of the Leonard container
-    deployment service at https://leonardo.dev.anvilproject.org/.
+    deployment service at
+    https://notebooks.firecloud.org/api-docs.yaml.
 
 `Terra()` creates the API of the Terra cloud computational
     environemnt at https://api.firecloud.org/.
@@ -106,11 +107,13 @@ RESTful services useful for AnVIL developers
 \examples{
 empty_object
 
-if (gcloud_exists()) {
-    terra <- Terra()
-    tags(terra)
-    tags(terra, "Billing")
-}
+Leonardo()
+
+terra <- Terra()
+tags(terra)
+tags(terra, "Billing")
+
+Dockstore()
 
 }
 \keyword{datasets}
