@@ -2,8 +2,11 @@
 
 NEW FEATURES
 
-- (v 1.1.3) Intorduce .deprecated flag in operations() / tags(); don't include
+- (v 1.1.3) introduce .deprecated flag in operations() / tags(); don't include
   deprecated APIs by default; warn on use of deprecated APIs.
+
+- (v 1.1.4) add repositories() to return binary (if available),
+  Bioconductor, and CRAN repository paths.
 
 # AnVIL 1.0.x
 

@@ -3,15 +3,14 @@
 \name{localize}
 \alias{localize}
 \alias{delocalize}
-\alias{add_libpaths}
 \alias{install}
+\alias{repositories}
+\alias{add_libpaths}
 \title{Copy packages, folders, or files to or from google buckets.}
 \usage{
 localize(source, destination, dry = TRUE)
 
 delocalize(source, destination, unlink = FALSE, dry = TRUE)
-
-add_libpaths(paths)
 
 install(
   pkgs,
@@ -20,6 +19,10 @@ install(
   binary_base_url = "https://storage.googleapis.com",
   verbose = getOption("verbose")
 )
+
+repositories(binary_base_url = "https://storage.googleapis.com")
+
+add_libpaths(paths)
 }
 \arguments{
 \item{source}{`character(1)`, a google storage bucket or local file
@@ -35,9 +38,6 @@ operation.}
 \item{unlink}{`logical(1)` remove (unlink) the file or directory
 in `source`. Default: `FALSE`.}
 
-\item{paths}{`character()`: vector of directories to add to
-`.libPaths()`. Paths that do not exist will be created.}
-
 \item{pkgs}{`character()` packages to install from binary repository.}
 
 \item{lib}{`character(1)` library path (directory) in which to
@@ -51,15 +51,21 @@ end-user.}
 
 \item{verbose}{`logical(1)` report on package installation
 progress?}
+
+\item{paths}{`character()`: vector of directories to add to
+`.libPaths()`. Paths that do not exist will be created.}
 }
 \value{
 `localize()`: exit status of function `gsutil_rsync()`.
 
 `delocalize()`: exit status of function `gsutil_rsync()`
 
-`add_libpaths()`: updated .libPaths(), invisibly.
-
 `install()`: return value of `install.packages()`.
+
+`repositories()`: character() of binary (if available),
+    Bioconductor, and CRAN repositories.
+
+`add_libpaths()`: updated .libPaths(), invisibly.
 }
 \description{
 `localize()`: recursively synchronizes files from a
@@ -74,26 +80,30 @@ progress?}
     directory, and does not delete files in `destination` that are
     not in `source`.
 
-`add_libpaths()`: Add local library paths to
-    `.libPaths()`.
-
 `install()`: install R / Bioconductor packages, using
     fast pre-built 'binary' libraries if available.
+
+`repositories()`: repositories to search for binary
+    (if available), Bioconductor, and CRAN packages.
+
+`add_libpaths()`: Add local library paths to
+    `.libPaths()`.
 }
 \details{
-`install()` prepends an additional repository URI to
+`repositories()` prepends an additional repository URI to
     `BiocManager::repositories()`. The URI is formed by
     concatenating `binary_base_url`, the environment variables
     `TERRA_R_PLATFORM` and the 'major' and 'minor' components of
     `TERRA_R_PLATFORM_BINARY_VERSION` and
     `BiocManager::version()`. The URI is only prepended if a
     CRAN-style repostiory exists at that location, with binary
-    package tar.gz content described by `src/contrib/PACKAGES`.
+    package tar.gz content described by `src/contrib/PACKAGES.gz`.
 }
 \examples{
-\dontrun{
-add_libpaths("/tmp/host-site-library")
-install(packages = c('BiocParallel', 'BiocGenerics'))
-}
+\dontrun{install(c('BiocParallel', 'BiocGenerics'))}
+
+repositories()
+
+\dontrun{add_libpaths("/tmp/host-site-library")}
 
 }
