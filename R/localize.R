@@ -154,7 +154,7 @@ install <-
         bioconductor_version <- BiocManager::version()
         ## binary_repos = https://storage.googleapis.com/terra-jupyter-r/0.99"
         ## binary_repos = https://storage.googleapis.com/terra-rstudio-bioconductor/0.99"
-        ## CRAN-style exetension: src/contrib/PACKAGES
+        ## CRAN-style exetension: src/contrib/PACKAGES.gz
         binary_repos0 <- paste0(
             binary_base_url, "/",
             platform, "/",
@@ -164,7 +164,7 @@ install <-
         )
         ## validate binary_repos is available
         binary_repos <- tryCatch({
-            packages <- paste0(contrib.url(binary_repos0), "/PACKAGES")
+            packages <- paste0(contrib.url(binary_repos0), "/PACKAGES.gz")
             readLines(packages, 1L)
             binary_repos0
         }, error = function(...) {
