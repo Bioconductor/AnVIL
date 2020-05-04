@@ -118,9 +118,11 @@ prefix `gs://`.}
 `avworkspace_namespace()` and `avworkspace_name()` are
     utiliity functions to retrieve workspace namespace and name
     from environment variables or interfaces available in
-    AnVIL. Providing arguments to these functions over-rides
-    AnVIL-determined settings with the provided value. Revert to
-    system settings with arguments `NA`.
+    AnVIL. The `namespace` is usually the billing account, and the
+    `name` is the name of the workspace as it appears in
+    \url{https://app.terra.bio/#workspaces}. Providing arguments to
+    these functions over-rides AnVIL-determined settings with the
+    provided value. Revert to system settings with arguments `NA`.
 }
 \examples{
 if (gcloud_exists() && nzchar(avworkspace_namespace()))

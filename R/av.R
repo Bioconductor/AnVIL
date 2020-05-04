@@ -285,9 +285,12 @@ avbucket <-
     function(key, value) {
         sysvar <- toupper(paste0("WORKSPACE_", key))
         if (is.null(value)) {
-            if (is.null(hash[[key]]))
+            if (is.null(hash[[key]])) {
                 ## initialize
                 hash[[key]] <- Sys.getenv(sysvar)
+                if (!nzchar(hash[[key]]) && interactive())
+                    warning("'", key, "' undefined; use `", key, "()` to set")
+            }
         } else {
             hash[[key]] <- ifelse(is.na(value), Sys.getenv(sysvar), value)
         }
@@ -300,9 +303,11 @@ avbucket <-
 #' @description `avworkspace_namespace()` and `avworkspace_name()` are
 #'     utiliity functions to retrieve workspace namespace and name
 #'     from environment variables or interfaces available in
-#'     AnVIL. Providing arguments to these functions over-rides
-#'     AnVIL-determined settings with the provided value. Revert to
-#'     system settings with arguments `NA`.
+#'     AnVIL. The `namespace` is usually the billing account, and the
+#'     `name` is the name of the workspace as it appears in
+#'     \url{https://app.terra.bio/#workspaces}. Providing arguments to
+#'     these functions over-rides AnVIL-determined settings with the
+#'     provided value. Revert to system settings with arguments `NA`.
 #'
 #' @param namespace character(1) AnVIL workspace namespace as returned
 #'     by, e.g., `avworkspace_namespace()`
@@ -318,7 +323,7 @@ avbucket <-
 #'
 #' @export
 avworkspace_namespace <- function(namespace = NULL)
-    .avworkspace("namespace", namespace)
+    .avworkspace("avworkspace_namespace", namespace)
 
 #' @rdname av
 #'
@@ -327,4 +332,4 @@ avworkspace_namespace <- function(namespace = NULL)
 #'
 #' @export
 avworkspace_name <- function(name = NULL)
-    .avworkspace("name", name)
+    .avworkspace("avworkspace_name", name)

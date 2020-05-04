@@ -275,7 +275,6 @@ knitr::include_graphics('images/AnVIL-Workspace-Data.png')
 ```
 
 ```{r, include = FALSE}
-## N.B.: IT IS NOT NECESSARY TO SET THESE WHEN ON ANVIL
 avworkspace_namespace("pathogen-genomic-surveillance")
 avworkspace_name("COVID-19")
 ```
@@ -294,7 +293,7 @@ It is also possible to specify, when not in the AnVIL compute
 environment, the data resource to work with.
 
 ```{r}
-## N.B.: IT IS NOT NECESSARY TO SET THESE WHEN ON ANVIL
+## N.B.: IT MAY NOT BE NECESSARY TO SET THESE WHEN ON ANVIL
 avworkspace_namespace("pathogen-genomic-surveillance")
 avworkspace_name("COVID-19")
 ```
