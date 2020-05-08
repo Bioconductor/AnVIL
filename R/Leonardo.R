@@ -18,7 +18,8 @@
 #' @format NULL
 #'
 #' @examples
-#' Leonardo()
+#' if (gcloud_exists())
+#'     Leonardo()
 #'
 #' @export
 Leonardo <-

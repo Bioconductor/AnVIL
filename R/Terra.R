@@ -17,9 +17,11 @@
 #' @format NULL
 #'
 #' @examples
-#' terra <- Terra()
-#' tags(terra)
-#' tags(terra, "Billing")
+#' if (gcloud_exists()) {
+#'     terra <- Terra()
+#'     tags(terra)
+#'     tags(terra, "Billing")
+#' }
 #'
 #' @export
 Terra <-

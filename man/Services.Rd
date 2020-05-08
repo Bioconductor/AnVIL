@@ -107,11 +107,14 @@ RESTful services useful for AnVIL developers
 \examples{
 empty_object
 
-Leonardo()
+if (gcloud_exists())
+    Leonardo()
 
-terra <- Terra()
-tags(terra)
-tags(terra, "Billing")
+if (gcloud_exists()) {
+    terra <- Terra()
+    tags(terra)
+    tags(terra, "Billing")
+}
 
 Dockstore()
 
