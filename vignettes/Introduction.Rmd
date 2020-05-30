@@ -349,17 +349,18 @@ summarized in the 'Files' portion of the workspace. The location of
 the files is
 
 ```{r}
-files <- avbucket()
-files
+bucket <- avbucket()
+bucket
 ```
 
-and the content can be discovered and retrieved using `gsutil_*()`
-functionality; if the workspace is owned by the user, then persistent
-data can be written to the bucket.
+The content of the bucket can be viewed with 
 
 ```{r}
-gsutil_ls(files)
+avfiles_ls()
 ```
+
+If the workspace is owned by the user, then persistent data can be
+written to the bucket.
 
 ```{r, eval = FALSE}
 ## requires workspace ownership
@@ -367,6 +368,27 @@ uri <- avbucket()                             # discover bucket
 bucket <- file.path(uri, "mtcars.tab")
 write.table(mtcars, gsutil_pipe(bucket, "w")) # write to bucket
 ```
+
+A particularly convenient operation is to back up files or directories
+from the compute node to the bucket
+
+```{r, eval = FALSE}
+## backup all files and folders in the current working directory
+avfiles_backup(getwd(), recursive = TRUE)
+
+## backup all files in the current directory
+avfiles_backup(dir())
+
+## backup all files to gs://<avbucket()>/scratch/
+avfiles_backup(dir, paste0(avbucket(), "/scratch"))
+```
+
+Note that the backup operations have file naming behavior like the
+Linux `cp` command; details are described in the help page
+`gsutil_help("cp")`.
+
+Use `avfiles_restore()` to restore files or directories from the
+workspace bucket to the compute node.
 
 ## Example work flows
 

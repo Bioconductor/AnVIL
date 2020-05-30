@@ -1,3 +1,7 @@
+##
+## internal
+## 
+
 #' @importFrom httr status_code http_condition
 .avstop_for_status <-
     function(response, op)
@@ -16,12 +20,17 @@
     stop(message, call.=FALSE)
 }
 
+##
+## tables
+##
+
 #' Functions for convenient user interaction with AnVIL resources
 #'
 #' @rdname av
 #'
 #' @description `avtables()` describes tables available in a
-#'     workspace.
+#'     workspace. Tables can be visualized under the DATA tab, TABLES
+#'     item.
 #'
 #' @return `avtables()`: A tibble with columns identifying the table,
 #'     the number of records, and the column names.
@@ -186,8 +195,9 @@ avtable_delete_values <-
 
 #' @rdname av
 #'
-#' @description `avdata()` returns the key-value table of 'REFERENCE
-#'     DATA' and 'OTHER DATA' workspace attributes.
+#' @description `avdata()` returns key-value tables representing the
+#'     information visualized under the DATA tab, 'REFERENCE DATA' and
+#'     'OTHER DATA' items.
 #'
 #' @return `avdata()` returns a tibble with five columns: `"type"`
 #'     represents the origin of the data from the 'REFERENCE' or
@@ -196,6 +206,7 @@ avtable_delete_values <-
 #'     menu, the key used to access the data element, the value label
 #'     associated with the data element and the value (e.g., google
 #'     bucket) of the element.
+#'
 #' @examples
 #' if (gcloud_exists() && nzchar(avworkspace_namespace()))
 #'     ## from within AnVIL
@@ -235,13 +246,33 @@ avdata <-
     arrange(tbl, type, table, key)
 }
 
+##
+## workspace bucket
+##
+
+.avbucket_cache <- local({
+    .key <- function(namespace, name)
+        paste(namespace, name, sep = "/")
+    buckets <- new.env(parent = emptyenv())
+
+    list(exists = function(namespace, name) {
+        exists(.key(namespace, name), envir = buckets)
+    }, get = function(namespace, name) {
+        buckets[[ .key(namespace, name) ]]
+    }, set = function(namespace, name, bucket) {
+        buckets[[ .key(namespace, name) ]] <- bucket
+    }, keys = function() {
+        names(buckets)
+    }, flush = function() {
+        rm(list = names(buckets), envir = buckets)
+    })
+})
+
 #' @rdname av
 #'
-#' @description `avbucket()` retrieves the google bucket associated
-#'     with a workspace.
-#'
-#' @param as_path logical(1) when TRUE (default) return bucket with
-#'     prefix `gs://`.
+#' @description `avbucket()` returns the workspace bucket, i.e., the
+#'     google bucket associated with a workspace. Bucket content can
+#'     be visualized under the 'DATA' tab, 'Files' item.
 #'
 #' @return `avbucket()` returns a `character(1)` bucket identifier,
 #'     prefixed with `gs://` if `as_path = TRUE`.
@@ -270,15 +301,232 @@ avbucket <-
         .is_scalar_logical(as_path)
     )
 
-    name <- curl_escape(name)
-    response <- Terra()$getWorkspace(namespace, name, "workspace.bucketName")
-    .avstop_for_status(response, "avbucket")
+    if (.avbucket_cache$exists(namespace, name)) {
+        bucket <- .avbucket_cache$get(namespace, name)
+    } else {
+        name <- curl_escape(name)
+        response <- Terra()$getWorkspace(namespace, name, "workspace.bucketName")
+        .avstop_for_status(response, "avbucket")
+        bucket <- as.list(response)$workspace$bucketName
+        .avbucket_cache$set(namespace, name, bucket)
+    }
 
-    bucket <- as.list(response)$workspace$bucketName
     if (as_path)
         bucket <- paste0("gs://", bucket)
     bucket
 }
+
+.avbucket_path <-
+    function(bucket, ...)
+{
+    stopifnot(.gsutil_is_uri(bucket))
+
+    ## get path without duplicate "/"
+    args <- expand.grid(..., stringsAsFactors = FALSE, KEEP.OUT.ATTRS = FALSE)
+    args <- unname(as.list(args))
+    bucket <- sub("/*$", "", bucket)
+    args <- lapply(args, sub, pattern = "^/*", replacement = "")
+    args <- lapply(args, sub, pattern = "/*$", replacement = "")
+    args <- do.call(
+        "mapply",
+        c(list(
+            FUN = paste,
+            MoreArgs = list(sep = "/"),
+            USE.NAMES = FALSE
+        ), args)
+    )
+    paste0(bucket, ifelse(length(args), "/", ""), args)
+}
+
+#' @rdname av
+#'
+#' @description `avfiles_ls()` returns the paths of files in the
+#'     workspace bucket.
+#'
+#' @param path For `avfiles_ls(), the character(1) file or directory path
+#'     to list.
+#'
+#'     For `avfiles_rm()`, the character() (perhaps with length
+#'     greater than 1) of files or directory paths to be removed. The
+#'     elements of `path` can contain glob-style patterns, e.g.,
+#'     `vign*`.
+#'
+#' @param full_names logical(1) return names relative to `path`
+#'     (`FALSE`, default) or root of the workspace bucket?
+#'
+#' @param recursive logical(1) list files recursively?
+#'
+#' @param as_path logical(1) when TRUE (default) return bucket with
+#'     prefix `gs://` (for `avbucket()`) or `gs://<bucket-id>` (for
+#'     `avfiles_ls()`).
+#'
+#' @return `avfiles_ls()` returns a character vector of files in the
+#'     workspace bucket.
+#'
+#' @examples
+#' if (gcloud_exists() && nzchar(avworkspace_namespace()))
+#'     avfiles_ls()
+#'
+#' @export
+avfiles_ls <-
+    function(
+        path = "",
+        full_names = FALSE,
+        recursive = FALSE,
+        namespace = avworkspace_namespace(), 
+        name = avworkspace_name())
+{
+    stopifnot(
+        .is_scalar_character(path, zchar = TRUE),
+        .is_scalar_character(namespace),
+        .is_scalar_character(name)
+    )
+
+    bucket <- avbucket(namespace, name)
+    source <- .avbucket_path(bucket, path)
+    result <- gsutil_ls(source, recursive = recursive)
+    if (full_names) {
+        sub(paste0(bucket, "/*"), "", result)
+    } else {
+        sub(paste0(source, "/*"), "", result)
+    }
+}
+
+#' @rdname av
+#'
+#' @description `avfiles_backup()` copies files from the compute node
+#'     file system to the workspace bucket.
+#'
+#' @details `avfiles_backup()` can be used to back-up individual files
+#'     or entire directories, recursively.  When `recursive = FALSE`,
+#'     files are backed up to the bucket with names approximately
+#'     `paste0(destination, "/", basename(source))`.  When `recursive
+#'     = TRUE` and source is a directory `path/to/foo/', files are
+#'     backed up to bucket names that include the directory name,
+#'     approximately `paste0(destination, "/", dir(basename(source),
+#'     full.names = TRUE))`.  Naming conventions are described in
+#'     detail in `gsutil_help("cp")`.
+#'
+#' @param source character() file paths. for `avfiles_backup()`,
+#'     `source` can include directory names when `recursive = TRUE`.
+#'
+#' @param destination character(1) a google bucket
+#'     (`gs://<bucket-id>/...`) to write files. The default is the
+#'     workspace bucket.
+#'
+#' @param parallel logical(1) backup files using parallel transfer?
+#'     See `?gsutil_cp()`.
+#'
+#' @return `avfiles_backup()` returns, invisibly, the status code of the
+#'     `gsutil_cp()` command used to back up the files.
+#'
+#' @examples
+#' \dontrun{
+#' ## backup all files in the current directory
+#' ## default buckets are gs://<bucket-id>/<file-names>
+#' avfiles_backup(dir())
+#' ## backup working directory, recursively
+#' ## default buckets are gs://<bucket-id>/<basename(getwd())>/...
+#' avfiles_backup(getwd(), recursive = TRUE)
+#' }
+#'
+#' @export
+avfiles_backup <-
+    function(
+        source,
+        destination = "",
+        recursive = FALSE,
+        parallel = TRUE,
+        namespace = avworkspace_namespace(),
+        name = avworkspace_name()
+    )
+{
+    stopifnot(
+        `some 'source' paths do not exist` = all(file.exists(source)),
+        .is_scalar_character(destination, zchar = TRUE),
+        .is_scalar_logical(recursive),
+        .is_scalar_logical(parallel),
+        .is_scalar_character(namespace),
+        .is_scalar_character(name)
+    )
+
+    bucket <- avbucket(namespace, name)
+    destination <- .avbucket_path(bucket, destination)
+    gsutil_cp(source, destination, recursive = recursive, parallel = parallel)
+}
+
+#' @rdname av
+#'
+#' @description `avfiles_restore()` copies files from the workspace
+#'     bucket to the compute node file system.
+#'
+#' @details `avfiles_restore()` behaves in a manner analogous to
+#'     `avfiles_backup()`, copying files from the workspace bucket to
+#'     the compute node file system.
+#'
+#' @export
+avfiles_restore <-
+    function(
+        source,
+        destination = ".",
+        recursive = FALSE,
+        parallel = TRUE,
+        namespace = avworkspace_namespace(),
+        name = avworkspace_name()
+    )
+{
+    stopifnot(
+        .is_character(source),
+        .is_scalar_character(destination),
+        `'destination' is not a directory` = dir.exists(destination),
+        .is_scalar_logical(recursive),
+        .is_scalar_logical(parallel),
+        .is_scalar_character(namespace),
+        .is_scalar_character(name)
+    )
+
+    bucket <- avbucket(namespace, name)
+    source <- .avbucket_path(bucket, source)
+    gsutil_cp(source, destination, recursive = recursive, parallel = parallel)
+}
+
+#' @rdname av
+#'
+#' @description `avfiles_rm()` removes files or directories from the
+#'     workspace bucket.
+#'
+#' @return `avfiles_rm()` on success, returns a list of the return
+#'     codes of `gsutil_rm()`, invisibly.
+#'
+#' @export
+avfiles_rm <-
+    function(
+        source,
+        recursive = FALSE,
+        parallel = TRUE,
+        namespace = avworkspace_namespace(),
+        name = avworkspace_name()
+    )        
+{
+    stopifnot(
+        .is_character(source),
+        .is_scalar_logical(recursive),
+        .is_scalar_logical(parallel),
+        .is_scalar_character(namespace),
+        .is_scalar_character(name)
+    )
+
+    bucket <- avbucket(namespace, name)
+    source <- .avbucket_path(bucket, source)
+    result <- lapply(
+        source, gsutil_rm, recursive = recursive, parallel = parallel
+    )
+    invisible(unlist(result))
+}
+
+##
+## utilities
+##
 
 .avworkspace <- local({
     hash <- new.env(parent = emptyenv())
@@ -302,12 +550,15 @@ avbucket <-
 #'
 #' @description `avworkspace_namespace()` and `avworkspace_name()` are
 #'     utiliity functions to retrieve workspace namespace and name
-#'     from environment variables or interfaces available in
-#'     AnVIL. The `namespace` is usually the billing account, and the
-#'     `name` is the name of the workspace as it appears in
-#'     \url{https://app.terra.bio/#workspaces}. Providing arguments to
-#'     these functions over-rides AnVIL-determined settings with the
-#'     provided value. Revert to system settings with arguments `NA`.
+#'     from environment variables or interfaces usually available in
+#'     AnVIL notebooks or RStudio sessions.
+#'
+#' @details `avworkspace_namespace()` is usually the billing account,
+#'     and `avworkspace_name()` the name of the workspace as it
+#'     appears in \url{https://app.terra.bio/#workspaces}. Providing
+#'     arguments to these functions over-rides AnVIL-determined
+#'     settings with the provided value. Revert to system settings
+#'     with arguments `NA`.
 #'
 #' @param namespace character(1) AnVIL workspace namespace as returned
 #'     by, e.g., `avworkspace_namespace()`

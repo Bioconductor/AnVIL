@@ -10,6 +10,8 @@ NEW FEATURES
 
 - (v 1.1.6) provide md5sum as check on service version.
 
+- (v 1.1.9) add avfiles_*() for managing workspace bucket files.
+
 # AnVIL 1.0.x
 
 BUG FIXES

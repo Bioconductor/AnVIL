@@ -40,3 +40,34 @@ test_that(".avtable_import_set_entity() works", {
         "!anyNA\\(.data\\[\\[entity\\]\\]\\) is not TRUE"
     )
 })
+
+test_that(".avbucket_path() trims arguments correctly", {
+    expect_error(
+        .avbucket_path(),
+        'argument "bucket" is missing, with no default'
+    )
+    expect_error(
+        .avbucket_path('foo'),
+        '.gsutil_is_uri\\(bucket\\) is not TRUE'
+    )
+    expect_identical("gs://foo", .avbucket_path("gs://foo"))
+    expect_identical("gs://foo/bar", .avbucket_path("gs://foo", "bar"))
+    expect_identical("gs://foo/bar", .avbucket_path("gs://foo", "/bar"))
+    expect_identical("gs://foo/bar", .avbucket_path("gs://foo", "bar/"))
+    expect_identical("gs://foo/bar", .avbucket_path("gs://foo", "/bar/"))
+    expect_identical("gs://foo/bar", .avbucket_path("gs://foo/", "/bar"))
+    expect_identical("gs://foo/bar", .avbucket_path("gs://foo/", "bar/"))
+    expect_identical("gs://foo/bar", .avbucket_path("gs://foo/", "/bar/"))
+    expect_identical(
+        paste0("gs://foo/", c("bar", "baz")),
+        .avbucket_path("gs://foo", c("bar", "baz"))
+    )
+    expect_identical(
+        "gs://foo/bar/baz",
+        .avbucket_path("gs://foo", "bar", "baz")
+    )
+    expect_identical(
+        paste0("gs://foo/bar/", c("baz", "bing")),
+        .avbucket_path("gs://foo", "bar", c("baz", "bing"))
+    )
+})

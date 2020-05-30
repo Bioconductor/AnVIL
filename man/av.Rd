@@ -7,6 +7,10 @@
 \alias{avtable_delete_values}
 \alias{avdata}
 \alias{avbucket}
+\alias{avfiles_ls}
+\alias{avfiles_backup}
+\alias{avfiles_restore}
+\alias{avfiles_rm}
 \alias{avworkspace_namespace}
 \alias{avworkspace_name}
 \title{Functions for convenient user interaction with AnVIL resources}
@@ -35,6 +39,40 @@ avbucket(
   namespace = avworkspace_namespace(),
   name = avworkspace_name(),
   as_path = TRUE
+)
+
+avfiles_ls(
+  path = "",
+  full_names = FALSE,
+  recursive = FALSE,
+  namespace = avworkspace_namespace(),
+  name = avworkspace_name()
+)
+
+avfiles_backup(
+  source,
+  destination = "",
+  recursive = FALSE,
+  parallel = TRUE,
+  namespace = avworkspace_namespace(),
+  name = avworkspace_name()
+)
+
+avfiles_restore(
+  source,
+  destination = ".",
+  recursive = FALSE,
+  parallel = TRUE,
+  namespace = avworkspace_namespace(),
+  name = avworkspace_name()
+)
+
+avfiles_rm(
+  source,
+  recursive = FALSE,
+  parallel = TRUE,
+  namespace = avworkspace_namespace(),
+  name = avworkspace_name()
 )
 
 avworkspace_namespace(namespace = NULL)
@@ -70,7 +108,31 @@ entity column with suffix `_id`, e.g., `sample_id`. Rows with
 entity column entries matching `values` are deleted.}
 
 \item{as_path}{logical(1) when TRUE (default) return bucket with
-prefix `gs://`.}
+prefix `gs://` (for `avbucket()`) or `gs://<bucket-id>` (for
+`avfiles_ls()`).}
+
+\item{path}{For `avfiles_ls(), the character(1) file or directory path
+    to list.
+
+    For `avfiles_rm()`, the character() (perhaps with length
+    greater than 1) of files or directory paths to be removed. The
+    elements of `path` can contain glob-style patterns, e.g.,
+    `vign*`.}
+
+\item{full_names}{logical(1) return names relative to `path`
+(`FALSE`, default) or root of the workspace bucket?}
+
+\item{recursive}{logical(1) list files recursively?}
+
+\item{source}{character() file paths. for `avfiles_backup()`,
+`source` can include directory names when `recursive = TRUE`.}
+
+\item{destination}{character(1) a google bucket
+(`gs://<bucket-id>/...`) to write files. The default is the
+workspace bucket.}
+
+\item{parallel}{logical(1) backup files using parallel transfer?
+See `?gsutil_cp()`.}
 }
 \value{
 `avtables()`: A tibble with columns identifying the table,
@@ -96,12 +158,22 @@ prefix `gs://`.}
 `avbucket()` returns a `character(1)` bucket identifier,
     prefixed with `gs://` if `as_path = TRUE`.
 
+`avfiles_ls()` returns a character vector of files in the
+    workspace bucket.
+
+`avfiles_backup()` returns, invisibly, the status code of the
+    `gsutil_cp()` command used to back up the files.
+
+`avfiles_rm()` on success, returns a list of the return
+    codes of `gsutil_rm()`, invisibly.
+
 `avworkspace_namespace()`, and `avworkspace_name()` return
     `character(1)` identifiers.
 }
 \description{
 `avtables()` describes tables available in a
-    workspace.
+    workspace. Tables can be visualized under the DATA tab, TABLES
+    item.
 
 `avtable()` returns an AnVIL table.
 
@@ -109,20 +181,52 @@ prefix `gs://`.}
 
 `avtable_delete_values()` removes rows from an AnVIL table.
 
-`avdata()` returns the key-value table of 'REFERENCE
-    DATA' and 'OTHER DATA' workspace attributes.
+`avdata()` returns key-value tables representing the
+    information visualized under the DATA tab, 'REFERENCE DATA' and
+    'OTHER DATA' items.
 
-`avbucket()` retrieves the google bucket associated
-    with a workspace.
+`avbucket()` returns the workspace bucket, i.e., the
+    google bucket associated with a workspace. Bucket content can
+    be visualized under the 'DATA' tab, 'Files' item.
+
+`avfiles_ls()` returns the paths of files in the
+    workspace bucket.
+
+`avfiles_backup()` copies files from the compute node
+    file system to the workspace bucket.
+
+`avfiles_restore()` copies files from the workspace
+    bucket to the compute node file system.
+
+`avfiles_rm()` removes files or directories from the
+    workspace bucket.
 
 `avworkspace_namespace()` and `avworkspace_name()` are
     utiliity functions to retrieve workspace namespace and name
-    from environment variables or interfaces available in
-    AnVIL. The `namespace` is usually the billing account, and the
-    `name` is the name of the workspace as it appears in
-    \url{https://app.terra.bio/#workspaces}. Providing arguments to
-    these functions over-rides AnVIL-determined settings with the
-    provided value. Revert to system settings with arguments `NA`.
+    from environment variables or interfaces usually available in
+    AnVIL notebooks or RStudio sessions.
+}
+\details{
+`avfiles_backup()` can be used to back-up individual files
+    or entire directories, recursively.  When `recursive = FALSE`,
+    files are backed up to the bucket with names approximately
+    `paste0(destination, "/", basename(source))`.  When `recursive
+    = TRUE` and source is a directory `path/to/foo/', files are
+    backed up to bucket names that include the directory name,
+    approximately `paste0(destination, "/", dir(basename(source),
+    full.names = TRUE))`.  Naming conventions are described in
+    detail in `gsutil_help("cp")`.
+
+`avfiles_restore()` behaves in a manner analogous to
+    `avfiles_backup()`, copying files from the workspace bucket to
+    the compute node file system.
+
+`avworkspace_namespace()` is usually the billing account,
+    and `avworkspace_name()` the name of the workspace as it
+    appears in \url{https://app.terra.bio/#workspaces}. Providing
+    arguments to these functions over-rides AnVIL-determined
+    settings with the provided value. Revert to system settings
+    with arguments `NA`.
 }
 \examples{
 if (gcloud_exists() && nzchar(avworkspace_namespace()))
@@ -140,6 +244,18 @@ write.table(mtcars, gsutil_pipe(path, "w")) # write to bucket
 gsutil_stat(path)                           # yep, there!
 read.table(gsutil_pipe(path, "r"))          # read from bucket
 }
+if (gcloud_exists() && nzchar(avworkspace_namespace()))
+    avfiles_ls()
+
+\dontrun{
+## backup all files in the current directory
+## default buckets are gs://<bucket-id>/<file-names>
+avfiles_backup(dir())
+## backup working directory, recursively
+## default buckets are gs://<bucket-id>/<basename(getwd())>/...
+avfiles_backup(getwd(), recursive = TRUE)
+}
+
 avworkspace_namespace()
 
 avworkspace_name()
