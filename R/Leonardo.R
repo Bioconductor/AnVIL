@@ -34,7 +34,7 @@ Leonardo <-
             config = httr::config(ssl_verifypeer = 0L, ssl_verifyhost = 0L),
             authenticate = FALSE,
             api_reference_url = "https://notebooks.firecloud.org/api-docs.yaml",
-            api_reference_md5sum = "003ec0d5a2e5b4e63fe4ab99b1072f36"
+            api_reference_md5sum = "30dfc178cb333cf040df98cde8680256"
         ),
         api_header = api_header
     )
