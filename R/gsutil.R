@@ -108,7 +108,8 @@ gsutil_ls <-
         ...,
         source
     )
-    .gsutil_do(args)
+    result <- .gsutil_do(args)
+    result[nzchar(result) & !endsWith(result, ":")]
 }
 
 .gsutil_exists_1 <-
