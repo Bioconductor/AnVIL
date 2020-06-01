@@ -277,6 +277,18 @@ illustrated in the figure below.
 knitr::include_graphics('images/AnVIL-Workspace-Data.png')
 ```
 
+The AnVIL package provides programmatic tools to access different
+components of the data workspace, as summarized in the following
+table.
+
+Workspace      | AnVIL function
+---------------|---------------
+TABLES         | `avtables()`
+REFERENCE DATA | None
+OTHER DATA     | `avbucket()`
+Workspace Data | `avdata()`
+Files          | `avfiles_ls()`, `avfiles_backup()`, `avfiles_restore()`
+
 ```{r, include = FALSE, cache = FALSE}
 avworkspace_namespace("pathogen-genomic-surveillance")
 avworkspace_name("COVID-19")
