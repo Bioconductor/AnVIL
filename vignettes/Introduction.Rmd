@@ -48,7 +48,7 @@ BiocManager::install("AnVIL")
 
 Once installed, load the package with
 
-```{r, message =FALSE, eval = TRUE}
+```{r, message =FALSE, eval = TRUE, cache = FALSE}
 library(AnVIL)
 ```
 
@@ -266,15 +266,18 @@ results to the cloud for long-term persistent storage.
 ### Tables, reference data, and persistent files {.unnumbered}
 
 AnVIL organizes data and analysis environments into
-'workspaces'. AnVIL-provided Data resources in a workspace are managed
-in as 'TABLES', 'REFERENCE DATA', and 'Workspace Data', as illustrated
-in the figure below.
+'workspaces'. AnVIL-provided data resources in a workspace are managed
+under the 'DATA' tab as 'TABLES', 'REFERENCE DATA', and 'OTHER DATA';
+the latter includes ''Workspace Data' and 'Files', with 'Files'
+corresponding to a google cloud bucket associated with the
+workspace. These components of the graphical user interface are
+illustrated in the figure below.
 
-```{r echo = FALSE}
+```{r, echo = FALSE, cache = FALSE}
 knitr::include_graphics('images/AnVIL-Workspace-Data.png')
 ```
 
-```{r, include = FALSE}
+```{r, include = FALSE, cache = FALSE}
 avworkspace_namespace("pathogen-genomic-surveillance")
 avworkspace_name("COVID-19")
 ```
