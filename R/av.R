@@ -537,7 +537,7 @@ avfiles_rm <-
                 ## initialize
                 hash[[key]] <- Sys.getenv(sysvar)
                 if (!nzchar(hash[[key]]) && interactive())
-                    warning("'", key, "' undefined; use `", fun, "()` to set")
+                    warning("'", sysvar, "' undefined; use `", fun, "()` to set")
             }
         } else {
             hash[[key]] <- ifelse(is.na(value), Sys.getenv(sysvar), value)
