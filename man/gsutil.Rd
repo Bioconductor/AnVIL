@@ -22,7 +22,7 @@ gsutil_exists(source)
 
 gsutil_stat(source)
 
-gsutil_cp(source, destination, ..., recursive = FALSE, parallel = TRUE)
+gsutil_cp(source, destination, ..., recursive = FALSE)
 
 gsutil_rm(source, ..., force = FALSE, recursive = FALSE, parallel = TRUE)
 
@@ -55,9 +55,6 @@ wild-cards for file-level pattern matching.}
 
 \item{destination}{`character(1)`, google cloud bucket or local
 file system destination path.}
-
-\item{parallel}{`logical(1)`, perform parallel multi-threaded /
-multi-processing (default is `TRUE`).}
 
 \item{force}{`logical(1)`: continue silently despite errors when
 removing multiple objects. Default: `FALSE`.}

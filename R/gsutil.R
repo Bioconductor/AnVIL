@@ -88,28 +88,28 @@ gsutil_requesterpays <-
 #' @param recursive `logical(1)`; perform operation recursively from
 #'     `source`?. Default: `FALSE`.
 #'
-#' @param ... additional arguments passed as-is to the `gsutil` subcommand.
+#' @param ... additional arguments passed as-is to the `gcs_dir`
+#'     function from GCSConnection.
 #'
-#' @return `gsutil_ls()`: `character()` listing of `source` content.
+#' @return `gsutil_ls()`: `GCSConnection::FolderClass()` listing of
+#'     `source` content.
+#'
+#' @importFrom GCSConnection gcs_dir
 #'
 #' @export
 gsutil_ls <-
-    function(source = character(), ..., recursive = FALSE)
+    function(source = character(), recursive = FALSE, ...)
 {
     stopifnot(
         .gsutil_is_uri(source),
         .is_scalar_logical(recursive)
     )
 
-    args <- c(
-        .gsutil_requesterpays_flag(source),
-        "ls",
-        if (recursive) "-r",
-        ...,
-        source
-    )
-    result <- .gsutil_do(args)
-    result[nzchar(result) & !endsWith(result, ":")]
+    GCSConnection::gcs_dir(
+                       source,
+                       recursive = recursive,
+                       ...
+                   )
 }
 
 .gsutil_exists_1 <-
@@ -141,7 +141,7 @@ gsutil_exists <-
     )
 
     gsutil <- .gcloud_sdk_find_binary("gsutil")
-    stopifnot(file.exists(gsutil))      # bad environment variables
+    stopifnot(file.exists(gsutil)) # bad environment variables
 
     vapply(source, .gsutil_exists_1, logical(1), gsutil)
 }
@@ -181,36 +181,31 @@ gsutil_stat <-
 #' @param destination `character(1)`, google cloud bucket or local
 #'     file system destination path.
 #'
-#' @param parallel `logical(1)`, perform parallel multi-threaded /
-#'     multi-processing (default is `TRUE`).
-#'
 #' @return `gsutil_cp()`: exit status of `gsutil_cp()`, invisibly.
 #'
 #' @examples
 #' if (gcloud_exists())
 #'    gsutil_cp(src, tempdir())
 #'
+#' @importFrom GCSConnection gcs_cp
+#'
 #' @export
 gsutil_cp <-
-    function(source, destination, ..., recursive = FALSE, parallel = TRUE)
+    function(source, destination, recursive = TRUE)
 {
     source_is_uri <- .gsutil_is_uri(source)
     stopifnot(
         .is_character(source), .is_scalar_character(destination),
         all(source_is_uri) || .gsutil_is_uri(destination),
-        .is_scalar_logical(recursive), .is_scalar_logical(parallel)
+        .is_scalar_logical(recursive)
     )
 
-    args <- c(
-        if (any(source_is_uri)) .gsutil_requesterpays_flag(source),
-        if (parallel) "-m", ## Makes the operations faster
-        "cp", ## cp command
-        if (recursive) "-r",
-        ...,
-        source,
-        destination
-    )
-    result <- .gsutil_do(args)
+    result <- GCSConnection::gcs_cp(
+                                 from = source,
+                                 to = destination,
+                                 recursive = recursive
+                             )
+
     .gcloud_sdk_result(result)
 }
 
