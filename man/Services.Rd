@@ -32,11 +32,11 @@
 \usage{
 empty_object
 
-operations(x, ...)
+operations(x, ..., .deprecated = FALSE)
 
 schemas(x)
 
-tags(x, .tags)
+tags(x, .tags, .deprecated = FALSE)
 
 \S4method{$}{Service}(x, name)
 
@@ -63,6 +63,8 @@ package and documented on this page, e.g., `leonardo` or
 `operations,Service-method`, to the internal `get_operation()`
 function.}
 
+\item{.deprecated}{optional logical(1) include deprecated operations?}
+
 \item{.tags}{optional character() of tags to use to filter operations.}
 
 \item{name}{A symbol representing a defined operation, e.g.,
@@ -74,7 +76,8 @@ function.}
     `\{\}`.
 
 `Leonardo()` creates the API of the Leonard container
-    deployment service at https://leonardo.dev.anvilproject.org/.
+    deployment service at
+    https://notebooks.firecloud.org/api-docs.yaml.
 
 `Terra()` creates the API of the Terra cloud computational
     environemnt at https://api.firecloud.org/.
@@ -104,11 +107,16 @@ RESTful services useful for AnVIL developers
 \examples{
 empty_object
 
+if (gcloud_exists())
+    Leonardo()
+
 if (gcloud_exists()) {
     terra <- Terra()
     tags(terra)
     tags(terra, "Billing")
 }
+
+Dockstore()
 
 }
 \keyword{datasets}

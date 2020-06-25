@@ -1,32 +1,39 @@
 Package: AnVIL
 Title: Bioconductor on the AnVIL compute environment
-Version: 0.0.28
+Version: 1.1.13
 Authors@R: 
     c(person(
         "Martin", "Morgan", role = c("aut", "cre"),
-        email = "Martin.Morgan@RoswellPark.org"
-     ), person(
-        "Nitesh", "Turaga", role = "aut",
-        email = "Nitesh.Turaga@RoswellPark.org"
-    ), person(
-       "Valerie", "Obenchain", role = "ctb",
-       email = "Valerie.Obenchain@RoswellPark.org"
-    ))
-Description: This package stub provides functionality to support
-    Bioconductor use on the US NHGRI AnVIL compute cloud. Possiblities
-    include authentication, data access, distributed computing,
-    specialized package management, and algorithm development.
+        email = "mtmorgan.bioc@gmail.com"
+     ),
+     person("Nitesh", "Turaga", role = "aut"),
+     person("BJ", "Stubbs", role =  "ctb"),
+     person("Vincent", "Carey", role = "ctb"),
+     person("Marcel", "Ramos", role = "ctb"),
+     person("Sweta", "Gopaulakrishnan", role = "ctb"),
+     person("Valerie", "Obenchain", role = "ctb")
+    )
+Description: The AnVIL is cloud computing resource developed in part
+    by the National Human Genome Research Institute. The AnVIL package
+    provides end-user and devloper functionality. For the end-user,
+    AnVIL provides fast binary package installation, utitlities for
+    working with Terra / AnVIL table and data resources, and
+    convenient functions for file movement to and from Google cloud
+    storage. For developers, AnVIL provides programatic access to the
+    Terra, Leonardo, Dockstore, and Gen3 RESTful programming
+    interface, including helper functions to transform JSON responses
+    to more formats more amenable to manipulation in R.
 License: Artistic-2.0
 Encoding: UTF-8
-Depends: R (>= 3.5.0), dplyr
+Depends: R (>= 3.6), dplyr
 Imports:
-    utils, methods,
+    stats, utils, methods,
     futile.logger,
-    jsonlite, httr,
-    rapiclient (== 0.1.2.3-3),
+    jsonlite, httr, curl,
+    rapiclient (>= 0.1.3),
     tibble,
     BiocManager
-Suggests: knitr, testthat, withr
+Suggests: knitr, testthat, withr, readr
 Collate:
     utilities.R authenticate.R
     Service.R Services.R Leonardo.R Terra.R Dockstore.R Gen3.R
@@ -36,4 +43,5 @@ Collate:
     zzz.R
 LazyData: true
 VignetteBuilder: knitr
-RoxygenNote: 6.1.1
+biocViews: Infrastructure
+RoxygenNote: 7.1.0

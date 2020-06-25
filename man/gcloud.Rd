@@ -11,15 +11,20 @@
 \usage{
 gcloud_exists()
 
-gcloud_account()
+gcloud_account(account = NULL)
 
-gcloud_project()
+gcloud_project(project = NULL)
 
 gcloud_help(...)
 
 gcloud_cmd(cmd, ...)
 }
 \arguments{
+\item{account}{character(1) Google account (e.g., `user@gmail.com`)
+to use for authentication.}
+
+\item{project}{character(1) billing project name.}
+
 \item{...}{additional arguments appended to gcloud commands.}
 
 \item{cmd}{`character(1)` representing a command used to evaluate
@@ -64,4 +69,14 @@ These functions invoke the `gcloud` command line
 `gcloud_cmd()` allows arbitrary `gcloud` command
     execution via `gcloud ...`. Use pre-defined functions in
     preference to this.
+}
+\examples{
+gcloud_exists()
+
+if (gcloud_exists())
+    gcloud_account()
+
+if (gcloud_exists())
+    gcloud_help()
+
 }

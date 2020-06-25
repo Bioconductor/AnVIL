@@ -4,8 +4,17 @@
 \alias{Service}
 \title{RESTful service constructor}
 \usage{
-Service(service, host, config = httr::config(), authenticate = TRUE,
-  api_url = character(), package = "AnVIL", schemes = "https")
+Service(
+  service,
+  host,
+  config = httr::config(),
+  authenticate = TRUE,
+  api_url = character(),
+  package = "AnVIL",
+  schemes = "https",
+  api_reference_url = api_url,
+  api_reference_md5sum = character()
+)
 }
 \arguments{
 \item{service}{character(1) The `Service` class name, e.g., `"terra"`.}
@@ -22,10 +31,16 @@ service file 'auth.json' in the specified package?}
 `.json` or `.yaml` service definition.}
 
 \item{package}{character(1) (default `AnVIL`) The package where
-'api.json' yaml and (optionally) 'auth.json' files are located}
+'api.json' yaml and (optionally) 'auth.json' files are located.}
 
 \item{schemes}{character(1) (default 'https') Specifies the
-transfer protocol supported by the API service}
+transfer protocol supported by the API service.}
+
+\item{api_reference_url}{character(1) path to reference API. See
+Details.}
+
+\item{api_reference_md5sum}{character(1) the result of
+`tools::md5sum()` applied to the reference API.}
 }
 \value{
 An object of class \code{Service}.
@@ -42,16 +57,18 @@ This function creates a RESTful interface to a service
     `<package>/inst/service/<service>/api.json` and
     `<package>/inst/service/<service>/auth.json`, or at `api_url`.
 
+    When provided, the `api_reference_md5sum` is used to check that
+    the file described at `api_reference_url` has the same checksum
+    as an author-validated version.
+
     The service is usually a singleton, created at the package
     level during `.onLoad()`.
 }
 \examples{
-\dontrun{
 .MyService <- setClass("MyService", contains = "Service")
 
 MyService <- function() {
     .MyService(Service("my_service", host="my.api.org"))
-}
 }
 
 }

@@ -1,20 +1,19 @@
-context("localize")
+test_that("repositories() works", {
+    ## unknown repository; return BiocManager::repositories()
+    envvars <- c(
+        TERRA_R_PLATFORM = "MOCK", TERRA_R_PLATFORM_BINARY_VERSION = "0.99.1"
+    )
+    object <- withr::with_envvar(envvars, repositories("3.10"))
+    expect_identical(object, BiocManager::repositories())
 
-test_that(".install_find_dependencies works", {
-    dir.create(lib <- tempfile())
-
-    pkgs <- character()
-    expect_identical(.install_find_dependencies(pkgs, lib), pkgs)
-
-    pkgs <- "BiocVersion"
-    expect_identical(.install_find_dependencies(pkgs, lib), pkgs)
-
-    pkgs <- "BiocGenerics"
-    exp <- c(pkgs, "methods", "utils", "graphics", "stats", "parallel")
-    expect_identical(.install_find_dependencies(pkgs, lib), exp)
-
-    ## search all libraries; other dependencies are required / recommended
-    ## so already installed
-    exp <- pkgs <- "BiocGenerics"
-    expect_identical(.install_find_dependencies(pkgs, NULL), pkgs)
+    envvars <- c(
+        TERRA_R_PLATFORM = "anvil-rstudio-bioconductor",
+        TERRA_R_PLATFORM_BINARY_VERSION = "0.99.1"
+    )
+    object <- withr::with_envvar(envvars, repositories("3.10"))
+    expected <- c(
+        "https://storage.googleapis.com/anvil-rstudio-bioconductor/0.99/3.10",
+        BiocManager::repositories()
+    )
+    expect_identical(object, expected)
 })

@@ -3,17 +3,30 @@
 \name{localize}
 \alias{localize}
 \alias{delocalize}
-\alias{add_libpaths}
 \alias{install}
+\alias{repositories}
+\alias{add_libpaths}
 \title{Copy packages, folders, or files to or from google buckets.}
 \usage{
 localize(source, destination, dry = TRUE)
 
 delocalize(source, destination, unlink = FALSE, dry = TRUE)
 
-add_libpaths(paths)
+install(
+  pkgs,
+  lib = .libPaths()[1],
+  ...,
+  version = BiocManager::version(),
+  binary_base_url = "https://storage.googleapis.com",
+  verbose = getOption("verbose")
+)
 
-install(pkgs, lib = .libPaths()[1], lib.loc = NULL)
+repositories(
+  version = BiocManager::version(),
+  binary_base_url = "https://storage.googleapis.com"
+)
+
+add_libpaths(paths)
 }
 \arguments{
 \item{source}{`character(1)`, a google storage bucket or local file
@@ -29,26 +42,37 @@ operation.}
 \item{unlink}{`logical(1)` remove (unlink) the file or directory
 in `source`. Default: `FALSE`.}
 
-\item{paths}{`character()`: vector of directories to add to
-`.libPaths()`. Paths that do not exist will be created.}
-
 \item{pkgs}{`character()` packages to install from binary repository.}
 
 \item{lib}{`character(1)` library path (directory) in which to
 install `pkgs`; defaults to `.libPaths()[1]`.}
 
-\item{lib.loc}{`character()` library locations to search for
-currently installed packages. Default is all paths in
-`.libPaths()`.}
+\item{...}{additional arguments, passed to `install.packages()`.}
+
+\item{version}{`character(1)` or `package_version` Bioconductor
+version, e.g., "3.12".}
+
+\item{binary_base_url}{`character(1)` host and base path for binary
+package 'CRAN-style' repository; not usually required by the
+end-user.}
+
+\item{verbose}{`logical(1)` report on package installation
+progress?}
+
+\item{paths}{`character()`: vector of directories to add to
+`.libPaths()`. Paths that do not exist will be created.}
 }
 \value{
 `localize()`: exit status of function `gsutil_rsync()`.
 
 `delocalize()`: exit status of function `gsutil_rsync()`
 
-`add_libpaths()`: updated .libPaths(), invisibly.
+`install()`: return value of `install.packages()`.
 
-`install()`: location of installed packages, invisibly.
+`repositories()`: character() of binary (if available),
+    Bioconductor, and CRAN repositories.
+
+`add_libpaths()`: updated .libPaths(), invisibly.
 }
 \description{
 `localize()`: recursively synchronizes files from a
@@ -63,32 +87,30 @@ currently installed packages. Default is all paths in
     directory, and does not delete files in `destination` that are
     not in `source`.
 
+`install()`: install R / Bioconductor packages, using
+    fast pre-built 'binary' libraries if available.
+
+`repositories()`: repositories to search for binary
+    (if available), Bioconductor, and CRAN packages.
+
 `add_libpaths()`: Add local library paths to
     `.libPaths()`.
-
-`install()`: install packages and their dependencies
-    from a bucket.
+}
+\details{
+`repositories()` prepends an additional repository URI to
+    `BiocManager::repositories()`. The URI is formed by
+    concatenating `binary_base_url`, the environment variables
+    `TERRA_R_PLATFORM` and the 'major' and 'minor' components of
+    `TERRA_R_PLATFORM_BINARY_VERSION` and
+    `BiocManager::version()`. The URI is only prepended if a
+    CRAN-style repostiory exists at that location, with binary
+    package tar.gz content described by `src/contrib/PACKAGES.gz`.
 }
 \examples{
+\dontrun{install(c('BiocParallel', 'BiocGenerics'))}
 
-\dontrun{
-   localize("gs://anvil-bioc", "/tmp/test-localize")
-}
+repositories()
 
-
-\dontrun{
-    delocalize("/tmp/test-localize/", "gs://anvil-bioc")
-}
-
-
-\dontrun{
-   add_libpaths('/tmp/my_library')
-   localize('gs://bioconductor-full-devel', '/tmp/my_library')
-}
-
-\dontrun{
-add_libpaths("/tmp/host-site-library")
-install(packages = c('BiocParallel', 'BiocGenerics'))
-}
+\dontrun{add_libpaths("/tmp/host-site-library")}
 
 }

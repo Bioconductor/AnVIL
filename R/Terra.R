@@ -34,7 +34,8 @@ Terra <-
             "terra",
             host = "api.firecloud.org",
             api_url = "https://api.firecloud.org/api-docs.yaml",
-            authenticate = FALSE
+            authenticate = FALSE,
+            api_reference_md5sum = "1b1fe131446f829cc81359d0026279f9"
         ),
         api_header = api_header
     )
@@ -45,9 +46,11 @@ Terra <-
 #' @export
 setMethod(
     "operations", "Terra",
-    function(x)
+    function(x, ..., .deprecated = FALSE)
 {
-    value <- callNextMethod(x, .headers = .api_header(x))
+    value <- callNextMethod(
+        x, .headers = .api_header(x), ..., .deprecated = .deprecated
+    )
     value[grep("[_,]+", names(value), invert = TRUE)]
 })
 
