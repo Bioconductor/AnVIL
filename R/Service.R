@@ -44,6 +44,8 @@ setOldClass("request")
     x
 }
 
+.service_validate_md5sum_warn <- new.env(parent = emptyenv())
+
 #' @importFrom tools md5sum
 #' @importFrom utils download.file
 .service_validate_md5sum <-
@@ -58,7 +60,11 @@ setOldClass("request")
     fl <- tempfile()
     download.file(reference_url, fl, quiet = TRUE)
     md5sum <- md5sum(fl)
-    if (!identical(unname(md5sum), reference_md5sum))
+    test <-
+        identical(unname(md5sum), reference_md5sum) ||
+        exists(reference_url, envir = .service_validate_md5sum_warn)
+    .service_validate_md5sum_warn[[reference_url]] <- TRUE
+    if (!test)
         warning(
             "service version differs from validated version",
             "\n    service url: ", reference_url,

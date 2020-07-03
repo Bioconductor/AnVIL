@@ -530,14 +530,14 @@ avfiles_rm <-
 
 .avworkspace <- local({
     hash <- new.env(parent = emptyenv())
-    function(key, value) {
+    function(fun, key, value) {
         sysvar <- toupper(paste0("WORKSPACE_", key))
         if (is.null(value)) {
             if (is.null(hash[[key]])) {
                 ## initialize
                 hash[[key]] <- Sys.getenv(sysvar)
                 if (!nzchar(hash[[key]]) && interactive())
-                    warning("'", key, "' undefined; use `", key, "()` to set")
+                    warning("'", sysvar, "' undefined; use `", fun, "()` to set")
             }
         } else {
             hash[[key]] <- ifelse(is.na(value), Sys.getenv(sysvar), value)
@@ -574,7 +574,7 @@ avfiles_rm <-
 #'
 #' @export
 avworkspace_namespace <- function(namespace = NULL)
-    .avworkspace("avworkspace_namespace", namespace)
+    .avworkspace("avworkspace_namespace", "NAMESPACE", namespace)
 
 #' @rdname av
 #'
@@ -583,4 +583,4 @@ avworkspace_namespace <- function(namespace = NULL)
 #'
 #' @export
 avworkspace_name <- function(name = NULL)
-    .avworkspace("avworkspace_name", name)
+    .avworkspace("avworkspace_name", "NAME", name)
