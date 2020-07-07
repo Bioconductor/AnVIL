@@ -221,19 +221,25 @@ See `?gsutil_cp()`.}
     `avfiles_backup()`, copying files from the workspace bucket to
     the compute node file system.
 
-`avworkspace_namespace()` is usually the billing account,
-    and `avworkspace_name()` the name of the workspace as it
-    appears in \url{https://app.terra.bio/#workspaces}. Providing
-    arguments to these functions over-rides AnVIL-determined
-    settings with the provided value. Revert to system settings
-    with arguments `NA`.
+`avworkspace_namespace()` is the billing account. If the
+    `namespace=` argument is not provided, try `gcloud_project()`,
+    and if that fails try `Sys.getenv("WORKSPACE_NAMESPACE")`.
+
+    `avworkspace_name()` is the name of the workspace as it appears
+    in \url{https://app.terra.bio/#workspaces}. If not provided,
+    `avworkspace_name()` tries to use
+    `Sys.getenv("WORKSPACE_NAME")`.
+
+    Values are cached across sessions, so explicitly providing
+    `avworkspace_*()` is required at most once per session. Revert
+    to system settings with arguments `NA`.
 }
 \examples{
-if (gcloud_exists() && nzchar(avworkspace_namespace()))
+if (gcloud_exists() && nzchar(avworkspace_name()))
     ## from within AnVIL
     avdata()
 
-if (gcloud_exists() && nzchar(avworkspace_namespace()))
+if (gcloud_exists() && nzchar(avworkspace_name()))
     ## From within AnVIL...
     bucket <- avbucket()                        # discover bucket
 
@@ -244,7 +250,7 @@ write.table(mtcars, gsutil_pipe(path, "w")) # write to bucket
 gsutil_stat(path)                           # yep, there!
 read.table(gsutil_pipe(path, "r"))          # read from bucket
 }
-if (gcloud_exists() && nzchar(avworkspace_namespace()))
+if (gcloud_exists() && nzchar(avworkspace_name()))
     avfiles_ls()
 
 \dontrun{
