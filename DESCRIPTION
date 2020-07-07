@@ -1,6 +1,6 @@
 Package: AnVIL
 Title: Bioconductor on the AnVIL compute environment
-Version: 1.1.13
+Version: 1.1.14
 Authors@R: 
     c(person(
         "Martin", "Morgan", role = c("aut", "cre"),
@@ -44,4 +44,4 @@ Collate:
 LazyData: true
 VignetteBuilder: knitr
 biocViews: Infrastructure
-RoxygenNote: 7.1.0
+RoxygenNote: 7.1.1
