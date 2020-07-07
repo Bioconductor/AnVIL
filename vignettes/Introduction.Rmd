@@ -222,7 +222,7 @@ csv
 intermediate disk storage.
 
 ```{r}
-pipe <- gsutil_pipe(fl)
+pipe <- gsutil_pipe(fl, "rb")
 readr::read_csv(pipe, guess_max = 5000L) %>%
     dplyr::select("Sample", "Family_ID", "Population", "Gender")
 ```
