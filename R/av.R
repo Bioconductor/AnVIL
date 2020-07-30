@@ -208,7 +208,7 @@ avtable_delete_values <-
 #'     bucket) of the element.
 #'
 #' @examples
-#' if (gcloud_exists() && nzchar(avworkspace_namespace()))
+#' if (gcloud_exists() && nzchar(avworkspace_name()))
 #'     ## from within AnVIL
 #'     avdata()
 #'
@@ -278,7 +278,7 @@ avdata <-
 #'     prefixed with `gs://` if `as_path = TRUE`.
 #'
 #' @examples
-#' if (gcloud_exists() && nzchar(avworkspace_namespace()))
+#' if (gcloud_exists() && nzchar(avworkspace_name()))
 #'     ## From within AnVIL...
 #'     bucket <- avbucket()                        # discover bucket
 #'
@@ -364,7 +364,7 @@ avbucket <-
 #'     workspace bucket.
 #'
 #' @examples
-#' if (gcloud_exists() && nzchar(avworkspace_namespace()))
+#' if (gcloud_exists() && nzchar(avworkspace_name()))
 #'     avfiles_ls()
 #'
 #' @export
@@ -553,12 +553,18 @@ avfiles_rm <-
 #'     from environment variables or interfaces usually available in
 #'     AnVIL notebooks or RStudio sessions.
 #'
-#' @details `avworkspace_namespace()` is usually the billing account,
-#'     and `avworkspace_name()` the name of the workspace as it
-#'     appears in \url{https://app.terra.bio/#workspaces}. Providing
-#'     arguments to these functions over-rides AnVIL-determined
-#'     settings with the provided value. Revert to system settings
-#'     with arguments `NA`.
+#' @details `avworkspace_namespace()` is the billing account. If the
+#'     `namespace=` argument is not provided, try `gcloud_project()`,
+#'     and if that fails try `Sys.getenv("WORKSPACE_NAMESPACE")`.
+#'
+#'     `avworkspace_name()` is the name of the workspace as it appears
+#'     in \url{https://app.terra.bio/#workspaces}. If not provided,
+#'     `avworkspace_name()` tries to use
+#'     `Sys.getenv("WORKSPACE_NAME")`.
+#'
+#'     Values are cached across sessions, so explicitly providing
+#'     `avworkspace_*()` is required at most once per session. Revert
+#'     to system settings with arguments `NA`.
 #'
 #' @param namespace character(1) AnVIL workspace namespace as returned
 #'     by, e.g., `avworkspace_namespace()`
@@ -573,8 +579,20 @@ avfiles_rm <-
 #' avworkspace_namespace()
 #'
 #' @export
-avworkspace_namespace <- function(namespace = NULL)
-    .avworkspace("avworkspace_namespace", "NAMESPACE", namespace)
+avworkspace_namespace <- function(namespace = NULL) {
+    suppressWarnings({
+        namespace <- .avworkspace("avworkspace_namespace", "NAMESPACE", namespace)
+    })
+    if (!nzchar(namespace)) {
+        namespace <- tryCatch({
+            gcloud_project()
+        }, error = function(e) {
+            NULL
+        })
+        namespace <- .avworkspace("avworkspace_namespace", "NAMESPACE", namespace)
+    }
+    namespace
+}
 
 #' @rdname av
 #'

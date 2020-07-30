@@ -407,20 +407,20 @@ gsutil_pipe <-
 {
     stopifnot(
         .is_scalar_character(source),
-        open %in% c("r", "w")
+        .is_scalar_character(open)
     )
 
-    is_read <- identical(open, "r")
+    is_read <- identical(substr(open, 1, 1), "r")
     args <- c(
         if (is_read) .gsutil_requesterpays_flag(source),
         "cp",
         ...,
-        if(is_read) c(source, "-") else c("-", source)
+        if (is_read) c(source, "-") else c("-", source)
     )
 
     bin <- .gcloud_sdk_find_binary("gsutil")
     stopifnot(file.exists(bin))
 
     cmd <- paste(c(bin, args), collapse = " ")
-    pipe(cmd)
+    pipe(cmd, open)
 }
