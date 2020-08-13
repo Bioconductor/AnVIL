@@ -50,16 +50,14 @@ NULL
 #' if (gcloud_exists())
 #'     gsutil_requesterpays(src) # FALSE -- no cost download
 #'
+#' @importFrom GCSConnection gcs_is_requester_pays
+#'
 #' @export
 gsutil_requesterpays <-
     function(source)
 {
     stopifnot(all(.gsutil_is_uri(source)))
-    project <- gcloud_project()
-    buckets <- regmatches(source, regexpr("^gs://[^/]+", source))
-    args <- c("-u", project, "requesterpays", "get", buckets)
-    result <- .gsutil_do(args)
-    setNames(endsWith(result, "Enabled"), source)
+    vapply(source, GCSConnection::gcs_is_requester_pays, logical(1))
 }
 
 .gsutil_requesterpays_flag <-
@@ -85,31 +83,47 @@ gsutil_requesterpays <-
 #'     `gsutil_cp()`) paths to a google storage bucket, possibly with
 #'     wild-cards for file-level pattern matching.
 #'
-#' @param recursive `logical(1)`; perform operation recursively from
-#'     `source`?. Default: `FALSE`.
+#' @param delimiter Logical(1), whether to use `/` as a path
+#'     delimiter. If not, the path will be treated as the path to a
+#'     file even when it ends with `/`
 #'
-#' @param ... additional arguments passed as-is to the `gcs_dir`
-#'     function from GCSConnection.
+#' @param billing_project `character(1)`, billing project which is
+#'     used for making a payment in the event the function requires
+#'     `gsutil_requesterpays()`.
 #'
 #' @return `gsutil_ls()`: `GCSConnection::FolderClass()` listing of
 #'     `source` content.
 #'
 #' @importFrom GCSConnection gcs_dir
-#'
+#' @importFrom GCSConnection gcs_get_billing_project
+#' @importFrom GCSConnection gcs_cloud_auth
 #' @export
 gsutil_ls <-
-    function(source = character(), recursive = FALSE, ...)
+    function(source = character(), delimiter,
+             billing_project = GCSConnection::gcs_get_billing_project())
 {
+    ## TODO: There might be an authentication issue
+    auth <- GCSConnection::gcs_get_cloud_auth()
+    if (gcloud_exists()) {
+        if(! auth$gcloud_auth) {
+            GCSConnection::gcs_cloud_auth(gcloud = TRUE)
+        }
+    }
+
     stopifnot(
-        .gsutil_is_uri(source),
-        .is_scalar_logical(recursive)
+        .gsutil_is_uri(source)
     )
 
-    GCSConnection::gcs_dir(
-                       source,
-                       recursive = recursive,
-                       ...
-                   )
+    ## Message to make sure users understand the issue with
+    ## billing project
+    tryCatch(
+        GCSConnection::gcs_dir(source, billing_project = billing_project),
+        error = function(e) {
+            msg <- c("Try with a different google billing project",
+                     " the error might be caused by lack of access rights.")
+            stop(.pretty(msg, indent = 0), call. = FALSE)
+        }
+    )
 }
 
 .gsutil_exists_1 <-
@@ -181,6 +195,9 @@ gsutil_stat <-
 #' @param destination `character(1)`, google cloud bucket or local
 #'     file system destination path.
 #'
+#' @param recursive `logical(1)`; perform operation recursively from
+#'     `source`?. Default: `FALSE`.
+#'
 #' @return `gsutil_cp()`: exit status of `gsutil_cp()`, invisibly.
 #'
 #' @examples
@@ -188,25 +205,34 @@ gsutil_stat <-
 #'    gsutil_cp(src, tempdir())
 #'
 #' @importFrom GCSConnection gcs_cp
+#' @importFrom GCSConnection gcs_get_billing_project
 #'
 #' @export
 gsutil_cp <-
-    function(source, destination, recursive = TRUE)
+    function(source, destination, recursive = FALSE,
+             billing_project = GCSConnection::gcs_get_billing_project())
 {
+    ## FIXME: authentication hack
+    auth <- GCSConnection::gcs_get_cloud_auth()
+    if(! auth$gcloud_auth) {
+        GCSConnection::gcs_cloud_auth(gcloud = TRUE)
+    }
+
     source_is_uri <- .gsutil_is_uri(source)
+
     stopifnot(
         .is_character(source), .is_scalar_character(destination),
         all(source_is_uri) || .gsutil_is_uri(destination),
         .is_scalar_logical(recursive)
     )
 
-    result <- GCSConnection::gcs_cp(
-                                 from = source,
-                                 to = destination,
-                                 recursive = recursive
-                             )
+    result <- GCSConnection::gcs_cp(from = source,
+                                    to = destination,
+                                    recursive = recursive,
+                                    billing_project = billing_project)
 
-    .gcloud_sdk_result(result)
+    ## return invisible because the copy function returns NULL
+    invisible(result)
 }
 
 #' @rdname gsutil
@@ -214,34 +240,41 @@ gsutil_cp <-
 #' @description `gsutil_rm()`: remove contents of a google cloud
 #'     bucket.
 #'
-#' @param force `logical(1)`: continue silently despite errors when
-#'     removing multiple objects. Default: `FALSE`.
+#' @param quiet `logical(1)`; require confirmation before deleting a
+#'     directory recursively. Default: `FALSE`
 #'
 #' @return `gsutil_rm()`: exit status of `gsutil_rm()`, invisibly.
 #'
+#' @importFrom GCSConnection gcs_rm
+#'
+#' @examples
+#' if (gcloud_exists()) {
+#'     gsutil_rm("gs://test-gcsconnection")
+#' }
+#'
 #' @export
 gsutil_rm <-
-    function(source, ..., force = FALSE, recursive = FALSE, parallel = TRUE)
+    function(source,
+             billing_project = GCSConnection::gcs_get_billing_project(),
+             quiet = FALSE)
 {
-    stopifnot(
-        .gsutil_is_uri(source),
-        .is_scalar_logical(force),
-        .is_scalar_logical(recursive),
-        .is_scalar_logical(parallel)
-    )
+
+    ## authenticate
+    auth <- GCSConnection::gcs_get_cloud_auth()
+    if(! auth$gcloud_auth) {
+        GCSConnection::gcs_cloud_auth(gcloud = TRUE)
+    }
+
+    ## validate
+    stopifnot(.gsutil_is_uri(source))
 
     ## remove
-    args <- c(
-        .gsutil_requesterpays_flag(source),
-        if (parallel) "-m",
-        "rm",
-        if (force) "-f",
-        if (recursive) "-r",
-        ...,
-        source
+    gcs_rm(
+        path = source,
+        billing_project = billing_project,
+        quiet = quiet
     )
-    result <- .gsutil_do(args)
-    .gcloud_sdk_result(result)
+
 }
 
 #' @rdname gsutil

@@ -16,15 +16,28 @@
 \usage{
 gsutil_requesterpays(source)
 
-gsutil_ls(source = character(), ..., recursive = FALSE)
+gsutil_ls(
+  source = character(),
+  delimiter,
+  billing_project = GCSConnection::gcs_get_billing_project()
+)
 
 gsutil_exists(source)
 
 gsutil_stat(source)
 
-gsutil_cp(source, destination, ..., recursive = FALSE)
+gsutil_cp(
+  source,
+  destination,
+  recursive = FALSE,
+  billing_project = GCSConnection::gcs_get_billing_project()
+)
 
-gsutil_rm(source, ..., force = FALSE, recursive = FALSE, parallel = TRUE)
+gsutil_rm(
+  source,
+  billing_project = GCSConnection::gcs_get_billing_project(),
+  quiet = FALSE
+)
 
 gsutil_rsync(
   source,
@@ -48,16 +61,22 @@ gsutil_pipe(source, open = "r", ...)
 `gsutil_cp()`) paths to a google storage bucket, possibly with
 wild-cards for file-level pattern matching.}
 
-\item{...}{additional arguments passed as-is to the `gsutil` subcommand.}
+\item{delimiter}{Logical(1), whether to use `/` as a path
+delimiter. If not, the path will be treated as the path to a
+file even when it ends with `/`}
 
-\item{recursive}{`logical(1)`; perform operation recursively from
-`source`?. Default: `FALSE`.}
+\item{billing_project}{`character(1)`, billing project which is
+used for making a payment in the event the function requires
+`gsutil_requesterpays()`.}
 
 \item{destination}{`character(1)`, google cloud bucket or local
 file system destination path.}
 
-\item{force}{`logical(1)`: continue silently despite errors when
-removing multiple objects. Default: `FALSE`.}
+\item{recursive}{`logical(1)`; perform operation recursively from
+`source`?. Default: `FALSE`.}
+
+\item{quiet}{`logical(1)`; require confirmation before deleting a
+directory recursively. Default: `FALSE`}
 
 \item{dry}{`logical(1)`, when `TRUE` (default), return the
 consequences of the operation without actually performing the
@@ -86,7 +105,8 @@ from the bucket.}
 `gsutil_requesterpays()`: named `logical()` vector TRUE
     when requester-pays is enabled.
 
-`gsutil_ls()`: `character()` listing of `source` content.
+`gsutil_ls()`: `GCSConnection::FolderClass()` listing of
+    `source` content.
 
 `gsutil_exists()`: logical(1) TRUE if bucket or object exists.
 
@@ -185,6 +205,10 @@ if (gcloud_exists()) {
 
 if (gcloud_exists())
    gsutil_cp(src, tempdir())
+
+if (gcloud_exists()) {
+    gsutil_rm("gs://test-gcsconnection")
+}
 
 if (gcloud_exists())
     gsutil_help("ls")
