@@ -162,6 +162,82 @@ avtable_import <-
 
 #' @rdname av
 #'
+#' @description `avtable_import_set()` imports set membership
+#'     information to an AnVIL table.
+#'
+#' @param origin character(1) name of the entity (table) used to
+#'     create the set e.g "sample", "participant",
+#'     etc.
+#'
+#' @param set `character(1)` column name of `.data` identifying the
+#'     set(s) to be created.
+#'
+#' @param member `character()` vector of entity from the avtable
+#'     identified by `origin`. The values may repeat if an ID is in
+#'     more than one set
+#'
+#' @details `avtable_import_set()` creates new rows in a table
+#'     `<origin>_set`. One row will be created for each distinct value
+#'     in the column identified by `set`. Each row entry has a
+#'     corresponding column `<origin>` linking to one or more rows in
+#'     the `<origin>` table, as given in the `member` column. The
+#'     operation is somewhat like `split(member, set)`.
+#'
+#' @return `avtable_import_set()` returns a `character(1)` name of the
+#'     imported AnVIL tibble.
+#'
+#' @importFrom utils write.table
+#'
+#' @examples
+#' \dontrun{
+#' ## editable copy of '1000G-high-coverage-2019' workspace
+#' avworkspace("bioconductor-rpci-anvil/1000G-high-coverage-2019")
+#' sample <-
+#'     avtable("sample") %>%                               # existing table
+#'     mutate(set = sample(head(LETTERS), nrow(.), TRUE))  # arbitrary groups
+#' sample %>%                                   # new 'participant_set' table
+#'     avtable_import_set("participant", "set", "participant")
+#' sample %>%                                   # new 'sample_set' table
+#'     avtable_import_set("sample", "set", "name")
+#' }
+#'
+#' @export
+avtable_import_set <-
+    function(
+        .data, origin, set = names(.data)[[1]], member = names(.data)[[2]],
+        namespace = avworkspace_namespace(), name = avworkspace_name())
+{
+    stopifnot(
+        is.data.frame(.data),
+        .is_scalar_character(origin),
+        .is_scalar_character(set),
+        set %in% names(.data),
+        .is_scalar_character(member),
+        !identical(set, member), member %in% names(.data),
+        .is_scalar_character(namespace),
+        .is_scalar_character(name)
+    )
+
+    origin <- curl_escape(origin)
+
+    tbl <-
+        .data %>%
+        select(set, member)
+    names(tbl)[[1]] <- paste0("membership:", origin, "_set_id")
+    names(tbl)[[2]] <- origin
+
+    destination <- tempfile()
+    write.table(tbl, destination, quote = FALSE, sep="\t", row.names=FALSE)
+
+    entities <- httr::upload_file(destination)
+    response <- Terra()$flexibleImportEntities(namespace, name, entities)
+    .avstop_for_status(response, "avtable_import_sample_set")
+
+    httr::content(response, type="text", encoding = "UTF-8")
+}
+
+#' @rdname av
+#'
 #' @description `avtable_delete_values()` removes rows from an AnVIL table.
 #'
 #' @param values vector of values in the entity (key) column of

@@ -4,6 +4,7 @@
 \alias{avtables}
 \alias{avtable}
 \alias{avtable_import}
+\alias{avtable_import_set}
 \alias{avtable_delete_values}
 \alias{avdata}
 \alias{avbucket}
@@ -23,6 +24,15 @@ avtable(table, namespace = avworkspace_namespace(), name = avworkspace_name())
 avtable_import(
   .data,
   entity = names(.data)[[1]],
+  namespace = avworkspace_namespace(),
+  name = avworkspace_name()
+)
+
+avtable_import_set(
+  .data,
+  origin,
+  set = names(.data)[[1]],
+  member = names(.data)[[2]],
   namespace = avworkspace_namespace(),
   name = avworkspace_name()
 )
@@ -105,6 +115,17 @@ a column in `.data`, e.g., `entity = "unknown"`, will cause a
 new table with name `entity` and entity values
 `seq_len(nrow(.data))`.}
 
+\item{origin}{character(1) name of the entity (table) used to
+create the set e.g "sample", "participant",
+etc.}
+
+\item{set}{`character(1)` column name of `.data` identifying the
+set(s) to be created.}
+
+\item{member}{`character()` vector of entity from the avtable
+identified by `origin`. The values may repeat if an ID is in
+more than one set}
+
 \item{values}{vector of values in the entity (key) column of
 `table` to be deleted. A table `sample` has an associated
 entity column with suffix `_id`, e.g., `sample_id`. Rows with
@@ -151,6 +172,9 @@ concatenated namespace and name, e.g.,
 `avtable_import()` returns a `character(1)` name of the
     imported AnVIL tibble.
 
+`avtable_import_set()` returns a `character(1)` name of the
+    imported AnVIL tibble.
+
 `avtable_delete_values()` returns a `tibble` representing
     deleted entities, invisibly.
 
@@ -189,6 +213,9 @@ concatenated namespace and name, e.g.,
 
 `avtable_import()` imports a data.frame to an AnVIL table.
 
+`avtable_import_set()` imports set membership
+    information to an AnVIL table.
+
 `avtable_delete_values()` removes rows from an AnVIL table.
 
 `avdata()` returns key-value tables representing the
@@ -217,6 +244,13 @@ concatenated namespace and name, e.g.,
     AnVIL notebooks or RStudio sessions.
 }
 \details{
+`avtable_import_set()` creates new rows in a table
+    `<origin>_set`. One row will be created for each distinct value
+    in the column identified by `set`. Each row entry has a
+    corresponding column `<origin>` linking to one or more rows in
+    the `<origin>` table, as given in the `member` column. The
+    operation is somewhat like `split(member, set)`.
+
 `avfiles_backup()` can be used to back-up individual files
     or entire directories, recursively.  When `recursive = FALSE`,
     files are backed up to the bucket with names approximately
@@ -245,6 +279,18 @@ concatenated namespace and name, e.g.,
     to system settings with arguments `NA`.
 }
 \examples{
+\dontrun{
+## editable copy of '1000G-high-coverage-2019' workspace
+avworkspace("bioconductor-rpci-anvil/1000G-high-coverage-2019")
+sample <-
+    avtable("sample") \%>\%                               # existing table
+    mutate(set = sample(head(LETTERS), nrow(.), TRUE))  # arbitrary groups
+sample \%>\%                                   # new 'participant_set' table
+    avtable_import_set("participant", "set", "participant")
+sample \%>\%                                   # new 'sample_set' table
+    avtable_import_set("sample", "set", "name")
+}
+
 if (gcloud_exists() && nzchar(avworkspace_name()))
     ## from within AnVIL
     avdata()
