@@ -1,6 +1,6 @@
 ##
 ## internal
-## 
+##
 
 #' @importFrom httr status_code http_condition
 .avstop_for_status <-
@@ -373,7 +373,7 @@ avfiles_ls <-
         path = "",
         full_names = FALSE,
         recursive = FALSE,
-        namespace = avworkspace_namespace(), 
+        namespace = avworkspace_namespace(),
         name = avworkspace_name())
 {
     stopifnot(
@@ -506,7 +506,7 @@ avfiles_rm <-
         parallel = TRUE,
         namespace = avworkspace_namespace(),
         name = avworkspace_name()
-    )        
+    )
 {
     stopifnot(
         .is_character(source),
@@ -602,3 +602,35 @@ avworkspace_namespace <- function(namespace = NULL) {
 #' @export
 avworkspace_name <- function(name = NULL)
     .avworkspace("avworkspace_name", "NAME", name)
+
+#' @rdname av
+#'
+#' @param workspace when present, a `character(1)` providing the
+#'     concatenated namespace and name, e.g.,
+#'     `"bioconductor-rpci-anvil/Bioconductor-Package-AnVIL"`
+#'
+#' @return `avworkspace()` returns the character(1) concatenated
+#'     namespace and name.
+#'
+#' @examples
+#' avworkspace()
+#'
+#' @export
+avworkspace <-
+    function(workspace = NULL)
+{
+    stopifnot(
+        is.null(workspace) || .is_scalar_character(workspace)
+    )
+    if (!is.null(workspace)) {
+        wkspc <- strsplit(workspace, "/")[[1]]
+        if (length(wkspc) != 2L)
+            stop(
+                "'workspace' must be of the form 'namespace/name', ",
+                "with a single '/'"
+            )
+        avworkspace_namespace(wkspc[[1]])
+        avworkspace_name(wkspc[[2]])
+    }
+    paste0(avworkspace_namespace(), "/", avworkspace_name())
+}

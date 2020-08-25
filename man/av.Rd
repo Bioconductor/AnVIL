@@ -13,6 +13,7 @@
 \alias{avfiles_rm}
 \alias{avworkspace_namespace}
 \alias{avworkspace_name}
+\alias{avworkspace}
 \title{Functions for convenient user interaction with AnVIL resources}
 \usage{
 avtables(namespace = avworkspace_namespace(), name = avworkspace_name())
@@ -78,6 +79,8 @@ avfiles_rm(
 avworkspace_namespace(namespace = NULL)
 
 avworkspace_name(name = NULL)
+
+avworkspace(workspace = NULL)
 }
 \arguments{
 \item{namespace}{character(1) AnVIL workspace namespace as returned
@@ -133,6 +136,10 @@ workspace bucket.}
 
 \item{parallel}{logical(1) backup files using parallel transfer?
 See `?gsutil_cp()`.}
+
+\item{workspace}{when present, a `character(1)` providing the
+concatenated namespace and name, e.g.,
+`"bioconductor-rpci-anvil/Bioconductor-Package-AnVIL"`}
 }
 \value{
 `avtables()`: A tibble with columns identifying the table,
@@ -169,6 +176,9 @@ See `?gsutil_cp()`.}
 
 `avworkspace_namespace()`, and `avworkspace_name()` return
     `character(1)` identifiers.
+
+`avworkspace()` returns the character(1) concatenated
+    namespace and name.
 }
 \description{
 `avtables()` describes tables available in a
@@ -265,5 +275,7 @@ avfiles_backup(getwd(), recursive = TRUE)
 avworkspace_namespace()
 
 avworkspace_name()
+
+avworkspace()
 
 }
