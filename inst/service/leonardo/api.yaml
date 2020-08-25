@@ -8,7 +8,7 @@
     },
     "termsOfService": "https://github.com/broadinstitute/leonardo",
     "title": "Leonardo",
-    "version": "0.1"
+    "version": "0.1.0"
   },
   "paths": {
     "/api/cluster/v2/{googleProject}/{clusterName}": {
@@ -198,6 +198,9 @@
         "summary": "Get details of a Dataproc cluster"
       },
       "put": {
+        "consumes": [
+          "application/json"
+        ],
         "produces": [
           "application/json"
         ],
@@ -215,6 +218,15 @@
             "name": "clusterName",
             "required": true,
             "type": "string"
+          },
+          {
+            "description": "Request for new cluster",
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ClusterRequest"
+            }
           }
         ],
         "responses": {
@@ -507,6 +519,375 @@
         "description": "List all active clusters within the given Google project, optionally filtering on a set of labels",
         "operationId": "listClustersByProject",
         "summary": "List all active clusters within the given Google project"
+      }
+    },
+    "/api/google/v1/apps": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "Optional label key-value pairs to filter results by. Example: Querying by key1=val1,key2=val2 returns all apps that contain the key1/val1 and key2/val2 labels (possibly among other labels). Note: this string format is a workaround because Swagger doesn't support free-form query string parameters. The recommended way to use this endpoint is to specify the labels as top-level query string parameters. For instance: GET /api/google/v1/app?key1=val1&key2=val2.\n",
+            "in": "query",
+            "name": "_labels",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "default": false,
+            "description": "Optional filter that includes any apps with a Deleted status.",
+            "in": "query",
+            "name": "includeDeleted",
+            "required": false,
+            "type": "boolean"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of apps",
+            "schema": {
+              "items": {
+                "$ref": "#/definitions/ListAppResponse"
+              },
+              "type": "array"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          },
+          "500": {
+            "description": "Internal Error",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          }
+        },
+        "security": [
+          {
+            "googleoauth": [
+              "openid",
+              "email",
+              "profile"
+            ]
+          }
+        ],
+        "tags": [
+          "apps"
+        ],
+        "description": "List kubernetes apps the caller has access to, without specifying a project",
+        "operationId": "listApp",
+        "summary": "List apps"
+      }
+    },
+    "/api/google/v1/apps/{googleProject}": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "googleProject",
+            "in": "path",
+            "name": "googleProject",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Optional label key-value pairs to filter results by. Example: Querying by key1=val1,key2=val2 returns all apps that contain the key1/val1 and key2/val2 labels (possibly among other labels). Note: this string format is a workaround because Swagger doesn't support free-form query string parameters. The recommended way to use this endpoint is to specify the labels as top-level query string parameters. For instance: GET /api/google/v1/app?key1=val1&key2=val2.\n",
+            "in": "query",
+            "name": "_labels",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "default": false,
+            "description": "Optional filter that includes any apps with a Deleted status.",
+            "in": "query",
+            "name": "includeDeleted",
+            "required": false,
+            "type": "boolean"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of apps",
+            "schema": {
+              "items": {
+                "$ref": "#/definitions/ListAppResponse"
+              },
+              "type": "array"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          },
+          "500": {
+            "description": "Internal Error",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          }
+        },
+        "security": [
+          {
+            "googleoauth": [
+              "openid",
+              "email",
+              "profile"
+            ]
+          }
+        ],
+        "tags": [
+          "apps"
+        ],
+        "description": "List kubernetes apps the caller has access to with a project filter",
+        "operationId": "listAppByProject",
+        "summary": "List apps within a project"
+      }
+    },
+    "/api/google/v1/apps/{googleProject}/batchNodepoolCreate": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "googleProject",
+            "in": "path",
+            "name": "googleProject",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "schema": {
+              "$ref": "#/definitions/BatchNodepoolCreateRequest"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Batch nodepool creation request successful"
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          },
+          "403": {
+            "description": "User does not have permission to perform action"
+          },
+          "409": {
+            "description": "Conflict",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          },
+          "500": {
+            "description": "Internal Error",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          }
+        },
+        "tags": [
+          "apps"
+        ],
+        "description": "This will fail if a cluster already exists in the project",
+        "operationId": "batchNodepoolCreate",
+        "summary": "Creates a cluster with pool of unclaimed nodepools, such that nodepools already exist at app creation time"
+      }
+    },
+    "/api/google/v1/apps/{googleProject}/{appName}": {
+      "delete": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "googleProject",
+            "in": "path",
+            "name": "googleProject",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "appName",
+            "in": "path",
+            "name": "appName",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "App deletion request accepted"
+          },
+          "403": {
+            "description": "User does not have permission to perform action on App"
+          },
+          "404": {
+            "description": "App not found",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          },
+          "500": {
+            "description": "Internal Error",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          }
+        },
+        "tags": [
+          "apps"
+        ],
+        "description": "deletes an App",
+        "operationId": "deleteApp",
+        "summary": "Deletes an existing app in the given project"
+      },
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "googleProject",
+            "in": "path",
+            "name": "googleProject",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "appName",
+            "in": "path",
+            "name": "appName",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "App found, here are the details",
+            "schema": {
+              "$ref": "#/definitions/GetAppResponse"
+            }
+          },
+          "403": {
+            "description": "User does not have permission to perform action on App"
+          },
+          "404": {
+            "description": "App not found",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          },
+          "500": {
+            "description": "Internal Error",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          }
+        },
+        "security": [
+          {
+            "googleoauth": [
+              "openid",
+              "email",
+              "profile"
+            ]
+          }
+        ],
+        "tags": [
+          "apps"
+        ],
+        "description": "Returns information about an existing App managed by Leo. Poll this to find out when your app has finished starting up.\n",
+        "operationId": "getApp",
+        "summary": "Get details of an app"
+      },
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "googleProject",
+            "in": "path",
+            "name": "googleProject",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "appName",
+            "in": "path",
+            "name": "appName",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "schema": {
+              "$ref": "#/definitions/CreateAppRequest"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "App creation successful"
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          },
+          "403": {
+            "description": "User does not have permission to perform action on App"
+          },
+          "409": {
+            "description": "Conflict",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          },
+          "500": {
+            "description": "Internal Error",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          }
+        },
+        "security": [
+          {
+            "googleoauth": [
+              "openid",
+              "email",
+              "profile"
+            ]
+          }
+        ],
+        "tags": [
+          "apps"
+        ],
+        "description": "Default labels appName, googleProject, serviceAccount, and creator cannot be overridden.",
+        "operationId": "createApp",
+        "summary": "Creates a new app in the given project with the given name"
       }
     },
     "/api/google/v1/disks": {
@@ -973,6 +1354,14 @@
             "name": "name",
             "required": true,
             "type": "string"
+          },
+          {
+            "default": false,
+            "description": "Whether or not disk should be deleted if the runtime is using persistent disk. Default to false if not specified",
+            "in": "query",
+            "name": "deleteDisk",
+            "required": false,
+            "type": "boolean"
           }
         ],
         "responses": {
@@ -1521,6 +1910,77 @@
         "summary": "(Deprecated) Sets a browser cookie needed to authorize connections to a Jupyter notebook"
       }
     },
+    "/proxy/google/v1/apps/{googleProject}/{appName}/{serviceName}": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "googleProject",
+            "in": "path",
+            "name": "googleProject",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "appName",
+            "in": "path",
+            "name": "appName",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "serviceName",
+            "in": "path",
+            "name": "serviceName",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Proxy connection successful"
+          },
+          "403": {
+            "description": "Proxy connection unauthorized",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          },
+          "404": {
+            "description": "App or service not found",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          },
+          "420": {
+            "description": "App not ready",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          },
+          "422": {
+            "description": "App is stopped",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          },
+          "500": {
+            "description": "Internal Error",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          }
+        },
+        "tags": [
+          "proxy"
+        ],
+        "description": "This URI supports all HTTP methods, not just GET as implied by this Swagger.\nProxies all requests through to the app via an ingress controller\n",
+        "operationId": "proxyApp",
+        "summary": "Access an app if the app and service name exists"
+      }
+    },
     "/proxy/invalidateToken": {
       "get": {
         "produces": [
@@ -1841,6 +2301,17 @@
     }
   },
   "definitions": {
+    "AppStatus": {
+      "enum": [
+        "STATUS_UNSPECIFIED",
+        "RUNNING",
+        "ERROR",
+        "DELETING",
+        "DELETED",
+        "PROVISIONING"
+      ],
+      "type": "string"
+    },
     "AsyncRuntimeFields": {
       "description": "Fields populated asynchronously to the runtime's creation",
       "properties": {
@@ -1896,6 +2367,22 @@
         "creator",
         "createdDate",
         "dateAccessed"
+      ],
+      "type": "object"
+    },
+    "BatchNodepoolCreateRequest": {
+      "description": "The configuration for a pool of nodepools, used to create a cluster with pre-created nodepools",
+      "properties": {
+        "kubernetesRuntimeConfig": {
+          "$ref": "#/definitions/KubernetesRuntimeConfig"
+        },
+        "numNodepools": {
+          "description": "number of nodepools to pre-create in the cluster. We enforce a max of 200. There will be an additional default nodepool created as well.",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "numNodepools"
       ],
       "type": "object"
     },
@@ -2102,6 +2589,14 @@
         "welderDockerImage": {
           "description": "The Welder docker image to install. Only takes effect if the tool being installed supports welder.\nMay be Dockerhub or GCR. If not set, then a default Welder image will be installed.\n",
           "type": "string"
+        },
+        "welderRegistry": {
+          "description": "The container registry from which to pull the latest version of welder.",
+          "enum": [
+            "GCR",
+            "DockerHub"
+          ],
+          "type": "string"
         }
       }
     },
@@ -2120,6 +2615,26 @@
       ],
       "type": "string"
     },
+    "CreateAppRequest": {
+      "description": "the configuration of an app, used to create an app",
+      "properties": {
+        "appType": {
+          "description": "currently only \"GALAXY\" is supported",
+          "type": "string"
+        },
+        "diskConfig": {
+          "$ref": "#/definitions/PersistentDiskRequest"
+        },
+        "kubernetesRuntimeConfig": {
+          "$ref": "#/definitions/KubernetesRuntimeConfig"
+        },
+        "labels": {
+          "description": "The labels to be placed on the cluster. Of type Map[String,String]",
+          "type": "object"
+        }
+      },
+      "type": "object"
+    },
     "CreateDiskRequest": {
       "description": "Creates a new persistent disk",
       "properties": {
@@ -2128,12 +2643,14 @@
           "type": "integer"
         },
         "diskType": {
-          "description": "The type of the persistent disk to be created. Can be \"Standard\" or \"SSD\".",
-          "enum": [
-            "pd-standard",
-            "pd-ssd"
-          ],
-          "type": "string"
+          "allOf": [
+            {
+              "$ref": "#/definitions/DiskType"
+            },
+            {
+              "description": "The type of the persistent disk to be created. Can be \"Standard\" or \"SSD\"."
+            }
+          ]
         },
         "labels": {
           "description": "The labels to be placed on the persistent disk. Of type Map[String,String]",
@@ -2201,6 +2718,14 @@
         "welderDockerImage": {
           "description": "The Welder docker image to install. Only takes effect if the tool being installed supports welder.\nMay be Dockerhub or GCR. If not set, then a default Welder image will be installed.\n",
           "type": "string"
+        },
+        "welderRegistry": {
+          "description": "The container registry from which to pull the latest version of welder.",
+          "enum": [
+            "GCR",
+            "DockerHub"
+          ],
+          "type": "string"
         }
       },
       "type": "object"
@@ -2213,8 +2738,7 @@
           "type": "integer"
         },
         "diskType": {
-          "description": "Type of persistent disk",
-          "type": "string"
+          "$ref": "#/definitions/DiskType"
         },
         "name": {
           "description": "Name of the persistent disk",
@@ -2241,6 +2765,13 @@
         "Ready",
         "Deleting",
         "Deleted"
+      ],
+      "type": "string"
+    },
+    "DiskType": {
+      "enum": [
+        "pd-standard",
+        "pd-ssd"
       ],
       "type": "string"
     },
@@ -2326,13 +2857,40 @@
               "type": "string"
             },
             "persistentDisk": {
-              "$ref": "#/definitions/PersistentDiskConfig"
+              "$ref": "#/definitions/PersistentDiskRequest"
             }
           },
           "type": "object"
         }
       ],
       "description": "Configuration for Google Compute Engine instances."
+    },
+    "GetAppResponse": {
+      "description": "the configuration of an app",
+      "properties": {
+        "diskName": {
+          "description": "the name of the disk associated with this app",
+          "type": "string"
+        },
+        "errors": {
+          "description": "The list of errors that the app has encountered.",
+          "items": {
+            "$ref": "#/definitions/KubernetesError"
+          },
+          "type": "array"
+        },
+        "kubernetesRuntimeConfig": {
+          "$ref": "#/definitions/KubernetesRuntimeConfig"
+        },
+        "proxyUrls": {
+          "description": "map of service name to proxyUrl",
+          "type": "object"
+        },
+        "status": {
+          "$ref": "#/definitions/AppStatus"
+        }
+      },
+      "type": "object"
     },
     "GetPersistentDiskResponse": {
       "description": "",
@@ -2345,8 +2903,7 @@
           "type": "integer"
         },
         "diskType": {
-          "description": "Type of persistent disk",
-          "type": "string"
+          "$ref": "#/definitions/DiskType"
         },
         "googleId": {
           "description": "Google's UUID for the persistent disk",
@@ -2567,10 +3124,95 @@
       ],
       "type": "string"
     },
+    "KubernetesError": {
+      "description": "a kubernetes app error",
+      "properties": {
+        "action": {
+          "description": "the api-level action associated with the error, e.g. createApp",
+          "type": "string"
+        },
+        "errorMessage": {
+          "description": "a helpful error message",
+          "type": "string"
+        },
+        "googleErrorCode": {
+          "description": "if the error is associated with an external API call, the error code will be propagated here",
+          "type": "integer"
+        },
+        "source": {
+          "description": "the internal source associated with the error",
+          "type": "string"
+        },
+        "timestamp": {
+          "description": "timestamp for error in ISO 8601 format",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "KubernetesRuntimeConfig": {
+      "description": "configuration for a kubernetes app runtime",
+      "properties": {
+        "autoscalingEnabled": {
+          "description": "whether or not the nodes autoscale up and down for this app",
+          "type": "boolean"
+        },
+        "machineType": {
+          "description": "the machine type for the nodes the kubernetes app will run on",
+          "example": "n1-standard-1",
+          "type": "string"
+        },
+        "numNodes": {
+          "description": "number of nodes for the kubernetes app",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "numNodes",
+        "machineType",
+        "autoscalingEnabled"
+      ],
+      "type": "object"
+    },
     "LeonardoVersion": {
       "properties": {
         "version": {
           "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "ListAppResponse": {
+      "description": "the configuration of an app",
+      "properties": {
+        "appName": {
+          "description": "the name of the app",
+          "type": "string"
+        },
+        "diskName": {
+          "description": "the name of the disk associated with this app",
+          "type": "string"
+        },
+        "errors": {
+          "description": "The list of errors that the app has encountered.",
+          "items": {
+            "$ref": "#/definitions/KubernetesError"
+          },
+          "type": "array"
+        },
+        "googleProject": {
+          "description": "the project this app is associated with",
+          "type": "string"
+        },
+        "kubernetesRuntimeConfig": {
+          "$ref": "#/definitions/KubernetesRuntimeConfig"
+        },
+        "proxyUrls": {
+          "description": "map of service name to proxyUrl",
+          "type": "object"
+        },
+        "status": {
+          "$ref": "#/definitions/AppStatus"
         }
       },
       "type": "object"
@@ -2671,8 +3313,7 @@
           "type": "integer"
         },
         "diskType": {
-          "description": "Type of persistent disk",
-          "type": "string"
+          "$ref": "#/definitions/DiskType"
         },
         "googleProject": {
           "description": "The google project used to create the persistent disk",
@@ -2805,35 +3446,27 @@
       ],
       "description": "Configuration for a single Dataproc cluster."
     },
-    "PersistentDiskConfig": {
-      "description": "The configuration of a persistent disk, returned in runtime responses",
+    "PersistentDiskRequest": {
+      "description": "configuration to create a disk",
       "properties": {
-        "blockSize": {
-          "description": "Block size of persistent disk in bytes",
-          "type": "integer"
-        },
         "diskType": {
-          "description": "Type of persistent disk",
-          "type": "string"
+          "$ref": "#/definitions/DiskType"
         },
         "labels": {
-          "description": "The labels to be placed on the disk",
+          "description": "The labels to be placed on the cluster. Of type Map[String,String]",
           "type": "object"
         },
         "name": {
-          "description": "Name of the persistent disk",
+          "description": "The name of the disk. This can reference an existing disk.",
           "type": "string"
         },
         "size": {
-          "description": "Size of persistent disk in GB",
+          "description": "the size of the disk, if this is a creation request. Has an intelligent default otherwise",
           "type": "integer"
         }
       },
       "required": [
-        "name",
-        "size",
-        "diskType",
-        "blockSize"
+        "name"
       ],
       "type": "object"
     },
@@ -2896,25 +3529,6 @@
         "lineNumber"
       ]
     },
-    "SubsystemStatus": {
-      "description": "status of a subsystem Leonardo depends on",
-      "properties": {
-        "messages": {
-          "items": {
-            "type": "string"
-          },
-          "type": "array"
-        },
-        "ok": {
-          "description": "whether this system is up or down from Leonardo's point of view",
-          "type": "boolean"
-        }
-      },
-      "required": [
-        "ok"
-      ],
-      "type": "object"
-    },
     "SystemStatus": {
       "description": "status of each subsystem Leonardo depends on",
       "properties": {
@@ -2970,8 +3584,7 @@
           "type": "integer"
         },
         "diskType": {
-          "description": "The disk type that the persistent disk is to be updated to. Can be \"Standard\" or \"SSD\".",
-          "type": "string"
+          "$ref": "#/definitions/DiskType"
         },
         "labels": {
           "description": "The labels to be added or updated on the persistent disk. Of type Map[String,String]",
@@ -3089,8 +3702,12 @@
       "name": "runtimes"
     },
     {
-      "description": "Experimental Persistent Disks API.",
+      "description": "Persistent Disks API.",
       "name": "disks"
+    },
+    {
+      "description": "Experimental App API",
+      "name": "apps"
     },
     {
       "description": "Legacy Clusters API. Supports Google Dataproc only.",
@@ -3111,41 +3728,100 @@
   ],
   "x-components": {
     "requestBodies": {
+      "BatchNodepoolCreateRequest": {
+        "content": {
+          "application/json": {
+            "example": {
+              "numNodepools": 10
+            },
+            "schema": {
+              "$ref": "#/definitions/BatchNodepoolCreateRequest"
+            }
+          }
+        }
+      },
       "ClusterRequest": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/definitions/ClusterRequest"
+            }
+          }
+        },
         "description": "Request for new cluster",
-        "in": "body",
-        "name": "body",
-        "required": true,
-        "schema": {
-          "$ref": "#/definitions/ClusterRequest"
+        "required": true
+      },
+      "CreateAppRequest": {
+        "content": {
+          "application/json": {
+            "example": {
+              "diskConfig": {
+                "name": "disk1"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/CreateAppRequest"
+            }
+          }
         }
       },
       "CreateDiskRequest": {
-        "in": "body",
-        "name": "body",
-        "schema": {
-          "$ref": "#/definitions/CreateDiskRequest"
+        "content": {
+          "application/json": {
+            "example": {
+              "blockSize": 4096,
+              "diskType": "pd-standard",
+              "size": 500
+            },
+            "schema": {
+              "$ref": "#/definitions/CreateDiskRequest"
+            }
+          }
         }
       },
       "CreateRuntimeRequest": {
-        "in": "body",
-        "name": "body",
-        "schema": {
-          "$ref": "#/definitions/CreateRuntimeRequest"
+        "content": {
+          "application/json": {
+            "example": {
+              "runtimeConfig": {
+                "cloudService": "gce",
+                "diskSize": 100,
+                "machineType": "n1-standard-4"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/CreateRuntimeRequest"
+            }
+          }
         }
       },
       "UpdateDiskRequest": {
-        "in": "body",
-        "name": "body",
-        "schema": {
-          "$ref": "#/definitions/UpdateDiskRequest"
+        "content": {
+          "application/json": {
+            "example": {
+              "size": 600
+            },
+            "schema": {
+              "$ref": "#/definitions/UpdateDiskRequest"
+            }
+          }
         }
       },
       "UpdateRuntimeRequest": {
-        "in": "body",
-        "name": "body",
-        "schema": {
-          "$ref": "#/definitions/UpdateRuntimeRequest"
+        "content": {
+          "application/json": {
+            "example": {
+              "allowStop": true,
+              "runtimeConfig": {
+                "cloudService": "gce",
+                "diskSize": 500,
+                "machineType": "n1-highmem-16"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/UpdateRuntimeRequest"
+            }
+          }
         }
       }
     }

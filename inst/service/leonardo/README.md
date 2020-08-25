@@ -14,7 +14,7 @@ and then ran the command
 
 ```
 api-spec-converter -f openapi_3 -t swagger_2 \
-  https://notebooks.firecloud.org/api-docs.yaml > \
+  https://raw.githubusercontent.com/DataBiosphere/leonardo/develop/http/src/main/resources/swagger/api-docs.yaml > \
   api.yaml
 ```
 

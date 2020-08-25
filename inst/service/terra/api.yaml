@@ -3413,8 +3413,45 @@
             "type": "string"
           },
           {
+            "description": "The workflow source file to submit for execution. Either workflow source or workflow url is required.",
+            "format": "binary",
             "in": "formData",
-            "name": "body"
+            "name": "workflowSource",
+            "type": "string"
+          },
+          {
+            "description": "URL which points to the workflow. Either workflow source or workflow url is required.",
+            "in": "formData",
+            "name": "workflowUrl",
+            "type": "string"
+          },
+          {
+            "description": "JSON or YAML file containing the inputs as an object.",
+            "format": "binary",
+            "in": "formData",
+            "name": "workflowInputs",
+            "type": "string"
+          },
+          {
+            "description": "The workflow language for the file you submitted. Cromwell currently supports WDL and CWL.",
+            "enum": [
+              "WDL",
+              "CWL"
+            ],
+            "in": "formData",
+            "name": "workflowType",
+            "type": "string"
+          },
+          {
+            "description": "The specification version for the workflow language being used. For WDL, Cromwell currently supports draft-2 and 1.0. For CWL, Cromwell currently supports v1.0.",
+            "enum": [
+              "draft-2",
+              "1.0",
+              "v1.0"
+            ],
+            "in": "formData",
+            "name": "workflowTypeVersion",
+            "type": "string"
           }
         ],
         "responses": {
@@ -5601,9 +5638,12 @@
             "type": "string"
           },
           {
+            "description": "A valid TSV import file",
+            "format": "binary",
             "in": "formData",
             "name": "entities",
-            "required": true
+            "required": true,
+            "type": "string"
           }
         ],
         "responses": {
@@ -5649,9 +5689,12 @@
             "type": "string"
           },
           {
+            "description": "A valid TSV import file",
+            "format": "binary",
             "in": "formData",
             "name": "attributes",
-            "required": true
+            "required": true,
+            "type": "string"
           }
         ],
         "responses": {
@@ -5750,9 +5793,12 @@
             "type": "string"
           },
           {
+            "description": "A valid TSV import file",
+            "format": "binary",
             "in": "formData",
             "name": "entities",
-            "required": true
+            "required": true,
+            "type": "string"
           }
         ],
         "responses": {
@@ -7595,7 +7641,6 @@
           },
           {
             "description": "Attribute operations. WARNING! This should not be used to change library metadata (republish will not happen). Use UpdateAttributes in the library section.",
-            "in": "body",
             "name": "body",
             "required": true,
             "schema": {
@@ -7632,7 +7677,7 @@
     "/cookie-authed/download/b/{bucket}/o/{object}": {
       "get": {
         "produces": [
-          "application/json"
+          "application/octet-stream"
         ],
         "parameters": [
           {
@@ -7668,7 +7713,7 @@
         "tags": [
           "Storage"
         ],
-        "description": "**Important**: this file download does not work within the swagger UI. It is here for documentation\npurposes. You can fill in the fields and submit; once you do so, you will get an error, but swagger\nwill populate the \"Request URL\" field. You can then copy and paste that field into a new tab to\nachieve your download.\n",
+        "description": "Download GCS object using a cookie token\n",
         "operationId": "getStorageDownload",
         "summary": "Download GCS object using a cookie token\n",
         "x-passthrough": false
@@ -7677,8 +7722,7 @@
     "/cookie-authed/workspaces/{workspaceNamespace}/{workspaceName}/entities/{entityType}/tsv": {
       "get": {
         "produces": [
-          "text/plain",
-          "application/octet-stream"
+          "text/plain"
         ],
         "parameters": [
           {
@@ -7746,8 +7790,7 @@
           "multipart/form-data"
         ],
         "produces": [
-          "text/plain",
-          "application/octet-stream"
+          "text/plain"
         ],
         "parameters": [
           {
@@ -9983,6 +10026,10 @@
     "MethodConfiguration": {
       "description": "",
       "properties": {
+        "dataReferenceName": {
+          "description": "the name of the data reference within this workspace to be used to derive input values",
+          "type": "string"
+        },
         "deleted": {
           "description": "Is this config marked as deleted?",
           "type": "boolean"
