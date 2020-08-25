@@ -36,7 +36,6 @@ Terra <-
             ## api_url = "https://api.firecloud.org/api-docs.yaml",
             authenticate = FALSE,
             api_reference_url = "https://api.firecloud.org/api-docs.yaml",
-            api_reference_md5sum = "ebaeb7e317b1702763a1961242d0666f"
         ),
         api_header = api_header
     )
