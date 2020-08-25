@@ -3,3 +3,11 @@ auth.json
 .Rproj.user
 *.Rproj
 .Rhistory
+vignettes/*.md
+vignettes/*ipynb
+vignettes/*html
+vignettes/*R
+vignettes/*log
+vignettes/*pdf
+vignettes/*_cache
+vignettes/*_files
