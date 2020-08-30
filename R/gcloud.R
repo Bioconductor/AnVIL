@@ -68,7 +68,8 @@ gcloud_account <- function(account = NULL) {
 
     if (!is.null(account))
         .gcloud_do("config", "set", "account", account)
-    .gcloud_do("config", "get-value", "account")
+    ## Grab only the email address which is in the [2] item in vector
+    .gcloud_do("config", "get-value", "account")[2]
 }
 
 #' @rdname gcloud
