@@ -20,6 +20,120 @@
     stop(message, call.=FALSE)
 }
 
+
+##
+## utilities
+##
+
+.avworkspace <- local({
+    hash <- new.env(parent = emptyenv())
+    function(fun, key, value) {
+        sysvar <- toupper(paste0("WORKSPACE_", key))
+        if (is.null(value)) {
+            if (is.null(hash[[key]])) {
+                ## initialize
+                hash[[key]] <- Sys.getenv(sysvar)
+                if (!nzchar(hash[[key]]) && interactive())
+                    warning("'", sysvar, "' undefined; use `", fun, "()` to set")
+            }
+        } else {
+            hash[[key]] <- ifelse(is.na(value), Sys.getenv(sysvar), value)
+        }
+        hash[[key]]
+    }
+})
+
+#' @rdname av
+#'
+#' @description `avworkspace_namespace()` and `avworkspace_name()` are
+#'     utiliity functions to retrieve workspace namespace and name
+#'     from environment variables or interfaces usually available in
+#'     AnVIL notebooks or RStudio sessions.  `avworkspace()` provides
+#'     a convenient way to specify workspace namespace and name in a
+#'     single command.
+#'
+#' @details `avworkspace_namespace()` is the billing account. If the
+#'     `namespace=` argument is not provided, try `gcloud_project()`,
+#'     and if that fails try `Sys.getenv("WORKSPACE_NAMESPACE")`.
+#'
+#'     `avworkspace_name()` is the name of the workspace as it appears
+#'     in \url{https://app.terra.bio/#workspaces}. If not provided,
+#'     `avworkspace_name()` tries to use
+#'     `Sys.getenv("WORKSPACE_NAME")`.
+#'
+#'     Values are cached across sessions, so explicitly providing
+#'     `avworkspace_*()` is required at most once per session. Revert
+#'     to system settings with arguments `NA`.
+#'
+#' @param namespace character(1) AnVIL workspace namespace as returned
+#'     by, e.g., `avworkspace_namespace()`
+#'
+#' @param name character(1) AnVIL workspace name as returned by, eg.,
+#'     `avworkspace_name()`.
+#'
+#' @return `avworkspace_namespace()`, and `avworkspace_name()` return
+#'     `character(1)` identifiers.
+#'
+#' @examples
+#' avworkspace_namespace()
+#'
+#' @export
+avworkspace_namespace <- function(namespace = NULL) {
+    suppressWarnings({
+        namespace <- .avworkspace("avworkspace_namespace", "NAMESPACE", namespace)
+    })
+    if (!nzchar(namespace)) {
+        namespace <- tryCatch({
+            gcloud_project()
+        }, error = function(e) {
+            NULL
+        })
+        namespace <- .avworkspace("avworkspace_namespace", "NAMESPACE", namespace)
+    }
+    namespace
+}
+
+#' @rdname av
+#'
+#' @examples
+#' avworkspace_name()
+#'
+#' @export
+avworkspace_name <- function(name = NULL)
+    .avworkspace("avworkspace_name", "NAME", name)
+
+#' @rdname av
+#'
+#' @param workspace when present, a `character(1)` providing the
+#'     concatenated namespace and name, e.g.,
+#'     `"bioconductor-rpci-anvil/Bioconductor-Package-AnVIL"`
+#'
+#' @return `avworkspace()` returns the character(1) concatenated
+#'     namespace and name.
+#'
+#' @examples
+#' avworkspace()
+#'
+#' @export
+avworkspace <-
+    function(workspace = NULL)
+{
+    stopifnot(
+        is.null(workspace) || .is_scalar_character(workspace)
+    )
+    if (!is.null(workspace)) {
+        wkspc <- strsplit(workspace, "/")[[1]]
+        if (length(wkspc) != 2L)
+            stop(
+                "'workspace' must be of the form 'namespace/name', ",
+                "with a single '/'"
+            )
+        avworkspace_namespace(wkspc[[1]])
+        avworkspace_name(wkspc[[2]])
+    }
+    paste0(avworkspace_namespace(), "/", avworkspace_name())
+}
+
 ##
 ## tables
 ##
@@ -30,7 +144,11 @@
 #'
 #' @description `avtables()` describes tables available in a
 #'     workspace. Tables can be visualized under the DATA tab, TABLES
-#'     item.
+#'     item.  `avtable()` returns an AnVIL table.  `avtable_import()`
+#'     imports a data.frame to an AnVIL table.  `avtable_import_set()`
+#'     imports set membership (i.e., a subset of an existing table)
+#'     information to an AnVIL table.  `avtable_delete_values()`
+#'     removes rows from an AnVIL table.
 #'
 #' @return `avtables()`: A tibble with columns identifying the table,
 #'     the number of records, and the column names.
@@ -59,8 +177,6 @@ avtables <-
 }
 
 #' @rdname av
-#'
-#' @description `avtable()` returns an AnVIL table.
 #'
 #' @param table character(1) table name as returned by, e.g., `avtables()`.
 #'
@@ -114,8 +230,6 @@ avtable <-
 
 #' @rdname av
 #'
-#' @description `avtable_import()` imports a data.frame to an AnVIL table.
-#'
 #' @param .data A tibble or data.frame for import as an AnVIL table.
 #'
 #' @param entity `character(1)` column name of `.data` to be used as
@@ -161,9 +275,6 @@ avtable_import <-
 }
 
 #' @rdname av
-#'
-#' @description `avtable_import_set()` imports set membership
-#'     information to an AnVIL table.
 #'
 #' @param origin character(1) name of the entity (table) used to
 #'     create the set e.g "sample", "participant",
@@ -237,8 +348,6 @@ avtable_import_set <-
 }
 
 #' @rdname av
-#'
-#' @description `avtable_delete_values()` removes rows from an AnVIL table.
 #'
 #' @param values vector of values in the entity (key) column of
 #'     `table` to be deleted. A table `sample` has an associated
@@ -417,7 +526,11 @@ avbucket <-
 #' @rdname av
 #'
 #' @description `avfiles_ls()` returns the paths of files in the
-#'     workspace bucket.
+#'     workspace bucket.  `avfiles_backup()` copies files from the
+#'     compute node file system to the workspace bucket.
+#'     `avfiles_restore()` copies files from the workspace bucket to
+#'     the compute node file system.  `avfiles_rm()` removes files or
+#'     directories from the workspace bucket.
 #'
 #' @param path For `avfiles_ls(), the character(1) file or directory path
 #'     to list.
@@ -469,9 +582,6 @@ avfiles_ls <-
 }
 
 #' @rdname av
-#'
-#' @description `avfiles_backup()` copies files from the compute node
-#'     file system to the workspace bucket.
 #'
 #' @details `avfiles_backup()` can be used to back-up individual files
 #'     or entire directories, recursively.  When `recursive = FALSE`,
@@ -533,9 +643,6 @@ avfiles_backup <-
 
 #' @rdname av
 #'
-#' @description `avfiles_restore()` copies files from the workspace
-#'     bucket to the compute node file system.
-#'
 #' @details `avfiles_restore()` behaves in a manner analogous to
 #'     `avfiles_backup()`, copying files from the workspace bucket to
 #'     the compute node file system.
@@ -568,9 +675,6 @@ avfiles_restore <-
 
 #' @rdname av
 #'
-#' @description `avfiles_rm()` removes files or directories from the
-#'     workspace bucket.
-#'
 #' @return `avfiles_rm()` on success, returns a list of the return
 #'     codes of `gsutil_rm()`, invisibly.
 #'
@@ -601,112 +705,139 @@ avfiles_rm <-
 }
 
 ##
-## utilities
+## Workflows
 ##
 
-.avworkspace <- local({
-    hash <- new.env(parent = emptyenv())
-    function(fun, key, value) {
-        sysvar <- toupper(paste0("WORKSPACE_", key))
-        if (is.null(value)) {
-            if (is.null(hash[[key]])) {
-                ## initialize
-                hash[[key]] <- Sys.getenv(sysvar)
-                if (!nzchar(hash[[key]]) && interactive())
-                    warning("'", sysvar, "' undefined; use `", fun, "()` to set")
-            }
-        } else {
-            hash[[key]] <- ifelse(is.na(value), Sys.getenv(sysvar), value)
-        }
-        hash[[key]]
-    }
-})
+.avworkflow_job <-
+    function(x)
+{
+    succeeded <- 0L
+    failed <- 0L
+    if ("Succeeded" %in% names(x$workflowStatuses))
+        succeeded <- x$workflowStatuses$Succeeded
+    if ("Failed" %in% names(x$workflowStatuses))
+        failed <- x$workflowStatuses$Failed
 
-#' @rdname av
-#'
-#' @description `avworkspace_namespace()` and `avworkspace_name()` are
-#'     utiliity functions to retrieve workspace namespace and name
-#'     from environment variables or interfaces usually available in
-#'     AnVIL notebooks or RStudio sessions.
-#'
-#' @details `avworkspace_namespace()` is the billing account. If the
-#'     `namespace=` argument is not provided, try `gcloud_project()`,
-#'     and if that fails try `Sys.getenv("WORKSPACE_NAMESPACE")`.
-#'
-#'     `avworkspace_name()` is the name of the workspace as it appears
-#'     in \url{https://app.terra.bio/#workspaces}. If not provided,
-#'     `avworkspace_name()` tries to use
-#'     `Sys.getenv("WORKSPACE_NAME")`.
-#'
-#'     Values are cached across sessions, so explicitly providing
-#'     `avworkspace_*()` is required at most once per session. Revert
-#'     to system settings with arguments `NA`.
-#'
-#' @param namespace character(1) AnVIL workspace namespace as returned
-#'     by, e.g., `avworkspace_namespace()`
-#'
-#' @param name character(1) AnVIL workspace name as returned by, eg.,
-#'     `avworkspace_name()`.
-#'
-#' @return `avworkspace_namespace()`, and `avworkspace_name()` return
-#'     `character(1)` identifiers.
-#'
-#' @examples
-#' avworkspace_namespace()
-#'
-#' @export
-avworkspace_namespace <- function(namespace = NULL) {
-    suppressWarnings({
-        namespace <- .avworkspace("avworkspace_namespace", "NAMESPACE", namespace)
-    })
-    if (!nzchar(namespace)) {
-        namespace <- tryCatch({
-            gcloud_project()
-        }, error = function(e) {
-            NULL
-        })
-        namespace <- .avworkspace("avworkspace_namespace", "NAMESPACE", namespace)
-    }
-    namespace
+    list(
+      submissionId = x[["submissionId"]],
+      submitter = x[["submitter"]],
+      submissionDate = x[["submissionDate"]],
+      succeeded = succeeded,
+      failed = failed
+    )
 }
 
 #' @rdname av
 #'
+#' @description `avworkflow_jobs()` returns a tibble summarizing
+#'     submitted workflow jobs.
+#'
+#' @return `avworkflow_jobs() returns a tibble with columns
+#'     submissionId, submitter, submissionDate, and the number of jobs
+#'     that succeeded and failed.
+#'
 #' @examples
-#' avworkspace_name()
+#' if (gcloud_exists() && nzchar(avworkspace_name()))
+#'     ## from within AnVIL
+#'     avworkflow_jobs()
+#'
+#' @importFrom dplyr bind_rows
 #'
 #' @export
-avworkspace_name <- function(name = NULL)
-    .avworkspace("avworkspace_name", "NAME", name)
+avworkflow_jobs <-
+    function(namespace = avworkspace_namespace(), name = avworkspace_name())
+{
+    stopifnot(
+        .is_scalar_character(namespace),
+        .is_scalar_character(name)
+    )
+    terra <- Terra()
+    response <- terra$listSubmissions(namespace, name)
+    .avstop_for_status(response, "avworkflow_jobs")
+
+    submissions <- content(response, encoding = "UTF-8")
+    if (length(submissions)) {
+        submissions <- lapply(submissions, .avworkflow_job)
+    } else {
+        submissions <- list(
+            submissionId = character(),
+            submitter = character(),
+            submissionDate = character(),
+            succeeded = integer(),
+            failed = integer()
+        )
+    }
+    bind_rows(submissions)
+}
+
+avworkflow_output_urls <-
+    function(submissionID, subBucket, outputName)
+{
+    stop("not yet implemented")
+    ## get the structure for a run of a workflow that Succeeded. We
+    ## need to go into the non log directory
+    workflowPath <- paste0(subBucket, "/", submissionID)
+    workflowBucketDir <- gsutil_ls(workflowPath)
+    idx <- !grepl(workflowBucketDir, pattern="workflow.log")
+    workflowTaskDirUrl <- workflowBucketDir[idx][1]
+
+    ## The next directory has 1 directory per job, we will pick one
+    ## that directory will have a call directory we want
+    workflowJobs <- gsutil_ls(workflowTaskDirUrl)
+    workflowCallUrl <- gsutil_ls(workflowJobs[1])[1]
+    workflowStructure <- gsutil_ls(workflowCallUrl)
+    workflowStructure
+
+    ## Now we can build the urls for the output we want
+    callNameTemp <- strsplit(workflowCallUrl, split="/")[[1]]
+    callName <- callNameTemp[length(callNameTemp)]
+    resultUrls <- paste0(workflowJobs, callName, "/", outputName)
+    resultUrls
+}
+
+##
+## Runtimes
+##
 
 #' @rdname av
 #'
-#' @param workspace when present, a `character(1)` providing the
-#'     concatenated namespace and name, e.g.,
-#'     `"bioconductor-rpci-anvil/Bioconductor-Package-AnVIL"`
+#' @description `avruntimes()` returns a tibble containing information
+#'     about runtimes (notebooks or RStudio instances, for example)
+#'     that the current user has access to.
 #'
-#' @return `avworkspace()` returns the character(1) concatenated
-#'     namespace and name.
+#' @return `avruntimes()` returns a tibble with columns creator (AnVIL
+#'     account), googleprojecct (billing account), clusterName, tool
+#'     (Jupyter, RStudio), status, createdDate, destroyedDate,
+#'     masterMachineType, workerMachineType, and machineType (it is
+#'     unclear which 'tool' populates which of the machineType
+#'     columns).
 #'
 #' @examples
-#' avworkspace()
+#' if (gcloud_exists() && nzchar(avworkspace_name()))
+#'     ## from within AnVIL
+#'     avruntimes()
+#'
+#' @importFrom dplyr rename_with
+#'
+#' @importFrom tidyselect everything
 #'
 #' @export
-avworkspace <-
-    function(workspace = NULL)
+avruntimes <-
+    function()
 {
-    stopifnot(
-        is.null(workspace) || .is_scalar_character(workspace)
+    leo <- Leonardo()
+    response <- leo$listRuntimes()
+    .avstop_for_status(response)
+    runtimes <- flatten(response)
+
+    want <- c(
+        "labels.creator", "clusterName", "tool",
+        "status", "createdDate", "destroyedDate",
+        "machineType"
     )
-    if (!is.null(workspace)) {
-        wkspc <- strsplit(workspace, "/")[[1]]
-        if (length(wkspc) != 2L)
-            stop(
-                "'workspace' must be of the form 'namespace/name', ",
-                "with a single '/'"
-            )
-        avworkspace_namespace(wkspc[[1]])
-        avworkspace_name(wkspc[[2]])
-    }
-    paste0(avworkspace_namespace(), "/", avworkspace_name())
+
+    runtimes %>%
+        select(ends_with(want), "googleProject") %>%
+        rename_with(~ sub(".*\\.", "", .x)) %>%
+        select("creator", "googleProject", everything())
 }
