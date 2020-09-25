@@ -705,7 +705,7 @@ avfiles_rm <-
 }
 
 ##
-## Workflows
+## Workflows / runtimes / persistent disks
 ##
 
 .avworkflow_job <-
@@ -795,10 +795,6 @@ avworkflow_output_urls <-
     resultUrls
 }
 
-##
-## Runtimes
-##
-
 #' @rdname av
 #'
 #' @description `avruntimes()` returns a tibble containing information
@@ -813,7 +809,7 @@ avworkflow_output_urls <-
 #'     columns).
 #'
 #' @examples
-#' if (gcloud_exists() && nzchar(avworkspace_name()))
+#' if (gcloud_exists())
 #'     ## from within AnVIL
 #'     avruntimes()
 #'
@@ -827,7 +823,7 @@ avruntimes <-
 {
     leo <- Leonardo()
     response <- leo$listRuntimes()
-    .avstop_for_status(response)
+    .avstop_for_status(response, "avruntimes")
     runtimes <- flatten(response)
 
     want <- c(
@@ -836,8 +832,60 @@ avruntimes <-
         "machineType"
     )
 
-    runtimes %>%
+    runtimes <-
+        runtimes %>%
         select(ends_with(want), "googleProject") %>%
         rename_with(~ sub(".*\\.", "", .x)) %>%
         select("creator", "googleProject", everything())
+
+    if (!nrow(runtimes)) {
+        runtimes <- tibble(
+            creator = character(0), googleProject = character(0),
+            clusterName = character(0), tool = character(0),
+            status = character(0), createdDate = character(0),
+            destroyedDate = logical(0), masterMachineType = character(0),
+            workerMachineType = logical(0), machineType = character(0)
+        )
+    }
+
+    runtimes
+}
+
+#' @name av
+#'
+#' @description 'avdisks()` returns a tibble containing information
+#'     about persistent disks associatd with the current user.
+#'
+#' @return `avdisks()` returns a tibble with columns id (disk id),
+#'     googleProject, zone (e.g., "us-central1-a"), name, status, size
+#'     (in GB), diskType, blockSize, auditInfo.creator,
+#'     auditInfo.createdDate, auditInfo.destroyedDate, and
+#'     auditInfo.dateAccessed.
+#'
+#' @examples
+#' if (gcloud_exists())
+#'     ## from within AnVIL
+#'     avdisks()
+#'
+#' @export
+avdisks <-
+    function()
+{
+    leo <- Leonardo()
+    response <- leo$listDisks()
+    .avstop_for_status(response, "avdisks")
+    runtimes <- flatten(response)
+
+    if (!nrow(runtimes))
+        runtimes <- tibble(
+            id = integer(0), googleProject = character(0),
+            zone = character(0), name = character(0), status = character(0),
+            size = integer(0), diskType = character(0), blockSize = integer(0),
+            auditInfo.creator = character(0),
+            auditInfo.createdDate = character(0),
+            auditInfo.destroyedDate = logical(0),
+            auditInfo.dateAccessed = character(0)
+        )
+
+    runtimes
 }

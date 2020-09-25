@@ -17,6 +17,8 @@
 \alias{avfiles_rm}
 \alias{avworkflow_jobs}
 \alias{avruntimes}
+\alias{av}
+\alias{avdisks}
 \title{Functions for convenient user interaction with AnVIL resources}
 \usage{
 avworkspace_namespace(namespace = NULL)
@@ -97,6 +99,8 @@ avfiles_rm(
 avworkflow_jobs(namespace = avworkspace_namespace(), name = avworkspace_name())
 
 avruntimes()
+
+avdisks()
 }
 \arguments{
 \item{namespace}{character(1) AnVIL workspace namespace as returned
@@ -220,6 +224,12 @@ See `?gsutil_cp()`.}
     masterMachineType, workerMachineType, and machineType (it is
     unclear which 'tool' populates which of the machineType
     columns).
+
+`avdisks()` returns a tibble with columns id (disk id),
+    googleProject, zone (e.g., "us-central1-a"), name, status, size
+    (in GB), diskType, blockSize, auditInfo.creator,
+    auditInfo.createdDate, auditInfo.destroyedDate, and
+    auditInfo.dateAccessed.
 }
 \description{
 `avworkspace_namespace()` and `avworkspace_name()` are
@@ -258,6 +268,9 @@ See `?gsutil_cp()`.}
 `avruntimes()` returns a tibble containing information
     about runtimes (notebooks or RStudio instances, for example)
     that the current user has access to.
+
+'avdisks()` returns a tibble containing information
+    about persistent disks associatd with the current user.
 }
 \details{
 `avworkspace_namespace()` is the billing account. If the
@@ -344,8 +357,12 @@ if (gcloud_exists() && nzchar(avworkspace_name()))
     ## from within AnVIL
     avworkflow_jobs()
 
-if (gcloud_exists() && nzchar(avworkspace_name()))
+if (gcloud_exists())
     ## from within AnVIL
     avruntimes()
+
+if (gcloud_exists())
+    ## from within AnVIL
+    avdisks()
 
 }
