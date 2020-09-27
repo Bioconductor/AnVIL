@@ -801,12 +801,13 @@ avworkflow_output_urls <-
 #'     about runtimes (notebooks or RStudio instances, for example)
 #'     that the current user has access to.
 #'
-#' @return `avruntimes()` returns a tibble with columns creator (AnVIL
-#'     account), googleprojecct (billing account), clusterName, tool
-#'     (Jupyter, RStudio), status, createdDate, destroyedDate,
-#'     masterMachineType, workerMachineType, and machineType (it is
-#'     unclear which 'tool' populates which of the machineType
-#'     columns).
+#' @return `avruntimes()` returns a tibble with columns id (runtime
+#'     id), googleProjecct (billing account), tool (Jupyter, RStudio),
+#'     status, creator (AnVIL account), createdDate, destroyedDate,
+#'     dateAccessed, runtimeName, masterMachineType,
+#'     workerMachineType, machineType (it is unclear which 'tool'
+#'     populates which of the machineType columns), and
+#'     persistentDiskId.
 #'
 #' @examples
 #' if (gcloud_exists())
@@ -826,29 +827,29 @@ avruntimes <-
     .avstop_for_status(response, "avruntimes")
     runtimes <- flatten(response)
 
-    want <- c(
-        "labels.creator", "clusterName", "tool",
-        "status", "createdDate", "destroyedDate",
-        "machineType"
+    want <- list(
+        id = integer(0),
+        googleProject = character(0),
+        labels.tool = character(0),
+        status = character(0),
+        auditInfo.creator = character(0),
+        auditInfo.createdDate = character(0),
+        auditInfo.destroyedDate = logical(0),
+        auditInfo.dateAccessed = character(0),
+        runtimeName = character(0),
+        runtimeConfig.masterMachineType = character(0),
+        runtimeConfig.workerMachineType = logical(0),
+        runtimeConfig.machineType = character(0),
+        runtimeConfig.persistentDiskId = integer(0)
     )
 
-    runtimes <-
-        runtimes %>%
-        select(ends_with(want), "googleProject") %>%
-        rename_with(~ sub(".*\\.", "", .x)) %>%
-        select("creator", "googleProject", everything())
-
     if (!nrow(runtimes)) {
-        runtimes <- tibble(
-            creator = character(0), googleProject = character(0),
-            clusterName = character(0), tool = character(0),
-            status = character(0), createdDate = character(0),
-            destroyedDate = logical(0), masterMachineType = character(0),
-            workerMachineType = logical(0), machineType = character(0)
-        )
+        as_tibble(want)
+    } else {
+        runtimes %>%
+            select(names(want)) %>%
+            rename_with(~ sub(".*\\.", "", .x))
     }
-
-    runtimes
 }
 
 #' @name av
@@ -857,10 +858,9 @@ avruntimes <-
 #'     about persistent disks associatd with the current user.
 #'
 #' @return `avdisks()` returns a tibble with columns id (disk id),
-#'     googleProject, zone (e.g., "us-central1-a"), name, status, size
-#'     (in GB), diskType, blockSize, auditInfo.creator,
-#'     auditInfo.createdDate, auditInfo.destroyedDate, and
-#'     auditInfo.dateAccessed.
+#'     googleProject, status, size (in GB), diskType, blockSize,
+#'     creator, createdDate, destroyedDate, dateAccessed, zone (e.g.,
+#'     "us-central1-a"), and name.
 #'
 #' @examples
 #' if (gcloud_exists())
@@ -876,16 +876,26 @@ avdisks <-
     .avstop_for_status(response, "avdisks")
     runtimes <- flatten(response)
 
-    if (!nrow(runtimes))
-        runtimes <- tibble(
-            id = integer(0), googleProject = character(0),
-            zone = character(0), name = character(0), status = character(0),
-            size = integer(0), diskType = character(0), blockSize = integer(0),
-            auditInfo.creator = character(0),
-            auditInfo.createdDate = character(0),
-            auditInfo.destroyedDate = logical(0),
-            auditInfo.dateAccessed = character(0)
-        )
+    want <- list(
+        id = integer(0),
+        googleProject = character(0),
+        status = character(0),
+        size = integer(0),
+        diskType = character(0),
+        blockSize = integer(0),
+        auditInfo.creator = character(0),
+        auditInfo.createdDate = character(0),
+        auditInfo.destroyedDate = logical(0),
+        auditInfo.dateAccessed = character(0),
+        name = character(0),
+        zone = character(0)
+    )
 
-    runtimes
+    if (nrow(runtimes)) {
+        runtimes %>%
+            select(names(want)) %>%
+            rename_with(~sub(".*\\.", "", .x))
+    } else {
+        as_tibble(want)
+    }
 }

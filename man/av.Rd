@@ -218,18 +218,18 @@ See `?gsutil_cp()`.}
     submissionId, submitter, submissionDate, and the number of jobs
     that succeeded and failed.
 
-`avruntimes()` returns a tibble with columns creator (AnVIL
-    account), googleprojecct (billing account), clusterName, tool
-    (Jupyter, RStudio), status, createdDate, destroyedDate,
-    masterMachineType, workerMachineType, and machineType (it is
-    unclear which 'tool' populates which of the machineType
-    columns).
+`avruntimes()` returns a tibble with columns id (runtime
+    id), googleProjecct (billing account), tool (Jupyter, RStudio),
+    status, creator (AnVIL account), createdDate, destroyedDate,
+    dateAccessed, runtimeName, masterMachineType,
+    workerMachineType, machineType (it is unclear which 'tool'
+    populates which of the machineType columns), and
+    persistentDiskId.
 
 `avdisks()` returns a tibble with columns id (disk id),
-    googleProject, zone (e.g., "us-central1-a"), name, status, size
-    (in GB), diskType, blockSize, auditInfo.creator,
-    auditInfo.createdDate, auditInfo.destroyedDate, and
-    auditInfo.dateAccessed.
+    googleProject, status, size (in GB), diskType, blockSize,
+    creator, createdDate, destroyedDate, dateAccessed, zone (e.g.,
+    "us-central1-a"), and name.
 }
 \description{
 `avworkspace_namespace()` and `avworkspace_name()` are
