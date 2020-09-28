@@ -796,18 +796,31 @@ avworkflow_output_urls <-
 }
 
 #' @rdname av
+#' @md
 #'
 #' @description `avruntimes()` returns a tibble containing information
 #'     about runtimes (notebooks or RStudio instances, for example)
 #'     that the current user has access to.
 #'
-#' @return `avruntimes()` returns a tibble with columns id (runtime
-#'     id), googleProjecct (billing account), tool (Jupyter, RStudio),
-#'     status, creator (AnVIL account), createdDate, destroyedDate,
-#'     dateAccessed, runtimeName, masterMachineType,
-#'     workerMachineType, machineType (it is unclear which 'tool'
-#'     populates which of the machineType columns), and
-#'     persistentDiskId.
+#' @return `avruntimes()` returns a tibble with columns
+#'
+#' - id: integer() runtime identifier.
+#' - googleProject: character() billing account.
+#' - tool: character() e.g., "Jupyter", "RStudio".
+#' - status character() e.g., "Stopped", "Running".
+#' - creator character() AnVIL account, typically "user@gmail.com".
+#' - createdDate character() creation date.
+#' - destroyedDate character() destruction date, or NA.
+#' - dateAccessed character() date of (first?) access.
+#' - runtimeName character().
+#' - clusterServiceAccount character() service ('pet') account for
+#'   this runtime.
+#' - masterMachineType character() It is unclear which 'tool' populates
+#'   which of the machineType columns).
+#' - workerMachineType character().
+#' - machineType character().
+#' - persistentDiskId integer() identifier of persistent disk (see
+#'   `avdisks()`), or `NA`.
 #'
 #' @examples
 #' if (gcloud_exists())
@@ -822,12 +835,7 @@ avworkflow_output_urls <-
 avruntimes <-
     function()
 {
-    leo <- Leonardo()
-    response <- leo$listRuntimes()
-    .avstop_for_status(response, "avruntimes")
-    runtimes <- flatten(response)
-
-    want <- list(
+    template <- list(
         id = integer(0),
         googleProject = character(0),
         labels.tool = character(0),
@@ -837,30 +845,42 @@ avruntimes <-
         auditInfo.destroyedDate = logical(0),
         auditInfo.dateAccessed = character(0),
         runtimeName = character(0),
+        labels.clusterServiceAccount = character(0),
         runtimeConfig.masterMachineType = character(0),
         runtimeConfig.workerMachineType = logical(0),
         runtimeConfig.machineType = character(0),
         runtimeConfig.persistentDiskId = integer(0)
     )
 
-    if (!nrow(runtimes)) {
-        as_tibble(want)
-    } else {
-        runtimes %>%
-            select(names(want)) %>%
-            rename_with(~ sub(".*\\.", "", .x))
-    }
+    leo <- Leonardo()
+    response <- leo$listRuntimes()
+    .avstop_for_status(response, "avruntimes")
+    runtimes <- flatten(response)
+
+    .tbl_with_template(runtimes, template) %>%
+        rename_with(~ sub(".*\\.", "", .x))
 }
 
 #' @name av
+#' @md
 #'
 #' @description 'avdisks()` returns a tibble containing information
 #'     about persistent disks associatd with the current user.
 #'
-#' @return `avdisks()` returns a tibble with columns id (disk id),
-#'     googleProject, status, size (in GB), diskType, blockSize,
-#'     creator, createdDate, destroyedDate, dateAccessed, zone (e.g.,
-#'     "us-central1-a"), and name.
+#' @return `avdisks()` returns a tibble with columns
+#'
+#' - id character() disk identifier.
+#' - googleProject: character() billing account.
+#' - status, e.g, "Ready"
+#' - size integer() in GB.
+#' - diskType character().
+#' - blockSize integer().
+#' - creator character() AnVIL account, typically "user@gmail.com".
+#' - createdDate character() creation date.
+#' - destroyedDate character() destruction date, or NA.
+#' - dateAccessed character() date of (first?) access.
+#' - zone character() e.g.. "us-central1-a".
+#' - name character().
 #'
 #' @examples
 #' if (gcloud_exists())
@@ -871,12 +891,7 @@ avruntimes <-
 avdisks <-
     function()
 {
-    leo <- Leonardo()
-    response <- leo$listDisks()
-    .avstop_for_status(response, "avdisks")
-    runtimes <- flatten(response)
-
-    want <- list(
+    template <- list(
         id = integer(0),
         googleProject = character(0),
         status = character(0),
@@ -891,11 +906,11 @@ avdisks <-
         zone = character(0)
     )
 
-    if (nrow(runtimes)) {
-        runtimes %>%
-            select(names(want)) %>%
-            rename_with(~sub(".*\\.", "", .x))
-    } else {
-        as_tibble(want)
-    }
+    leo <- Leonardo()
+    response <- leo$listDisks()
+    .avstop_for_status(response, "avdisks")
+    runtimes <- flatten(response)
+
+    .tbl_with_template(runtimes, template) %>%
+        rename_with(~sub(".*\\.", "", .x))
 }

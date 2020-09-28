@@ -218,18 +218,42 @@ See `?gsutil_cp()`.}
     submissionId, submitter, submissionDate, and the number of jobs
     that succeeded and failed.
 
-`avruntimes()` returns a tibble with columns id (runtime
-    id), googleProjecct (billing account), tool (Jupyter, RStudio),
-    status, creator (AnVIL account), createdDate, destroyedDate,
-    dateAccessed, runtimeName, masterMachineType,
-    workerMachineType, machineType (it is unclear which 'tool'
-    populates which of the machineType columns), and
-    persistentDiskId.
+\code{avruntimes()} returns a tibble with columns
+\itemize{
+\item id: integer() runtime identifier.
+\item googleProjecct: character() billing account.
+\item tool: character() e.g., "Jupyter", "RStudio".
+\item status character() e.g., "Stopped", "Running".
+\item creator character() AnVIL account, typically "user@gmail.com".
+\item createdDate character() creation date.
+\item destroyedDate character() destruction date, or NA.
+\item dateAccessed character() date of (first?) access.
+\item runtimeName character().
+\item clusterServiceAccount character() service ('pet') account for
+this runtime.
+\item masterMachineType character() It is unclear which 'tool' populates
+which of the machineType columns).
+\item workerMachineType character().
+\item machineType character().
+\item persistentDiskId integer() identifier of persistent disk (see
+\code{avdisks()}), or \code{NA}.
+}
 
-`avdisks()` returns a tibble with columns id (disk id),
-    googleProject, status, size (in GB), diskType, blockSize,
-    creator, createdDate, destroyedDate, dateAccessed, zone (e.g.,
-    "us-central1-a"), and name.
+\code{avdisks()} returns a tibble with columns
+\itemize{
+\item id character() disk identifier.
+\item googleProjecct: character() billing account.
+\item status, e.g, "Ready"
+\item size integer() in GB.
+\item diskType character().
+\item blockSize integer().
+\item creator character() AnVIL account, typically "user@gmail.com".
+\item createdDate character() creation date.
+\item destroyedDate character() destruction date, or NA.
+\item dateAccessed character() date of (first?) access.
+\item zone character() e.g.. "us-central1-a".
+\item name character().
+}
 }
 \description{
 `avworkspace_namespace()` and `avworkspace_name()` are
@@ -265,12 +289,12 @@ See `?gsutil_cp()`.}
 `avworkflow_jobs()` returns a tibble summarizing
     submitted workflow jobs.
 
-`avruntimes()` returns a tibble containing information
-    about runtimes (notebooks or RStudio instances, for example)
-    that the current user has access to.
+\code{avruntimes()} returns a tibble containing information
+about runtimes (notebooks or RStudio instances, for example)
+that the current user has access to.
 
 'avdisks()` returns a tibble containing information
-    about persistent disks associatd with the current user.
+about persistent disks associatd with the current user.
 }
 \details{
 `avworkspace_namespace()` is the billing account. If the
