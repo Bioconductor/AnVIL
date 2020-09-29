@@ -730,7 +730,7 @@ avfiles_rm <-
 #' @rdname av
 #'
 #' @description `avworkflow_jobs()` returns a tibble summarizing
-#'     submitted workflow jobs.
+#'     submitted workflow jobs for a namespace and name.
 #'
 #' @return `avworkflow_jobs() returns a tibble with columns
 #'     submissionId, submitter, submissionDate, and the number of jobs

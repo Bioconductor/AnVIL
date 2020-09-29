@@ -221,7 +221,7 @@ See `?gsutil_cp()`.}
 \code{avruntimes()} returns a tibble with columns
 \itemize{
 \item id: integer() runtime identifier.
-\item googleProjecct: character() billing account.
+\item googleProject: character() billing account.
 \item tool: character() e.g., "Jupyter", "RStudio".
 \item status character() e.g., "Stopped", "Running".
 \item creator character() AnVIL account, typically "user@gmail.com".
@@ -242,7 +242,7 @@ which of the machineType columns).
 \code{avdisks()} returns a tibble with columns
 \itemize{
 \item id character() disk identifier.
-\item googleProjecct: character() billing account.
+\item googleProject: character() billing account.
 \item status, e.g, "Ready"
 \item size integer() in GB.
 \item diskType character().
@@ -287,7 +287,7 @@ which of the machineType columns).
     directories from the workspace bucket.
 
 `avworkflow_jobs()` returns a tibble summarizing
-    submitted workflow jobs.
+    submitted workflow jobs for a namespace and name.
 
 \code{avruntimes()} returns a tibble containing information
 about runtimes (notebooks or RStudio instances, for example)
