@@ -861,6 +861,32 @@ avruntimes <-
         rename_with(~ sub(".*\\.", "", .x))
 }
 
+.runtime_pet <-
+    function(creator, tool = c("Jupyter", "RStudio"),
+             namespace = avworkspace_namespace())
+{
+    tool <- match.arg(tool)
+    stopifnot(
+        .is_scalar_character(tool),
+        .is_scalar_character(creator),
+        .is_scalar_character(namespace)
+    )
+
+    runtimes <- avruntimes()
+    pet <-
+        runtimes %>%
+        filter(
+            .data$tool == {{ tool }},
+            .data$creator == {{ creator }},
+            .data$googleProject == {{ namespace }}
+        ) %>%
+        pull(.data$clusterServiceAccount)
+
+    if (!.is_scalar_character(pet))
+        warning("'.runtime_pet' return value is not scalar")
+    pet
+}
+
 #' @name av
 #' @md
 #'
