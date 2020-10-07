@@ -97,7 +97,7 @@ gcloud_project <- function(project = NULL) {
 #' @description `gcloud_help()`: queries `gcloud` for help for a
 #'     command or sub-comand via `gcloud help ...`.
 #'
-#' @param ... additional arguments appended to gcloud commands.
+#' @param ... Additional arguments appended to gcloud commands.
 #'
 #' @return `gcloud_help()` returns an unquoted `character()` vector
 #'     representing the text of the help manual page returned by

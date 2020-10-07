@@ -15,7 +15,6 @@
 \alias{avfiles_backup}
 \alias{avfiles_restore}
 \alias{avfiles_rm}
-\alias{avworkflow_jobs}
 \alias{avruntimes}
 \alias{av}
 \alias{avdisks}
@@ -96,18 +95,16 @@ avfiles_rm(
   name = avworkspace_name()
 )
 
-avworkflow_jobs(namespace = avworkspace_namespace(), name = avworkspace_name())
-
 avruntimes()
 
 avdisks()
 }
 \arguments{
 \item{namespace}{character(1) AnVIL workspace namespace as returned
-by, e.g., `avworkspace_namespace()`}
+by, e.g., \code{avworkspace_namespace()}}
 
 \item{name}{character(1) AnVIL workspace name as returned by, eg.,
-`avworkspace_name()`.}
+\code{avworkspace_name()}.}
 
 \item{workspace}{when present, a `character(1)` providing the
 concatenated namespace and name, e.g.,
@@ -173,8 +170,8 @@ workspace bucket.}
 See `?gsutil_cp()`.}
 }
 \value{
-`avworkspace_namespace()`, and `avworkspace_name()` return
-    `character(1)` identifiers.
+\code{avworkspace_namespace()}, and \code{avworkspace_name()} return
+\code{character(1)} identifiers.
 
 `avworkspace()` returns the character(1) concatenated
     namespace and name.
@@ -214,10 +211,6 @@ See `?gsutil_cp()`.}
 `avfiles_rm()` on success, returns a list of the return
     codes of `gsutil_rm()`, invisibly.
 
-`avworkflow_jobs() returns a tibble with columns
-    submissionId, submitter, submissionDate, and the number of jobs
-    that succeeded and failed.
-
 \code{avruntimes()} returns a tibble with columns
 \itemize{
 \item id: integer() runtime identifier.
@@ -256,12 +249,12 @@ which of the machineType columns).
 }
 }
 \description{
-`avworkspace_namespace()` and `avworkspace_name()` are
-    utiliity functions to retrieve workspace namespace and name
-    from environment variables or interfaces usually available in
-    AnVIL notebooks or RStudio sessions.  `avworkspace()` provides
-    a convenient way to specify workspace namespace and name in a
-    single command.
+\code{avworkspace_namespace()} and \code{avworkspace_name()} are
+utiliity functions to retrieve workspace namespace and name
+from environment variables or interfaces usually available in
+AnVIL notebooks or RStudio sessions.  \code{avworkspace()} provides
+a convenient way to specify workspace namespace and name in a
+single command.
 
 `avtables()` describes tables available in a
     workspace. Tables can be visualized under the DATA tab, TABLES
@@ -286,9 +279,6 @@ which of the machineType columns).
     the compute node file system.  `avfiles_rm()` removes files or
     directories from the workspace bucket.
 
-`avworkflow_jobs()` returns a tibble summarizing
-    submitted workflow jobs for a namespace and name.
-
 \code{avruntimes()} returns a tibble containing information
 about runtimes (notebooks or RStudio instances, for example)
 that the current user has access to.
@@ -297,18 +287,17 @@ that the current user has access to.
 about persistent disks associatd with the current user.
 }
 \details{
-`avworkspace_namespace()` is the billing account. If the
-    `namespace=` argument is not provided, try `gcloud_project()`,
-    and if that fails try `Sys.getenv("WORKSPACE_NAMESPACE")`.
+\code{avworkspace_namespace()} is the billing account. If the
+\verb{namespace=} argument is not provided, try \code{gcloud_project()},
+and if that fails try \code{Sys.getenv("WORKSPACE_NAMESPACE")}.\preformatted{`avworkspace_name()` is the name of the workspace as it appears
+in \url{https://app.terra.bio/#workspaces}. If not provided,
+`avworkspace_name()` tries to use
+`Sys.getenv("WORKSPACE_NAME")`.
 
-    `avworkspace_name()` is the name of the workspace as it appears
-    in \url{https://app.terra.bio/#workspaces}. If not provided,
-    `avworkspace_name()` tries to use
-    `Sys.getenv("WORKSPACE_NAME")`.
-
-    Values are cached across sessions, so explicitly providing
-    `avworkspace_*()` is required at most once per session. Revert
-    to system settings with arguments `NA`.
+Values are cached across sessions, so explicitly providing
+`avworkspace_*()` is required at most once per session. Revert
+to system settings with arguments `NA`.
+}
 
 `avtable_import_set()` creates new rows in a table
     `<origin>_set`. One row will be created for each distinct value
@@ -376,10 +365,6 @@ avfiles_backup(dir())
 ## default buckets are gs://<bucket-id>/<basename(getwd())>/...
 avfiles_backup(getwd(), recursive = TRUE)
 }
-
-if (gcloud_exists() && nzchar(avworkspace_name()))
-    ## from within AnVIL
-    avworkflow_jobs()
 
 if (gcloud_exists())
     ## from within AnVIL

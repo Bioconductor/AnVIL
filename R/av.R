@@ -44,6 +44,7 @@
 })
 
 #' @rdname av
+#' @md
 #'
 #' @description `avworkspace_namespace()` and `avworkspace_name()` are
 #'     utiliity functions to retrieve workspace namespace and name
@@ -705,95 +706,8 @@ avfiles_rm <-
 }
 
 ##
-## Workflows / runtimes / persistent disks
+## runtimes / persistent disks
 ##
-
-.avworkflow_job <-
-    function(x)
-{
-    succeeded <- 0L
-    failed <- 0L
-    if ("Succeeded" %in% names(x$workflowStatuses))
-        succeeded <- x$workflowStatuses$Succeeded
-    if ("Failed" %in% names(x$workflowStatuses))
-        failed <- x$workflowStatuses$Failed
-
-    list(
-      submissionId = x[["submissionId"]],
-      submitter = x[["submitter"]],
-      submissionDate = x[["submissionDate"]],
-      succeeded = succeeded,
-      failed = failed
-    )
-}
-
-#' @rdname av
-#'
-#' @description `avworkflow_jobs()` returns a tibble summarizing
-#'     submitted workflow jobs for a namespace and name.
-#'
-#' @return `avworkflow_jobs() returns a tibble with columns
-#'     submissionId, submitter, submissionDate, and the number of jobs
-#'     that succeeded and failed.
-#'
-#' @examples
-#' if (gcloud_exists() && nzchar(avworkspace_name()))
-#'     ## from within AnVIL
-#'     avworkflow_jobs()
-#'
-#' @importFrom dplyr bind_rows
-#'
-#' @export
-avworkflow_jobs <-
-    function(namespace = avworkspace_namespace(), name = avworkspace_name())
-{
-    stopifnot(
-        .is_scalar_character(namespace),
-        .is_scalar_character(name)
-    )
-    terra <- Terra()
-    response <- terra$listSubmissions(namespace, name)
-    .avstop_for_status(response, "avworkflow_jobs")
-
-    submissions <- content(response, encoding = "UTF-8")
-    if (length(submissions)) {
-        submissions <- lapply(submissions, .avworkflow_job)
-    } else {
-        submissions <- list(
-            submissionId = character(),
-            submitter = character(),
-            submissionDate = character(),
-            succeeded = integer(),
-            failed = integer()
-        )
-    }
-    bind_rows(submissions)
-}
-
-avworkflow_output_urls <-
-    function(submissionID, subBucket, outputName)
-{
-    stop("not yet implemented")
-    ## get the structure for a run of a workflow that Succeeded. We
-    ## need to go into the non log directory
-    workflowPath <- paste0(subBucket, "/", submissionID)
-    workflowBucketDir <- gsutil_ls(workflowPath)
-    idx <- !grepl(workflowBucketDir, pattern="workflow.log")
-    workflowTaskDirUrl <- workflowBucketDir[idx][1]
-
-    ## The next directory has 1 directory per job, we will pick one
-    ## that directory will have a call directory we want
-    workflowJobs <- gsutil_ls(workflowTaskDirUrl)
-    workflowCallUrl <- gsutil_ls(workflowJobs[1])[1]
-    workflowStructure <- gsutil_ls(workflowCallUrl)
-    workflowStructure
-
-    ## Now we can build the urls for the output we want
-    callNameTemp <- strsplit(workflowCallUrl, split="/")[[1]]
-    callName <- callNameTemp[length(callNameTemp)]
-    resultUrls <- paste0(workflowJobs, callName, "/", outputName)
-    resultUrls
-}
 
 #' @rdname av
 #' @md
@@ -861,6 +775,7 @@ avruntimes <-
         rename_with(~ sub(".*\\.", "", .x))
 }
 
+#' @importFrom dplyr pull
 .runtime_pet <-
     function(creator, tool = c("Jupyter", "RStudio"),
              namespace = avworkspace_namespace())
