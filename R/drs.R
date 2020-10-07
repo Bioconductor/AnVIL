@@ -1,5 +1,11 @@
 .DRS_MARTHA <- "https://us-central1-broad-dsde-prod.cloudfunctions.net/martha_v3"
 
+.DRS_RAWLS <- paste0(
+    "https://rawls.dsde-prod.broadinstitute.org/api/workspaces/",
+    "%s/%s/enableRequesterPaysForLinkedServiceAccounts"
+)
+
+
 .drs_is_uri <-
     function(source)
 {
@@ -39,7 +45,7 @@
 #'     notebook in the AnVIL), or can be found in the return value of
 #'     `avruntimes()`.
 #'
-#' @param drs character() DRS URLs (beginning with 'drs://') to
+#' @param source character() DRS URLs (beginning with 'drs://') to
 #'     resources managed by the 'martha' DRS resolution server.
 #'
 #' @return `drs_stat()` returns a tbl with the following columns:
@@ -74,10 +80,13 @@
 #'     # no pet account needed for HCA data
 #'     drs_stat(drs_eg_hca)
 #'
-#' if (gcloud_exists() && startsWiith(gcloud_accout(), "pet-")) {
+#' if (gcloud_exists() && startsWith(gcloud_account(), "pet-")) {
 #'     ## from within AnVIL
 #'     drs_stat(drs_eg_anvil)
 #' }
+#'
+#' @importFrom rlang .data
+#'
 #' @export
 drs_stat <-
     function(source = character())
@@ -119,9 +128,53 @@ drs_stat <-
     gsutil_cp(gsUri, destination, ...)
 }
 
+#' @importFrom httr GET PUT
+.drs_enable_requester_pays <-
+    function(namespace = avworkspace_namespace(), name = avworkspace_name())
+{
+    name <- curl_escape(name)
+    url <- sprintf(.DRS_RAWLS, namespace, name)
+
+    access_token <- .gcloud_access_token()
+    headers <- add_headers(
+        Authorization = paste("Bearer", access_token),
+        "content-type" = "application/json"
+    )
+    response <- PUT(url, headers)
+    .avstop_for_status(response, "DRS enable requester pays")
+
+    response
+}
+
+#' @importFrom httr oauth_service_token write_disk progress
+.drs_cp_full_1 <-
+    function(bucket, uri, gsa, destination)
+{
+    SCOPE <- "https://www.googleapis.com/auth/devstorage.read_only"
+    URL <- "https://storage.googleapis.com/%s/%s?userProject=%s"
+
+    secrets <- gsa
+    token <- oauth_service_token(oauth_endpoints("google"), secrets, SCOPE)
+
+    object <- sub(paste0("gs://", bucket, "/"), "", uri)
+    url <- sprintf(URL, bucket, object, "anvilprod")
+    GET(url, token, write_disk(destination, overwrite = TRUE), progress())
+}
+
 .drs_cp_full <-
     function(tbl, destination, ...)
 {
+    tbl <-
+        tbl %>%
+        filter(!.data$simple)
+    Map(
+        .drs_cp_full_1,
+        bucket = tbl$bucket,
+        uri = tbl$gsUri,
+        gsa = tbl$googleServiceAccount,
+        destination = file.path(destination, tbl$fileName),
+        ...
+    )
 }
 
 #' @rdname drs
@@ -133,6 +186,9 @@ drs_stat <-
 #' @param destination character(1) directory path in which to retrieve
 #'     files.
 #'
+#' @param ... additional arguments, passed to `gsutil_cp()` for file
+#'     copying.
+#'
 #' @return `drs_cp()` returns a tibble like `drs_stat()`, but with
 #'     additional columns
 #'
@@ -142,7 +198,9 @@ drs_stat <-
 #'
 #' @examples
 #' if (gcloud_exists()) {
-#'     tbl <- drs_cp(drs_eg_hca)
+#'     destination <- tempfile()
+#'     dir.create(destination)
+#'     tbl <- drs_cp(drs_eg_hca, destination)
 #'     readLines(tbl$destination, warn = FALSE)
 #' }
 #'

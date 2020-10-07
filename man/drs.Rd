@@ -10,11 +10,14 @@ drs_stat(source = character())
 drs_cp(source, destination, ...)
 }
 \arguments{
+\item{source}{character() DRS URLs (beginning with 'drs://') to
+resources managed by the 'martha' DRS resolution server.}
+
 \item{destination}{character(1) directory path in which to retrieve
 files.}
 
-\item{drs}{character() DRS URLs (beginning with 'drs://') to
-resources managed by the 'martha' DRS resolution server.}
+\item{...}{additional arguments, passed to \code{gsutil_cp()} for file
+copying.}
 }
 \value{
 \code{drs_stat()} returns a tbl with the following columns:
@@ -36,7 +39,7 @@ value; if unknown. it returns null)
 }
 
 \code{drs_cp()} returns a tibble like \code{drs_stat()}, but with
-additional colums
+additional columns
 \itemize{
 \item simple: logical() value indicating whether resolution used a
 simple signed URL (\code{TRUE}) or auxilliary service account.
@@ -72,12 +75,15 @@ if (gcloud_exists())
     # no pet account needed for HCA data
     drs_stat(drs_eg_hca)
 
-if (gcloud_exists() && startsWiith(gcloud_accout(), "pet-")) {
+if (gcloud_exists() && startsWith(gcloud_account(), "pet-")) {
     ## from within AnVIL
     drs_stat(drs_eg_anvil)
 }
+
 if (gcloud_exists()) {
-    tbl <- drs_cp(drs_eg_hca)
+    destination <- tempfile()
+    dir.create(destination)
+    tbl <- drs_cp(drs_eg_hca, destination)
     readLines(tbl$destination, warn = FALSE)
 }
 
