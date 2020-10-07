@@ -20,6 +20,9 @@ NEW FEATURES
 
 - (v 1.1.17) add avdisks() to query for persistent disks associate
   with the active billing account.
+  
+- (v 1.1.21) ad avworkflow_*() for interacting with workflow jobs
+  and outputs.
 
 # AnVIL 1.0.x
 
