@@ -7,7 +7,7 @@
 \usage{
 avworkflow_jobs(namespace = avworkspace_namespace(), name = avworkspace_name())
 
-avworkflow_files(submissionId, bucket = avbucket())
+avworkflow_files(submissionId = NULL, bucket = avbucket())
 }
 \arguments{
 \item{namespace}{character(1) AnVIL workspace namespace as returned
@@ -16,8 +16,9 @@ by, e.g., \code{avworkspace_namespace()}}
 \item{name}{character(1) AnVIL workspace name as returned by, eg.,
 \code{avworkspace_name()}.}
 
-\item{submissionId}{a character() of workflow submission ids or a
-tibble with column \code{submissionId}. See 'Details'.}
+\item{submissionId}{a character() of workflow submission ids, or a
+tibble with column \code{submissionId}, or NULL / missing. See
+'Details'.}
 
 \item{bucket}{character(1) name of the google bucket in which the
 workflow products are available, as \verb{gs://...}. Usually the
@@ -57,7 +58,9 @@ identifier associated with the workflow job, and is present in
 the return value of \code{avworkflow_jobs()}; the example
 illustrates how the first row of \code{avworkflow_jobs()} (i.e., the
 most recenltly completed workflow) can be used as input to
-\code{avworkflow_files()}.
+\code{avworkflow_files()}. When \code{submissionId} is not provided, the
+return value is for the most recently submitted workflow of the
+namespace and name of \code{avworkspace()}.
 }
 \examples{
 if (gcloud_exists() && nzchar(avworkspace_name()))

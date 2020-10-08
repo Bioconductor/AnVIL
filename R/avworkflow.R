@@ -83,8 +83,9 @@ avworkflow_jobs <-
 #' @description `avworkflow_files()` returns a tibble containing
 #'     information and file paths to workflow outputs.
 #'
-#' @param submissionId a character() of workflow submission ids or a
-#'     tibble with column `submissionId`. See 'Details'.
+#' @param submissionId a character() of workflow submission ids, or a
+#'     tibble with column `submissionId`, or NULL / missing. See
+#'     'Details'.
 #'
 #' @param bucket character(1) name of the google bucket in which the
 #'     workflow products are available, as `gs://...`. Usually the
@@ -95,7 +96,9 @@ avworkflow_jobs <-
 #'     the return value of `avworkflow_jobs()`; the example
 #'     illustrates how the first row of `avworkflow_jobs()` (i.e., the
 #'     most recenltly completed workflow) can be used as input to
-#'     `avworkflow_files()`.
+#'     `avworkflow_files()`. When `submissionId` is not provided, the
+#'     return value is for the most recently submitted workflow of the
+#'     namespace and name of `avworkspace()`.
 #'
 #' @return `avworkflow_files()` returns a tibble with columns
 #'
@@ -118,15 +121,22 @@ avworkflow_jobs <-
 #'     avworkflow_files()
 #' }
 avworkflow_files <-
-    function(submissionId, bucket = avbucket())
+    function(submissionId = NULL, bucket = avbucket())
 {
     WORKFLOW_LOGS <- "workflow.logs"
 
     stopifnot(
         .is_scalar_character(bucket),
-        .is_character(submissionId) ||
+        is.null(submissionId) || .is_character(submissionId) ||
         (is_tibble(submissionId) && "submissionId" %in% names(submissionId))
     )
+
+    if (is.null(submissionId))
+        ## default: most recent workflow job
+        submissionId <-
+            avworkflow_jobs() %>%
+            head(1)
+
     if (is_tibble(submissionId))
         submissionId <- submissionId$submissionId
 

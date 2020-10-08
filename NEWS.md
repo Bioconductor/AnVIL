@@ -21,7 +21,7 @@ NEW FEATURES
 - (v 1.1.17) add avdisks() to query for persistent disks associate
   with the active billing account.
   
-- (v 1.1.21) ad avworkflow_*() for interacting with workflow jobs
+- (v 1.1.21) add avworkflow_*() for interacting with workflow jobs
   and outputs.
 
 # AnVIL 1.0.x
@@ -39,8 +39,7 @@ USER VISIBLE CHANGES
 
 # AnVIL 1.0.0
 
-- AnVIL is _finally
-_ on Bioconductor!
+- AnVIL is _finally on Bioconductor!
 - Support OpenAPI Specification version 2 (aka Swagger 2.0)
 - `av`, `gcloud`, `gsutil` type functions added to interface with AnVIL
   and the cloud
