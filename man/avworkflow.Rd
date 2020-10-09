@@ -75,4 +75,5 @@ if (gcloud_exists() && nzchar(avworkspace_name())) {
     ## find paths to output and log files on the bucket
     avworkflow_files()
 }
+
 }

@@ -120,6 +120,8 @@ avworkflow_jobs <-
 #'     ## find paths to output and log files on the bucket
 #'     avworkflow_files()
 #' }
+#'
+#' @export
 avworkflow_files <-
     function(submissionId = NULL, bucket = avbucket())
 {
