@@ -19,6 +19,24 @@
 .is_scalar_logical <- function(x, na.ok = FALSE)
     is.logical(x) && length(x) == 1L && (na.ok || !is.na(x))
 
+.is_local_directory <- function(x)
+    .is_scalar_character(x) && dir.exists(x)
+
+#' @importFrom dplyr full_join
+.tbl_with_template <-
+    function(tbl, tmpl)
+{
+    result <- as_tibble(tmpl)
+    if (nrow(tbl)) {
+        have <- intersect(names(tbl), names(tmpl))
+        tbl <- select(tbl, have)
+        result <-
+            full_join(tbl, result, by = have) %>%
+            select(names(tmpl))
+    }
+    result
+}
+
 #' @importFrom utils head
 .pretty <- function(x, indent = 2, exdent = 0, some=FALSE) {
     len <- length(x)

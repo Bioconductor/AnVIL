@@ -33,9 +33,9 @@ Terra <-
         Service(
             "terra",
             host = "api.firecloud.org",
-            api_url = "https://api.firecloud.org/api-docs.yaml",
+            ## api_url = "https://api.firecloud.org/api-docs.yaml",
             authenticate = FALSE,
-            api_reference_md5sum = "1b1fe131446f829cc81359d0026279f9"
+            api_reference_url = "https://api.firecloud.org/api-docs.yaml",
         ),
         api_header = api_header
     )

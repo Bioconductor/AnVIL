@@ -222,7 +222,7 @@ csv
 intermediate disk storage.
 
 ```{r}
-pipe <- gsutil_pipe(fl)
+pipe <- gsutil_pipe(fl, "rb")
 readr::read_csv(pipe, guess_max = 5000L) %>%
     dplyr::select("Sample", "Family_ID", "Population", "Gender")
 ```
@@ -342,6 +342,23 @@ Users can easily add tables to their own workspace using
 mtcars %>%
     mutate(cyl = factor(cyl)) %>%
     avtable_import()
+```
+
+The Terra data model allows for tables that represent samples of other
+tables. The following create or add rows to `participant_set` and
+`sample_set` tables. Each row represents a sample from the
+corresponding 'origin' table.
+
+```{r, eval = FALSE}
+## editable copy of '1000G-high-coverage-2019' workspace
+avworkspace("bioconductor-rpci-anvil/1000G-high-coverage-2019")
+sample <-
+    avtable("sample") %>%                               # existing table
+    mutate(set = sample(head(LETTERS), nrow(.), TRUE))  # arbitrary groups
+sample %>%                                   # new 'participant_set' table
+    avtable_import_set("participant", "set", "participant")
+sample %>%                                   # new 'sample_set' table
+    avtable_import_set("sample", "set", "name")
 ```
 
 The `TABLES` data in a workspace are usually provided as curated
