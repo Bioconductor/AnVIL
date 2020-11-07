@@ -77,142 +77,6 @@
         "x-passthrough-target": "rawls"
       }
     },
-    "/api/billing/{projectId}/googleRole/{role}/{email}": {
-      "delete": {
-        "produces": [
-          "application/json"
-        ],
-        "parameters": [
-          {
-            "description": "Project ID",
-            "in": "path",
-            "name": "projectId",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "description": "google role of user for project",
-            "in": "path",
-            "name": "role",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "description": "email of user",
-            "in": "path",
-            "name": "email",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successfully Removed Google Role from User"
-          },
-          "403": {
-            "description": "You must be a project owner removing a role on the whitelist",
-            "schema": {
-              "$ref": "#/definitions/ErrorReport"
-            }
-          },
-          "404": {
-            "description": "User not found",
-            "schema": {
-              "$ref": "#/definitions/ErrorReport"
-            }
-          },
-          "500": {
-            "description": "FireCloud Internal Error",
-            "schema": {
-              "$ref": "#/definitions/ErrorReport"
-            }
-          }
-        },
-        "security": [
-          {
-            "googleoauth": [
-              "openid",
-              "email",
-              "profile"
-            ]
-          }
-        ],
-        "tags": [
-          "Billing"
-        ],
-        "operationId": "removeGoogleRoleFromUser",
-        "summary": "remove a google role from a user and their pet in the billing project the caller owns",
-        "x-passthrough": true,
-        "x-passthrough-target": "rawls"
-      },
-      "put": {
-        "produces": [
-          "application/json"
-        ],
-        "parameters": [
-          {
-            "description": "Project ID",
-            "in": "path",
-            "name": "projectId",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "description": "google role of user for project",
-            "in": "path",
-            "name": "role",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "description": "email of user",
-            "in": "path",
-            "name": "email",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successfully Granted Google Role to User"
-          },
-          "403": {
-            "description": "You must be a project owner granting a role on the whitelist",
-            "schema": {
-              "$ref": "#/definitions/ErrorReport"
-            }
-          },
-          "404": {
-            "description": "User not found",
-            "schema": {
-              "$ref": "#/definitions/ErrorReport"
-            }
-          },
-          "500": {
-            "description": "FireCloud Internal Error",
-            "schema": {
-              "$ref": "#/definitions/ErrorReport"
-            }
-          }
-        },
-        "security": [
-          {
-            "googleoauth": [
-              "openid",
-              "email",
-              "profile"
-            ]
-          }
-        ],
-        "tags": [
-          "Billing"
-        ],
-        "operationId": "grantGoogleRoleToUser",
-        "summary": "grant a google role to a user and their pet in the billing project the caller owns",
-        "x-passthrough": true,
-        "x-passthrough-target": "rawls"
-      }
-    },
     "/api/billing/{projectId}/members": {
       "get": {
         "produces": [
@@ -3025,28 +2889,6 @@
         "x-passthrough": false
       }
     },
-    "/api/profile/trial/userAgreement": {
-      "put": {
-        "parameters": [],
-        "responses": {
-          "204": {
-            "description": "NoContent; userAgreed set to true"
-          },
-          "403": {
-            "description": "Forbidden; user is not eligible for free trial"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        },
-        "tags": [
-          "Profile"
-        ],
-        "operationId": "recordUserAgreement",
-        "summary": "Set userAgreed flag to true",
-        "x-passthrough": false
-      }
-    },
     "/api/proxyGroup/{email}": {
       "get": {
         "produces": [
@@ -3279,120 +3121,58 @@
         "x-passthrough-target": "rawls"
       }
     },
-    "/api/trial/manager/projects": {
-      "post": {
-        "parameters": [
-          {
-            "default": "count",
-            "description": "operation to perform on projects.\n\"Create\" will create projects and verify those projects.\n\"Verify\" will verify all unverified projects in the pool.\n\"Count\" will return the number of projects in various statuses.\n\"Adopt\" will enter a previously-created project into the pool without verifying it.\n\"Scratch\" will mark a pool project as unavailable/errored and disassociate it from any user that claimed it.\n\"Report\" will return a report of all claimed projects.\n",
-            "enum": [
-              "create",
-              "verify",
-              "count",
-              "adopt",
-              "scratch",
-              "report"
-            ],
-            "in": "query",
-            "name": "operation",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "description": "number of projects to create; only used for create operation",
-            "format": "int32",
-            "in": "query",
-            "name": "count",
-            "type": "integer"
-          },
-          {
-            "description": "name of project to adopt or scratch; only used for adopt and scratch operations",
-            "in": "query",
-            "name": "project",
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK; used for verify operation"
-          },
-          "202": {
-            "description": "Accepted; used for create operation"
-          },
-          "400": {
-            "description": "Bad Request. Creation already in progress or incorrect credentials."
-          },
-          "403": {
-            "description": "You must be a campaign manager to call this endpoint."
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        },
-        "tags": [
-          "Trial (FireCloud Credits)"
-        ],
-        "operationId": "manageTrialProjects",
-        "summary": "Manage projects in the FireCloud Free Credits Program; for managers of the Program only.",
-        "x-passthrough": false
-      }
-    },
-    "/api/trial/manager/{operation}": {
-      "post": {
-        "consumes": [
-          "application/json"
-        ],
+    "/api/user/billing/{projectName}": {
+      "delete": {
         "produces": [
           "application/json"
         ],
         "parameters": [
           {
-            "description": "operation to perform on the specified users.",
-            "enum": [
-              "enable",
-              "disable",
-              "terminate"
-            ],
+            "description": "Name of the billing project",
             "in": "path",
-            "name": "operation",
+            "name": "projectName",
             "required": true,
             "type": "string"
-          },
-          {
-            "description": "list of users on which to operate",
-            "in": "body",
-            "name": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/StringArray"
-            }
           }
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "Successfully delete billing project"
+          },
+          "400": {
+            "description": "Project cannot be deleted because it contains workspaces.",
             "schema": {
-              "$ref": "#/definitions/TrialOperationResponse"
+              "$ref": "#/definitions/ErrorReport"
             }
           },
-          "204": {
-            "description": "Success (No Content)"
-          },
           "403": {
-            "description": "Forbidden; you must be a campaign manager to call this endpoint."
+            "description": "You must be a project owner to delete billing project",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "Rawls Internal Error",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
           }
         },
-        "tags": [
-          "Trial (FireCloud Credits)"
+        "security": [
+          {
+            "authorization": [
+              "openid",
+              "email",
+              "profile"
+            ]
+          }
         ],
-        "description": "* **Enable** Add registered user(s) to FireCloud's internal record of users that are allowed to enroll (of their own accord, by clicking the Enroll button in the UI)\n* **Disable** If a user has not yet enrolled themselves, we can still remove them from the trial. Reverse of the Enable operation.\n* **Terminate** End the user's trial by removing their billing project from the FireCloud Free Credits Program billing account. The user will no longer be able to create workspaces in that billing project.\n",
-        "operationId": "updateTrialUserStatus",
-        "summary": "Update user status in the FireCloud Free Credits Program; for managers of the Program only.",
-        "x-codegen-request-body-name": "users",
-        "x-passthrough": false
+        "tags": [
+          "Billing"
+        ],
+        "description": "delete billing project",
+        "operationId": "deleteBillingProject",
+        "summary": "delete billing project"
       }
     },
     "/api/womtool/{version}/describe": {
@@ -7641,6 +7421,7 @@
           },
           {
             "description": "Attribute operations. WARNING! This should not be used to change library metadata (republish will not happen). Use UpdateAttributes in the library section.",
+            "in": "body",
             "name": "body",
             "required": true,
             "schema": {
@@ -8589,7 +8370,7 @@
     "AddListMember": {
       "allOf": [
         {
-          "$ref": "#/definitions/AtttributeUpdateOperation"
+          "$ref": "#/definitions/AttributeUpdateOperation"
         },
         {
           "properties": {
@@ -8609,7 +8390,7 @@
     "AddUpdateAttribute": {
       "allOf": [
         {
-          "$ref": "#/definitions/AtttributeUpdateOperation"
+          "$ref": "#/definitions/AttributeUpdateOperation"
         },
         {
           "properties": {
@@ -8644,15 +8425,7 @@
       ],
       "type": "object"
     },
-    "AttributeUpdateOperationArray": {
-      "description": "",
-      "example": "[\n  {\n    \"op\": \"AddUpdateAttribute\",\n    \"attributeName\": \"name of attribute to add/update\",\n    \"addUpdateAttribute\": \"value to add/update\"\n  },\n  {\n    \"op\": \"RemoveAttribute\",\n    \"attributeName\": \"name of attribute to remove\"\n  },\n  {\n    \"op\": \"AddListMember\",\n    \"attributeListName\": \"name of list attribute\",\n    \"newMember\": \"value to add to list\"\n  },\n  {\n    \"op\": \"RemoveListMember\",\n    \"attributeListName\": \"name of list attribute\",\n    \"removeMember\": \"value to remove from list\"\n  },\n  {\n    \"op\": \"CreateAttributeEntityReferenceList\",\n    \"attributeListName\": \"name of entity-reference list attribute to create\"\n  },\n  {\n    \"op\": \"CreateAttributeValueList\",\n    \"attributeName\": \"name of value-list attribute to create\"\n  }\n]\n",
-      "items": {
-        "$ref": "#/definitions/AtttributeUpdateOperation"
-      },
-      "type": "array"
-    },
-    "AtttributeUpdateOperation": {
+    "AttributeUpdateOperation": {
       "discriminator": "op",
       "properties": {
         "op": {
@@ -8672,6 +8445,14 @@
         "op"
       ],
       "type": "object"
+    },
+    "AttributeUpdateOperationArray": {
+      "description": "",
+      "example": "[\n  {\n    \"op\": \"AddUpdateAttribute\",\n    \"attributeName\": \"name of attribute to add/update\",\n    \"addUpdateAttribute\": \"value to add/update\"\n  },\n  {\n    \"op\": \"RemoveAttribute\",\n    \"attributeName\": \"name of attribute to remove\"\n  },\n  {\n    \"op\": \"AddListMember\",\n    \"attributeListName\": \"name of list attribute\",\n    \"newMember\": \"value to add to list\"\n  },\n  {\n    \"op\": \"RemoveListMember\",\n    \"attributeListName\": \"name of list attribute\",\n    \"removeMember\": \"value to remove from list\"\n  },\n  {\n    \"op\": \"CreateAttributeEntityReferenceList\",\n    \"attributeListName\": \"name of entity-reference list attribute to create\"\n  },\n  {\n    \"op\": \"CreateAttributeValueList\",\n    \"attributeName\": \"name of value-list attribute to create\"\n  }\n]\n",
+      "items": {
+        "$ref": "#/definitions/AttributeUpdateOperation"
+      },
+      "type": "array"
     },
     "BagitRequest": {
       "properties": {
@@ -9278,7 +9059,7 @@
     "CreateAttributeEntityReferenceList": {
       "allOf": [
         {
-          "$ref": "#/definitions/AtttributeUpdateOperation"
+          "$ref": "#/definitions/AttributeUpdateOperation"
         },
         {
           "properties": {
@@ -9294,7 +9075,7 @@
     "CreateAttributeValueList": {
       "allOf": [
         {
-          "$ref": "#/definitions/AtttributeUpdateOperation"
+          "$ref": "#/definitions/AttributeUpdateOperation"
         },
         {
           "properties": {
@@ -10719,7 +10500,7 @@
     "RemoveAttribute": {
       "allOf": [
         {
-          "$ref": "#/definitions/AtttributeUpdateOperation"
+          "$ref": "#/definitions/AttributeUpdateOperation"
         },
         {
           "properties": {
@@ -10735,7 +10516,7 @@
     "RemoveListMember": {
       "allOf": [
         {
-          "$ref": "#/definitions/AtttributeUpdateOperation"
+          "$ref": "#/definitions/AttributeUpdateOperation"
         },
         {
           "properties": {
@@ -11502,49 +11283,6 @@
         "meta-version",
         "url"
       ],
-      "type": "object"
-    },
-    "TrialOperationResponse": {
-      "description": "The result of the operation for each user, grouped by the status",
-      "properties": {
-        "Failure": {
-          "example": [
-            "name@gmail.com"
-          ],
-          "items": {
-            "type": "string"
-          },
-          "type": "array"
-        },
-        "NoChangeRequired": {
-          "example": [
-            "user2@gmail.com"
-          ],
-          "items": {
-            "type": "string"
-          },
-          "type": "array"
-        },
-        "ServerError": {
-          "example": [
-            "user@gmail.com"
-          ],
-          "items": {
-            "type": "string"
-          },
-          "type": "array"
-        },
-        "Success": {
-          "example": [
-            "user1@email.com",
-            "user2@email.com"
-          ],
-          "items": {
-            "type": "string"
-          },
-          "type": "array"
-        }
-      },
       "type": "object"
     },
     "UserImportPermission": {
@@ -12617,6 +12355,11 @@
         "namespace": {
           "description": "The namespace (billing project) the workspace belongs to",
           "type": "string"
+        },
+        "noWorkspaceOwner": {
+          "default": false,
+          "description": "Optional, false if not specified. If true, the workspace is created with a Billing Project owner but no workspace owner. Requires being a Billing Project owner.",
+          "type": "boolean"
         }
       },
       "required": [
@@ -12651,6 +12394,11 @@
         "namespace": {
           "description": "The namespace (billing project) the workspace belongs to",
           "type": "string"
+        },
+        "noWorkspaceOwner": {
+          "default": false,
+          "description": "Optional, false if not specified. If true, the workspace is created with a Billing Project owner but no workspace owner. Requires being a Billing Project owner.",
+          "type": "boolean"
         }
       },
       "required": [
