@@ -35,7 +35,7 @@ Imports:
     BiocManager
 Suggests: knitr, testthat, withr, readr
 Collate:
-    utilities.R authenticate.R
+    utilities.R authenticate.R api.R
     Service.R Services.R Leonardo.R Terra.R Rawls.R Dockstore.R Gen3.R
     Response.R
     gcloud_sdk.R gcloud.R gsutil.R localize.R

@@ -45,7 +45,7 @@ setMethod(
     "operations", "Service",
     function(x, ..., .deprecated = FALSE)
 {
-    operations <- get_operations(.api(x), ...)
+    operations <- .api_get_operations(.api(x), ...)
     deprecated <- .operation_field(operations, "deprecated")
     keep <- .deprecated | !vapply(deprecated, isTRUE, logical(1))
     operations[keep]
