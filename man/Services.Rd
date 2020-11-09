@@ -113,8 +113,19 @@ function.}
 \description{
 RESTful services useful for AnVIL developers
 }
+\details{
+When using `$` to select a service, some arguments appear
+    in 'body' of the REST request. Specify these using the
+    `.__body__=` argument, as illustrated for
+    `createBillingProjectFull()`, below.
+}
 \examples{
 empty_object
+
+## Arguments to be used as the 'body' (`.__body__=`) of a REST query
+terra <- Terra()
+terra$createBillingProjectFull       # 6 arguments...
+args(terra$createBillingProjectFull) # ... passed as `.__body__ = list(...)`
 
 if (gcloud_exists())
     Leonardo()

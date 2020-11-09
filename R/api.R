@@ -96,7 +96,7 @@
     }, logical(1))
 }
 
-
+#' @importFrom jsonlite unbox
 .api_get_message_body <-
     function(op_def, body)
 {
@@ -105,7 +105,15 @@
     } else {
         ## unbox?
         name <- vapply(op_def$parameters, `[[`, character(1), "name")
-        type <- vapply(op_def$parameters, `[[`, character(1), "type")
+        type <- vapply(op_def$parameters, function(elt) {
+            type <- elt$type
+            if (is.null(type)) {
+                ## FIXME: recurse into $ref
+                NA_character_
+            } else {
+                type
+            }
+        }, character(1))
         for (nm in names(body)) {
             idx <- match(nm, name)
             if (type[idx] %in% c("string", "number", "integer", "boolean"))
@@ -133,7 +141,7 @@
             what,
             POST =,
             PATCH =,
-            PUT = function() {
+            PUT = function(..., .__body__ = list()) {
                 args <- .api_args(formals(), environment())
                 body <- .api_body(formals(), ..., .__body__ = .__body__)
                 result <- HTTR_FUN(
@@ -148,7 +156,7 @@
             },
             GET =,
             HEAD =,
-            DELETE = function() {
+            DELETE = function(...) {
                 args <- .api_args(formals(), environment())
                 result <- HTTR_FUN(
                     url = .api_get_url(api, op_def, args),
