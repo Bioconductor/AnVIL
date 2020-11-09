@@ -118,82 +118,48 @@
 }
 
 #' @importFrom rapiclient get_operation_definitions
+#' @importFrom httr POST PATCH PUT GET HEAD DELETE
 .api_get_operations <-
     function(api, .headers = NULL, path = NULL, handle_response = identity)
 {
     operation_defs <- get_operation_definitions(api, path)
 
     lapply(operation_defs, function(op_def){
-        WHAT <- toupper(op_def$action)
-        FUN <- switch(WHAT, POST = function() {
-            args <- .api_args(formals(), environment())
-            body <- .api_body(formals(), ..., .__body__ = .__body__)
-            result <- POST(
-                url = .api_get_url(api, op_def, args),
-                body = .api_get_message_body(op_def, body),
-                config = .api_get_config(api),
-                .api_get_content_type(op_def),
-                .api_get_accept(op_def),
-                add_headers(.headers = .headers)
-            )
-            handle_response(result)
-        }, PATCH = function() {
-            args <- .api_args(formals(), environment())
-            body <- .api_body(formals(), ..., .__body__ = .__body__)
-            result <- PATCH(
-                url = .api_get_url(api, op_def, args),
-                body = .api_get_message_body(op_def, body),
-                config = .api_get_config(api),
-                .api_get_content_type(op_def),
-                .api_get_accept(op_def),
-                add_headers(.headers = .headers)
-            )
-            handle_response(result)
-        }, PUT = function() {
-            args <- .api_args(formals(), environment())
-            body <- .api_body(formals(), ..., .__body__ = .__body__)
-            result <- PUT(
-                url = .api_get_url(api, op_def, args),
-                body = .api_get_message_body(op_def, body),
-                config = .api_get_config(api),
-                .api_get_content_type(op_def),
-                .api_get_accept(op_def),
-                add_headers(.headers = .headers)
-            )
-            handle_response(result)
-        }, GET = function() {
-            args <- .api_args(formals(), environment())
-            result <- GET(
-                url = .api_get_url(api, op_def, args),
-                config = .api_get_config(api),
-                .api_get_content_type(op_def),
-                .api_get_accept(op_def),
-                add_headers(.headers = .headers)
-            )
-            handle_response(result)
-        }, HEAD = function() {
-            args <- .api_args(formals(), environment())
-            result <- HEAD(
-                url = .api_get_url(api, op_def, args),
-                config = .api_get_config(api),
-                .api_get_content_type(op_def),
-                .api_get_accept(op_def),
-                add_headers(.headers = .headers)
-            )
-            handle_response(result)
-        }, DELETE = function() {
-            args <- .api_args(formals(), environment())
-            result <- DELETE(
-                url = get_url(x),
-                config = get_config(),
-                content_type("application/json"),
-                get_accept(op_def),
-                add_headers(.headers = .headers)
-            )
-            handle_response(result)
-        }, default = {
-            stop("unsupported action '", WHAT, "'")
-        })
+        what <- toupper(op_def$action)
+        if (!what %in% c("POST", "PATCH", "PUT", "GET", "HEAD", "DELETE"))
+            stop("unsupported REST operation '", what, "'")
+        HTTR_FUN <- get(what, envir = getNamespace("httr"))
+        FUN <- switch(
+            what,
+            POST =,
+            PATCH =,
+            PUT = function() {
+                args <- .api_args(formals(), environment())
+                body <- .api_body(formals(), ..., .__body__ = .__body__)
+                result <- HTTR_FUN(
+                    url = .api_get_url(api, op_def, args),
+                    config = .api_get_config(api),
+                    .api_get_content_type(op_def),
+                    .api_get_accept(op_def),
+                    add_headers(.headers = .headers),
+                    body = .api_get_message_body(op_def, body)
+                )
+                handle_response(result)
+            },
+            GET =,
+            HEAD =,
+            DELETE = function() {
+                args <- .api_args(formals(), environment())
+                result <- HTTR_FUN(
+                    url = .api_get_url(api, op_def, args),
+                    config = .api_get_config(api),
+                    .api_get_content_type(op_def),
+                    .api_get_accept(op_def),
+                    add_headers(.headers = .headers)
+                )
+                handle_response(result)
+            }
+        )
 
         ## create function arguments from operation parameters definition
         parameters <- rapiclient:::get_parameters(api, op_def$parameters)
