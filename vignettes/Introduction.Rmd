@@ -486,6 +486,27 @@ terra$status
 terra$status()
 ```
 
+Some arguments appear in the 'body' of a REST request. Provide these
+as a list specified with `.__body__ = list(...)`; use `args()` to
+discover whether arguments should be present in the body of the
+request. For instance,
+
+```{r}
+args(terra$createBillingProjectFull)
+```
+
+shows that all arguments should be included in the `.__body__=`
+argument. A more complicated example is
+
+```{r}
+args(terra$overwriteWorkspaceMethodConfig)
+```
+
+where the same argument name appears in both the URL and the
+body. Again, the specification of the body arguments should be in
+`.__body__ = list()`. As a convenience, arguments appearing _only_ in
+the body can also be specified in the `...` argument of the reqeust.
+
 `operations()` and `schemas()` return a named list of endpoints, and
 of argument and return value schemas. `operations(terra)$XXX()` can be
 used an alternative to direct invocation `terra$XXX()`. `schemas()`

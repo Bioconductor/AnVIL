@@ -96,7 +96,7 @@
     }, logical(1))
 }
 
-
+#' @importFrom jsonlite unbox
 .api_get_message_body <-
     function(op_def, body)
 {
