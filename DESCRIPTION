@@ -20,7 +20,7 @@ Description: The AnVIL is cloud computing resource developed in part
     working with Terra / AnVIL table and data resources, and
     convenient functions for file movement to and from Google cloud
     storage. For developers, AnVIL provides programatic access to the
-    Terra, Leonardo, Dockstore, and Gen3 RESTful programming
+    Terra, Leonardo, Rawls, Dockstore, and Gen3 RESTful programming
     interface, including helper functions to transform JSON responses
     to more formats more amenable to manipulation in R.
 License: Artistic-2.0
@@ -36,7 +36,7 @@ Imports:
 Suggests: knitr, testthat, withr, readr
 Collate:
     utilities.R authenticate.R
-    Service.R Services.R Leonardo.R Terra.R Dockstore.R Gen3.R
+    Service.R Services.R Leonardo.R Terra.R Rawls.R Dockstore.R Gen3.R
     Response.R
     gcloud_sdk.R gcloud.R gsutil.R localize.R
     av.R avworkflow.R drs.R
