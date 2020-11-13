@@ -1,3 +1,19 @@
+# AnVIL 1.4.0
+
+NEW FEATURES
+
+- (v 1.3.1) support Rawls() service (more fine-grained implementation
+  / extension of the 'Terra()' orchestration API).
+  
+USER VISIBLE CHANGES
+
+- (v 1.3.1) service functions have signature like `fun(x, ...,
+  .__body__ = list(y))`, where `x` is a argument for the 'URL' of the
+  RESTful interface, and `y` is an argument for the 'BODY' of POST and
+  similar requests. The `...` provide backward compatibility, and is
+  used to populate elements of `.__body__`; the full interface is
+  required when URL and BODY have identically named arguments.
+
 # AnVIL 1.2.0
 
 NEW FEATURES
