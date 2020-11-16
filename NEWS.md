@@ -4,6 +4,9 @@ NEW FEATURES
 
 - (v 1.3.1) support Rawls() service (more fine-grained implementation
   / extension of the 'Terra()' orchestration API).
+
+- (v 1.3.2) introduce avworkspace_*() functions for viewing and updating
+  workflow configurations.
   
 USER VISIBLE CHANGES
 
