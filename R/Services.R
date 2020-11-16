@@ -122,11 +122,12 @@ tags <-
 #'     `createBillingProjectFull()`, below.
 #'
 #' @examples
-#' ## Arguments to be used as the 'body' (`.__body__=`) of a REST query
-#' terra <- Terra()
-#' terra$createBillingProjectFull       # 6 arguments...
-#' args(terra$createBillingProjectFull) # ... passed as `.__body__ = list(...)`
-#'
+#' if (gcloud_exists()) {
+#'     ## Arguments to be used as the 'body' (`.__body__=`) of a REST query
+#'     terra <- Terra()
+#'     terra$createBillingProjectFull       # 6 arguments...
+#'     args(terra$createBillingProjectFull) # ... passed as `.__body__ = list(...)`
+#' }
 #' @export
 setMethod(
     "$", "Service",
