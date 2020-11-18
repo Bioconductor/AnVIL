@@ -117,7 +117,9 @@ character(1) elements described in the return value for \code{avworkflows()}.
 \item methodUri
 \item sourceRepo
 \item methodPath
-\item methodVersion
+\item methodVersion. The REST specification indicates that this has
+type \code{integer}, but the documentation indicates either
+\code{integer} or \code{string}.
 }
 \item deleted logical(1) of uncertain purpose.
 }
@@ -125,7 +127,9 @@ character(1) elements described in the return value for \code{avworkflows()}.
 The exact format of the configuration is important.\preformatted{One common problem is that a scalar character vector `"bar"` is
 interpretted as a json 'array' `["bar"]` rather than a json
 string `"bar"`. Enclose the string with
-`jsonlite::unbox("bar")` in the configuration list.
+`jsonlite::unbox("bar")` in the configuration list if the
+length 1 character vector in R is to be interpretted as a json
+string.
 
 A second problem is that an unquoted unboxed character string
 `unbox("foo")` is required by AnVIL to be quoted. This is
@@ -195,9 +199,8 @@ if (gcloud_exists() && nzchar(avworkspace_name())) {
 avworkflow_configuration_template()
 
 \dontrun{
-config <- avworkflow_configuration(
-    "bioconductor-anvil-rpci", "AnVILBulkRNASeq"
-)
+config <-
+    avworkflow_configuration("bioconductor-anvil-rpci", "AnVILBulkRNASeq")
 str(config)
 }
 

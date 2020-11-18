@@ -231,7 +231,9 @@ avworkflow_files <-
 #'   - methodUri
 #'   - sourceRepo
 #'   - methodPath
-#'   - methodVersion
+#'   - methodVersion. The REST specification indicates that this has
+#'     type `integer`, but the documentation indicates either
+#'     `integer` or `string`.
 #' - deleted logical(1) of uncertain purpose.
 #'
 #' @return The exact format of the configuration is important.
@@ -239,7 +241,9 @@ avworkflow_files <-
 #'     One common problem is that a scalar character vector `"bar"` is
 #'     interpretted as a json 'array' `["bar"]` rather than a json
 #'     string `"bar"`. Enclose the string with
-#'     `jsonlite::unbox("bar")` in the configuration list.
+#'     `jsonlite::unbox("bar")` in the configuration list if the
+#'     length 1 character vector in R is to be interpretted as a json
+#'     string.
 #'
 #'     A second problem is that an unquoted unboxed character string
 #'     `unbox("foo")` is required by AnVIL to be quoted. This is
@@ -317,20 +321,28 @@ avworkflow_configuration <-
     function(methodRepoMethod, .schema)
 {
     args <- formals(.schema)
-    ok <- vapply(methodRepoMethod, .is_scalar_character, logical(1))
-    unknown <- setdiff(names(ok), names(args))
+    unknown <- setdiff(names(methodRepoMethod), names(args))
     if (length(unknown))
         stop(
             "unknown 'methodRepoMethod' names: '",
             paste(unknown, collapse = "' '"),
             "'"
         )
+    idx <- !names(methodRepoMethod) %in% "methodVersion"
+    ok <- vapply(methodRepoMethod[idx], .is_scalar_character, logical(1))
     if (!all(ok))
         stop(
             "'methodRepoMethod' values must be character(1); bad values: '",
             paste(names(ok)[!ok], collapse = "' '"),
             "'"
         )
+    methodVersion <- methodRepoMethod$methodVersion
+    stopifnot(
+        `'methodRepoMethod$methodVersion' must be character(1) or integer(1)` =
+            .is_scalar_character(methodVersion) ||
+            .is_scalar_integer(as.integer(methodVersion))
+    )
+
     ## all elements are unboxed
     lapply(methodRepoMethod, jsonlite::unbox)
 }
