@@ -80,6 +80,8 @@ method might reference a github repository.
 \item submissionId character() job identifier from the workflow runner.
 \item submitter character() AnVIL user id of individual submitting the job.
 \item submissionDate POSIXct() date (in local time zone) of job submission.
+\item status character() job status, with values 'Accepted' 'Evaluating'
+'Submitting' 'Submitted' 'Aborting' 'Aborted' 'Done'
 \item succeeded integer() number of workflows succeeding.
 \item failed integer() number of workflows failing.
 }

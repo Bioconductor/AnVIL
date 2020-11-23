@@ -1,6 +1,6 @@
 Package: AnVIL
 Title: Bioconductor on the AnVIL compute environment
-Version: 1.3.4
+Version: 1.3.5
 Authors@R: 
     c(person(
         "Martin", "Morgan", role = c("aut", "cre"),
@@ -10,6 +10,7 @@ Authors@R:
      person("BJ", "Stubbs", role =  "ctb"),
      person("Vincent", "Carey", role = "ctb"),
      person("Marcel", "Ramos", role = "ctb"),
+     person("Sehyun", "Oh", role = "ctb"),
      person("Sweta", "Gopaulakrishnan", role = "ctb"),
      person("Valerie", "Obenchain", role = "ctb")
     )
