@@ -45,7 +45,7 @@ setMethod(
     "operations", "Service",
     function(x, ..., .deprecated = FALSE)
 {
-    operations <- get_operations(.api(x), ...)
+    operations <- .api_get_operations(.api(x), ...)
     deprecated <- .operation_field(operations, "deprecated")
     keep <- .deprecated | !vapply(deprecated, isTRUE, logical(1))
     operations[keep]
@@ -116,6 +116,18 @@ tags <-
 #' @param name A symbol representing a defined operation, e.g.,
 #'     `leonardo$listClusters()`.
 #'
+#' @details When using `$` to select a service, some arguments appear
+#'     in 'body' of the REST request. Specify these using the
+#'     `.__body__=` argument, as illustrated for
+#'     `createBillingProjectFull()`, below.
+#'
+#' @examples
+#' if (gcloud_exists()) {
+#'     ## Arguments to be used as the 'body' (`.__body__=`) of a REST query
+#'     terra <- Terra()
+#'     terra$createBillingProjectFull       # 6 arguments...
+#'     args(terra$createBillingProjectFull) # ... passed as `.__body__ = list(...)`
+#' }
 #' @export
 setMethod(
     "$", "Service",

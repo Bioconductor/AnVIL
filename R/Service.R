@@ -20,30 +20,6 @@ setOldClass("request")
 
 .config <- function(x) x@config
 
-.api <- function(x) x@api
-
-.api_path <-
-    function(service, package)
-{
-    fl <- system.file(package = package, "service", service, "api.json")
-    if (!file.exists(fl))
-        fl <- system.file(package = package, "service", service, "api.yaml")
-    if (!file.exists(fl))
-        stop("could not find api.json or api.yaml for service '", service, "'")
-    fl
-}
-
-.api_paths_fix <-
-    function(x)
-{
-    ## 'produces' needs to be character(1) for httr 1.4.1
-    if ("produces" %in% names(x))
-        x[["produces"]] <- paste(x[["produces"]], collapse = ", ")
-    else if (is.list(x))
-        x <- lapply(x, .api_paths_fix)
-    x
-}
-
 .service_validate_md5sum_warn <- new.env(parent = emptyenv())
 
 #' @importFrom tools md5sum

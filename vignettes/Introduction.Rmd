@@ -20,7 +20,7 @@ abstract: |
   with Terra / AnVIL table and data resources, and convenient
   functions for file movement to and from Google cloud storage. For
   developers, AnVIL provides programmatic access to the Terra,
-  Leonardo, Dockstore, and Gen3 RESTful programming interface,
+  Leonardo, Rawls, Dockstore, and Gen3 RESTful programming interface,
   including helper functions to transform JSON responses to more
   formats more amenable to manipulation in _R_.
 vignette: |
@@ -486,6 +486,27 @@ terra$status
 terra$status()
 ```
 
+Some arguments appear in the 'body' of a REST request. Provide these
+as a list specified with `.__body__ = list(...)`; use `args()` to
+discover whether arguments should be present in the body of the
+request. For instance,
+
+```{r}
+args(terra$createBillingProjectFull)
+```
+
+shows that all arguments should be included in the `.__body__=`
+argument. A more complicated example is
+
+```{r}
+args(terra$overwriteWorkspaceMethodConfig)
+```
+
+where the same argument name appears in both the URL and the
+body. Again, the specification of the body arguments should be in
+`.__body__ = list()`. As a convenience, arguments appearing _only_ in
+the body can also be specified in the `...` argument of the reqeust.
+
 `operations()` and `schemas()` return a named list of endpoints, and
 of argument and return value schemas. `operations(terra)$XXX()` can be
 used an alternative to direct invocation `terra$XXX()`. `schemas()`
@@ -538,7 +559,8 @@ The AnVIL package implements and has made extensive use of the
 following services:
 
 - _Terra_ (https://api.firecloud.org/; `Terra()`) provides access to
-  terra account and workspace management.
+  terra account and workspace management, and is meant as the primary
+  user-facing 'orchestration' API.
 
 [Terra service]: https://api.firecloud.org
 
@@ -546,6 +568,12 @@ following services:
   implements an interface to the AnVIL container deployment service,
   useful for management Jupyter notebook and RStudio sessions running
   in the AnVIL compute cloud.
+
+- _Rawls_ (https://rawls.dsde-prod.broadinstitute.org; `Rawls()`)
+  implements functionality that often overlaps with (and is delegated
+  to) the _Terra_ interface; the _Rawls_ interface implements
+  lower-level functionality, and some operations (e.g., populating a
+  DATA TABLE) are more difficult to accomplish with _Rawls_.
 
 The _Dockstore_ service (https://dockstore.org/swagger.json,
 `Dockstore()`) is available but has received limited

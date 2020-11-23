@@ -1,6 +1,6 @@
 Package: AnVIL
 Title: Bioconductor on the AnVIL compute environment
-Version: 1.1.23
+Version: 1.3.3
 Authors@R: 
     c(person(
         "Martin", "Morgan", role = c("aut", "cre"),
@@ -20,7 +20,7 @@ Description: The AnVIL is cloud computing resource developed in part
     working with Terra / AnVIL table and data resources, and
     convenient functions for file movement to and from Google cloud
     storage. For developers, AnVIL provides programatic access to the
-    Terra, Leonardo, Dockstore, and Gen3 RESTful programming
+    Terra, Leonardo, Rawls, Dockstore, and Gen3 RESTful programming
     interface, including helper functions to transform JSON responses
     to more formats more amenable to manipulation in R.
 License: Artistic-2.0
@@ -35,8 +35,8 @@ Imports:
     BiocManager
 Suggests: knitr, testthat, withr, readr
 Collate:
-    utilities.R authenticate.R
-    Service.R Services.R Leonardo.R Terra.R Dockstore.R Gen3.R
+    utilities.R authenticate.R api.R
+    Service.R Services.R Leonardo.R Terra.R Rawls.R Dockstore.R Gen3.R
     Response.R
     gcloud_sdk.R gcloud.R gsutil.R localize.R
     av.R avworkflow.R drs.R
