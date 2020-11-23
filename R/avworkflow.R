@@ -50,6 +50,7 @@ avworkflows <-
       submissionId = x[["submissionId"]],
       submitter = x[["submitter"]],
       submissionDate = x[["submissionDate"]],
+      status = x[["status"]],
       succeeded = succeeded,
       failed = failed
     )
@@ -97,6 +98,7 @@ avworkflow_jobs <-
             submissionId = character(),
             submitter = character(),
             submissionDate = character(),
+            status = character(),
             succeeded = integer(),
             failed = integer()
         )
