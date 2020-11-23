@@ -16,6 +16,7 @@
 \alias{avfiles_restore}
 \alias{avfiles_rm}
 \alias{avruntimes}
+\alias{avruntime}
 \alias{av}
 \alias{avdisks}
 \title{Functions for convenient user interaction with AnVIL resources}
@@ -97,6 +98,8 @@ avfiles_rm(
 
 avruntimes()
 
+avruntime(project = gcloud_project(), account = gcloud_account())
+
 avdisks()
 }
 \arguments{
@@ -168,6 +171,14 @@ workspace bucket.}
 
 \item{parallel}{logical(1) backup files using parallel transfer?
 See `?gsutil_cp()`.}
+
+\item{project}{\code{character(1)} project (billing account) name, as
+returned by, e.g., \code{gcloud_project()} or
+\code{avworkspace_namespace()}.}
+
+\item{account}{\code{character(1)} google account (email address
+associated with billing account), as returned by
+\code{gcloud_account()}.}
 }
 \value{
 \code{avworkspace_namespace()}, and \code{avworkspace_name()} return
@@ -232,6 +243,9 @@ which of the machineType columns).
 \code{avdisks()}), or \code{NA}.
 }
 
+\code{avruntime()} returns a tibble witht he same structure as
+the return value of \code{avruntimes()}.
+
 \code{avdisks()} returns a tibble with columns
 \itemize{
 \item id character() disk identifier.
@@ -282,6 +296,11 @@ single command.
 \code{avruntimes()} returns a tibble containing information
 about runtimes (notebooks or RStudio instances, for example)
 that the current user has access to.
+
+\code{avruntime()} returns a tibble with the runtimes
+associated with a particular google project and account number;
+usually there is a single runtime satisfiying these criteria,
+and it is the runtime active in AnVIL.
 
 'avdisks()` returns a tibble containing information
 about persistent disks associatd with the current user.

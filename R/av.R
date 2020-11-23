@@ -775,6 +775,38 @@ avruntimes <-
         rename_with(~ sub(".*\\.", "", .x))
 }
 
+#' @rdname av
+#' @md
+#'
+#' @description `avruntime()` returns a tibble with the runtimes
+#'     associated with a particular google project and account number;
+#'     usually there is a single runtime satisfiying these criteria,
+#'     and it is the runtime active in AnVIL.
+#'
+#' @param project `character(1)` project (billing account) name, as
+#'     returned by, e.g., `gcloud_project()` or
+#'     `avworkspace_namespace()`.
+#'
+#' @param account `character(1)` google account (email address
+#'     associated with billing account), as returned by
+#'     `gcloud_account()`.
+#'
+#' @return `avruntime()` returns a tibble witht he same structure as
+#'     the return value of `avruntimes()`.
+#'
+#' @export
+avruntime <-
+    function(project = gcloud_project(), account = gcloud_account())
+{
+    stopifnot(
+        .is_scalar_character(project),
+        .is_scalar_character(account)
+    )
+    rt <- avruntimes()
+    rt %>%
+        filter(.data$googleProject == project, .data$creator == account)
+}
+
 #' @importFrom dplyr pull
 .runtime_pet <-
     function(creator, tool = c("Jupyter", "RStudio"),

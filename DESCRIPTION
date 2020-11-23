@@ -1,6 +1,6 @@
 Package: AnVIL
 Title: Bioconductor on the AnVIL compute environment
-Version: 1.3.3
+Version: 1.3.4
 Authors@R: 
     c(person(
         "Martin", "Morgan", role = c("aut", "cre"),
@@ -39,7 +39,7 @@ Collate:
     Service.R Services.R Leonardo.R Terra.R Rawls.R Dockstore.R Gen3.R
     Response.R
     gcloud_sdk.R gcloud.R gsutil.R localize.R
-    av.R avworkflow.R drs.R
+    av.R avworkflow.R avnotebooks.R drs.R
     zzz.R
 LazyData: true
 VignetteBuilder: knitr

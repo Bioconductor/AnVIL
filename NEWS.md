@@ -7,10 +7,13 @@ NEW FEATURES
 
 - (v 1.3.2) introduce avworkspace_*() functions for viewing and updating
   workflow configurations.
-  
+
+- (v 1.3.3) introduce avnotebooks_() functions for managing notebooks
+  on workspaces and runtimes.
+
 USER VISIBLE CHANGES
 
-- (v 1.3.1) service functions have signature like `fun(x, ...,
+- (v 1.3.1) service functions have signatures like `fun(x, ...,
   .__body__ = list(y))`, where `x` is a argument for the 'URL' of the
   RESTful interface, and `y` is an argument for the 'BODY' of POST and
   similar requests. The `...` provide backward compatibility, and is
@@ -39,7 +42,7 @@ NEW FEATURES
 
 - (v 1.1.17) add avdisks() to query for persistent disks associate
   with the active billing account.
-  
+
 - (v 1.1.21) add avworkflow_*() for interacting with workflow jobs
   and outputs.
 
