@@ -103,6 +103,8 @@
     if (identical(op_def$consumes, "multipart/form-data")) {
         json <- body
     } else {
+        if (length(body) == 1L)
+            body <- body[[1]]
         ## unbox?
         name <- vapply(op_def$parameters, `[[`, character(1), "name")
         type <- vapply(op_def$parameters, function(elt) {

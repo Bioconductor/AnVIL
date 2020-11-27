@@ -20,6 +20,11 @@ USER VISIBLE CHANGES
   used to populate elements of `.__body__`; the full interface is
   required when URL and BODY have identically named arguments.
 
+BUG FIXES
+
+- (v 1.3.6) when .__body__ consists of 1 argument, it is represented as an
+  unnamed set.
+
 # AnVIL 1.2.0
 
 NEW FEATURES
