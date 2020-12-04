@@ -25,6 +25,8 @@ BUG FIXES
 - (v 1.3.6) when .__body__ consists of 1 argument, it is represented as an
   unnamed set.
 
+- (v 1.3.7) allow positional matching for .__body__ arguments
+
 # AnVIL 1.2.0
 
 NEW FEATURES
