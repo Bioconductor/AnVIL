@@ -1,5 +1,6 @@
 test_that("positional matching works for body arguments", {
-
+    skip_if(!gcloud_exists())
+    
     ## two arguments for URL, one for BODY
     fun <- Terra()$flexibleImportEntities
 
