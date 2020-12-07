@@ -89,7 +89,7 @@
 .api_get_accept <-
     function(op_def)
 {
-    type <- ifelse(is.null(op_def$produces), "application/json", op_def$produces)
+    type <- ifelse(is.null(op_def$produces), "*/*", op_def$produces)
     accept(type)
 }
 

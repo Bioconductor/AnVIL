@@ -15,3 +15,12 @@ test_that("positional matching works for body arguments", {
     )
 
 })
+
+test_that("'accept' defaults to */*", {
+    op_def <- list(produces = NULL)
+    expect_identical(.api_get_accept(op_def), httr::accept("*/*"))
+
+    produces <- "application/json"
+    op_def <- list(produces = produces)
+    expect_identical(.api_get_accept(op_def), httr::accept(produces))
+})
