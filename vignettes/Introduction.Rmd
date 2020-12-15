@@ -176,7 +176,7 @@ gcloud_cmd("projects", "list") %>%
 This translates into the command line `gcloud projects list`. Help is
 also available within _R_, e.g.,
 
-```{r}
+```{r, eval = FALSE}
 gcloud_help("projects")
 ```
 
@@ -214,7 +214,7 @@ the arguments can be cloud endpoints.
 fl <- tempfile()
 gsutil_cp(sample_info, fl)
 
-csv <- readr::read_csv(fl, guess_max = 5000L)
+csv <- readr::read_csv(fl, guess_max = 5000L, col_types = readr::cols())
 csv
 ```
 
@@ -223,7 +223,7 @@ intermediate disk storage.
 
 ```{r}
 pipe <- gsutil_pipe(fl, "rb")
-readr::read_csv(pipe, guess_max = 5000L) %>%
+readr::read_csv(pipe, guess_max = 5000L, col_types = readr::cols()) %>%
     dplyr::select("Sample", "Family_ID", "Population", "Gender")
 ```
 
