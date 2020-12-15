@@ -196,11 +196,16 @@ avtable <-
         .is_scalar_character(namespace),
         .is_scalar_character(name)
     )
+    tbls <- avtables(namespace, name)
+    if (!table %in% tbls$table)
+        stop("table = \"", table, "\" not present in workspace; use `avtables()`")
+
     name = curl_escape(name)
     entities <- Terra()$getEntities(namespace, name, table)
     .avstop_for_status(entities, "avtable")
     tbl <-
-        as_tibble(flatten(entities)) %>%
+        entities %>%
+        flatten() %>%
         select(name, starts_with("attributes"), -ends_with("entityType"))
     names(tbl) <- sub("^attributes.", "", names(tbl))
     names(tbl) <- sub(".entityName$", "", names(tbl))
