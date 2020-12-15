@@ -363,6 +363,8 @@ avtable_import_set <-
 #' @return `avtable_delete_values()` returns a `tibble` representing
 #'     deleted entities, invisibly.
 #'
+#' @importFrom utils capture.output
+#'
 #' @export
 avtable_delete_values <-
     function(table, values,
@@ -379,7 +381,20 @@ avtable_delete_values <-
     body <- tibble(entityType = table, entityName = as.character(values))
 
     response <- Terra()$deleteEntities(namespace, name, body)
-    .avstop_for_status(response, "avtable_delete_values")
+    if (status_code(response) == 409L) {
+        tbl <-
+            response %>%
+            flatten() %>%
+            capture.output() %>%
+            paste(collapse = "\n")
+        stop(
+            "\n",
+            "  'values' (entityName) appear in more than one table (entityType);",
+            "\n  delete entityName from leaf tables first\n\n",
+            tbl
+        )
+    }
+    .avstop_for_status(response, "avtable_delete_values") # other errors
 
     invisible(body)
 }
