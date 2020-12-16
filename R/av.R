@@ -8,7 +8,7 @@
 {
     status <- status_code(response)
     if (status < 400L)
-        return()
+        return(invisible(response))
 
     cond <- http_condition(status, "error")
     type <- headers(response)[["content-type"]]
@@ -27,7 +27,6 @@
     )
     stop(message, call.=FALSE)
 }
-
 
 ##
 ## utilities
@@ -153,7 +152,9 @@ avworkspace <-
 #'
 #' @description `avtables()` describes tables available in a
 #'     workspace. Tables can be visualized under the DATA tab, TABLES
-#'     item.  `avtable()` returns an AnVIL table.  `avtable_import()`
+#'     item.  `avtable()` returns an AnVIL table.  `avtable_paged()`
+#'     retrieves an AnVIL table by requesting the table in 'chunks',
+#'     and may be appropriate for large tables. `avtable_import()`
 #'     imports a data.frame to an AnVIL table.  `avtable_import_set()`
 #'     imports set membership (i.e., a subset of an existing table)
 #'     information to an AnVIL table.  `avtable_delete_values()`
@@ -217,6 +218,112 @@ avtable <-
         select(name, starts_with("attributes"), -ends_with("entityType"))
     names(tbl) <- sub("^attributes.", "", names(tbl))
     names(tbl) <- sub(".entityName$", "", names(tbl))
+    names(tbl) <- sub("^name$", table, names(tbl))
+    tbl
+}
+
+#' @importFrom utils txtProgressBar setTxtProgressBar
+.avtable_pages <-
+    function(FUN, ..., n, page, pageSize)
+{
+    result <- NULL
+    bar <- NULL
+    repeat {
+        response <- FUN(..., page = page, pageSize = pageSize)
+        result <- bind_rows(result, response$results)
+        if (is.null(bar)) {
+            bar <- txtProgressBar(
+                max = response$resultMetadata$filteredCount,
+                style = 3L
+            )
+            on.exit(close(bar))
+        }
+        setTxtProgressBar(bar, NROW(result))
+        page <- response$parameters$page + 1L
+        test <-
+            (page > response$resultMetadata$filteredPageCount) ||
+            (NROW(result) >= n)
+        if (test)
+            break
+    }
+
+    head(result, n)
+}
+
+.avtable_paged1 <-
+    function(
+        namespace, name, table,
+        page, pageSize, sortField, sortDirection,
+        filterTerms)
+{
+    response <- Terra()$entityQuery(
+        namespace, name, table,
+        page, pageSize, sortField, sortDirection,
+        filterTerms)
+    .avstop_for_status(response, "avtable_paged")
+
+    lst <-
+        response %>%
+        as.list()
+    list(
+        parameters = lst$parameters,
+        resultMetadata = lst$resultMetadata,
+        results = bind_cols(
+            tibble(name = lst$results$name),
+            as_tibble(lst$results$attributes)
+        )
+    )
+}
+
+#' @rdname av
+#'
+#' @param n numeric(1) maximum number of rows to return
+#'
+#' @param page integer(1) first page of iteration
+#'
+#' @param pageSize integer(1) number of records per page. Generally,
+#'     larger page sizes are more efficient.
+#'
+#' @param sortField character(1) field used to sort records when
+#'     determining page order. Default is the entity field.
+#'
+#' @param sortDirection character(1) direction to sort entities
+#'     (`"asc"`ending or `"desc"`ending) when paging.
+#'
+#' @return `avtable_paged()`: a tibble of data corresponding to the
+#'     AnVIL table `table` in the specified workspace.
+#'
+#' @export
+avtable_paged <-
+    function(table,
+        n = Inf, page = 1L, pageSize = 1000L,
+        sortField = "name", sortDirection = c("asc", "desc"),
+        filterTerms =character(),
+        namespace = avworkspace_namespace(),
+        name = avworkspace_name())
+{
+    page <- as.integer(page)
+    pageSize <- as.integer(pageSize)
+    stopifnot(
+        .is_scalar_character(table),
+        .is_scalar_numeric(n, infinite.ok = TRUE),
+        .is_scalar_integer(page),
+        .is_scalar_integer(pageSize),
+        .is_scalar_character(sortField),
+        is.character(filterTerms),
+        .is_scalar_character(namespace),
+        .is_scalar_character(name)
+    )
+    sortDirection <- match.arg(sortDirection)
+
+    tbl <- .avtable_pages(
+        .avtable_paged1,
+        namespace = namespace, name = name, table = table,
+        sortField = sortField, sortDirection = sortDirection,
+        filterTerms = filterTerms,
+        n = n, page = page, pageSize = pageSize
+    )
+    names(tbl) <- sub("^name$", paste0(table, "_id"), names(tbl))
     tbl
 }
 

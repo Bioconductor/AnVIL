@@ -6,6 +6,7 @@
 \alias{avworkspace}
 \alias{avtables}
 \alias{avtable}
+\alias{avtable_paged}
 \alias{avtable_import}
 \alias{avtable_import_set}
 \alias{avtable_delete_values}
@@ -30,6 +31,18 @@ avworkspace(workspace = NULL)
 avtables(namespace = avworkspace_namespace(), name = avworkspace_name())
 
 avtable(table, namespace = avworkspace_namespace(), name = avworkspace_name())
+
+avtable_paged(
+  table,
+  n = Inf,
+  page = 1L,
+  pageSize = 1000L,
+  sortField = table,
+  sortDirection = c("asc", "desc"),
+  filterTerms = character(),
+  namespace = avworkspace_namespace(),
+  name = avworkspace_name()
+)
 
 avtable_import(
   .data,
@@ -115,6 +128,19 @@ concatenated namespace and name, e.g.,
 
 \item{table}{character(1) table name as returned by, e.g., `avtables()`.}
 
+\item{n}{numeric(1) maximum number of rows to return}
+
+\item{page}{integer(1) first page of iteration}
+
+\item{pageSize}{integer(1) number of records per page. Generally,
+larger page sizes are more efficient.}
+
+\item{sortField}{character(1) field used to sort records when
+determining page order. Default is the entity field.}
+
+\item{sortDirection}{character(1) direction to sort entities
+(`"asc"`ending or `"desc"`ending) when paging.}
+
 \item{.data}{A tibble or data.frame for import as an AnVIL table.}
 
 \item{entity}{`character(1)` column name of `.data` to be used as
@@ -192,6 +218,9 @@ associated with billing account), as returned by
 
 `avtable()`: a tibble of data corresponding to the AnVIL
     table `table` in the specified workspace.
+
+`avtable_paged()`: a tibble of data corresponding to the
+    AnVIL table `table` in the specified workspace.
 
 `avtable_import()` returns a `character(1)` name of the
     imported AnVIL tibble.
@@ -272,7 +301,9 @@ single command.
 
 `avtables()` describes tables available in a
     workspace. Tables can be visualized under the DATA tab, TABLES
-    item.  `avtable()` returns an AnVIL table.  `avtable_import()`
+    item.  `avtable()` returns an AnVIL table.  `avtable_paged()`
+    retrieves an AnVIL table by requesting the table in 'chunks',
+    and may be appropriate for large tables. `avtable_import()`
     imports a data.frame to an AnVIL table.  `avtable_import_set()`
     imports set membership (i.e., a subset of an existing table)
     information to an AnVIL table.  `avtable_delete_values()`
