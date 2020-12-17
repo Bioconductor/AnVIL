@@ -186,6 +186,13 @@ avtables <-
     tibble(table, count, colnames)
 }
 
+.is_avtable <-
+    function(table, namespace, name)
+{
+    tbls <- avtables(namespace, name)
+    table %in% tbls$table
+}
+
 #' @rdname av
 #'
 #' @param table character(1) table name as returned by, e.g., `avtables()`.
@@ -203,11 +210,10 @@ avtable <-
     stopifnot(
         .is_scalar_character(table),
         .is_scalar_character(namespace),
-        .is_scalar_character(name)
+        .is_scalar_character(name),
+        `unknown table; use 'avtables()' for valid names` =
+            .is_avtable(table, namespace, name)
     )
-    tbls <- avtables(namespace, name)
-    if (!table %in% tbls$table)
-        stop("table = \"", table, "\" not present in workspace; use `avtables()`")
 
     name = curl_escape(name)
     entities <- Terra()$getEntities(namespace, name, table)
@@ -232,13 +238,11 @@ avtable <-
         response <- FUN(..., page = page, pageSize = pageSize)
         result <- bind_rows(result, response$results)
         if (is.null(bar)) {
-            bar <- txtProgressBar(
-                max = response$resultMetadata$filteredCount,
-                style = 3L
-            )
+            max <- min(n, response$resultMetadata$filteredCount)
+            bar <- txtProgressBar(max = max, style = 3L)
             on.exit(close(bar))
         }
-        setTxtProgressBar(bar, NROW(result))
+        setTxtProgressBar(bar, min(NROW(result), n))
         page <- response$parameters$page + 1L
         test <-
             (page > response$resultMetadata$filteredPageCount) ||
@@ -312,7 +316,9 @@ avtable_paged <-
         .is_scalar_character(sortField),
         is.character(filterTerms),
         .is_scalar_character(namespace),
-        .is_scalar_character(name)
+        .is_scalar_character(name),
+        `unknown table; use 'avtables()' for valid names` =
+            .is_avtable(table, namespace, name)
     )
     sortDirection <- match.arg(sortDirection)
 
