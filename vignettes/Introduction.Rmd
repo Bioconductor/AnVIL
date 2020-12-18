@@ -331,7 +331,7 @@ fasta file is available.
 
 ```{r}
 sample %>%
-    select(name, contains("fasta")) %>%
+    select("sample_id", contains("fasta")) %>%
     filter(!is.na(final_assembly_fasta))
 ```
 

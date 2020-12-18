@@ -225,7 +225,7 @@ avtable <-
         select(name, starts_with("attributes"), -ends_with("entityType"))
     names(tbl) <- sub("^attributes.", "", names(tbl))
     names(tbl) <- sub(".entityName$", "", names(tbl))
-    names(tbl) <- sub("^name$", table, names(tbl))
+    names(tbl) <- sub("^name$", paste0(table, "_id"), names(tbl))
     tbl
 }
 
@@ -239,7 +239,7 @@ avtable <-
         response <- FUN(..., page = page, pageSize = pageSize)
         result <- bind_rows(result, response$results)
         if (is.null(bar)) {
-            max <- min(n, response$resultMetadata$filteredCount)
+            max <- max(min(n, response$resultMetadata$filteredCount), 1L)
             bar <- txtProgressBar(max = max, style = 3L)
             on.exit(close(bar))
         }
@@ -271,13 +271,18 @@ avtable <-
     lst <-
         response %>%
         as.list()
-    list(
-        parameters = lst$parameters,
-        resultMetadata = lst$resultMetadata,
-        results = bind_cols(
+    if (length(lst$results)) {
+        results <- bind_cols(
             tibble(name = lst$results$name),
             as_tibble(lst$results$attributes)
         )
+    } else {
+        results <- tibble()
+    }
+    list(
+        parameters = lst$parameters,
+        resultMetadata = lst$resultMetadata,
+        results = results
     )
 }
 
@@ -296,6 +301,9 @@ avtable <-
 #' @param sortDirection character(1) direction to sort entities
 #'     (`"asc"`ending or `"desc"`ending) when paging.
 #'
+#' @param filterTerms character(1) string literal to select rows with
+#'     an exact (substring) matches in column.
+#'
 #' @return `avtable_paged()`: a tibble of data corresponding to the
 #'     AnVIL table `table` in the specified workspace.
 #'
@@ -304,7 +312,7 @@ avtable_paged <-
     function(table,
         n = Inf, page = 1L, pageSize = 1000L,
         sortField = "name", sortDirection = c("asc", "desc"),
-        filterTerms =character(),
+        filterTerms = character(),
         namespace = avworkspace_namespace(),
         name = avworkspace_name())
 {
@@ -316,7 +324,7 @@ avtable_paged <-
         .is_scalar_integer(page),
         .is_scalar_integer(pageSize),
         .is_scalar_character(sortField),
-        is.character(filterTerms),
+        .is_scalar_character(filterTerms),
         .is_scalar_character(namespace),
         .is_scalar_character(name)
         ## ,

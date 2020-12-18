@@ -141,6 +141,9 @@ determining page order. Default is the entity field.}
 \item{sortDirection}{character(1) direction to sort entities
 (`"asc"`ending or `"desc"`ending) when paging.}
 
+\item{filterTerms}{character(1) string literal to select rows with
+an exact (substring) matches in column.}
+
 \item{.data}{A tibble or data.frame for import as an AnVIL table.}
 
 \item{entity}{`character(1)` column name of `.data` to be used as

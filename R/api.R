@@ -66,7 +66,7 @@
 .api_get_url <-
     function(api, op_def, x)
 {
-    rapiclient::: build_op_url(
+    rapiclient:::build_op_url(
         api, api$schemes[1], api$host, api$basePath, op_def, x
     )
 }
