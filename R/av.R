@@ -2,7 +2,7 @@
 ## internal
 ##
 
-#' @importFrom httr status_code http_condition
+#' @importFrom httr status_code http_condition headers
 .avstop_for_status <-
     function(response, op)
 {
@@ -11,7 +11,15 @@
         return()
 
     cond <- http_condition(status, "error")
-    msg <- as.list(response)[["message"]]
+    type <- headers(response)[["content-type"]]
+    msg <- NULL
+    if (nzchar(type) && grepl("application/json", type)) {
+        msg <- as.list(response)[["message"]]
+    } else if (nzchar(type) && grepl("text/html", type)) {
+        ## these pages can be too long for a standard 'stop()' message
+        cat(as.character(response), file = stderr())
+    }
+
     message <- paste0(
         "'", op, "' failed:\n  ",
         conditionMessage(cond),
