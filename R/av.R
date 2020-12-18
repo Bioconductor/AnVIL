@@ -210,12 +210,13 @@ avtable <-
     stopifnot(
         .is_scalar_character(table),
         .is_scalar_character(namespace),
-        .is_scalar_character(name),
-        `unknown table; use 'avtables()' for valid names` =
-            .is_avtable(table, namespace, name)
+        .is_scalar_character(name)
+       ## ,
+       ##  `unknown table; use 'avtables()' for valid names` =
+       ##      .is_avtable(table, namespace, name)
     )
 
-    name = curl_escape(name)
+    name <- curl_escape(name)
     entities <- Terra()$getEntities(namespace, name, table)
     .avstop_for_status(entities, "avtable")
     tbl <-
@@ -254,6 +255,7 @@ avtable <-
     head(result, n)
 }
 
+#' @importFrom dplyr bind_cols
 .avtable_paged1 <-
     function(
         namespace, name, table,
@@ -316,11 +318,13 @@ avtable_paged <-
         .is_scalar_character(sortField),
         is.character(filterTerms),
         .is_scalar_character(namespace),
-        .is_scalar_character(name),
-        `unknown table; use 'avtables()' for valid names` =
-            .is_avtable(table, namespace, name)
+        .is_scalar_character(name)
+        ## ,
+        ## `unknown table; use 'avtables()' for valid names` =
+        ##     .is_avtable(table, namespace, name)
     )
     sortDirection <- match.arg(sortDirection)
+    name <- curl_escape(name)
 
     tbl <- .avtable_pages(
         .avtable_paged1,
@@ -388,7 +392,7 @@ avtable_import <-
         .is_scalar_character(name)
     )
 
-    name = curl_escape(name)
+    name <- curl_escape(name)
 
     .data <- .avtable_import_set_entity(.data, entity)
     destination <- tempfile()

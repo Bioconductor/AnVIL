@@ -37,7 +37,7 @@ avtable_paged(
   n = Inf,
   page = 1L,
   pageSize = 1000L,
-  sortField = table,
+  sortField = "name",
   sortDirection = c("asc", "desc"),
   filterTerms = character(),
   namespace = avworkspace_namespace(),
