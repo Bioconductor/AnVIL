@@ -5,13 +5,25 @@
 }
 
 .gcloud_access_token <-
-    function()
+    local(
 {
-    app_default <-
-        if (identical(Sys.getenv("USER"), "jupyter-user"))
-            "application-default"
-    .gcloud_do("auth", app_default, "print-access-token")
-}
+    tokens <- new.env(parent = emptyenv())
+    function(service) {
+        app_default <-
+            if (identical(Sys.getenv("USER"), "jupyter-user"))
+                "application-default"
+
+        key <- paste0(service, ":", app_default)
+        now <- Sys.time()
+
+        if (is.null(tokens[[key]]) || tokens[[key]]$expires < now) {
+            token <- .gcloud_do("auth", app_default, "print-access-token")
+            expires <- Sys.time() + 3600L
+            tokens[[key]] <- list(token = token, expires = expires)
+        }
+        tokens[[key]]$token
+    }
+})
 
 #' @rdname gcloud
 #'

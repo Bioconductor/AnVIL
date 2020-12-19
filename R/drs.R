@@ -16,7 +16,7 @@
 .martha_v3 <-
     function(url, template)
 {
-    access_token <- .gcloud_access_token()
+    access_token <- .gcloud_access_token("drs")
     headers <- add_headers(
         Authorization = paste("Bearer", access_token),
         "content-type" = "application/json"
@@ -135,7 +135,7 @@ drs_stat <-
     name <- curl_escape(name)
     url <- sprintf(.DRS_RAWLS, namespace, name)
 
-    access_token <- .gcloud_access_token()
+    access_token <- .gcloud_access_token("drs")
     headers <- add_headers(
         Authorization = paste("Bearer", access_token),
         "content-type" = "application/json"

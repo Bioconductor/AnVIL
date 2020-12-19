@@ -27,7 +27,7 @@
 Terra <-
     function()
 {
-    access_token <- .gcloud_access_token()
+    access_token <- .gcloud_access_token("terra")
     api_header <- c(Authorization = paste("Bearer", access_token))
     .Terra(
         Service(
