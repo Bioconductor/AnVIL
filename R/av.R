@@ -79,11 +79,20 @@
 #' @param name character(1) AnVIL workspace name as returned by, eg.,
 #'     `avworkspace_name()`.
 #'
+#' @param workspace when present, a `character(1)` providing the
+#'     concatenated namespace and name, e.g.,
+#'     `"bioconductor-rpci-anvil/Bioconductor-Package-AnVIL"`
+#'
 #' @return `avworkspace_namespace()`, and `avworkspace_name()` return
-#'     `character(1)` identifiers.
+#'     `character(1)` identifiers. `avworkspace()` returns the
+#'     character(1) concatenated namespace and name. The value
+#'     returned by `avworkspace_name()` will be percent-encoded (e.g.,
+#'     spaces `" "` replaced by `"%20"`).
 #'
 #' @examples
 #' avworkspace_namespace()
+#' avworkspace_name()
+#' avworkspace()
 #'
 #' @export
 avworkspace_namespace <- function(namespace = NULL) {
@@ -103,24 +112,17 @@ avworkspace_namespace <- function(namespace = NULL) {
 
 #' @rdname av
 #'
-#' @examples
-#' avworkspace_name()
+#' @importFrom utils URLencode
 #'
 #' @export
-avworkspace_name <- function(name = NULL)
-    .avworkspace("avworkspace_name", "NAME", name)
+avworkspace_name <-
+    function(name = NULL)
+{
+    value <- .avworkspace("avworkspace_name", "NAME", name)
+    URLencode(value)
+}
 
 #' @rdname av
-#'
-#' @param workspace when present, a `character(1)` providing the
-#'     concatenated namespace and name, e.g.,
-#'     `"bioconductor-rpci-anvil/Bioconductor-Package-AnVIL"`
-#'
-#' @return `avworkspace()` returns the character(1) concatenated
-#'     namespace and name.
-#'
-#' @examples
-#' avworkspace()
 #'
 #' @export
 avworkspace <-
@@ -163,8 +165,6 @@ avworkspace <-
 #' @return `avtables()`: A tibble with columns identifying the table,
 #'     the number of records, and the column names.
 #'
-#' @importFrom curl curl_escape
-#'
 #' @export
 avtables <-
     function(namespace = avworkspace_namespace(), name = avworkspace_name())
@@ -173,7 +173,7 @@ avtables <-
         .is_scalar_character(namespace),
         .is_scalar_character(name)
     )
-    name <- curl_escape(name)
+    name <- URLencode(name)
     types <- Terra()$getEntityTypes(namespace, name)
     .avstop_for_status(types, "avtables")
     lst <- content(types)
@@ -216,7 +216,7 @@ avtable <-
        ##      .is_avtable(table, namespace, name)
     )
 
-    name <- curl_escape(name)
+    name <- URLencode(name)
     entities <- Terra()$getEntities(namespace, name, table)
     .avstop_for_status(entities, "avtable")
     tbl <-
@@ -332,7 +332,7 @@ avtable_paged <-
         ##     .is_avtable(table, namespace, name)
     )
     sortDirection <- match.arg(sortDirection)
-    name <- curl_escape(name)
+    name <- URLencode(name)
 
     tbl <- .avtable_pages(
         .avtable_paged1,
@@ -400,7 +400,7 @@ avtable_import <-
         .is_scalar_character(name)
     )
 
-    name <- curl_escape(name)
+    name <- URLencode(name)
 
     .data <- .avtable_import_set_entity(.data, entity)
     destination <- tempfile()
@@ -468,7 +468,7 @@ avtable_import_set <-
         .is_scalar_character(name)
     )
 
-    origin <- curl_escape(origin)
+    origin <- URLencode(origin)
 
     tbl <-
         .data %>%
@@ -510,7 +510,7 @@ avtable_delete_values <-
         .is_scalar_character(name)
     )
 
-    name <- curl_escape(name)
+    name <- URLencode(name)
     body <- tibble(entityType = table, entityName = as.character(values))
 
     response <- Terra()$deleteEntities(namespace, name, body)
@@ -560,7 +560,7 @@ avdata <-
         .is_scalar_character(name)
     )
 
-    name <- curl_escape(name)
+    name <- URLencode(name)
     response <- Terra()$exportAttributesTSV(namespace, name)
     .avstop_for_status(response, "avworkspace_data")
 
@@ -643,7 +643,7 @@ avbucket <-
     if (.avbucket_cache$exists(namespace, name)) {
         bucket <- .avbucket_cache$get(namespace, name)
     } else {
-        name <- curl_escape(name)
+        name <- URLencode(name)
         response <- Terra()$getWorkspace(namespace, name, "workspace.bucketName")
         .avstop_for_status(response, "avbucket")
         bucket <- as.list(response)$workspace$bucketName

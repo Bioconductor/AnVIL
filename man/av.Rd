@@ -122,9 +122,9 @@ by, e.g., \code{avworkspace_namespace()}}
 \item{name}{character(1) AnVIL workspace name as returned by, eg.,
 \code{avworkspace_name()}.}
 
-\item{workspace}{when present, a `character(1)` providing the
+\item{workspace}{when present, a \code{character(1)} providing the
 concatenated namespace and name, e.g.,
-`"bioconductor-rpci-anvil/Bioconductor-Package-AnVIL"`}
+\code{"bioconductor-rpci-anvil/Bioconductor-Package-AnVIL"}}
 
 \item{table}{character(1) table name as returned by, e.g., `avtables()`.}
 
@@ -211,10 +211,10 @@ associated with billing account), as returned by
 }
 \value{
 \code{avworkspace_namespace()}, and \code{avworkspace_name()} return
-\code{character(1)} identifiers.
-
-`avworkspace()` returns the character(1) concatenated
-    namespace and name.
+\code{character(1)} identifiers. \code{avworkspace()} returns the
+character(1) concatenated namespace and name. The value
+returned by \code{avworkspace_name()} will be percent-encoded (e.g.,
+spaces \code{" "} replaced by \code{"\%20"}).
 
 `avtables()`: A tibble with columns identifying the table,
     the number of records, and the column names.
@@ -375,9 +375,7 @@ to system settings with arguments `NA`.
 }
 \examples{
 avworkspace_namespace()
-
 avworkspace_name()
-
 avworkspace()
 
 \dontrun{

@@ -132,7 +132,7 @@ drs_stat <-
 .drs_enable_requester_pays <-
     function(namespace = avworkspace_namespace(), name = avworkspace_name())
 {
-    name <- curl_escape(name)
+    name <- URLencode(name)
     url <- sprintf(.DRS_RAWLS, namespace, name)
 
     access_token <- .gcloud_access_token("drs")
