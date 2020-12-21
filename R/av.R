@@ -324,7 +324,7 @@ avtable_paged <-
         .is_scalar_integer(page),
         .is_scalar_integer(pageSize),
         .is_scalar_character(sortField),
-        .is_scalar_character(filterTerms),
+        length(filterTerms) == 0L || .is_scalar_character(filterTerms),
         .is_scalar_character(namespace),
         .is_scalar_character(name)
         ## ,
