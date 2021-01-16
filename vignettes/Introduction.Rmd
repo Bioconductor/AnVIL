@@ -466,6 +466,15 @@ cloud increases.
 
 ## Using `avworkspace_*()` for workspaces
 
+`avworkspace()` is used to define or return the 'namespace' (billing
+project) and 'name' of the workspace on which operations are to
+act. `avworkspace_namespace()` and `avworkspace_name()` can be used to
+set individual elements of the workspace.
+
+`avworkspace_clone()` clones a workspace to a new location. The clone
+includes the 'DATA', 'NOTEBOOK', and 'WORKFLOWS' elements of the
+workspace.
+
 # For developers
 
 ## Set-up

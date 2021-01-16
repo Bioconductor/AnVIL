@@ -13,7 +13,7 @@
 #' @rdname avnotebooks
 #' @md
 #'
-#' @title Working with AnVIL Notebooks
+#' @title Notebook management
 #'
 #' @description `avnotebooks()` returns the names of the notebooks
 #'     associated with the current workspace.

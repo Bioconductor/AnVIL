@@ -2,7 +2,7 @@
 #'
 #' @name gsutil
 #'
-#' @title Interact with the gsutil command line utility
+#' @title gsutil command line utility interface
 #'
 #' @description These functions invoke the `gsutil` command line
 #'     utility. See the "Details:" section if you have gsutil

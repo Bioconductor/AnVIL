@@ -1,3 +1,10 @@
+#' @rdname av
+#'
+#' @name av
+#'
+#' @title TABLE, DATA, files, bucket, runtime, and disk elements
+NULL
+
 ##
 ## internal
 ##
@@ -29,127 +36,9 @@
 }
 
 ##
-## utilities
-##
-
-.avworkspace <- local({
-    hash <- new.env(parent = emptyenv())
-    function(fun, key, value) {
-        sysvar <- toupper(paste0("WORKSPACE_", key))
-        if (is.null(value)) {
-            if (is.null(hash[[key]])) {
-                ## initialize
-                hash[[key]] <- Sys.getenv(sysvar)
-                if (!nzchar(hash[[key]]) && interactive())
-                    warning("'", sysvar, "' undefined; use `", fun, "()` to set")
-            }
-        } else {
-            hash[[key]] <- ifelse(is.na(value), Sys.getenv(sysvar), value)
-        }
-        hash[[key]]
-    }
-})
-
-#' @rdname av
-#' @md
-#'
-#' @description `avworkspace_namespace()` and `avworkspace_name()` are
-#'     utiliity functions to retrieve workspace namespace and name
-#'     from environment variables or interfaces usually available in
-#'     AnVIL notebooks or RStudio sessions.  `avworkspace()` provides
-#'     a convenient way to specify workspace namespace and name in a
-#'     single command.
-#'
-#' @details `avworkspace_namespace()` is the billing account. If the
-#'     `namespace=` argument is not provided, try `gcloud_project()`,
-#'     and if that fails try `Sys.getenv("WORKSPACE_NAMESPACE")`.
-#'
-#'     `avworkspace_name()` is the name of the workspace as it appears
-#'     in \url{https://app.terra.bio/#workspaces}. If not provided,
-#'     `avworkspace_name()` tries to use
-#'     `Sys.getenv("WORKSPACE_NAME")`.
-#'
-#'     Values are cached across sessions, so explicitly providing
-#'     `avworkspace_*()` is required at most once per session. Revert
-#'     to system settings with arguments `NA`.
-#'
-#' @param namespace character(1) AnVIL workspace namespace as returned
-#'     by, e.g., `avworkspace_namespace()`
-#'
-#' @param name character(1) AnVIL workspace name as returned by, eg.,
-#'     `avworkspace_name()`.
-#'
-#' @param workspace when present, a `character(1)` providing the
-#'     concatenated namespace and name, e.g.,
-#'     `"bioconductor-rpci-anvil/Bioconductor-Package-AnVIL"`
-#'
-#' @return `avworkspace_namespace()`, and `avworkspace_name()` return
-#'     `character(1)` identifiers. `avworkspace()` returns the
-#'     character(1) concatenated namespace and name. The value
-#'     returned by `avworkspace_name()` will be percent-encoded (e.g.,
-#'     spaces `" "` replaced by `"%20"`).
-#'
-#' @examples
-#' avworkspace_namespace()
-#' avworkspace_name()
-#' avworkspace()
-#'
-#' @export
-avworkspace_namespace <- function(namespace = NULL) {
-    suppressWarnings({
-        namespace <- .avworkspace("avworkspace_namespace", "NAMESPACE", namespace)
-    })
-    if (!nzchar(namespace)) {
-        namespace <- tryCatch({
-            gcloud_project()
-        }, error = function(e) {
-            NULL
-        })
-        namespace <- .avworkspace("avworkspace_namespace", "NAMESPACE", namespace)
-    }
-    namespace
-}
-
-#' @rdname av
-#'
-#' @importFrom utils URLencode
-#'
-#' @export
-avworkspace_name <-
-    function(name = NULL)
-{
-    value <- .avworkspace("avworkspace_name", "NAME", name)
-    URLencode(value)
-}
-
-#' @rdname av
-#'
-#' @export
-avworkspace <-
-    function(workspace = NULL)
-{
-    stopifnot(
-        is.null(workspace) || .is_scalar_character(workspace)
-    )
-    if (!is.null(workspace)) {
-        wkspc <- strsplit(workspace, "/")[[1]]
-        if (length(wkspc) != 2L)
-            stop(
-                "'workspace' must be of the form 'namespace/name', ",
-                "with a single '/'"
-            )
-        avworkspace_namespace(wkspc[[1]])
-        avworkspace_name(wkspc[[2]])
-    }
-    paste0(avworkspace_namespace(), "/", avworkspace_name())
-}
-
-##
 ## tables
 ##
 
-#' Functions for convenient user interaction with AnVIL resources
-#'
 #' @rdname av
 #'
 #' @description `avtables()` describes tables available in a
@@ -161,6 +50,12 @@ avworkspace <-
 #'     imports set membership (i.e., a subset of an existing table)
 #'     information to an AnVIL table.  `avtable_delete_values()`
 #'     removes rows from an AnVIL table.
+#'
+#' @param namespace character(1) AnVIL workspace namespace as returned
+#'     by, e.g., `avworkspace_namespace()`
+#'
+#' @param name character(1) AnVIL workspace name as returned by, eg.,
+#'     `avworkspace_name()`.
 #'
 #' @return `avtables()`: A tibble with columns identifying the table,
 #'     the number of records, and the column names.

@@ -34,7 +34,7 @@
 #' @rdname drs
 #' @md
 #'
-#' @title Manipulate 'DRS' (Data Repository Service) URLs
+#' @title DRS (Data Repository Service) URL management
 #'
 #' @description `drs_stat()` resolves zero or more DRS URLs to their
 #'     google bucket location.

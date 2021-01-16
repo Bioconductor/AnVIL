@@ -29,7 +29,7 @@
 #'
 #' @name gcloud
 #'
-#' @title Interact with the gcloud command line utility
+#' @title gcloud command line utility interface
 #'
 #' @description These functions invoke the `gcloud` command line
 #'     utility. See \link{gsutil} for details on how `gcloud` is
