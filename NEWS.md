@@ -13,6 +13,9 @@ NEW FEATURES
 
 - (v 1.3.11) introduce avtable_paged() for page-wise access to tables
 
+- (v 1.3.14) introduce avworkspace_clone() for cloning existing
+  workspaces.
+
 USER VISIBLE CHANGES
 
 - (v 1.3.1) service functions have signatures like `fun(x, ...,

@@ -7,7 +7,7 @@
 \alias{avworkflow_configuration_template}
 \alias{avworkflow_configuration}
 \alias{avworkflow_import_configuration}
-\title{Working with AnVIL Workflow submissions and file outputs}
+\title{Workflow submissions and file outputs}
 \usage{
 avworkflows(namespace = avworkspace_namespace(), name = avworkspace_name())
 

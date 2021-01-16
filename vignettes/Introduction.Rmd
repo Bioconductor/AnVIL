@@ -459,10 +459,12 @@ definitive notebook in the workspace. When `dry = FALSE`, this
 operation also overwrites older workspace notebook files with their
 runtime version.
 
-## Example work flows
+## Using `avworkflows_*()` for workflows
 
 Example work flows will be developed as experience with the AnVIL
 cloud increases.
+
+## Using `avworkspace_*()` for workspaces
 
 # For developers
 

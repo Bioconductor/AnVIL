@@ -1,7 +1,7 @@
 #' @rdname avworkflow
 #' @md
 #'
-#' @title Working with AnVIL Workflow submissions and file outputs
+#' @title Workflow submissions and file outputs
 #'
 #' @inheritParams avworkspace
 #'
