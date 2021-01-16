@@ -40,7 +40,7 @@ Collate:
     Service.R Services.R Leonardo.R Terra.R Rawls.R Dockstore.R Gen3.R
     Response.R
     gcloud_sdk.R gcloud.R gsutil.R localize.R
-    av.R avworkflow.R avnotebooks.R drs.R
+    av.R avworkspace.R avworkflow.R avnotebooks.R drs.R
     zzz.R
 LazyData: true
 VignetteBuilder: knitr
