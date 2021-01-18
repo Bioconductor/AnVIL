@@ -4,7 +4,7 @@
 \alias{avnotebooks}
 \alias{avnotebooks_localize}
 \alias{avnotebooks_delocalize}
-\title{Working with AnVIL Notebooks}
+\title{Notebook management}
 \usage{
 avnotebooks(
   local = FALSE,

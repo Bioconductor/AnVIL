@@ -3,7 +3,7 @@
 \name{drs_stat}
 \alias{drs_stat}
 \alias{drs_cp}
-\title{Manipulate 'DRS' (Data Repository Service) URLs}
+\title{DRS (Data Repository Service) URL management}
 \usage{
 drs_stat(source = character())
 
@@ -61,6 +61,7 @@ notebook in the AnVIL), or can be found in the return value of
 \code{avruntimes()}.
 }
 \examples{
+
 drs_eg_hca <- paste0(
     "drs://drs.data.humancellatlas.org/",
     "4cf48dbf-cf09-452e-bb5b-fd016af0c747?version=2019-09-14T024754.281908Z"

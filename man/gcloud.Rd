@@ -7,7 +7,7 @@
 \alias{gcloud_project}
 \alias{gcloud_help}
 \alias{gcloud_cmd}
-\title{Interact with the gcloud command line utility}
+\title{gcloud command line utility interface}
 \usage{
 gcloud_exists()
 

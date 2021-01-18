@@ -12,7 +12,7 @@
 \alias{gsutil_cat}
 \alias{gsutil_help}
 \alias{gsutil_pipe}
-\title{Interact with the gsutil command line utility}
+\title{gsutil command line utility interface}
 \usage{
 gsutil_requesterpays(source)
 
