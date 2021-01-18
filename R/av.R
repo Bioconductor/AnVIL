@@ -21,7 +21,11 @@ NULL
     type <- headers(response)[["content-type"]]
     msg <- NULL
     if (nzchar(type) && grepl("application/json", type)) {
-        msg <- as.list(response)[["message"]]
+        content <- as.list(response)
+        msg <- content[["message"]]
+        if (is.null(msg))
+            ## e.g., from bond DRS server
+            msg <- content$response$text
     } else if (nzchar(type) && grepl("text/html", type)) {
         ## these pages can be too long for a standard 'stop()' message
         cat(as.character(response), file = stderr())
