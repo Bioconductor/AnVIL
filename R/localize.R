@@ -101,7 +101,7 @@ delocalize <-
 install <-
     function(pkgs, lib = .libPaths()[1], ...,
         version = BiocManager::version(),
-        binary_base_url = "https://storage.googleapis.com",
+        binary_base_url = "https://storage.googleapis.com/bioconductor_docker/packages",
         verbose = getOption("verbose"))
 {
     stopifnot(
@@ -139,41 +139,26 @@ install <-
 #' @export
 repositories <-
     function(version = BiocManager::version(),
-        binary_base_url = "https://storage.googleapis.com")
+        binary_base_url = "https://storage.googleapis.com/bioconductor_docker/packages")
 {
     stopifnot(
         .is_scalar_character(version) || is.package_version(version),
         .is_scalar_character(binary_base_url)
     )
 
-    binary_repos <- NULL
-    bioconductor_version <- package_version(version)
-    platform <- Sys.getenv("TERRA_R_PLATFORM", NA)
-    platform_version_string <- Sys.getenv("TERRA_R_PLATFORM_BINARY_VERSION", NA)
-    if (!is.na(platform) && !is.na(platform_version_string)) {
-        ## binary_repos = https://storage.googleapis.com/terra-jupyter-r/0.99"
-        ## binary_repos = https://storage.googleapis.com/terra-rstudio-bioconductor/0.99"
-        ## CRAN-style exetension: src/contrib/PACKAGES.gz
-        platform_version <- package_version(platform_version_string)
-        binary_repos0 <- paste0(
-            binary_base_url, "/",
-            platform, "/",
-            platform_version$major, ".", platform_version$minor, "/",
-            bioconductor_version$major, ".", bioconductor_version$minor
-
-        )
-        ## validate binary_repos is available
-        packages <- paste0(contrib.url(binary_repos0), "/PACKAGES.gz")
-        url <- url(packages)
-        binary_repos <- tryCatch({
-            suppressWarnings(open(url, "rb"))
-            close(url)
-            binary_repos0
-        }, error = function(...) {
-            close(url)
-            NULL
-        })
-    }
+    bioconductor_version <- as.character(package_version(version))
+    binary_repos0 <- paste0(binary_base_url, "/", bioconductor_version, "/bioc")
+    ## validate binary_repos is available
+    packages <- paste0(contrib.url(binary_repos0), "/PACKAGES.gz")
+    url <- url(packages)
+    binary_repos <- tryCatch({
+        suppressWarnings(open(url, "rb"))
+        close(url)
+        binary_repos0
+    }, error = function(...) {
+        close(url)
+        NULL
+    })
 
     c(binary_repos, BiocManager::repositories())
 }
