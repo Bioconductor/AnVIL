@@ -7,15 +7,33 @@ NEW FEATURES
 
 - (v 1.3.2) introduce avworkspace_*() functions for viewing and updating
   workflow configurations.
-  
+
+- (v 1.3.3) introduce avnotebooks_() functions for managing notebooks
+  on workspaces and runtimes.
+
+- (v 1.3.11) introduce avtable_paged() for page-wise access to tables
+
+- (v 1.3.14) introduce avworkspace_clone() for cloning existing
+  workspaces.
+
 USER VISIBLE CHANGES
 
-- (v 1.3.1) service functions have signature like `fun(x, ...,
+- (v 1.3.1) service functions have signatures like `fun(x, ...,
   .__body__ = list(y))`, where `x` is a argument for the 'URL' of the
   RESTful interface, and `y` is an argument for the 'BODY' of POST and
   similar requests. The `...` provide backward compatibility, and is
   used to populate elements of `.__body__`; the full interface is
   required when URL and BODY have identically named arguments.
+  
+- (v 1.3.10, 1.3.11) return 'entity' column with name 'table_id',
+  rather than 'name'
+
+BUG FIXES
+
+- (v 1.3.6) when `.__body__` consists of 1 argument, it is represented
+  as an unnamed set.
+
+- (v 1.3.7) allow positional matching for `.__body__` arguments
 
 # AnVIL 1.2.0
 
@@ -39,7 +57,7 @@ NEW FEATURES
 
 - (v 1.1.17) add avdisks() to query for persistent disks associate
   with the active billing account.
-  
+
 - (v 1.1.21) add avworkflow_*() for interacting with workflow jobs
   and outputs.
 

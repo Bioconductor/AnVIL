@@ -58,10 +58,10 @@ library(AnVIL)
 
 The [AnVIL project][] is an analysis, visualization, and informatics
 cloud-based space for data access, sharing and computing across large
-genomic-related data sets. 
+genomic-related data sets.
 
 The _AnVIL_ project supports use of _R_ through Jupyter notebooks and
-_RStudio_. Support for _RStudio_ is preliminary as of April 2020. 
+_RStudio_. Support for _RStudio_ is preliminary as of April 2020.
 
 This package provides access to _AnVIL_ resources from within the
 _AnVIL_ cloud, and also from stand-alone computing resources such as a
@@ -111,7 +111,7 @@ cloud. For local use, one must
     ```
 
   Test the installation with `gcloud_exists()`
-  
+
     ```{r, eval = TRUE}
     ## the code chunks in this vignette are fully evaluated when
     ## gcloud_exists() returns TRUE
@@ -176,7 +176,7 @@ gcloud_cmd("projects", "list") %>%
 This translates into the command line `gcloud projects list`. Help is
 also available within _R_, e.g.,
 
-```{r}
+```{r, eval = FALSE}
 gcloud_help("projects")
 ```
 
@@ -214,7 +214,7 @@ the arguments can be cloud endpoints.
 fl <- tempfile()
 gsutil_cp(sample_info, fl)
 
-csv <- readr::read_csv(fl, guess_max = 5000L)
+csv <- readr::read_csv(fl, guess_max = 5000L, col_types = readr::cols())
 csv
 ```
 
@@ -223,7 +223,7 @@ intermediate disk storage.
 
 ```{r}
 pipe <- gsutil_pipe(fl, "rb")
-readr::read_csv(pipe, guess_max = 5000L) %>%
+readr::read_csv(pipe, guess_max = 5000L, col_types = readr::cols()) %>%
     dplyr::select("Sample", "Family_ID", "Population", "Gender")
 ```
 
@@ -331,7 +331,7 @@ fasta file is available.
 
 ```{r}
 sample %>%
-    select(name, contains("fasta")) %>%
+    select("sample_id", contains("fasta")) %>%
     filter(!is.na(final_assembly_fasta))
 ```
 
@@ -385,7 +385,7 @@ bucket <- avbucket()
 bucket
 ```
 
-The content of the bucket can be viewed with 
+The content of the bucket can be viewed with
 
 ```{r}
 avfiles_ls()
@@ -422,10 +422,58 @@ Linux `cp` command; details are described in the help page
 Use `avfiles_restore()` to restore files or directories from the
 workspace bucket to the compute node.
 
-## Example work flows
+## Using `avnotebooks*()` for notebook management
+
+Python (`.ipynb`) or R (`.Rmd`) notebooks are associated with
+individual workspaces under the DATA tab, `Files/notebooks`
+location.
+
+Jupyter notebooks are exposed through the Terra interface under the
+NOTEBOOKS tab, and are automatically synchronized between the
+workspace and the current runtime.
+
+R markdown documents may also be associated with the workspace (under
+DATA `Files/notebooks`) but are not automatically synchronized with
+the current runtime. The functions in this section help manage R
+markdown documents.
+
+Available notebooks in the workspace are listed with
+`avnotebooks()`. Copies of the notebooks on the current runtime are
+listed with `avnotebooks(local = TRUE)`. The default location of the
+notebooks is `~/<avworkspace_name()>/notebooks/`.
+
+Use `avnotebooks_localize()` to synchronize the version of the
+notebooks in the workspace to the current runtime. This operation
+might be used when a new runtime is created, and one wishes to start
+with the notebooks found in the workspace. If a newer version of the
+notebook exists in the workspace, this will overwrite the older
+version on the runtime, potentially causing data loss. For this
+reason, `avnotebooks_localize()` by default reports the actions that
+will be performed, without actually performing them. Use
+`avnotebooks_localize(dry = FALSE)` to perform the localization.
+
+Use `avnotebooks_delocalize()` to synchronize local versions of the
+notebooks on the current runtime to the workspace. This operation
+might be used when developing a workspace, and wishing to update the
+definitive notebook in the workspace. When `dry = FALSE`, this
+operation also overwrites older workspace notebook files with their
+runtime version.
+
+## Using `avworkflows_*()` for workflows
 
 Example work flows will be developed as experience with the AnVIL
 cloud increases.
+
+## Using `avworkspace_*()` for workspaces
+
+`avworkspace()` is used to define or return the 'namespace' (billing
+project) and 'name' of the workspace on which operations are to
+act. `avworkspace_namespace()` and `avworkspace_name()` can be used to
+set individual elements of the workspace.
+
+`avworkspace_clone()` clones a workspace to a new location. The clone
+includes the 'DATA', 'NOTEBOOK', and 'WORKFLOWS' elements of the
+workspace.
 
 # For developers
 
@@ -598,16 +646,16 @@ packages,
     ```
     Imports: AnVIL
     ```
-    
+
 - Arrange (e.g., via roxygen2 `@importFrom`, etc.) for the NAMESPACE
   file to contain
-  
+
     ```
     importFrom AnVIL, Service
     importMethodsFrom AnVIL, "$"   # pehaps also `tags()`, etc
     importClassesFrom AnVIL, Service
     ```
-    
+
 - Implement your own class definition and constructor. Use `?Service`
   to provide guidance on argument specification. For instance, to
   re-implement the terra service.

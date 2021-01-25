@@ -1,17 +1,36 @@
+#' @rdname av
+#'
+#' @name av
+#'
+#' @title TABLE, DATA, files, bucket, runtime, and disk elements
+NULL
+
 ##
 ## internal
 ##
 
-#' @importFrom httr status_code http_condition
+#' @importFrom httr status_code http_condition headers
 .avstop_for_status <-
     function(response, op)
 {
     status <- status_code(response)
     if (status < 400L)
-        return()
+        return(invisible(response))
 
     cond <- http_condition(status, "error")
-    msg <- as.list(response)[["message"]]
+    type <- headers(response)[["content-type"]]
+    msg <- NULL
+    if (nzchar(type) && grepl("application/json", type)) {
+        content <- as.list(response)
+        msg <- content[["message"]]
+        if (is.null(msg))
+            ## e.g., from bond DRS server
+            msg <- content$response$text
+    } else if (nzchar(type) && grepl("text/html", type)) {
+        ## these pages can be too long for a standard 'stop()' message
+        cat(as.character(response), file = stderr())
+    }
+
     message <- paste0(
         "'", op, "' failed:\n  ",
         conditionMessage(cond),
@@ -20,51 +39,21 @@
     stop(message, call.=FALSE)
 }
 
-
 ##
-## utilities
+## tables
 ##
-
-.avworkspace <- local({
-    hash <- new.env(parent = emptyenv())
-    function(fun, key, value) {
-        sysvar <- toupper(paste0("WORKSPACE_", key))
-        if (is.null(value)) {
-            if (is.null(hash[[key]])) {
-                ## initialize
-                hash[[key]] <- Sys.getenv(sysvar)
-                if (!nzchar(hash[[key]]) && interactive())
-                    warning("'", sysvar, "' undefined; use `", fun, "()` to set")
-            }
-        } else {
-            hash[[key]] <- ifelse(is.na(value), Sys.getenv(sysvar), value)
-        }
-        hash[[key]]
-    }
-})
 
 #' @rdname av
-#' @md
 #'
-#' @description `avworkspace_namespace()` and `avworkspace_name()` are
-#'     utiliity functions to retrieve workspace namespace and name
-#'     from environment variables or interfaces usually available in
-#'     AnVIL notebooks or RStudio sessions.  `avworkspace()` provides
-#'     a convenient way to specify workspace namespace and name in a
-#'     single command.
-#'
-#' @details `avworkspace_namespace()` is the billing account. If the
-#'     `namespace=` argument is not provided, try `gcloud_project()`,
-#'     and if that fails try `Sys.getenv("WORKSPACE_NAMESPACE")`.
-#'
-#'     `avworkspace_name()` is the name of the workspace as it appears
-#'     in \url{https://app.terra.bio/#workspaces}. If not provided,
-#'     `avworkspace_name()` tries to use
-#'     `Sys.getenv("WORKSPACE_NAME")`.
-#'
-#'     Values are cached across sessions, so explicitly providing
-#'     `avworkspace_*()` is required at most once per session. Revert
-#'     to system settings with arguments `NA`.
+#' @description `avtables()` describes tables available in a
+#'     workspace. Tables can be visualized under the DATA tab, TABLES
+#'     item.  `avtable()` returns an AnVIL table.  `avtable_paged()`
+#'     retrieves an AnVIL table by requesting the table in 'chunks',
+#'     and may be appropriate for large tables. `avtable_import()`
+#'     imports a data.frame to an AnVIL table.  `avtable_import_set()`
+#'     imports set membership (i.e., a subset of an existing table)
+#'     information to an AnVIL table.  `avtable_delete_values()`
+#'     removes rows from an AnVIL table.
 #'
 #' @param namespace character(1) AnVIL workspace namespace as returned
 #'     by, e.g., `avworkspace_namespace()`
@@ -72,89 +61,8 @@
 #' @param name character(1) AnVIL workspace name as returned by, eg.,
 #'     `avworkspace_name()`.
 #'
-#' @return `avworkspace_namespace()`, and `avworkspace_name()` return
-#'     `character(1)` identifiers.
-#'
-#' @examples
-#' avworkspace_namespace()
-#'
-#' @export
-avworkspace_namespace <- function(namespace = NULL) {
-    suppressWarnings({
-        namespace <- .avworkspace("avworkspace_namespace", "NAMESPACE", namespace)
-    })
-    if (!nzchar(namespace)) {
-        namespace <- tryCatch({
-            gcloud_project()
-        }, error = function(e) {
-            NULL
-        })
-        namespace <- .avworkspace("avworkspace_namespace", "NAMESPACE", namespace)
-    }
-    namespace
-}
-
-#' @rdname av
-#'
-#' @examples
-#' avworkspace_name()
-#'
-#' @export
-avworkspace_name <- function(name = NULL)
-    .avworkspace("avworkspace_name", "NAME", name)
-
-#' @rdname av
-#'
-#' @param workspace when present, a `character(1)` providing the
-#'     concatenated namespace and name, e.g.,
-#'     `"bioconductor-rpci-anvil/Bioconductor-Package-AnVIL"`
-#'
-#' @return `avworkspace()` returns the character(1) concatenated
-#'     namespace and name.
-#'
-#' @examples
-#' avworkspace()
-#'
-#' @export
-avworkspace <-
-    function(workspace = NULL)
-{
-    stopifnot(
-        is.null(workspace) || .is_scalar_character(workspace)
-    )
-    if (!is.null(workspace)) {
-        wkspc <- strsplit(workspace, "/")[[1]]
-        if (length(wkspc) != 2L)
-            stop(
-                "'workspace' must be of the form 'namespace/name', ",
-                "with a single '/'"
-            )
-        avworkspace_namespace(wkspc[[1]])
-        avworkspace_name(wkspc[[2]])
-    }
-    paste0(avworkspace_namespace(), "/", avworkspace_name())
-}
-
-##
-## tables
-##
-
-#' Functions for convenient user interaction with AnVIL resources
-#'
-#' @rdname av
-#'
-#' @description `avtables()` describes tables available in a
-#'     workspace. Tables can be visualized under the DATA tab, TABLES
-#'     item.  `avtable()` returns an AnVIL table.  `avtable_import()`
-#'     imports a data.frame to an AnVIL table.  `avtable_import_set()`
-#'     imports set membership (i.e., a subset of an existing table)
-#'     information to an AnVIL table.  `avtable_delete_values()`
-#'     removes rows from an AnVIL table.
-#'
 #' @return `avtables()`: A tibble with columns identifying the table,
 #'     the number of records, and the column names.
-#'
-#' @importFrom curl curl_escape
 #'
 #' @export
 avtables <-
@@ -164,7 +72,7 @@ avtables <-
         .is_scalar_character(namespace),
         .is_scalar_character(name)
     )
-    name <- curl_escape(name)
+    name <- URLencode(name)
     types <- Terra()$getEntityTypes(namespace, name)
     .avstop_for_status(types, "avtables")
     lst <- content(types)
@@ -175,6 +83,13 @@ avtables <-
         paste(value, collapse=", ")
     }, character(1))
     tibble(table, count, colnames)
+}
+
+.is_avtable <-
+    function(table, namespace, name)
+{
+    tbls <- avtables(namespace, name)
+    table %in% tbls$table
 }
 
 #' @rdname av
@@ -195,15 +110,137 @@ avtable <-
         .is_scalar_character(table),
         .is_scalar_character(namespace),
         .is_scalar_character(name)
+       ## ,
+       ##  `unknown table; use 'avtables()' for valid names` =
+       ##      .is_avtable(table, namespace, name)
     )
-    name = curl_escape(name)
+
+    name <- URLencode(name)
     entities <- Terra()$getEntities(namespace, name, table)
     .avstop_for_status(entities, "avtable")
     tbl <-
-        as_tibble(flatten(entities)) %>%
+        entities %>%
+        flatten() %>%
         select(name, starts_with("attributes"), -ends_with("entityType"))
     names(tbl) <- sub("^attributes.", "", names(tbl))
     names(tbl) <- sub(".entityName$", "", names(tbl))
+    names(tbl) <- sub("^name$", paste0(table, "_id"), names(tbl))
+    tbl
+}
+
+#' @importFrom utils txtProgressBar setTxtProgressBar
+.avtable_pages <-
+    function(FUN, ..., n, page, pageSize)
+{
+    result <- NULL
+    bar <- NULL
+    repeat {
+        response <- FUN(..., page = page, pageSize = pageSize)
+        result <- bind_rows(result, response$results)
+        if (is.null(bar)) {
+            max <- max(min(n, response$resultMetadata$filteredCount), 1L)
+            bar <- txtProgressBar(max = max, style = 3L)
+            on.exit(close(bar))
+        }
+        setTxtProgressBar(bar, min(NROW(result), n))
+        page <- response$parameters$page + 1L
+        test <-
+            (page > response$resultMetadata$filteredPageCount) ||
+            (NROW(result) >= n)
+        if (test)
+            break
+    }
+
+    head(result, n)
+}
+
+#' @importFrom dplyr bind_cols
+.avtable_paged1 <-
+    function(
+        namespace, name, table,
+        page, pageSize, sortField, sortDirection,
+        filterTerms)
+{
+    response <- Terra()$entityQuery(
+        namespace, name, table,
+        page, pageSize, sortField, sortDirection,
+        filterTerms)
+    .avstop_for_status(response, "avtable_paged")
+
+    lst <-
+        response %>%
+        as.list()
+    if (length(lst$results)) {
+        results <- bind_cols(
+            tibble(name = lst$results$name),
+            as_tibble(lst$results$attributes)
+        )
+    } else {
+        results <- tibble()
+    }
+    list(
+        parameters = lst$parameters,
+        resultMetadata = lst$resultMetadata,
+        results = results
+    )
+}
+
+#' @rdname av
+#'
+#' @param n numeric(1) maximum number of rows to return
+#'
+#' @param page integer(1) first page of iteration
+#'
+#' @param pageSize integer(1) number of records per page. Generally,
+#'     larger page sizes are more efficient.
+#'
+#' @param sortField character(1) field used to sort records when
+#'     determining page order. Default is the entity field.
+#'
+#' @param sortDirection character(1) direction to sort entities
+#'     (`"asc"`ending or `"desc"`ending) when paging.
+#'
+#' @param filterTerms character(1) string literal to select rows with
+#'     an exact (substring) matches in column.
+#'
+#' @return `avtable_paged()`: a tibble of data corresponding to the
+#'     AnVIL table `table` in the specified workspace.
+#'
+#' @export
+avtable_paged <-
+    function(table,
+        n = Inf, page = 1L, pageSize = 1000L,
+        sortField = "name", sortDirection = c("asc", "desc"),
+        filterTerms = character(),
+        namespace = avworkspace_namespace(),
+        name = avworkspace_name())
+{
+    page <- as.integer(page)
+    pageSize <- as.integer(pageSize)
+    stopifnot(
+        .is_scalar_character(table),
+        .is_scalar_numeric(n, infinite.ok = TRUE),
+        .is_scalar_integer(page),
+        .is_scalar_integer(pageSize),
+        .is_scalar_character(sortField),
+        length(filterTerms) == 0L || .is_scalar_character(filterTerms),
+        .is_scalar_character(namespace),
+        .is_scalar_character(name)
+        ## ,
+        ## `unknown table; use 'avtables()' for valid names` =
+        ##     .is_avtable(table, namespace, name)
+    )
+    sortDirection <- match.arg(sortDirection)
+    name <- URLencode(name)
+
+    tbl <- .avtable_pages(
+        .avtable_paged1,
+        namespace = namespace, name = name, table = table,
+        sortField = sortField, sortDirection = sortDirection,
+        filterTerms = filterTerms,
+        n = n, page = page, pageSize = pageSize
+    )
+    names(tbl) <- sub("^name$", paste0(table, "_id"), names(tbl))
     tbl
 }
 
@@ -262,7 +299,7 @@ avtable_import <-
         .is_scalar_character(name)
     )
 
-    name = curl_escape(name)
+    name <- URLencode(name)
 
     .data <- .avtable_import_set_entity(.data, entity)
     destination <- tempfile()
@@ -330,7 +367,7 @@ avtable_import_set <-
         .is_scalar_character(name)
     )
 
-    origin <- curl_escape(origin)
+    origin <- URLencode(origin)
 
     tbl <-
         .data %>%
@@ -358,6 +395,8 @@ avtable_import_set <-
 #' @return `avtable_delete_values()` returns a `tibble` representing
 #'     deleted entities, invisibly.
 #'
+#' @importFrom utils capture.output
+#'
 #' @export
 avtable_delete_values <-
     function(table, values,
@@ -370,11 +409,24 @@ avtable_delete_values <-
         .is_scalar_character(name)
     )
 
-    name <- curl_escape(name)
+    name <- URLencode(name)
     body <- tibble(entityType = table, entityName = as.character(values))
 
     response <- Terra()$deleteEntities(namespace, name, body)
-    .avstop_for_status(response, "avtable_delete_values")
+    if (status_code(response) == 409L) {
+        tbl <-
+            response %>%
+            flatten() %>%
+            capture.output() %>%
+            paste(collapse = "\n")
+        stop(
+            "\n",
+            "  'values' (entityName) appear in more than one table (entityType);",
+            "\n  delete entityName from leaf tables first\n\n",
+            tbl
+        )
+    }
+    .avstop_for_status(response, "avtable_delete_values") # other errors
 
     invisible(body)
 }
@@ -407,7 +459,7 @@ avdata <-
         .is_scalar_character(name)
     )
 
-    name <- curl_escape(name)
+    name <- URLencode(name)
     response <- Terra()$exportAttributesTSV(namespace, name)
     .avstop_for_status(response, "avworkspace_data")
 
@@ -490,7 +542,7 @@ avbucket <-
     if (.avbucket_cache$exists(namespace, name)) {
         bucket <- .avbucket_cache$get(namespace, name)
     } else {
-        name <- curl_escape(name)
+        name <- URLencode(name)
         response <- Terra()$getWorkspace(namespace, name, "workspace.bucketName")
         .avstop_for_status(response, "avbucket")
         bucket <- as.list(response)$workspace$bucketName
@@ -773,6 +825,38 @@ avruntimes <-
 
     .tbl_with_template(runtimes, template) %>%
         rename_with(~ sub(".*\\.", "", .x))
+}
+
+#' @rdname av
+#' @md
+#'
+#' @description `avruntime()` returns a tibble with the runtimes
+#'     associated with a particular google project and account number;
+#'     usually there is a single runtime satisfiying these criteria,
+#'     and it is the runtime active in AnVIL.
+#'
+#' @param project `character(1)` project (billing account) name, as
+#'     returned by, e.g., `gcloud_project()` or
+#'     `avworkspace_namespace()`.
+#'
+#' @param account `character(1)` google account (email address
+#'     associated with billing account), as returned by
+#'     `gcloud_account()`.
+#'
+#' @return `avruntime()` returns a tibble witht he same structure as
+#'     the return value of `avruntimes()`.
+#'
+#' @export
+avruntime <-
+    function(project = gcloud_project(), account = gcloud_account())
+{
+    stopifnot(
+        .is_scalar_character(project),
+        .is_scalar_character(account)
+    )
+    rt <- avruntimes()
+    rt %>%
+        filter(.data$googleProject == project, .data$creator == account)
 }
 
 #' @importFrom dplyr pull

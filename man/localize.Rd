@@ -17,13 +17,13 @@ install(
   lib = .libPaths()[1],
   ...,
   version = BiocManager::version(),
-  binary_base_url = "https://storage.googleapis.com",
+  binary_base_url = "https://storage.googleapis.com/bioconductor_docker/packages",
   verbose = getOption("verbose")
 )
 
 repositories(
   version = BiocManager::version(),
-  binary_base_url = "https://storage.googleapis.com"
+  binary_base_url = "https://storage.googleapis.com/bioconductor_docker/packages"
 )
 
 add_libpaths(paths)

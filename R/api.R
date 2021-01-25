@@ -50,8 +50,15 @@
             !any(names(dot_args) %in% names(.__body__))
     )
     body <- c(dot_args, .__body__)
-    if (!length(body))
-        names(body) <- character()
+
+    ## always named
+    if (is.null(names(body)))
+        names(body) <- rep("", length(body))
+
+    ## positional matching of '...' and .__body__ args
+    idx <- nzchar(names(body)) # named arguments
+    available <- setdiff(names(body0), names(body)[idx])
+    names(body)[!idx] <- available[seq_len(sum(!idx))]
 
     body
 }
@@ -59,7 +66,7 @@
 .api_get_url <-
     function(api, op_def, x)
 {
-    rapiclient::: build_op_url(
+    rapiclient:::build_op_url(
         api, api$schemes[1], api$host, api$basePath, op_def, x
     )
 }
@@ -82,7 +89,7 @@
 .api_get_accept <-
     function(op_def)
 {
-    type <- ifelse(is.null(op_def$produces), "application/json", op_def$produces)
+    type <- ifelse(is.null(op_def$produces), "*/*", op_def$produces)
     accept(type)
 }
 
@@ -103,6 +110,8 @@
     if (identical(op_def$consumes, "multipart/form-data")) {
         json <- body
     } else {
+        if (length(body) == 1L)
+            body <- body[[1]]
         ## unbox?
         name <- vapply(op_def$parameters, `[[`, character(1), "name")
         type <- vapply(op_def$parameters, function(elt) {
@@ -143,14 +152,15 @@
             PATCH =,
             PUT = function(..., .__body__ = list()) {
                 args <- .api_args(formals(), environment())
-                body <- .api_body(formals(), ..., .__body__ = .__body__)
+                body0 <- .api_body(formals(), ..., .__body__ = .__body__)
+                body <-  .api_get_message_body(op_def, body0)
                 result <- HTTR_FUN(
                     url = .api_get_url(api, op_def, args),
                     config = .api_get_config(api),
                     .api_get_content_type(op_def),
                     .api_get_accept(op_def),
                     add_headers(.headers = .headers),
-                    body = .api_get_message_body(op_def, body)
+                    body = body
                 )
                 handle_response(result)
             },

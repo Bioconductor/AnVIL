@@ -16,7 +16,7 @@
 .martha_v3 <-
     function(url, template)
 {
-    access_token <- .gcloud_access_token()
+    access_token <- .gcloud_access_token("drs")
     headers <- add_headers(
         Authorization = paste("Bearer", access_token),
         "content-type" = "application/json"
@@ -34,7 +34,7 @@
 #' @rdname drs
 #' @md
 #'
-#' @title Manipulate 'DRS' (Data Repository Service) URLs
+#' @title DRS (Data Repository Service) URL management
 #'
 #' @description `drs_stat()` resolves zero or more DRS URLs to their
 #'     google bucket location.
@@ -132,10 +132,10 @@ drs_stat <-
 .drs_enable_requester_pays <-
     function(namespace = avworkspace_namespace(), name = avworkspace_name())
 {
-    name <- curl_escape(name)
+    name <- URLencode(name)
     url <- sprintf(.DRS_RAWLS, namespace, name)
 
-    access_token <- .gcloud_access_token()
+    access_token <- .gcloud_access_token("drs")
     headers <- add_headers(
         Authorization = paste("Bearer", access_token),
         "content-type" = "application/json"

@@ -25,7 +25,7 @@
 Leonardo <-
     function()
 {
-    access_token <- .gcloud_access_token()
+    access_token <- .gcloud_access_token("leonardo")
     api_header <- c(Authorization = paste("Bearer", access_token))
     .Leonardo(
         Service(

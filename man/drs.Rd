@@ -3,7 +3,7 @@
 \name{drs_stat}
 \alias{drs_stat}
 \alias{drs_cp}
-\title{Manipulate 'DRS' (Data Repository Service) URLs}
+\title{DRS (Data Repository Service) URL management}
 \usage{
 drs_stat(source = character())
 

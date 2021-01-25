@@ -38,8 +38,13 @@ setGeneric("flatten", function(x) standardGeneric("flatten"))
 setMethod("flatten", "response",
     function(x)
 {
-    json <- fromJSON(content(x, as="text", encoding = "UTF-8"), flatten = TRUE)
-    as_tibble(json)
+    value <- content(x, as="text", encoding = "UTF-8")
+    if (nzchar(value)) {
+        json <- fromJSON(value, flatten = TRUE)
+        as_tibble(json)
+    } else {
+        tibble()
+    }
 })
 
 #' @rdname Response
@@ -57,7 +62,12 @@ setMethod("flatten", "response",
 setMethod("str", "response",
     function(object)
 {
-    json <- fromJSON(content(object, as="text", encoding = "UTF-8"))
+    value <- content(object, as="text", encoding = "UTF-8")
+    if (nzchar(value)) {
+        json <- fromJSON(value)
+    } else {
+        json <- character()
+    }
     str(json)
 })
 
@@ -79,5 +89,9 @@ as.list.response <-
     function(x, ..., as=c("text", "raw", "parsed"))
 {
     as <- match.arg(as)
-    fromJSON(content(x, as=as, encoding = "UTF-8"))
+    value <- content(x, as=as, encoding = "UTF-8")
+    if (identical(as, "text") && nzchar(value)) {
+        value <- fromJSON(value)
+    }
+    value
 }

@@ -7,7 +7,7 @@
 \alias{avworkflow_configuration_template}
 \alias{avworkflow_configuration}
 \alias{avworkflow_import_configuration}
-\title{Working with AnVIL Workflow submissions and file outputs}
+\title{Workflow submissions and file outputs}
 \usage{
 avworkflows(namespace = avworkspace_namespace(), name = avworkspace_name())
 
@@ -32,10 +32,10 @@ avworkflow_import_configuration(
 }
 \arguments{
 \item{namespace}{character(1) AnVIL workspace namespace as returned
-by, e.g., \code{avworkspace_namespace()}}
+by, e.g., `avworkspace_namespace()`}
 
 \item{name}{character(1) AnVIL workspace name as returned by, eg.,
-\code{avworkspace_name()}.}
+`avworkspace_name()`.}
 
 \item{submissionId}{a character() of workflow submission ids, or a
 tibble with column \code{submissionId}, or NULL / missing. See
@@ -80,6 +80,8 @@ method might reference a github repository.
 \item submissionId character() job identifier from the workflow runner.
 \item submitter character() AnVIL user id of individual submitting the job.
 \item submissionDate POSIXct() date (in local time zone) of job submission.
+\item status character() job status, with values 'Accepted' 'Evaluating'
+'Submitting' 'Submitted' 'Aborting' 'Aborted' 'Done'
 \item succeeded integer() number of workflows succeeding.
 \item failed integer() number of workflows failing.
 }

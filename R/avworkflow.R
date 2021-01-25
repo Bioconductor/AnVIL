@@ -1,7 +1,7 @@
 #' @rdname avworkflow
 #' @md
 #'
-#' @title Working with AnVIL Workflow submissions and file outputs
+#' @title Workflow submissions and file outputs
 #'
 #' @inheritParams avworkspace
 #'
@@ -68,6 +68,8 @@ avworkflows <-
 #' - submissionId character() job identifier from the workflow runner.
 #' - submitter character() AnVIL user id of individual submitting the job.
 #' - submissionDate POSIXct() date (in local time zone) of job submission.
+#' - status character() job status, with values 'Accepted' 'Evaluating'
+#'   'Submitting' 'Submitted' 'Aborting' 'Aborted' 'Done'
 #' - succeeded integer() number of workflows succeeding.
 #' - failed integer() number of workflows failing.
 #'
