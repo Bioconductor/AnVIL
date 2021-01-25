@@ -162,5 +162,5 @@ avworkspace_clone <-
         )
     .avstop_for_status(response, "avworkspace_clone")
 
-    paste(to_name, to_namespace, sep = "/")
+    paste(to_namespace, to_name, sep = "/")
 }
