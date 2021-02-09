@@ -71,11 +71,5 @@ if (gcloud_exists() && startsWith(gcloud_account(), "pet-")) {
     drs_stat(drs_eg_anvil)
 }
 
-if (gcloud_exists()) {
-    destination <- tempfile()
-    dir.create(destination)
-    tbl <- drs_cp(drs_eg_hca, destination)
-    readLines(tbl$destination, warn = FALSE)
-}
 
 }

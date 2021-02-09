@@ -188,12 +188,6 @@ drs_stat <-
 #' - destination: character() full path to retrieved object(s)
 #'
 #' @examples
-#' if (gcloud_exists()) {
-#'     destination <- tempfile()
-#'     dir.create(destination)
-#'     tbl <- drs_cp(drs_eg_hca, destination)
-#'     readLines(tbl$destination, warn = FALSE)
-#' }
 #'
 #' @export
 drs_cp <-
