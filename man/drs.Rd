@@ -61,19 +61,10 @@ notebook in the AnVIL), or can be found in the return value of
 \code{avruntimes()}.
 }
 \examples{
-drs_eg_hca <- paste0(
-    "drs://drs.data.humancellatlas.org/",
-    "4cf48dbf-cf09-452e-bb5b-fd016af0c747?version=2019-09-14T024754.281908Z"
-)
-
 drs_eg_anvil <- c(
     "drs://dg.ANV0/975bd45f-f022-4fad-b9a2-3a00c3b8792c",
     "drs://dg.ANV0/00008531-03d7-418c-b3d3-b7b22b5381a0"
 )
-
-if (gcloud_exists())
-    # no pet account needed for HCA data
-    drs_stat(drs_eg_hca)
 
 if (gcloud_exists() && startsWith(gcloud_account(), "pet-")) {
     ## from within AnVIL
