@@ -2,11 +2,14 @@
 % Please edit documentation in R/avworkspace.R
 \name{avworkspace}
 \alias{avworkspace}
+\alias{avworkspaces}
 \alias{avworkspace_namespace}
 \alias{avworkspace_name}
 \alias{avworkspace_clone}
 \title{Workspace management}
 \usage{
+avworkspaces()
+
 avworkspace_namespace(namespace = NULL)
 
 avworkspace_name(name = NULL)
@@ -37,6 +40,10 @@ which to make the clone.}
 \item{to_name}{character(1) name of the cloned workspace.}
 }
 \value{
+`avworkspaces()` returns a tibble with columns including
+    the name, names, and last modification date, as well as
+    additional information.
+
 `avworkspace_namespace()`, and `avworkspace_name()` return
     `character(1)` identifiers. `avworkspace()` returns the
     character(1) concatenated namespace and name. The value
@@ -47,6 +54,9 @@ which to make the clone.}
     the format `namespace/name`, of the cloned workspace.
 }
 \description{
+`avworkspaces()` returns a tibble with available
+    workspaces.
+
 `avworkspace_namespace()` and `avworkspace_name()` are
     utiliity functions to retrieve workspace namespace and name
     from environment variables or interfaces usually available in

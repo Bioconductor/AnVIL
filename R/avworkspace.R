@@ -26,6 +26,42 @@ NULL
         hash[[key]]
     }
 })
+
+#' @rdname avworkspace
+#'
+#' @description `avworkspaces()` returns a tibble with available
+#'     workspaces.
+#'
+#' @return `avworkspaces()` returns a tibble with columns including
+#'     the name, names, and last modification date, as well as
+#'     additional information.
+#'
+#' @export
+avworkspaces <-
+    function()
+{
+
+    response <- Terra()$listWorkspaces()
+    stop_for_status(response)
+
+    flatten(response) %>%
+        select(
+            name = .data$workspace.name,
+            lastModified = .data$workspace.lastModified,
+            createdBy = .data$workspace.createdBy,
+            namespace = .data$workspace.namespace,
+            accessLevel = .data$accessLevel
+        ) %>%
+        mutate(
+            name = trimws(.data$name),
+            lastModified = as.Date(.data$lastModified)
+        ) %>%
+        arrange(
+            name,
+            desc(lastModified)
+        )
+}
+
 #' @rdname avworkspace
 #'
 #' @description `avworkspace_namespace()` and `avworkspace_name()` are
