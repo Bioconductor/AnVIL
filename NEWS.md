@@ -15,6 +15,8 @@ NEW FEATURES
 
 - (v 1.3.14) introduce avworkspace_clone() for cloning existing
   workspaces.
+  
+- (v 1.3.21) avworkspaces() returns a tibble of available workspaces.
 
 USER VISIBLE CHANGES
 

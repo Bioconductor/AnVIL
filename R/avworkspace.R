@@ -42,7 +42,7 @@ avworkspaces <-
 {
 
     response <- Terra()$listWorkspaces()
-    stop_for_status(response)
+    .avstop_for_status(response, "avworkspaces")
 
     flatten(response) %>%
         select(
@@ -57,8 +57,8 @@ avworkspaces <-
             lastModified = as.Date(.data$lastModified)
         ) %>%
         arrange(
-            name,
-            desc(lastModified)
+            .data$name,
+            desc(.data$lastModified)
         )
 }
 
