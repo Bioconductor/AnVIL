@@ -28,7 +28,10 @@ USER VISIBLE CHANGES
   required when URL and BODY have identically named arguments.
   
 - (v 1.3.10, 1.3.11) return 'entity' column with name 'table_id',
-  rather than 'name'
+  rather than 'name'.
+
+- (v 1.3.22) localize() / delocalize() warn when dry = TRUE, so that
+  lack of localization is more apparent.
 
 BUG FIXES
 

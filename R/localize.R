@@ -29,6 +29,8 @@ localize <-
         .is_scalar_character(destination), dir.exists(destination),
         .is_scalar_logical(dry)
     )
+    if (dry)
+        warning("use 'dry = FALSE' to localize source / destination")
 
     ## FIXME: return destination paths of copied files
     gsutil_rsync(
@@ -59,6 +61,9 @@ delocalize <-
         .is_scalar_logical(unlink),
         .is_scalar_logical(dry)
     )
+    if (dry)
+        warning("use 'dry = FALSE' to delocalize source / destination")
+
     ## sync and optionally remove source
     result <- gsutil_rsync(
         source, destination, delete = FALSE, recursive = TRUE, dry = dry
