@@ -32,10 +32,10 @@ avworkflow_import_configuration(
 }
 \arguments{
 \item{namespace}{character(1) AnVIL workspace namespace as returned
-by, e.g., `avworkspace_namespace()`}
+by, e.g., \code{avworkspace_namespace()}}
 
 \item{name}{character(1) AnVIL workspace name as returned by, eg.,
-`avworkspace_name()`.}
+\code{avworkspace_name()}.}
 
 \item{submissionId}{a character() of workflow submission ids, or a
 tibble with column \code{submissionId}, or NULL / missing. See

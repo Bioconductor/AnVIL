@@ -25,14 +25,14 @@ avworkspace_clone(
 }
 \arguments{
 \item{namespace}{character(1) AnVIL workspace namespace as returned
-by, e.g., `avworkspace_namespace()`}
+by, e.g., \code{avworkspace_namespace()}}
 
 \item{name}{character(1) AnVIL workspace name as returned by, eg.,
-`avworkspace_name()`.}
+\code{avworkspace_name()}.}
 
-\item{workspace}{when present, a `character(1)` providing the
+\item{workspace}{when present, a \code{character(1)} providing the
 concatenated namespace and name, e.g.,
-`"bioconductor-rpci-anvil/Bioconductor-Package-AnVIL"`}
+\code{"bioconductor-rpci-anvil/Bioconductor-Package-AnVIL"}}
 
 \item{to_namespace}{character(1) workspace (billing account) in
 which to make the clone.}
@@ -40,47 +40,45 @@ which to make the clone.}
 \item{to_name}{character(1) name of the cloned workspace.}
 }
 \value{
-`avworkspaces()` returns a tibble with columns including
-    the name, names, and last modification date, as well as
-    additional information.
+\code{avworkspaces()} returns a tibble with columns including
+the name, last modification time, namespace, and owner status.
 
-`avworkspace_namespace()`, and `avworkspace_name()` return
-    `character(1)` identifiers. `avworkspace()` returns the
-    character(1) concatenated namespace and name. The value
-    returned by `avworkspace_name()` will be percent-encoded (e.g.,
-    spaces `" "` replaced by `"%20"`).
+\code{avworkspace_namespace()}, and \code{avworkspace_name()} return
+\code{character(1)} identifiers. \code{avworkspace()} returns the
+character(1) concatenated namespace and name. The value
+returned by \code{avworkspace_name()} will be percent-encoded (e.g.,
+spaces \code{" "} replaced by \code{"\%20"}).
 
-`avworkspace_clone()` returns the namespace and name, in
-    the format `namespace/name`, of the cloned workspace.
+\code{avworkspace_clone()} returns the namespace and name, in
+the format \code{namespace/name}, of the cloned workspace.
 }
 \description{
-`avworkspaces()` returns a tibble with available
-    workspaces.
+\code{avworkspaces()} returns a tibble with available
+workspaces.
 
-`avworkspace_namespace()` and `avworkspace_name()` are
-    utiliity functions to retrieve workspace namespace and name
-    from environment variables or interfaces usually available in
-    AnVIL notebooks or RStudio sessions.  `avworkspace()` provides
-    a convenient way to specify workspace namespace and name in a
-    single command.
+\code{avworkspace_namespace()} and \code{avworkspace_name()} are
+utiliity functions to retrieve workspace namespace and name
+from environment variables or interfaces usually available in
+AnVIL notebooks or RStudio sessions.  \code{avworkspace()} provides
+a convenient way to specify workspace namespace and name in a
+single command.
 
-`avworkspace_clone()` clones (copies) an existing
-    workspace, possibly into a new namespace (billing account).
+\code{avworkspace_clone()} clones (copies) an existing
+workspace, possibly into a new namespace (billing account).
 }
 \details{
-`avworkspace_namespace()` is the billing account. If the
-    `namespace=` argument is not provided, try `gcloud_project()`,
-    and if that fails try `Sys.getenv("WORKSPACE_NAMESPACE")`.
+\code{avworkspace_namespace()} is the billing account. If the
+\verb{namespace=} argument is not provided, try \code{gcloud_project()},
+and if that fails try \code{Sys.getenv("WORKSPACE_NAMESPACE")}.\preformatted{`avworkspace_name()` is the name of the workspace as it appears
+in \url{https://app.terra.bio/#workspaces}. If not provided,
+`avworkspace_name()` tries to use
+`Sys.getenv("WORKSPACE_NAME")`.
 
-    `avworkspace_name()` is the name of the workspace as it appears
-    in \url{https://app.terra.bio/#workspaces}. If not provided,
-    `avworkspace_name()` tries to use
-    `Sys.getenv("WORKSPACE_NAME")`.
-
-    Namespace and name values are cached across sessions, so
-    explicitly providing `avworkspace_name*()` is required at most
-    once per session. Revert to system settings with arguments
-    `NA`.
+Namespace and name values are cached across sessions, so
+explicitly providing `avworkspace_name*()` is required at most
+once per session. Revert to system settings with arguments
+`NA`.
+}
 }
 \examples{
 avworkspace_namespace()

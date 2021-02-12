@@ -28,13 +28,14 @@ NULL
 })
 
 #' @rdname avworkspace
+#' @md
 #'
 #' @description `avworkspaces()` returns a tibble with available
 #'     workspaces.
 #'
 #' @return `avworkspaces()` returns a tibble with columns including
-#'     the name, names, and last modification date, as well as
-#'     additional information.
+#'     the name, last modification time, namespace, and owner status.
+#'
 #'
 #' @export
 avworkspaces <-
@@ -63,6 +64,7 @@ avworkspaces <-
 }
 
 #' @rdname avworkspace
+#' @md
 #'
 #' @description `avworkspace_namespace()` and `avworkspace_name()` are
 #'     utiliity functions to retrieve workspace namespace and name
@@ -157,6 +159,7 @@ avworkspace <-
 }
 
 #' @rdname avworkspace
+#' @md
 #'
 #' @description `avworkspace_clone()` clones (copies) an existing
 #'     workspace, possibly into a new namespace (billing account).
