@@ -6,7 +6,7 @@ stubs but these are not complete because I do not know end points.
 
 Install the dependency and this package with
 
-    pkgs <- ("Bioconductor/AnVIL_rapiclient", "Bioconductor/AnVIL")
+    pkgs <- c("Bioconductor/AnVIL_rapiclient", "Bioconductor/AnVIL")
     BiocManager::install(pkgs)
 
 The package provides singleton endpoints with tab completion on
