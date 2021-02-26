@@ -1,42 +1,26 @@
-This archive contains an interface to AnVIL web services. The
-interface uses [Bioconductor/AnVIL_rapiclient][7] (rather than the
-older [CRAN][6] version), and is easily extended. Current
-implementations are for Leonardo, Terra, and Dockstore; there are Gen3
-stubs but these are not complete because I do not know end points.
+This archive contains an interface to AnVIL web services. The AnVIL
+package has been available since Bioconductor version 3.11. To install
+the released version, follow instructions in the package vignette
 
-Install the dependency and this package with
+    if (!requireNamespace("BiocManager", quietly = TRUE))
+        install.packages("BiocManager")
+    BiocManager::install("AnVIL")
 
-    pkgs <- ("Bioconductor/AnVIL_rapiclient", "Bioconductor/AnVIL")
-    BiocManager::install(pkgs)
+To install the development (github master) version in a recent _R_,
+use
 
-The package provides singleton endpoints with tab completion on
-operations
+    if (!requireNamespace("BiocManager", quietly = TRUE))
+        install.packages("BiocManager")
+    if (!requireNamespace("remotes", quietly = TRUE))
+        install.packages("remotes")
+    BiocManager::install("Bioconductor/AnVIL")
 
-    terra = Terra()
-    terra$getUserStatus() %>% AnVIL::str()
+View the vignette (on [Bioconductor][bioc-vignette],
+[github][github-vignette], or in your R session
+`browseVignettes(package = "AnVIL")`) for usage and help pages for
+accurate documentation.  Visit the Bioconductor package [landing page]
+for more information.
 
-    leonardo = Leonardo()
-    leonardo
-    leonardo$listClusters() %>% AnVIL::flatten()
-    operations(leonardo)
-    schemas(leonardo)
-
-The return values all require further processing; there are some
-helper functions `str()` and `flatten()`, as well as
-`httr::content()`.
-
-Some services require client keys, in
-`inst/service/<name>/auth.json`.
-
-- For dockstore, visit [dockstore.org/accounts][8] and put your token in
-  `inst/service/dockstore/auth.json` file like
-
-    ```
-    {
-        "token" : "fff"
-    }
-    ```
-
-[6]: https://cran.r-project.org/package=rapiclient
-[7]: https://github.com/Bioconductor/AnVIL_rapiclient
-[8]: https://dockstore.org/accounts
+[landing page]: https://bioconductor.org/packages/AnVIL
+[bioc-vignette]: https://bioconductor.org/packages/devel/bioc/vignettes/AnVIL/inst/doc/Introduction.html
+[github-vignette]: https://github.com/Bioconductor/AnVIL/blob/master/vignettes/Introduction.Rmd
