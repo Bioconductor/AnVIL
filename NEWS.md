@@ -18,6 +18,9 @@ NEW FEATURES
 
 - (v 1.3.21) avworkspaces() returns a tibble of available workspaces.
 
+- (v 1.3.23) gsutil_rsync() supports a regular expresion exclude = to
+  exclude files from synchronization.
+
 USER VISIBLE CHANGES
 
 - (v 1.3.1) service functions have signatures like `fun(x, ...,

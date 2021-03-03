@@ -30,6 +30,7 @@ gsutil_rsync(
   source,
   destination,
   ...,
+  exclude = NULL,
   dry = TRUE,
   delete = FALSE,
   recursive = FALSE,
@@ -61,6 +62,10 @@ multi-processing (default is `TRUE`).}
 
 \item{force}{`logical(1)`: continue silently despite errors when
 removing multiple objects. Default: `FALSE`.}
+
+\item{exclude}{`character(1)` a python regular expression of bucket
+paths to exclude from synchronization. E.g.,
+`'.*(\\.png|\\.txt)$"` excludes '.png' and .txt' files.}
 
 \item{dry}{`logical(1)`, when `TRUE` (default), return the
 consequences of the operation without actually performing the

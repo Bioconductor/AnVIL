@@ -282,6 +282,10 @@ gsutil_rm <-
 #'
 #' @description `gsutil_rsync()`: synchronize a source and a destination.
 #'
+#' @param exclude `character(1)` a python regular expression of bucket
+#'     paths to exclude from synchronization. E.g.,
+#'     `'.*(\\.png|\\.txt)$"` excludes '.png' and .txt' files.
+#'
 #' @param dry `logical(1)`, when `TRUE` (default), return the
 #'     consequences of the operation without actually performing the
 #'     operation.
@@ -311,12 +315,13 @@ gsutil_rm <-
 #'
 #' @export
 gsutil_rsync <-
-    function(source, destination, ..., dry = TRUE,
+    function(source, destination, ..., exclude = NULL, dry = TRUE,
         delete = FALSE, recursive = FALSE, parallel = TRUE)
 {
     stopifnot(
         .is_scalar_character(source), .is_scalar_character(destination),
         .gsutil_is_uri(source) || .gsutil_is_uri(destination),
+        is.null(exclude) || .is_scalar_character(exclude),
         .is_scalar_logical(dry),
         .is_scalar_logical(delete),
         .is_scalar_logical(recursive),
@@ -333,6 +338,7 @@ gsutil_rsync <-
         ##  -m option, to perform parallel (multi-threaded/multi-processing)
         if (parallel) "-m",
         "rsync",
+        if (length(exclude)) paste0('-x "', exclude, '"'),
         if (dry) "-n",
         if (delete) "-d",
         if (recursive) "-r",
