@@ -4,6 +4,7 @@
 \alias{avworkflows}
 \alias{avworkflow_jobs}
 \alias{avworkflow_files}
+\alias{avworkflow_files_localize}
 \alias{avworkflow_configuration_template}
 \alias{avworkflow_configuration}
 \alias{avworkflow_import_configuration}
@@ -14,6 +15,14 @@ avworkflows(namespace = avworkspace_namespace(), name = avworkspace_name())
 avworkflow_jobs(namespace = avworkspace_namespace(), name = avworkspace_name())
 
 avworkflow_files(submissionId = NULL, bucket = avbucket())
+
+avworkflow_files_localize(
+  submissionId = NULL,
+  destination = NULL,
+  type = c("all", "control", "output"),
+  bucket = avbucket(),
+  dry = TRUE
+)
 
 avworkflow_configuration_template()
 
@@ -44,6 +53,20 @@ tibble with column \code{submissionId}, or NULL / missing. See
 \item{bucket}{character(1) name of the google bucket in which the
 workflow products are available, as \verb{gs://...}. Usually the
 bucket of the active workspace, returned by \code{avbucket()}.}
+
+\item{destination}{character(1) file path to the location where
+files will be synchronized. For directories in the current
+working directory, be sure to prepend with \code{"./"}. When \code{NULL},
+the \code{submissionId} is used as the destination. \code{destination}
+may also be a google bucket, in which case th workflow files
+are synchronized from the workspace to a second bucket.}
+
+\item{type}{character(1) copy \code{"all"}, \code{"control"}, or \code{"output"}
+files, produced by the workflow.}
+
+\item{dry}{logical(1) when \code{TRUE} (default), report the
+consequences but do not perform the action requested. When
+\code{FALSE}, perform the action.}
 
 \item{configuration_namespace}{character(1) namespace of the
 workflow. Often the same as the namespace of the
@@ -95,6 +118,14 @@ with.
 the file.
 \item path: charcter() full path to the file in the google bucket.
 }
+
+\code{avworkflow_files_localize()} prints a message indicating
+the number of files that are (if \code{dry = FALSE}) or would be
+localized. If no files require localization (i.e., local files
+are not older than the bucket files), then no files are
+localized. \code{avworkflow_files_localize()} returns a description
+of the file transfer process invisibly; this may be useful for
+debugging.
 
 \code{avworkflow_configuration_template()} returns a list
 providing a template for configuration lists, with the
@@ -159,6 +190,10 @@ submitted workflow jobs for a namespace and name.
 \code{avworkflow_files()} returns a tibble containing
 information and file paths to workflow outputs.
 
+\code{avworkflow_files_localize()} creates or synchronizes
+a local copy of files with files stored in the workspace bucket
+and produced by the workflow.
+
 \code{avworkflow_configuration_template()} returns a
 template for defining workflow configurations. This template
 can be used as a starting point for providing a custom
@@ -179,6 +214,17 @@ most recenltly completed workflow) can be used as input to
 \code{avworkflow_files()}. When \code{submissionId} is not provided, the
 return value is for the most recently submitted workflow of the
 namespace and name of \code{avworkspace()}.
+
+\code{avworkflow_files_localize()}. \code{type = "control"} files
+summarize workflow progress; they can be numerous but are
+frequently small and quickly syncronized. \code{type = "output"}
+files are the output products of the workflow stored in the
+workspace bucket. Depending on the workflow, outputs may be
+large, e.g., aligned reads in bam files. See \code{gsutil_cp()} to
+copy individual files from the bucket to the local drive.\preformatted{`avworkflow_files_localize()` treats `submissionId=` in the
+same way as `avworkflow_files()`: when missing, files from the
+most recent workflow job are candidates for localization.
+}
 }
 \examples{
 if (gcloud_exists() && nzchar(avworkspace_name()))
@@ -196,6 +242,10 @@ if (gcloud_exists() && nzchar(avworkspace_name())) {
     head(1) \%>\%
     ## find paths to output and log files on the bucket
     avworkflow_files()
+}
+
+if (gcloud_exists() && nzchar(avworkspace_name())) {
+    avworkflow_files_localize(dry = TRUE)
 }
 
 avworkflow_configuration_template()

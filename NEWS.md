@@ -18,8 +18,11 @@ NEW FEATURES
 
 - (v 1.3.21) avworkspaces() returns a tibble of available workspaces.
 
-- (v 1.3.23) gsutil_rsync() supports a regular expresion exclude = to
+- (v 1.3.24) gsutil_rsync() supports a regular expresion exclude = to
   exclude files from synchronization.
+
+- (v 1.3.24) avworkflow_files_localize() copies workflow control and /
+  or output files to the local disk.
 
 USER VISIBLE CHANGES
 
@@ -36,7 +39,7 @@ USER VISIBLE CHANGES
 - (v 1.3.22) localize() / delocalize() warn when dry = TRUE, so that
   lack of localization is more apparent.
 
-- (v 1.3.23) gsutil_stat() returns a tibble summaring bucket status,
+- (v 1.3.24) gsutil_stat() returns a tibble summaring bucket status,
   rather than character().
 
 BUG FIXES
