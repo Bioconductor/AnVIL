@@ -15,7 +15,7 @@ NEW FEATURES
 
 - (v 1.3.14) introduce avworkspace_clone() for cloning existing
   workspaces.
-  
+
 - (v 1.3.21) avworkspaces() returns a tibble of available workspaces.
 
 USER VISIBLE CHANGES
@@ -26,12 +26,15 @@ USER VISIBLE CHANGES
   similar requests. The `...` provide backward compatibility, and is
   used to populate elements of `.__body__`; the full interface is
   required when URL and BODY have identically named arguments.
-  
+
 - (v 1.3.10, 1.3.11) return 'entity' column with name 'table_id',
   rather than 'name'.
 
 - (v 1.3.22) localize() / delocalize() warn when dry = TRUE, so that
   lack of localization is more apparent.
+
+- (v 1.3.23) gsutil_stat() returns a tibble summaring bucket status,
+  rather than character().
 
 BUG FIXES
 

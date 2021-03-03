@@ -93,8 +93,8 @@ from the bucket.}
 
 `gsutil_exists()`: logical(1) TRUE if bucket or object exists.
 
-`gsutil_stat()`: `character()` description of status of
-    objects matching `source`.
+`gsutil_stat()`: `tibble()` summarizing status of each
+    bucket member.
 
 `gsutil_cp()`: exit status of `gsutil_cp()`, invisibly.
 
