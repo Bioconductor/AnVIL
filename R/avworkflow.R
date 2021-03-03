@@ -233,11 +233,11 @@ avworkflow_files <-
 #' @rdname avworkflow
 #' @md
 #'
-#' @description `avworkflow_files_localize()` creates or synchronizes
-#'     a local copy of files with files stored in the workspace bucket
+#' @description `avworkflow_localize()` creates or synchronizes a
+#'     local copy of files with files stored in the workspace bucket
 #'     and produced by the workflow.
 #'
-#' @details `avworkflow_files_localize()`. `type = "control"` files
+#' @details `avworkflow_localize()`. `type = "control"` files
 #'     summarize workflow progress; they can be numerous but are
 #'     frequently small and quickly syncronized. `type = "output"`
 #'     files are the output products of the workflow stored in the
@@ -245,9 +245,9 @@ avworkflow_files <-
 #'     large, e.g., aligned reads in bam files. See `gsutil_cp()` to
 #'     copy individual files from the bucket to the local drive.
 #'
-#'     `avworkflow_files_localize()` treats `submissionId=` in the
-#'     same way as `avworkflow_files()`: when missing, files from the
-#'     most recent workflow job are candidates for localization.
+#'     `avworkflow_localize()` treats `submissionId=` in the same way
+#'     as `avworkflow_files()`: when missing, files from the most
+#'     recent workflow job are candidates for localization.
 #'
 #' @param destination character(1) file path to the location where
 #'     files will be synchronized. For directories in the current
@@ -256,32 +256,32 @@ avworkflow_files <-
 #'     may also be a google bucket, in which case th workflow files
 #'     are synchronized from the workspace to a second bucket.
 #'
-#' @param type character(1) copy `"all"`, `"control"`, or `"output"`
-#'     files, produced by the workflow.
+#' @param type character(1) copy `"control"` (default), `"output"`, or
+#'     `"all"` files produced by a workflow.
 #'
 #' @param dry logical(1) when `TRUE` (default), report the
 #'     consequences but do not perform the action requested. When
 #'     `FALSE`, perform the action.
 #'
-#' @return `avworkflow_files_localize()` prints a message indicating
+#' @return `avworkflow_localize()` prints a message indicating
 #'     the number of files that are (if `dry = FALSE`) or would be
 #'     localized. If no files require localization (i.e., local files
-#'     are not older than the bucket files), then no files are
-#'     localized. `avworkflow_files_localize()` returns a description
+#'     are not older than the bucket files), then no  files are
+#'     localized. `avworkflow_localize()` returns a description
 #'     of the file transfer process invisibly; this may be useful for
 #'     debugging.
 #'
 #' @examples
 #' if (gcloud_exists() && nzchar(avworkspace_name())) {
-#'     avworkflow_files_localize(dry = TRUE)
+#'     avworkflow_localize(dry = TRUE)
 #' }
 #'
 #' @export
-avworkflow_files_localize <-
+avworkflow_localize <-
     function(
          submissionId = NULL,
          destination = NULL,
-         type = c("all", "control", "output"),
+         type = c("control", "output", "all"),
          bucket = avbucket(),
          dry = TRUE
     )
