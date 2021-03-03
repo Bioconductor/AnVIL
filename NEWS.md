@@ -2,27 +2,27 @@
 
 NEW FEATURES
 
-- (v 1.3.1) support Rawls() service (more fine-grained implementation
+- (v 1.3.1) support `Rawls()` service (more fine-grained implementation
   / extension of the 'Terra()' orchestration API).
 
-- (v 1.3.2) introduce avworkspace_*() functions for viewing and updating
+- (v 1.3.2) introduce `avworkspace_*()` functions for viewing and updating
   workflow configurations.
 
-- (v 1.3.3) introduce avnotebooks_() functions for managing notebooks
+- (v 1.3.3) introduce `avnotebooks_()` functions for managing notebooks
   on workspaces and runtimes.
 
-- (v 1.3.11) introduce avtable_paged() for page-wise access to tables
+- (v 1.3.11) introduce `avtable_paged()` for page-wise access to tables
 
-- (v 1.3.14) introduce avworkspace_clone() for cloning existing
+- (v 1.3.14) introduce `avworkspace_clone()` for cloning existing
   workspaces.
 
-- (v 1.3.21) avworkspaces() returns a tibble of available workspaces.
+- (v 1.3.21) `avworkspaces()` returns a tibble of available workspaces.
 
-- (v 1.3.24) gsutil_rsync() supports a regular expresion exclude = to
-  exclude files from synchronization.
+- (v 1.3.24) `gsutil_rsync()` supports a regular expresion `exclude =`
+  to exclude files from synchronization.
 
-- (v 1.3.24) avworkflow_files_localize() copies workflow control and /
-  or output files to the local disk.
+- (v 1.3.24) `avworkflow_localize()` copies workflow control and / or
+  output files to the local disk.
 
 USER VISIBLE CHANGES
 
@@ -33,13 +33,13 @@ USER VISIBLE CHANGES
   used to populate elements of `.__body__`; the full interface is
   required when URL and BODY have identically named arguments.
 
-- (v 1.3.10, 1.3.11) return 'entity' column with name 'table_id',
-  rather than 'name'.
+- (v 1.3.10, 1.3.11) return 'entity' column with name `'table_id'`,
+  rather than `'name'`.
 
-- (v 1.3.22) localize() / delocalize() warn when dry = TRUE, so that
+- (v 1.3.22) `localize()` / `delocalize()` warn when `dry = TRUE`, so that
   lack of localization is more apparent.
 
-- (v 1.3.24) gsutil_stat() returns a tibble summaring bucket status,
+- (v 1.3.24) `gsutil_stat()` returns a tibble summaring bucket status,
   rather than character().
 
 BUG FIXES
@@ -53,26 +53,26 @@ BUG FIXES
 
 NEW FEATURES
 
-- (v 1.1.3) introduce .deprecated flag in operations() / tags(); don't include
+- (v 1.1.3) introduce .deprecated flag in `operations()` / `tags()`; don't include
   deprecated APIs by default; warn on use of deprecated APIs.
 
-- (v 1.1.4) add repositories() to return binary (if available),
+- (v 1.1.4) add `repositories()` to return binary (if available),
   Bioconductor, and CRAN repository paths.
 
 - (v 1.1.6) provide md5sum as check on service version.
 
-- (v 1.1.9) add avfiles_*() for managing workspace bucket files.
+- (v 1.1.9) add `avfiles_*()` for managing workspace bucket files.
 
-- (v 1.1.15) add avtable_import_set() to create subsets of tables,
+- (v 1.1.15) add `avtable_import_set()` to create subsets of tables,
   following the Terra data model.
 
-- (v 1.1.16) add avruntimes(), avworkspace_jobs() to query for runtimes
+- (v 1.1.16) add `avruntimes()`, `avworkspace_jobs()` to query for runtimes
   and jobs associated with the active billing account.
 
-- (v 1.1.17) add avdisks() to query for persistent disks associate
+- (v 1.1.17) add `avdisks()` to query for persistent disks associate
   with the active billing account.
 
-- (v 1.1.21) add avworkflow_*() for interacting with workflow jobs
+- (v 1.1.21) add `avworkflow_*()` for interacting with workflow jobs
   and outputs.
 
 # AnVIL 1.0.x
