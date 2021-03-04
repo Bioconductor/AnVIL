@@ -120,8 +120,17 @@ avtable <-
     .avstop_for_status(entities, "avtable")
     tbl <-
         entities %>%
-        flatten() %>%
-        select(name, starts_with("attributes"), -ends_with("entityType"))
+        flatten()
+    if (!"name" %in% names(tbl)) {
+        stop(
+            "table '", table, "' does not exist; see 'avtables()'\n",
+            "    namespace: ", namespace, "\n",
+            "    name: ", name, "\n"
+        )
+    }
+    tbl <-
+        tbl %>%
+        select("name", starts_with("attributes"), -ends_with("entityType"))
     names(tbl) <- sub("^attributes.", "", names(tbl))
     names(tbl) <- sub(".entityName$", "", names(tbl))
     names(tbl) <- sub("^name$", paste0(table, "_id"), names(tbl))
