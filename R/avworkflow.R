@@ -326,15 +326,17 @@ avworkflow_localize <-
         )
     } else {
         idx <- startsWith(result, "Copying ")
-        result <- sub("Copying (.*) to .*", "\\1", result[idx])
+        result <- sub("Copying (.*)\\.\\.\\.", "\\1", result[idx])
         n_files <- length(result)
         message("localized ", n_files, " workflow files to '", destination, "'")
     }
 
-    tibble(
+    tbl <- tibble(
         file = basename(result),
         path = result
     )
+
+    invisible(tbl)
 }
 
 #' @rdname avworkflow
