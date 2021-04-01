@@ -119,13 +119,12 @@ the file.
 \item path: charcter() full path to the file in the google bucket.
 }
 
-\code{avworkflow_localize()} prints a message indicating
-the number of files that are (if \code{dry = FALSE}) or would be
+\code{avworkflow_localize()} prints a message indicating the
+number of files that are (if \code{dry = FALSE}) or would be
 localized. If no files require localization (i.e., local files
-are not older than the bucket files), then no
-localized. \code{avworkflow_localize()} returns a description
-of the file transfer process invisibly; this may be useful for
-debugging.
+are not older than the bucket files), then no files are
+localized. \code{avworkflow_localize()} returns a tibble of file
+name and bucket path of files to be synchronized.
 
 \code{avworkflow_configuration_template()} returns a list
 providing a template for configuration lists, with the

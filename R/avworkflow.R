@@ -263,13 +263,12 @@ avworkflow_files <-
 #'     consequences but do not perform the action requested. When
 #'     `FALSE`, perform the action.
 #'
-#' @return `avworkflow_localize()` prints a message indicating
-#'     the number of files that are (if `dry = FALSE`) or would be
+#' @return `avworkflow_localize()` prints a message indicating the
+#'     number of files that are (if `dry = FALSE`) or would be
 #'     localized. If no files require localization (i.e., local files
-#'     are not older than the bucket files), then no  files are
-#'     localized. `avworkflow_localize()` returns a description
-#'     of the file transfer process invisibly; this may be useful for
-#'     debugging.
+#'     are not older than the bucket files), then no files are
+#'     localized. `avworkflow_localize()` returns a tibble of file
+#'     name and bucket path of files to be synchronized.
 #'
 #' @examples
 #' if (gcloud_exists() && nzchar(avworkspace_name())) {
@@ -318,14 +317,24 @@ avworkflow_localize <-
         recursive = TRUE, exclude = exclude, dry = dry
     )
     if (dry) {
-        n_files <- sum(startsWith(result, "Would copy "))
-        warning("use 'dry = FALSE' to localize ", n_files, " workflow files")
+        idx <- startsWith(result, "Would copy ")
+        result <- sub("Would copy (.*) to .*", "\\1", result[idx])
+        n_files <- length(result)
+        warning(
+            "use 'dry = FALSE' to localize ", n_files, " workflow files",
+            call. = FALSE
+        )
     } else {
-        n_files <- sum(startsWith(result, "Copying "))
+        idx <- startsWith(result, "Copying ")
+        result <- sub("Copying (.*) to .*", "\\1", result[idx])
+        n_files <- length(result)
         message("localized ", n_files, " workflow files to '", destination, "'")
     }
 
-    invisible(result)
+    tibble(
+        file = basename(result),
+        path = result
+    )
 }
 
 #' @rdname avworkflow
