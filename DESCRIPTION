@@ -1,6 +1,6 @@
 Package: AnVIL
 Title: Bioconductor on the AnVIL compute environment
-Version: 1.3.26
+Version: 1.3.27
 Authors@R: 
     c(person(
         "Martin", "Morgan", role = c("aut", "cre"),
@@ -15,16 +15,16 @@ Authors@R:
      person("Sweta", "Gopaulakrishnan", role = "ctb"),
      person("Valerie", "Obenchain", role = "ctb")
     )
-Description: The AnVIL is cloud computing resource developed in part
+Description: The AnVIL is a cloud computing resource developed in part
     by the National Human Genome Research Institute. The AnVIL package
-    provides end-user and devloper functionality. For the end-user,
+    provides end-user and developer functionality. For the end-user,
     AnVIL provides fast binary package installation, utitlities for
     working with Terra / AnVIL table and data resources, and
     convenient functions for file movement to and from Google cloud
     storage. For developers, AnVIL provides programatic access to the
     Terra, Leonardo, Rawls, Dockstore, and Gen3 RESTful programming
     interface, including helper functions to transform JSON responses
-    to more formats more amenable to manipulation in R.
+    to formats more amenable to manipulation in R.
 License: Artistic-2.0
 Encoding: UTF-8
 Depends: R (>= 3.6), dplyr

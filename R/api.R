@@ -183,7 +183,7 @@
         parameters <- rapiclient:::get_parameters(api, op_def$parameters)
         idx <- .api_is_message_body_parameter(op_def, parameters)
         args <- do.call("alist", parameters[!idx])
-        if (any(idx)) {
+        if (what %in% c("POST", "PATCH", "PUT")) {
             alist0 <- do.call("alist", list(.__body__ = parameters[idx]))
             args <- c(args, alist(...=), alist0)
         }

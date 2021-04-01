@@ -134,7 +134,7 @@ avworkflow_jobs <-
     type <- rep("output", length(file))
     fls <- c(
         .WORKFLOW_CONTROL_FILES,
-        paste0(unique(workflow), "_run\\.log")
+        paste0(unique(workflow), "_run-*[[:digit:]]*\\.log")
     )
     pattern <- paste0("^(", paste(fls, collapse = "|"), ")$")
     type[grepl(pattern, file)] <- "control"
@@ -298,6 +298,11 @@ avworkflow_localize <-
             head(1)
     if (is.null(destination))
         destination <- paste0("./", submissionId)
+    if (dry && !dir.exists(destination)) {
+        ## create temporary 'destination' so gsutil_rsync does not fail
+        destination <- tempfile()
+        dir.create(destination)
+    }
 
     fls <- avworkflow_files(submissionId, bucket)
 
