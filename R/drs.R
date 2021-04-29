@@ -25,7 +25,10 @@
     response <- POST(.DRS_MARTHA, headers, body = body, encode="raw")
     .avstop_for_status(response, "DRS resolution")
     lst <- as.list(response)
-    tbl <- as_tibble(lst[!vapply(lst, is.null, logical(1))])
+    is_list <- # nest list elements so length == 1L
+        vapply(lst, is.list, logical(1))
+    lst[is_list] <- lapply(lst[is_list], list)
+    tbl <- as_tibble(lst[lengths(lst) == 1L])
 
     .tbl_with_template(tbl, template)
 }

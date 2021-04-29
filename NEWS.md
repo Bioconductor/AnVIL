@@ -51,6 +51,9 @@ BUG FIXES
 
 - (v 1.3.7) allow positional matching for `.__body__` arguments
 
+- (v. 1.2.1 / 1.3.30) drs_stat() returns a single record per URL when
+  multiple hashes available.
+
 # AnVIL 1.2.0
 
 NEW FEATURES
