@@ -1,3 +1,10 @@
+# AnVIL 1.2.x
+
+BUG FIX
+
+- (v. 1.2.1) drs_stat() returns a single record per URL when multiple
+  hashes available.
+
 # AnVIL 1.2.0
 
 NEW FEATURES
