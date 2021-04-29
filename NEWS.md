@@ -42,6 +42,8 @@ USER VISIBLE CHANGES
 - (v 1.3.24) `gsutil_stat()` returns a tibble summaring bucket status,
   rather than character().
 
+- (v 1.3.30) Add Referer: header to all Leonardo requests
+
 BUG FIXES
 
 - (v 1.3.6) when `.__body__` consists of 1 argument, it is represented

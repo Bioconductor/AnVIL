@@ -26,7 +26,10 @@ Leonardo <-
     function()
 {
     access_token <- .gcloud_access_token("leonardo")
-    api_header <- c(Authorization = paste("Bearer", access_token))
+    api_header <- c(
+        Authorization = paste("Bearer", access_token),
+        Referer = "https://notebooks.firecloud.org"
+    )
     .Leonardo(
         Service(
             "leonardo",
