@@ -71,16 +71,18 @@ drs_eg_anvil <- c(
     "drs://dg.ANV0/00008531-03d7-418c-b3d3-b7b22b5381a0"
 )
 
-if (gcloud_exists())
+if (gcloud_exists() && interactive())
     # no pet account needed for HCA data
     drs_stat(drs_eg_hca)
 
-if (gcloud_exists() && startsWith(gcloud_account(), "pet-")) {
+test <- gcloud_exists() && interactive() &&
+    startsWith(gcloud_account(), "pet-")
+if (test) {
     ## from within AnVIL
     drs_stat(drs_eg_anvil)
 }
 
-if (gcloud_exists()) {
+if (gcloud_exists() && interactive()) {
     destination <- tempfile()
     dir.create(destination)
     tbl <- drs_cp(drs_eg_hca, destination)
