@@ -1,6 +1,6 @@
 Package: AnVIL
 Title: Bioconductor on the AnVIL compute environment
-Version: 1.4.0
+Version: 1.5.0
 Authors@R: 
     c(person(
         "Martin", "Morgan", role = c("aut", "cre"),
