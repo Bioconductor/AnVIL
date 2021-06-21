@@ -143,7 +143,8 @@ install <-
 #'
 #' @export
 repositories <-
-    function(version = BiocManager::version(),
+    function(
+        version = BiocManager::version(),
         binary_base_url = "https://storage.googleapis.com/bioconductor_docker/packages")
 {
     stopifnot(
@@ -151,9 +152,25 @@ repositories <-
         .is_scalar_character(binary_base_url)
     )
 
-    bioconductor_version <- as.character(package_version(version))
+    repositories <- BiocManager::repositories()
+
+    ## are we running on a docker container?
+    bioconductor_docker_version <- Sys.getenv("BIOCONDUCTOR_DOCKER_VERSION")
+    if (!nzchar(bioconductor_docker_version))
+        return(repositories)
+
+    ## is the docker container configured correctly?
+    bioconductor_version <- package_version(version)
+    docker_version <- package_version(bioconductor_docker_version)
+    test <-
+        (bioconductor_version$major == docker_version$major) &
+        (bioconductor_version$minor == docker_version$minor)
+    if (!test) {
+        return(repositories)
+    }
+
+    ## does the binary repository exist?
     binary_repos0 <- paste0(binary_base_url, "/", bioconductor_version, "/bioc")
-    ## validate binary_repos is available
     packages <- paste0(contrib.url(binary_repos0), "/PACKAGES.gz")
     url <- url(packages)
     binary_repos <- tryCatch({
@@ -165,7 +182,7 @@ repositories <-
         NULL
     })
 
-    c(binary_repos, BiocManager::repositories())
+    c(BiocBinaries = binary_repos, repositories)
 }
 
 #' @rdname localize
