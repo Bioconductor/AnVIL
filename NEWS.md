@@ -1,3 +1,9 @@
+# AnVIL 1.4.1
+
+BUG FIXES
+
+- Only install binary packages on Bioconductor docker images
+
 # AnVIL 1.4.0
 
 NEW FEATURES
