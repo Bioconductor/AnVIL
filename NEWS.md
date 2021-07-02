@@ -1,3 +1,10 @@
+# AnVIL 1.6.0
+
+USER VISIBLE CHANGES
+
+- (v. 1.5.2) drs_stat() uses multiple cores (on non-Windows) to enhance
+  performance
+
 # AnVIL 1.4.1
 
 BUG FIXES
