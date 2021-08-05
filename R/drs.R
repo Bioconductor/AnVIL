@@ -14,9 +14,8 @@
 
 #' @importFrom httr POST add_headers
 .martha_v3 <-
-    function(url, template)
+    function(url, template, access_token)
 {
-    access_token <- .gcloud_access_token("drs")
     headers <- add_headers(
         Authorization = paste("Bearer", access_token),
         "content-type" = "application/json"
@@ -42,7 +41,12 @@
 #' @description `drs_stat()` resolves zero or more DRS URLs to their
 #'     google bucket location.
 #'
-#' @details `drs_stat()` uses the AnVIL 'pet' account associated with a
+#' @details `drs_stat()` sends requests in parallel to the DRS server,
+#'     using 8 forked processes (by default) to speed up queries. Use
+#'     `options(mc.cores = 16L)`, for instance, to set the number of
+#'     processes to use.
+#'
+#'     `drs_stat()` uses the AnVIL 'pet' account associated with a
 #'     runtime. The pet account is discovered by default when
 #'     evaluated on an AnVIL runtime (e.g., in RStudio or a Jupyter
 #'     notebook in the AnVIL), or can be found in the return value of
@@ -81,6 +85,8 @@
 #'
 #' @importFrom rlang .data
 #'
+#' @importFrom parallel mclapply
+#'
 #' @export
 drs_stat <-
     function(source = character())
@@ -103,8 +109,16 @@ drs_stat <-
         hashes = list()
     )
 
+    access_token <- .gcloud_access_token("drs")
 
-    response <- lapply(source, .martha_v3, template)
+    if (identical(.Platform$OS.type, "windows")) {
+        mc.cores <- 1L
+    } else {
+        mc.cores <- getOption("mc.cores", min(length(source), 8L))
+    }
+    response <- mclapply(
+        source, .martha_v3, template, access_token, mc.cores = mc.cores
+    )
     tbl <- bind_rows(response)
     .tbl_with_template(tbl, template)
 }

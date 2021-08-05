@@ -54,11 +54,15 @@ google bucket location.
 bucket or local folder
 }
 \details{
-\code{drs_stat()} uses the AnVIL 'pet' account associated with a
+\code{drs_stat()} sends requests in parallel to the DRS server,
+using 8 forked processes (by default) to speed up queries. Use
+\code{options(mc.cores = 16L)}, for instance, to set the number of
+processes to use.\preformatted{`drs_stat()` uses the AnVIL 'pet' account associated with a
 runtime. The pet account is discovered by default when
 evaluated on an AnVIL runtime (e.g., in RStudio or a Jupyter
 notebook in the AnVIL), or can be found in the return value of
-\code{avruntimes()}.
+`avruntimes()`.
+}
 }
 \examples{
 drs_eg_anvil <- c(
