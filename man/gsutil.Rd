@@ -191,8 +191,13 @@ if (gcloud_exists()) {
     gsutil_ls(dirname(src))
 }
 
-if (gcloud_exists())
+if (gcloud_exists()) {
    gsutil_cp(src, tempdir())
+   ## gsutil_*() commands work with spaces in the source or destination
+   destination <- file.path(tempdir(), "foo bar")
+   gsutil_cp(src, destination)
+   file.exists(destination)
+}
 
 if (gcloud_exists())
     gsutil_help("ls")

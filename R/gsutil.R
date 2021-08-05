@@ -106,7 +106,7 @@ gsutil_ls <-
         "ls",
         if (recursive) "-r",
         ...,
-        source
+        shQuote(source)
     )
     result <- .gsutil_do(args)
     result[nzchar(result) & !endsWith(result, ":")]
@@ -143,6 +143,7 @@ gsutil_exists <-
     gsutil <- .gcloud_sdk_find_binary("gsutil")
     stopifnot(file.exists(gsutil))      # bad environment variables
 
+    source <- setNames(shQuote(source), source)
     vapply(source, .gsutil_exists_1, logical(1), gsutil)
 }
 
@@ -168,7 +169,7 @@ gsutil_stat <-
 {
     stopifnot(.gsutil_is_uri(source))
 
-    args <- c(.gsutil_requesterpays_flag(source), "stat", source)
+    args <- c(.gsutil_requesterpays_flag(source), "stat", shQuote(source))
     result <- .gsutil_do(args)
 
     ## omit nested 'metadata', for convenience
@@ -216,8 +217,13 @@ gsutil_stat <-
 #' @return `gsutil_cp()`: exit status of `gsutil_cp()`, invisibly.
 #'
 #' @examples
-#' if (gcloud_exists())
+#' if (gcloud_exists()) {
 #'    gsutil_cp(src, tempdir())
+#'    ## gsutil_*() commands work with spaces in the source or destination
+#'    destination <- file.path(tempdir(), "foo bar")
+#'    gsutil_cp(src, destination)
+#'    file.exists(destination)
+#' }
 #'
 #' @export
 gsutil_cp <-
@@ -236,8 +242,8 @@ gsutil_cp <-
         "cp", ## cp command
         if (recursive) "-r",
         ...,
-        source,
-        destination
+        shQuote(source),
+        shQuote(destination)
     )
     result <- .gsutil_do(args)
     .gcloud_sdk_result(result)
@@ -272,7 +278,7 @@ gsutil_rm <-
         if (force) "-f",
         if (recursive) "-r",
         ...,
-        source
+        shQuote(source)
     )
     result <- .gsutil_do(args)
     .gcloud_sdk_result(result)
@@ -343,8 +349,8 @@ gsutil_rsync <-
         if (delete) "-d",
         if (recursive) "-r",
         ...,
-        source,
-        destination
+        shQuote(source),
+        shQuote(destination)
     )
     result <- .gsutil_do(args)
     .gcloud_sdk_result(result)
@@ -386,7 +392,7 @@ gsutil_cat <-
         "cat",
         if (header) "-h",
         if (length(range)) c("-r", range),
-        source
+        shQuote(source)
     )
 
     .gsutil_do(args)
@@ -451,6 +457,7 @@ gsutil_pipe <-
     )
 
     is_read <- identical(substr(open, 1, 1), "r")
+    source <- shQuote(source)
     args <- c(
         if (is_read) .gsutil_requesterpays_flag(source),
         "cp",
