@@ -16,6 +16,9 @@
         .is_character(x, na.ok, zchar)
 }
 
+.is_null_or_scalar_character <- function(x, ...)
+    is.null(x) || .is_scalar_character(x, ...)
+
 .is_scalar_logical <- function(x, na.ok = FALSE)
     is.logical(x) && length(x) == 1L && (na.ok || !is.na(x))
 

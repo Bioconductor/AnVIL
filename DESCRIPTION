@@ -1,6 +1,6 @@
 Package: AnVIL
 Title: Bioconductor on the AnVIL compute environment
-Version: 1.5.2
+Version: 1.5.2.1
 Authors@R: 
     c(person(
         "Martin", "Morgan", role = c("aut", "cre"),
@@ -34,6 +34,7 @@ Imports:
     jsonlite, httr,
     rapiclient (>= 0.1.3),
     tibble, tidyselect, tidyr, rlang,
+    AzureRMR, AzureStor,
     BiocManager
 Suggests: parallel, knitr, rmarkdown, testthat, withr, readr
 Collate:
@@ -41,6 +42,7 @@ Collate:
     Service.R Services.R Leonardo.R Terra.R Rawls.R Dockstore.R Gen3.R
     Response.R
     gcloud_sdk.R gcloud.R gsutil.R localize.R
+    azure.R
     av.R avworkspace.R avworkflow.R avnotebooks.R drs.R
     zzz.R
 VignetteBuilder: knitr
