@@ -1,0 +1,199 @@
+---
+title: "The AnVIL package for Azure users"
+author:
+- name: Martin Morgan
+  affiliation: Roswell Park Comprehensive Cancer Institute
+  email: Martin.Morgan@RoswellPark.org
+package: AnVIL
+output:
+  BiocStyle::html_document
+abstract: |
+  This vignette describes how users with Microsoft Azure credentials might use
+  the AnVIL package. The vignette describes account login and project (billing)
+  specifcation. The credentials derived from login and billing can be used to 
+  generate 'signed' URLs for listing (`azure_ls()`) and copying (`azure_cp()`)
+  cloud resources.
+vignette: |
+  %\VignetteIndexEntry{The AnVIL package for Azure users}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+# Installation
+
+Make sure to install the latest version of this package, using the
+[AnVIL Azure][] branch.
+
+```{r, eval = FALSE}
+BiocManager::install("Bioconductor/AnVIL", ref = "azure")
+```
+
+[AnVIL Azure]: https://github.com/Bioconductor/AnVIL/tree/azure
+
+# Authentication and billing
+
+Our goal is to mimic the existing Google cloud exprience. 
+
+## Authenticating an Azure account
+
+We represent the gcloud 'account' concept as an Azure 'tenant'
+(organization) and Azure 'account' (user name, e.g., email address).
+
+```{r, eval = FALSE}
+organization <- "44101ff9-53bc-4fa7-8481-f1daee320cf8" # 'tenant'
+user_name <- "mtmorgan.bioc@gmail.com"                 # 'account'
+```
+
+Log in, and register this account as the default for this _R_
+session. This will open a browser window (or provide a key to present
+in an indepenent browser session) asking for password or other
+authentication. Invoking `azure_account()` with no arguments is also
+possible; the response to the interative login determines the tenant
+and account in use.
+
+```{r, eval = FALSE}
+azure_account(tenant = organization, account = user_name)
+```
+
+## Billing to an Azure storage project
+
+In the Google cloud, a user account is associated with a billing
+'project'. Our focus is exclusively on storage (blob) access. Azure
+blob access is billed to a subscription, resource group, and storage
+account. We use this information to establish an `azure_project()`.
+
+```{r, eval = FALSE}
+subscription <- "Azure subscription 1"
+resource_group <- "test"
+storage_account <- "mtmorganbioc"
+```
+
+Register this information as the default with
+
+```{r, eval = FALSE}
+azure_project(subscription, resource_group, storage_account)
+```
+
+If the account has a single subscription, resource group, and storage
+account (this might be the usual scenario for an AnVIL-hosted
+account), it is sufficient to invoke
+
+```{r, eval = FALSE}
+azure_project()
+```
+
+# Working with Azure blobs
+
+Current understanding is that Azure does not provide a protocol
+prefix, e.g., `az://`, to identify cloud resources. We thus anticipate
+the users provide a standard URL with format
+`https://endpoint/container/path`. The default endpoint is
+`<storage_accout>.blob.core.windows.net`, but this is not reliable,
+e.g., because the endpoint is redefined by a CNAME domain name server
+entry. Nonetheless, an Azure URL might look like
+
+```{r, eval = FALSE}
+container <- "mixpanel"
+uri <- sprintf("https://%s.blob.core.windows.net/%s", storage_account, container)
+uri
+```
+
+This URI contains blobs representing an `R` package. The content is approximately
+
+```
+/mixpanel
+├── DESCRIPTION
+├── NAMESPACE
+├── NEWS.md
+├── R
+│   ├── hash.R
+│   └── mixpanel_io.R
+├── man
+│   ├── hash.Rd
+│   └── mixpanel_io.Rd
+├── src
+│   └── hash.c
+├── tests
+│   ├── testthat
+│   │   └── test_hash.R
+│   └── testthat.R
+└── vignettes
+    └── using_mixpanel.Rmd
+```
+
+## Listing accessible blobs ('files')
+
+Use `azure_ls()` to list the 'content' of `uri`. This function uses
+the credentials established with `azure_account()` and
+`azure_project()` to obtain a shared access signature (SAS) token and
+'sign' the URL. The `...` argument of `azure_ls()` can be used to
+override arguments to `azure_account()` and `azure_project()`.
+
+The container is actually a blob store, so consists only of objects
+whose name happens to contain `/`. Nonetheless, `azure_ls()` treats
+the `/` as if it were a 'directory' delimiter. Thus
+
+```{r, eval = FALSE}
+azure_ls(uri) # signed URL generated from account / subscription /
+```
+
+returns a vector of paths that look like the top-level directory
+structure of a file system. Non-blob paths contain `/` as a suffix,
+e.g., `NEWS.md` is a blob, but `vignettes/` is the start of a path to
+additional blobs.
+
+The following variations illustrate addition outcomes
+
+```{r, eval = FALSE}
+azure_ls(uri, recursive = TRUE) # all blobs in the container
+azure_ls(paste0(uri, "/tests")) # 'tests/'
+azure_ls(paste0(uri, "/tests/")) # tests/testthat.R' 'tests/testthat/'
+azure_ls(paste0(uri, "/tests"), recursive = TRUE) # all blobs with prefix '/tests'
+```
+
+Note that the path is a _prefix_, so does not have to fully identify a
+blob -- `azure_ls(paste0(uri, "/NEWS"))` matches the blob `NEWS.md`.
+
+## Downloading from Azure
+
+Download one or several blobs using an Azure blob store URI as the
+first (`source`) argument to `azure_cp()` and the path to a local file
+name as the second (`destination`) argument. Conceptually the `source`
+URI is used in `azure_ls()` and must identify a single blob. The
+destination cannot already exist.
+
+```{r, eval = FALSE}
+local_file <- tempfile()
+azure_cp(paste0(uri, "/NEWS.md"), local_file) # one file
+noquote(readLines(local_file))
+```
+
+Multiple blobs can be downloaded to the local file system by using a
+`source` uri that identifies more than one blob, and passing a
+directory as the `destination` argument to `azure_cp()`.
+
+```{r, eval = FALSE}
+destination_directory <- tempfile()
+dir.create(destination_directory)
+azure_cp(uri, destination_directory, recursive = TRUE) # all blobs in uri
+dir(destination_directory, recursive = TRUE)
+```
+
+When `recursive = TRUE`, all blobs prefixed by the path are
+downloaded. A `/` in the blob name is treated as a directory
+delimiter, so the blob `R/mixpanel_io.R` is represented as a directory
+`R` and a file `mixpanel_io.R` on the local file system.
+
+## Upload to Azure
+
+TODO
+
+## Cloud-cloud transfer
+
+TODO
+
+# Session info {.unnumbered}
+
+```{r sessionInfo, echo=FALSE}
+sessionInfo()
+```
