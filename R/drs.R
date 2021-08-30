@@ -162,6 +162,8 @@ drs_stat <-
     URL <- "https://storage.googleapis.com/%s/%s?userProject=%s"
 
     secrets <- gsa
+    if ("data" %in% names(secrets))
+        secrets <- secrets[["data"]]
     token <- oauth_service_token(oauth_endpoints("google"), secrets, SCOPE)
 
     object <- sub(paste0("gs://", bucket, "/"), "", uri)
