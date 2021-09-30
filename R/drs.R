@@ -136,39 +136,11 @@ drs_stat <-
     gsutil_cp(gsUri, destination, ...)
 }
 
-#' @importFrom httr GET PUT
-.drs_enable_requester_pays <-
-    function(namespace = avworkspace_namespace(), name = avworkspace_name())
-{
-    name <- URLencode(name)
-    url <- sprintf(.DRS_RAWLS, namespace, name)
-
-    access_token <- .gcloud_access_token("drs")
-    headers <- add_headers(
-        Authorization = paste("Bearer", access_token),
-        "content-type" = "application/json"
-    )
-    response <- PUT(url, headers)
-    .avstop_for_status(response, "DRS enable requester pays")
-
-    response
-}
-
-#' @importFrom httr oauth_service_token write_disk progress
 .drs_cp_full_1 <-
-    function(bucket, uri, gsa, destination)
+    function(bucket, uri, gsa, destination, ...)
 {
-    SCOPE <- "https://www.googleapis.com/auth/devstorage.read_only"
-    URL <- "https://storage.googleapis.com/%s/%s?userProject=%s"
-
-    secrets <- gsa
-    if ("data" %in% names(secrets))
-        secrets <- secrets[["data"]]
-    token <- oauth_service_token(oauth_endpoints("google"), secrets, SCOPE)
-
-    object <- sub(paste0("gs://", bucket, "/"), "", uri)
-    url <- sprintf(URL, bucket, object, "anvilprod")
-    GET(url, token, write_disk(destination, overwrite = TRUE), progress())
+    ## credentials <- gsa$data
+    gsutil_cp(uri, destination)
 }
 
 .drs_cp_full <-
