@@ -5,6 +5,9 @@ USER VISIBLE CHANGES
 - (v. 1.5.2) drs_stat() uses multiple cores (on non-Windows) to enhance
   performance
 
+- (v. 1.5.5) add repository() to return the binary repository
+  location, if available.
+
 # AnVIL 1.4.1
 
 BUG FIXES

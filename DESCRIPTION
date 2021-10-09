@@ -1,6 +1,6 @@
 Package: AnVIL
 Title: Bioconductor on the AnVIL compute environment
-Version: 1.5.4
+Version: 1.5.5
 Authors@R: 
     c(person(
         "Martin", "Morgan", role = c("aut", "cre"),
@@ -37,7 +37,7 @@ Imports:
     BiocManager
 Suggests: parallel, knitr, rmarkdown, testthat, withr, readr, BiocStyle
 Collate:
-    utilities.R authenticate.R api.R
+    utilities.R install.R authenticate.R api.R
     Service.R Services.R Leonardo.R Terra.R Rawls.R Dockstore.R Gen3.R
     Response.R
     gcloud_sdk.R gcloud.R gsutil.R localize.R
@@ -45,4 +45,4 @@ Collate:
     zzz.R
 VignetteBuilder: knitr
 biocViews: Infrastructure
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2
