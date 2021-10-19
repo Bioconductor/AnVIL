@@ -9,10 +9,7 @@ BINARY_BASE_URL <- "https://storage.googleapis.com/bioconductor_docker/packages"
 #'
 #' @param pkgs `character()` packages to install from binary repository.
 #'
-#' @param lib `character(1)` library path (directory) in which to
-#'     install `pkgs`; defaults to `.libPaths()[1]`.
-#'
-#' @param ... additional arguments, passed to `install.packages()`.
+#' @param ... additional arguments, passed to `BiocManager::install()`.
 #'
 #' @param version `character(1)` or `package_version` Bioconductor
 #'     version, e.g., "3.12".
@@ -21,33 +18,34 @@ BINARY_BASE_URL <- "https://storage.googleapis.com/bioconductor_docker/packages"
 #'     package 'CRAN-style' repository; not usually required by the
 #'     end-user.
 #'
-#' @param verbose `logical(1)` report on package installation
-#'     progress?
-#'
-#' @return `install()`: return value of `install.packages()`.
+#' @return `install()`: return value of `BiocManager::install()`.
 #'
 #' @examples
 #' \dontrun{install(c('BiocParallel', 'BiocGenerics'))}
 #'
-#' @importFrom utils contrib.url install.packages
-#'
 #' @export
 install <-
-    function(pkgs, lib = .libPaths()[1], ...,
-        version = BiocManager::version(),
-        binary_base_url = BINARY_BASE_URL,
-        verbose = getOption("verbose"))
+    function(
+        pkgs = character(), ...,
+        version = BiocManager::version(), binary_base_url = BINARY_BASE_URL
+    )
 {
     stopifnot(
         .is_character(pkgs),
-        .is_scalar_character(lib), dir.exists(lib),
         .is_scalar_character(version) || is.package_version(version),
-        .is_scalar_character(binary_base_url),
-        .is_scalar_logical(verbose)
+        .is_scalar_character(binary_base_url)
     )
+    if ("site_repository" %in% names(list(...))) {
+        stop("'site_repository=' cannot be used with AnVIL::install()")
+    }
 
-    repos <- repositories(version, binary_base_url)
-    install.packages(pkgs, repos = repos, lib = lib, ..., verbose = verbose)
+    site_repository <- repository(version, binary_base_url)
+    BiocManager::install(
+                     pkgs = pkgs,
+                     ...,
+                     site_repository = site_repository,
+                     version = version
+                 )
 }
 
 #' @rdname install
@@ -104,6 +102,8 @@ repositories <-
 #'
 #' @examples
 #' repository()
+#'
+#' @importFrom utils contrib.url
 #'
 #' @export
 repository <-

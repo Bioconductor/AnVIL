@@ -9,12 +9,10 @@
 \title{Discover and install binary packages for fast installation}
 \usage{
 install(
-  pkgs,
-  lib = .libPaths()[1],
+  pkgs = character(),
   ...,
   version = BiocManager::version(),
-  binary_base_url = BINARY_BASE_URL,
-  verbose = getOption("verbose")
+  binary_base_url = BINARY_BASE_URL
 )
 
 repositories(
@@ -29,10 +27,7 @@ add_libpaths(paths)
 \arguments{
 \item{pkgs}{`character()` packages to install from binary repository.}
 
-\item{lib}{`character(1)` library path (directory) in which to
-install `pkgs`; defaults to `.libPaths()[1]`.}
-
-\item{...}{additional arguments, passed to `install.packages()`.}
+\item{...}{additional arguments, passed to `BiocManager::install()`.}
 
 \item{version}{`character(1)` or `package_version` Bioconductor
 version, e.g., "3.12".}
@@ -41,14 +36,11 @@ version, e.g., "3.12".}
 package 'CRAN-style' repository; not usually required by the
 end-user.}
 
-\item{verbose}{`logical(1)` report on package installation
-progress?}
-
 \item{paths}{`character()`: vector of directories to add to
 `.libPaths()`. Paths that do not exist will be created.}
 }
 \value{
-`install()`: return value of `install.packages()`.
+`install()`: return value of `BiocManager::install()`.
 
 `repositories()`: character() of binary (if available),
     Bioconductor, and CRAN repositories.
