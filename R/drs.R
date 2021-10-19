@@ -5,6 +5,19 @@
     "%s/%s/enableRequesterPaysForLinkedServiceAccounts"
 )
 
+.DRS_STAT_TEMPLATE <- list(
+    drs = character(),
+    fileName = character(),
+    size = integer(),
+    url = character(),
+    timeCreated = character(),
+    timeUpdated = character(),
+    urlType = character(),
+    hashes = list()
+    ## bucket = character(),
+    ## name = character(),
+    ## googleServiceAccount = list()
+)
 
 .drs_is_uri <-
     function(source)
@@ -14,16 +27,31 @@
 
 #' @importFrom httr POST add_headers
 .martha_v3 <-
-    function(url, template, access_token)
+    function(drs, template, access_token)
 {
     headers <- add_headers(
         Authorization = paste("Bearer", access_token),
         "content-type" = "application/json"
     )
-    body <- paste0('{ "url": "', url, '"}')
-    response <- POST(.DRS_MARTHA, headers, body = body, encode="raw")
+
+    body <- list(
+        fields = c(
+            "fileName", "hashes", "size", "gsUri",
+            "timeUpdated", "accessUrl"),
+        url = jsonlite::unbox(drs)
+    )
+    body_json <- jsonlite::toJSON(body)
+    response <- POST(.DRS_MARTHA, headers, body = body_json, encode="raw")
     .avstop_for_status(response, "DRS resolution")
     lst <- as.list(response)
+    if (is.null(lst$accessUrl)) {
+        url <- lst$gsUri
+        urlType <- "gs"
+    } else {
+        url <- lst$accessUrl$url
+        urlType <- "signed"
+    }
+    lst[c("drs", "url", "urlType")] <- list(drs, url, urlType)
     is_list <- # nest list elements so length == 1L
         vapply(lst, is.list, logical(1))
     lst[is_list] <- lapply(lst[is_list], list)
@@ -96,19 +124,6 @@ drs_stat <-
             all(.drs_is_uri(source))
     )
 
-    template <- list(
-        fileName = character(),
-        size = integer(),
-        contentType = character(),
-        gsUri = character(),
-        timeCreated = character(),
-        timeUpdated = character(),
-        bucket = character(),
-        name = character(),
-        googleServiceAccount = list(),
-        hashes = list()
-    )
-
     access_token <- .gcloud_access_token("drs")
 
     if (identical(.Platform$OS.type, "windows")) {
@@ -117,46 +132,81 @@ drs_stat <-
         mc.cores <- getOption("mc.cores", min(length(source), 8L))
     }
     response <- mclapply(
-        source, .martha_v3, template, access_token, mc.cores = mc.cores
+        source, .martha_v3, .DRS_STAT_TEMPLATE, access_token,
+        mc.cores = mc.cores
     )
     tbl <- bind_rows(response)
-    .tbl_with_template(tbl, template)
+    tbl <- .tbl_with_template(tbl, .DRS_STAT_TEMPLATE)
+    order_idx <- match(source, tbl$drs)
+    tbl <- tbl[order_idx, ]
+    class(tbl) <- c("drs_stat_tbl", class(tbl))
+    tbl
 }
 
-.drs_cp_simple <-
-    function(tbl, destination, ...)
+.drs_check_local_path_exists <-
+    function(path)
 {
-    if (!any(tbl$simple))
-        return(NULL)
-
-    gsUri <-
-        tbl %>%
-        filter(.data$simple) %>%
-        pull(gsUri)
-    gsutil_cp(gsUri, destination, ...)
+    file_exists <- file.exists(path)
+    if (any(file_exists)) {
+        stop(
+            "'destination' file paths already exist:",
+            "\n  ", paste0(path[file_exists], collapse = "\n  ")
+        )
+    }
 }
 
-.drs_cp_full_1 <-
-    function(bucket, uri, gsa, destination, ...)
+.drs_cp <-
+    function(source, destination, ..., FUN)
 {
-    ## credentials <- gsa$data
-    gsutil_cp(uri, destination)
+    Map(function(source, destination, ...) {
+        status <- "OK"
+        tryCatch({
+            message(basename(destination), " ", appendLF = FALSE)
+            if (.is_local_directory(dirname(destination)))
+                .drs_check_local_path_exists(destination)
+            FUN(source, destination, ...)
+        }, error = function(err) {
+            msg <- paste0(
+                "failed to download drs resource:",
+                "\n  source: ", source,
+                "\n  reason: ", conditionMessage(err)
+            )
+            warning(msg, call. = FALSE)
+            status <<- "FAIL"
+            NULL
+        })
+        message("[", status, "]")
+    }, source, destination, ...)
 }
 
-.drs_cp_full <-
-    function(tbl, destination, ...)
+.drs_download <-
+    function(tbl, destination)
 {
     tbl <-
-        tbl %>%
-        filter(!.data$simple)
-    Map(
-        .drs_cp_full_1,
-        bucket = tbl$bucket,
-        uri = tbl$gsUri,
-        gsa = tbl$googleServiceAccount,
-        destination = file.path(destination, tbl$fileName),
-        ...
-    )
+        tbl |>
+        filter( .is_https(tbl$url) & .is_local_directory(destination) )
+    if (!nrow(tbl))
+        return(tbl)
+
+    path <- file.path(destination, tbl$fileName)
+    .drs_cp(tbl$url, path, MoreArgs = list(quiet = TRUE), FUN = download.file)
+
+    mutate(tbl, destination = path)
+}
+
+.drs_gsutil_cp <-
+    function(tbl, destination)
+{
+    tbl <-
+        tbl |>
+        filter( !(.is_https(tbl$url) & .is_local_directory(destination)) )
+
+    if (!nrow(tbl))
+        return(tbl)
+
+    path <- paste(destination, tbl$fileName, sep = "/")
+    .drs_cp(tbl$url, path, FUN = gsutil_cp)
+    mutate(tbl, destination = path)
 }
 
 #' @rdname drs
@@ -181,7 +231,33 @@ drs_stat <-
 #' @examples
 #'
 #' @export
-drs_cp <-
+drs_cp <- function(source, destination, ...)
+    UseMethod("drs_cp")
+
+#' @export
+drs_cp.drs_stat_tbl <-
+    function(source, destination, ...)
+{
+    stopifnot(
+        `'destination' must be a google bucket or existing local directory` =
+            .gsutil_is_uri(destination) || .is_local_directory(destination)
+    )
+    destination <- sub("/$", "", destination)
+    tbl <- source
+
+    ## download (https to local file system) or gsutil_cp each resource
+    tbl <- bind_rows(
+        .drs_download(tbl, destination),
+        .drs_gsutil_cp(tbl, destination)
+    )
+    template <- c(.DRS_STAT_TEMPLATE, list(destination = character()))
+    tbl <- .tbl_with_template(tbl, template)
+    order_idx <- match(source$drs, tbl$drs)
+    tbl[order_idx, ]
+}
+
+#' @export
+drs_cp.character <-
     function(source, destination, ...)
 {
     stopifnot(
@@ -191,24 +267,6 @@ drs_cp <-
             .gsutil_is_uri(destination) || .is_local_directory(destination)
     )
 
-    ## discover DRS information, including signed URL
     tbl <- drs_stat(source)
-    tbl <-
-        tbl %>%
-        mutate(
-            simple = lengths(.data$googleServiceAccount) == 0L,
-            destination = file.path(destination, .data$fileName)
-        )
-
-    ## copy files to local directory
-    .drs_cp_simple(tbl, destination, ...)
-    .drs_cp_full(tbl, destination, ...)
-
-    ## rename to file name in drs response
-    file.rename(
-        file.path(destination, basename(tbl$gsUri)),
-        tbl$destination
-    )
-
-    tbl
+    drs_cp(tbl, destination, ...)
 }

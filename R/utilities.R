@@ -30,6 +30,9 @@
 .is_local_directory <- function(x)
     .is_scalar_character(x) && dir.exists(x)
 
+.is_https <- function(x)
+    .is_character(x) & startsWith(x, "https://")
+
 #' @importFrom dplyr full_join
 .tbl_with_template <-
     function(tbl, tmpl)

@@ -69,7 +69,14 @@ gsutil_requesterpays <-
         if (any(gsutil_requesterpays(source))) {
             c("-u", gcloud_project())
         } else NULL
-    }, error = function(...) {
+    }, error = function(e) {
+        ## this was originally written to return NULL without a
+        ## warning, but I'm not sure whether we cannot just stop()?
+        warning(
+            "'gsutil_requesterpays()' returned an error:",
+            "\n  ", conditionMessage(e),
+            call. = FALSE
+        )
         NULL
     })
 }
