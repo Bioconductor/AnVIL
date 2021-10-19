@@ -1,12 +1,22 @@
 # AnVIL 1.6.0
 
+NEW FEATURES
+
+- (v. 1.5.5) add `repository()` to return the binary repository
+  location, if available.
+  
+- (v. 1.5.7) `drs_stat()` and `drs_cp()` support signed URLs
+
 USER VISIBLE CHANGES
 
-- (v. 1.5.2) drs_stat() uses multiple cores (on non-Windows) to enhance
+- (v. 1.5.2) `drs_stat()` uses multiple cores (on non-Windows) to enhance
   performance
 
-- (v. 1.5.5) add repository() to return the binary repository
-  location, if available.
+- (v. 1.5.6) `install()` delegates to `BiocManager::install()`,
+  providing more flexibility (e.g., installing from GitHub) and
+  robustness.
+
+- (v. 1.5.7) `drs_stat()` returns fields more selectively.
 
 # AnVIL 1.4.1
 
