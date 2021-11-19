@@ -415,6 +415,84 @@ avworkflow_configuration_template <-
     )
 }
 
+.CONFIG <- list(
+    namespace = character(1),
+    name = character(1),
+    rootEntityType = character(0),
+    prerequisites = list(),
+    prerequisites_names = character(),
+    inputs = list(),
+    inputs_names = character(),
+    outputs = list(),
+    outputs_names = character(),
+    methodConfigVersion = integer(1),
+    methodUri = character(1),
+    sourceRepo = character(1),
+    methodPath = character(1),
+    methodVersion = character(1),
+    deleted = logical(1)
+)
+
+.config_validate <-
+    function(value)
+{
+    stopifnot(
+        setequal(names(value), names(.CONFIG))
+    )
+
+    value <- value[names(.CONFIG)]
+
+    ok <- mapply(function(v, t) inherits(v, class(t)), value, .CONFIG)
+    if (!all(ok))
+        stop(
+            "'class(value)' differs from class of template for fields:\n    ",
+            paste(names(.CONFIG)[!ok], collapse = "\n    ")
+        )
+
+    TRUE
+}
+
+avworkflow_config() 
+    function(
+        namespace = character(1),
+        name = character(1),
+        rootEntityType = character(0),
+        prerequisites = list(),
+        prerequisites_names = character(),
+        inputs = list(),
+        inputs_names = character(),
+        outputs = list(),
+        outputs_names = character(),
+        methodConfigVersion = integer(1),
+        methodUri = character(1),
+        sourceRepo = character(1),
+        methodPath = character(1),
+        methodVersion = character(1),
+        deleted = logical(1)
+    )
+{
+    config <- list(
+        namespace = namespace,
+        name = name,
+        rootEntityType = rootEntityType,
+        prerequisites = prerequisites,
+        prerequisites_names = prerequisites_names,
+        inputs = inputs,
+        inputs_names = inputs_names, 
+        outputs = outputs,
+        outputs_names = outputs_names,
+        methodConfigVersion = methodConfigVersion,
+        methodUri = methodUri,
+        sourceRepo = sourceRepo,
+        methodPath = methodPath,
+        methodVersion = methodVersion,
+        deleted = deleted
+    )
+
+    .config_validate(config)
+    config
+}
+
 #' @rdname avworkflow
 #' @md
 #'
