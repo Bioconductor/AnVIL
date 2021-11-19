@@ -13,7 +13,8 @@ Service(
   package = "AnVIL",
   schemes = "https",
   api_reference_url = api_url,
-  api_reference_md5sum = character()
+  api_reference_md5sum = character(),
+  api_reference_headers = NULL
 )
 }
 \arguments{
@@ -41,6 +42,10 @@ Details.}
 
 \item{api_reference_md5sum}{character(1) the result of
 `tools::md5sum()` applied to the reference API.}
+
+\item{api_reference_headers}{character() header(s) to be used
+(e.g., `c(Authorization = paste("Bearer", token))`) when
+retrieving the API reference for validation.}
 }
 \value{
 An object of class \code{Service}.

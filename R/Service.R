@@ -24,8 +24,9 @@ setOldClass("request")
 
 #' @importFrom tools md5sum
 #' @importFrom utils download.file
+#' @importFrom httr write_disk
 .service_validate_md5sum <-
-    function(reference_url, reference_md5sum)
+    function(reference_url, reference_md5sum, reference_headers)
 {
     flog.debug("Service reference url: %s", reference_url)
     flog.debug("Service reference md5sum: %s", reference_md5sum)
@@ -34,7 +35,12 @@ setOldClass("request")
         return()
 
     fl <- tempfile()
-    download.file(reference_url, fl, quiet = TRUE)
+    response <- GET(
+        reference_url,
+        add_headers(.headers = reference_headers),
+        write_disk(fl)
+    )
+    .avstop_for_status(response)
     md5sum <- md5sum(fl)
     test <-
         identical(unname(md5sum), reference_md5sum) ||
@@ -80,6 +86,10 @@ setOldClass("request")
 #' @param api_reference_md5sum character(1) the result of
 #'     `tools::md5sum()` applied to the reference API.
 #'
+#' @param api_reference_headers character() header(s) to be used
+#'     (e.g., `c(Authorization = paste("Bearer", token))`) when
+#'     retrieving the API reference for validation.
+#'
 #' @details This function creates a RESTful interface to a service
 #'     provided by a host, e.g., "api.firecloud.org". The function
 #'     requires an OpenAPI `.json` or `.yaml` specifcation as well as
@@ -110,7 +120,8 @@ Service <-
         service, host, config = httr::config(), authenticate = TRUE,
         api_url = character(), package = "AnVIL", schemes = "https",
         api_reference_url = api_url,
-        api_reference_md5sum = character())
+        api_reference_md5sum = character(),
+        api_reference_headers = NULL)
 {
     stopifnot(
         .is_scalar_character(service),
@@ -120,11 +131,14 @@ Service <-
         length(api_reference_url) == 0L ||
             .is_scalar_character(api_reference_url),
         length(api_reference_md5sum) == 0L ||
-            .is_scalar_character(api_reference_md5sum)
+            .is_scalar_character(api_reference_md5sum),
+        is.null(api_reference_headers) || .is_character(api_reference_headers)
     )
     flog.debug("Service(): %s", service)
 
-    .service_validate_md5sum(api_reference_url, api_reference_md5sum)
+    .service_validate_md5sum(
+        api_reference_url, api_reference_md5sum, api_reference_headers
+    )
 
     if (authenticate)
         config <- c(authenticate_config(service), config)
