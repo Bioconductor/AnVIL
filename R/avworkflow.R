@@ -415,83 +415,77 @@ avworkflow_configuration_template <-
     )
 }
 
-.CONFIG <- list(
-    namespace = character(1),
-    name = character(1),
-    rootEntityType = character(0),
-    prerequisites = list(),
-    prerequisites_names = character(),
-    inputs = list(),
-    inputs_names = character(),
-    outputs = list(),
-    outputs_names = character(),
-    methodConfigVersion = integer(1),
-    methodUri = character(1),
-    sourceRepo = character(1),
-    methodPath = character(1),
-    methodVersion = character(1),
-    deleted = logical(1)
-)
-
-.config_validate <-
-    function(value)
+.response <-
+    function(config)
 {
-    stopifnot(
-        setequal(names(value), names(.CONFIG))
+    response <- Rawls()$method_inputs_outputs(
+        config$name,
+        config$namespace,
+        config$methodRepoMethod$methodPath,
+        config$methodRepoMethod$methodUri,
+        config$methodRepoMethod$methodVersion,
+        config$methodRepoMethod$sourceRepo
     )
+    .avstop_for_status(response)
+}
 
-    value <- value[names(.CONFIG)]
-
-    ok <- mapply(function(v, t) inherits(v, class(t)), value, .CONFIG)
-    if (!all(ok))
-        stop(
-            "'class(value)' differs from class of template for fields:\n    ",
-            paste(names(.CONFIG)[!ok], collapse = "\n    ")
+avworkflow_configuration_inputs_template <-
+    function(config)
+{
+    response <- .response(config)
+    inputs_tmpl <- as.list(response)$inputs
+    if (length(config$inputs)) {
+        inputs_config <-
+            tibble::enframe(config$inputs, value = "attribute") |>
+            tidyr::unnest(attribute)
+        inputs_tmpl <- left_join(
+            inputs_tmpl,
+            inputs_config,
+            by = "name"
         )
-
-    TRUE
+    } else {
+        inputs_tmpl <- cbind(inputs_tmpl, attribute = character(nrow(inputs_tmpl)))
+    }
+    inputs_tmpl
 }
 
-avworkflow_config() 
-    function(
-        namespace = character(1),
-        name = character(1),
-        rootEntityType = character(0),
-        prerequisites = list(),
-        prerequisites_names = character(),
-        inputs = list(),
-        inputs_names = character(),
-        outputs = list(),
-        outputs_names = character(),
-        methodConfigVersion = integer(1),
-        methodUri = character(1),
-        sourceRepo = character(1),
-        methodPath = character(1),
-        methodVersion = character(1),
-        deleted = logical(1)
-    )
+avworkflow_configuration_outputs_template <-
+    function(config)
 {
-    config <- list(
-        namespace = namespace,
-        name = name,
-        rootEntityType = rootEntityType,
-        prerequisites = prerequisites,
-        prerequisites_names = prerequisites_names,
-        inputs = inputs,
-        inputs_names = inputs_names, 
-        outputs = outputs,
-        outputs_names = outputs_names,
-        methodConfigVersion = methodConfigVersion,
-        methodUri = methodUri,
-        sourceRepo = sourceRepo,
-        methodPath = methodPath,
-        methodVersion = methodVersion,
-        deleted = deleted
-    )
-
-    .config_validate(config)
-    config
+    response <- .response(config)
+    outputs_tmpl <- as.list(response)$outputs
+    if (length(config$outputs)) {
+        outputs_config <-
+            tibble::enframe(config$outputs, value = "attribute") |>
+            tidyr::unnest(attribute)
+        outputs_tmpl <- left_join(
+            outputs_tmpl,
+            outputs_config,
+            by = "name"
+        )
+    } else {
+        outputs_tmpl <- cbind(outputs_tmpl, attribute = character(nrow(outputs_tmpl)))
+    }
+    outputs_tmpl
 }
+
+#' @rdname avworkflow
+#' @md
+#'
+#' @description Produce print method for class `avworkflow_configuration`.
+#'
+#' @param x Object of class `avworkflow_configuration`.
+#'
+#' @return none
+#'
+#' @examples
+#' \dontrun{
+#' config <-
+#'     avworkflow_configuration("bioconductor-anvil-rpci", "AnVILBulkRNASeq")
+#' }
+#'
+#' @export
+print.avworkflow_configuration <- function(x, ...) str(x)
 
 #' @rdname avworkflow
 #' @md
@@ -516,7 +510,6 @@ avworkflow_config()
 #' \dontrun{
 #' config <-
 #'     avworkflow_configuration("bioconductor-anvil-rpci", "AnVILBulkRNASeq")
-#' str(config)
 #' }
 #'
 #' @export
@@ -530,7 +523,9 @@ avworkflow_configuration <-
         configuration_namespace, configuration_name
     )
     .avstop_for_status(config, "avworkflow_methods")
-    config %>% as.list()
+    config_list <- config %>% as.list()
+    class(config_list) <- c("avworkflow_configuration", class(config_list))
+    config_list
 }
 
 .avworkflow_MethodRepoMethod_validate <-
@@ -578,6 +573,20 @@ avworkflow_configuration <-
     }
 
     invisible(response)
+}
+
+avworkflow_update_configuration_inputs <-
+    function(config, inputs_template)
+{
+    config$inputs <-
+        setNames(as.list(inputs_template$attribute), inputs_template$name)
+}
+
+avworkflow_update_configuration_outputs <-
+    function(config, outputs_template)
+{
+    config$outputs <-
+        setNames(as.list(outputs_template$attribute), outputs_template$name)
 }
 
 #' @rdname avworkflow

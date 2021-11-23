@@ -6,6 +6,7 @@
 \alias{avworkflow_files}
 \alias{avworkflow_localize}
 \alias{avworkflow_configuration_template}
+\alias{print.avworkflow_configuration}
 \alias{avworkflow_configuration}
 \alias{avworkflow_import_configuration}
 \title{Workflow submissions and file outputs}
@@ -25,6 +26,8 @@ avworkflow_localize(
 )
 
 avworkflow_configuration_template()
+
+\method{print}{avworkflow_configuration}(x, ...)
 
 avworkflow_configuration(
   configuration_namespace,
@@ -67,6 +70,8 @@ are synchronized from the workspace to a second bucket.}
 \item{dry}{logical(1) when \code{TRUE} (default), report the
 consequences but do not perform the action requested. When
 \code{FALSE}, perform the action.}
+
+\item{x}{Object of class \code{avworkflow_configuration}.}
 
 \item{configuration_namespace}{character(1) namespace of the
 workflow. Often the same as the namespace of the
@@ -169,6 +174,8 @@ reported as a warning() about invalid inputs or outputs, and
 the solution is to provide a quoted string `unbox('"foo"')`.
 }
 
+none
+
 \code{avworkflow_configuration()} returns a list structure
 describing the configuration. See
 \code{avworkflow_configuration_template()} for the structure of a
@@ -197,6 +204,8 @@ and produced by the workflow.
 template for defining workflow configurations. This template
 can be used as a starting point for providing a custom
 configuration.
+
+Produce print method for class \code{avworkflow_configuration}.
 
 \code{avworkflow_configuration()} returns a list structure
 describing an existing workflow configuration.
@@ -252,7 +261,11 @@ avworkflow_configuration_template()
 \dontrun{
 config <-
     avworkflow_configuration("bioconductor-anvil-rpci", "AnVILBulkRNASeq")
-str(config)
+}
+
+\dontrun{
+config <-
+    avworkflow_configuration("bioconductor-anvil-rpci", "AnVILBulkRNASeq")
 }
 
 \dontrun{
