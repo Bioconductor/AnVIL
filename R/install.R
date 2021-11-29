@@ -142,6 +142,34 @@ repository <-
     binary_repository
 }
 
+repository_stats <-
+    function(
+        version = BiocManager::version(),
+        binary_base_url = BINARY_BASE_URL)
+{
+    bioc_repository <- suppressMessages({
+        BiocManager::repositories()[["BioCsoft"]]
+    })
+    binary_repository <- repository(version, binary_base_url)
+    db_bioc <- available.packages(repos = bioc_repository)
+    db_binary <- available.packages(repos = binary_repository)
+
+    found_binaries <- intersect(rownames(db_bioc), rownames(db_binary))
+    n_binaries <- length(found_binaries)
+
+    bioc_versions <- package_version(db_bioc[found_binaries, "Version"])
+    binary_versions <- package_version(db_binary[found_binaries, "Version"])
+    n_out_of_date_binaries <- sum(bioc_versions > binary_versions)
+
+    cat(
+        "Bioconductor software packages: ", nrow(db_bioc), "\n",
+        "Binary packages: ", nrow(db_binary), "\n",
+        "Binary software packages: ", n_binaries, "\n",
+        "Out-of-date binary software packages: ", n_out_of_date_binaries, "\n",
+        sep = ""
+    )
+}
+
 #' @rdname install
 #'
 #' @description `add_libpaths()`: Add local library paths to
