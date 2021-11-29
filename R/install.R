@@ -142,6 +142,7 @@ repository <-
     binary_repository
 }
 
+#' @importFrom utils available.packages
 repository_stats <-
     function(
         version = BiocManager::version(),
