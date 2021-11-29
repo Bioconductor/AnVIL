@@ -1,4 +1,4 @@
-BINARY_BASE_URL <- "https://storage.googleapis.com/bioconductor_docker/packages"
+BINARY_BASE_URL <- "https://bioconductor.org/packages/%s/container-binaries"
 
 #' @rdname install
 #'
@@ -127,7 +127,7 @@ repository <-
     }
 
     ## does the binary repository exist?
-    binary_repos0 <- paste0(binary_base_url, "/", bioconductor_version, "/bioc")
+    binary_repos0 <- sprintf(binary_base_url, bioconductor_version)
     packages <- paste0(contrib.url(binary_repos0), "/PACKAGES.gz")
     url <- url(packages)
     binary_repository <- tryCatch({
