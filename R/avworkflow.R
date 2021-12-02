@@ -575,18 +575,27 @@ avworkflow_configuration <-
     invisible(response)
 }
 
-avworkflow_update_configuration_inputs <-
-    function(config, inputs_template)
-{
-    config$inputs <-
-        setNames(as.list(inputs_template$attribute), inputs_template$name)
-}
+#avworkflow_update_configuration_inputs <-
+#    function(config, inputs_template)
+#{
+#    config$inputs <-
+#        setNames(as.list(inputs_template$attribute), inputs_template$name)
+#}
 
-avworkflow_update_configuration_outputs <-
-    function(config, outputs_template)
+#avworkflow_update_configuration_outputs <-
+#    function(config, outputs_template)
+#{
+#    config$outputs <-
+#        setNames(as.list(outputs_template$attribute), outputs_template$name)
+#}
+
+avworkflow_configuration_update <- 
+    function(config, inputs = setNames(list(), character()), outputs = setNames(list(), character()))
 {
-    config$outputs <-
-        setNames(as.list(outputs_template$attribute), outputs_template$name)
+    ## TODO: validation step
+    config$inputs <- inputs
+    config$outputs <- outputs
+    config
 }
 
 #' @rdname avworkflow
