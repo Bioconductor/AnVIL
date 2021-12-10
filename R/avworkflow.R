@@ -415,7 +415,7 @@ avworkflow_configuration_template <-
     )
 }
 
-.response <-
+.avworkflow_response <-
     function(config)
 {
     response <- Rawls()$method_inputs_outputs(
@@ -432,7 +432,8 @@ avworkflow_configuration_template <-
 avworkflow_configuration_inputs_template <-
     function(config)
 {
-    response <- .response(config)
+    stopifnot(inherits(config, "avworkflow_configuration"))
+    response <- .avworkflow_response(config)
     inputs_tmpl <- as.list(response)$inputs
     if (length(config$inputs)) {
         inputs_config <-
@@ -452,7 +453,8 @@ avworkflow_configuration_inputs_template <-
 avworkflow_configuration_outputs_template <-
     function(config)
 {
-    response <- .response(config)
+    stopifnot(inherits(config, "avworkflow_configuration"))
+    response <- .avworkflow_response(config)
     outputs_tmpl <- as.list(response)$outputs
     if (length(config$outputs)) {
         outputs_config <-
@@ -575,24 +577,10 @@ avworkflow_configuration <-
     invisible(response)
 }
 
-#avworkflow_update_configuration_inputs <-
-#    function(config, inputs_template)
-#{
-#    config$inputs <-
-#        setNames(as.list(inputs_template$attribute), inputs_template$name)
-#}
-
-#avworkflow_update_configuration_outputs <-
-#    function(config, outputs_template)
-#{
-#    config$outputs <-
-#        setNames(as.list(outputs_template$attribute), outputs_template$name)
-#}
-
 avworkflow_configuration_update <- 
     function(config, inputs = setNames(list(), character()), outputs = setNames(list(), character()))
 {
-    ## TODO: validation step
+    stopifnot(inherits(config, "avworkflow_configuration"))
     config$inputs <- inputs
     config$outputs <- outputs
     config
