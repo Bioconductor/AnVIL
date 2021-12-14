@@ -577,12 +577,17 @@ avworkflow_configuration <-
     invisible(response)
 }
 
+## expecting inputs and outputs in the same format of 
+## avworkflow_configuration_*_template
 avworkflow_configuration_update <- 
-    function(config, inputs = setNames(list(), character()), outputs = setNames(list(), character()))
+    function(config, inputs = avworkflow_configuration_inputs_template(config), outputs = avworkflow_configuration_outputs_template(config))
 {
-    stopifnot(inherits(config, "avworkflow_configuration"))
-    config$inputs <- inputs
-    config$outputs <- outputs
+    stopifnot(inherits(config, "avworkflow_configuration"),
+        all(c("name", "attribute") %in% names(inputs)),
+        all(c("name", "attribute") %in% names(outputs)),
+        is(inputs, "data.frame"), is(outputs, "data.frame"))
+    config$inputs <- lapply(setNames(as.list(inputs$attribute), inputs$name), unbox)
+    config$outputs <- lapply(setNames(as.list(outputs$attribute), outputs$name), unbox)
     config
 }
 
