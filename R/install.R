@@ -142,6 +142,13 @@ repository <-
     binary_repository
 }
 
+.repository_stats_package_format <-
+    function(x)
+{
+    msg <- paste(sort(x), collapse = " ")
+    paste(strwrap(msg, indent = 2L, exdent = 2L), collaspe = "\n")
+}
+
 #' @importFrom utils available.packages
 repository_stats <-
     function(
@@ -155,18 +162,23 @@ repository_stats <-
     db_bioc <- available.packages(repos = bioc_repository)
     db_binary <- available.packages(repos = binary_repository)
 
+    missing_binaries <- setdiff(rownames(db_bioc), rownames(db_binary))
     found_binaries <- intersect(rownames(db_bioc), rownames(db_binary))
-    n_binaries <- length(found_binaries)
 
     bioc_versions <- package_version(db_bioc[found_binaries, "Version"])
     binary_versions <- package_version(db_binary[found_binaries, "Version"])
-    n_out_of_date_binaries <- sum(bioc_versions > binary_versions)
+    binary_out_of_date <- bioc_versions > binary_versions
+    n_out_of_date_binaries <- sum(binary_out_of_date)
+    out_of_date_binaries <- found_binaries[binary_out_of_date]
 
     cat(
         "Bioconductor software packages: ", nrow(db_bioc), "\n",
         "Binary packages: ", nrow(db_binary), "\n",
-        "Binary software packages: ", n_binaries, "\n",
+        "Binary software packages: ", length(found_binaries), "\n",
+        "Missing binary software packages: ", length(missing_binaries), "\n",
+        .repository_stats_package_format(missing_binaries),
         "Out-of-date binary software packages: ", n_out_of_date_binaries, "\n",
+        .repository_stats_package_format(out_of_date_binaries),
         sep = ""
     )
 }
