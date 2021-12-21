@@ -7,8 +7,8 @@
 \alias{avworkflow_localize}
 \alias{avworkflow_configuration_template}
 \alias{print.avworkflow_configuration}
-\alias{avworkflow_configuration}
-\alias{avworkflow_import_configuration}
+\alias{avworkflow_configuration_get}
+\alias{avworkflow_configuration_set}
 \title{Workflow submissions and file outputs}
 \usage{
 avworkflows(namespace = avworkspace_namespace(), name = avworkspace_name())
@@ -29,14 +29,14 @@ avworkflow_configuration_template()
 
 \method{print}{avworkflow_configuration}(x, ...)
 
-avworkflow_configuration(
+avworkflow_configuration_get(
   configuration_namespace,
   configuration_name,
   namespace = avworkspace_namespace(),
   name = avworkspace_name()
 )
 
-avworkflow_import_configuration(
+avworkflow_configuration_set(
   config,
   namespace = avworkspace_namespace(),
   name = avworkspace_name()
@@ -78,12 +78,12 @@ workflow. Often the same as the namespace of the
 workspace. Discover configuration namespace and name
 information from \code{avworkflows()}.}
 
-\item{configuration_name}{character(1) name of the workflow, from
-\code{avworkflows()}}
+\item{configuration_name}{character(1) name of the workflow, form
+\code{avworkflows()}.}
 
 \item{config}{a named list describing the full configuration, e.g.,
 created from editing the return value of
-\code{avworkflow_configuration()} or
+\code{avworkflow_configuration_set()} or
 \code{avworkflow_configuration_template()}.}
 }
 \value{
@@ -176,12 +176,12 @@ the solution is to provide a quoted string `unbox('"foo"')`.
 
 none
 
-\code{avworkflow_configuration()} returns a list structure
+\code{avworkflow_configuration_get()} returns a list structure
 describing the configuration. See
 \code{avworkflow_configuration_template()} for the structure of a
 typical workflow.
 
-\code{avworkflow_import_configuration()} returns an object
+\code{avworkflow_configuration_set()} returns an object
 describing the updated configuration. The return value includes
 invalid or unused elements of the \code{config} input. Invalid or
 unused elements of \code{config} are also reported as a warning.
@@ -207,10 +207,10 @@ configuration.
 
 Produce print method for class \code{avworkflow_configuration}.
 
-\code{avworkflow_configuration()} returns a list structure
+\code{avworkflow_configuration_get()} returns a list structure
 describing an existing workflow configuration.
 
-\code{avworkflow_import_configuration()} updates an
+\code{avworkflow_configuration_set()} updates an
 existing configuration, e.g., changing inputs to the workflow.
 }
 \details{
@@ -260,16 +260,16 @@ avworkflow_configuration_template()
 
 \dontrun{
 config <-
-    avworkflow_configuration("bioconductor-anvil-rpci", "AnVILBulkRNASeq")
+    avworkflow_configuration_get("bioconductor-anvil-rpci", "AnVILBulkRNASeq")
 }
 
 \dontrun{
 config <-
-    avworkflow_configuration("bioconductor-anvil-rpci", "AnVILBulkRNASeq")
+    avworkflow_configuration_get("bioconductor-rpci-anvil", "AnVILBulkRNASeq")
 }
 
 \dontrun{
-avworkflow_import_configuration(config)
+avworkflow_configuration_set(config)
 }
 
 }

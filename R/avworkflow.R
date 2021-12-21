@@ -429,7 +429,8 @@ avworkflow_configuration_template <-
     .avstop_for_status(response)
 }
 
-avworkflow_configuration_inputs_template <-
+## TODO: Document this function
+avworkflow_configuration_template_inputs <-
     function(config)
 {
     stopifnot(inherits(config, "avworkflow_configuration"))
@@ -450,7 +451,8 @@ avworkflow_configuration_inputs_template <-
     inputs_tmpl
 }
 
-avworkflow_configuration_outputs_template <-
+## TODO: Document this function
+avworkflow_configuration_template_outputs <-
     function(config)
 {
     stopifnot(inherits(config, "avworkflow_configuration"))
@@ -483,27 +485,52 @@ avworkflow_configuration_outputs_template <-
 #' @examples
 #' \dontrun{
 #' config <-
-#'     avworkflow_configuration("bioconductor-anvil-rpci", "AnVILBulkRNASeq")
+#'     avworkflow_configuration_get("bioconductor-anvil-rpci", "AnVILBulkRNASeq")
 #' }
 #'
 #' @export
 print.avworkflow_configuration <- function(x, ...) str(x)
 
+#' @rdname AnVIL-deprecated
+#' @md
+#'
+#' @title Deprecated functions in package \sQuote{AnVIL}
+#'
+#' @description These functions are provided for compatibility with older 
+#'     versions ofi \sQuote{AnVIL} only, and will be defunct at the next release.
+#'
+#' @details The following functions are deprecated and will be made defunct; use
+#'     the replacement indicated below:
+#'     \itemize{
+#'         \item{avworkflow_configuration: \code{\link{avworkflow_configuration_get}}}
+#'         \item{avworkflow_import_configuration: \code{\link{avworkflow_configuration_set}}}
+#'     }
+avworkflow_configuration <-
+    function(configuration_namespace, configuration_name,
+             namespace = avworkspace_namespace(),
+             name = avworkspace_name())
+{
+    .Deprecated("avworkflow_configuration_get")
+    avworkflow_configuration_get(configuration_namespace, configuration_name, 
+        namespace = avworkspace_namespace(),
+        name = avworkspace_name())
+}
+
 #' @rdname avworkflow
 #' @md
 #'
-#' @description `avworkflow_configuration()` returns a list structure
+#' @description `avworkflow_configuration_get()` returns a list structure
 #'     describing an existing workflow configuration.
 #'
-#' @param configuration_namespace character(1) namespace of the
-#'     workflow. Often the same as the namespace of the
+#' @param configuration_namespace character(1) namespace of the 
+#'     workflow. Often the same as the namespace of the 
 #'     workspace. Discover configuration namespace and name
 #'     information from `avworkflows()`.
 #'
-#' @param configuration_name character(1) name of the workflow, from
-#'     `avworkflows()`
+#' @param configuration_name character(1) name of the workflow, form
+#'     `avworkflows()`.
 #'
-#' @return `avworkflow_configuration()` returns a list structure
+#' @return `avworkflow_configuration_get()` returns a list structure
 #'     describing the configuration. See
 #'     `avworkflow_configuration_template()` for the structure of a
 #'     typical workflow.
@@ -511,11 +538,11 @@ print.avworkflow_configuration <- function(x, ...) str(x)
 #' @examples
 #' \dontrun{
 #' config <-
-#'     avworkflow_configuration("bioconductor-anvil-rpci", "AnVILBulkRNASeq")
+#'     avworkflow_configuration_get("bioconductor-rpci-anvil", "AnVILBulkRNASeq")
 #' }
 #'
 #' @export
-avworkflow_configuration <-
+avworkflow_configuration_get <- 
     function(configuration_namespace, configuration_name,
              namespace = avworkspace_namespace(),
              name = avworkspace_name())
@@ -560,14 +587,14 @@ avworkflow_configuration <-
     lapply(methodRepoMethod, jsonlite::unbox)
 }
 
-.avworkflow_import_configuration_validate_response <-
+.avworkflow_configuration_set_validate_response <-
     function(response, op)
 {
     lens <- lengths(response)
     bad <- grepl("^(extra|invalid)", names(lens)) & lens != 0L
     if (any(bad)) {
         warning(
-            "'avworkflow_import_configuration' bad values:", immediate. = TRUE
+            "'avworkflow_configuration_set' bad values:", immediate. = TRUE
         )
         sink(stderr())
         on.exit(sink(NULL))
@@ -577,10 +604,10 @@ avworkflow_configuration <-
     invisible(response)
 }
 
-## expecting inputs and outputs in the same format of 
-## avworkflow_configuration_*_template
+## TODO: Document this function
 avworkflow_configuration_update <- 
-    function(config, inputs = avworkflow_configuration_inputs_template(config), outputs = avworkflow_configuration_outputs_template(config))
+    function(config, inputs = avworkflow_configuration_template_inputs(config),
+outputs = avworkflow_configuration_template_outputs(config))
 {
     stopifnot(inherits(config, "avworkflow_configuration"),
         all(c("name", "attribute") %in% names(inputs)),
@@ -591,29 +618,40 @@ avworkflow_configuration_update <-
     config
 }
 
+#' @rdname AnVIL-deprecated
+#' @md
+avworkflow_import_configuration <-
+    function(config,
+             namespace = avworkspace_namespace(), name = avworkspace_name())
+{
+    .Deprecated("avworkflow_configuration_set")
+    avworkflow_configuration_set(config,
+        namespace = avworkspace_namespace(), name = avworkspace_name())
+}
+
 #' @rdname avworkflow
 #' @md
 #'
-#' @description `avworkflow_import_configuration()` updates an
+#' @description `avworkflow_configuration_set()` updates an
 #'     existing configuration, e.g., changing inputs to the workflow.
 #'
 #' @param config a named list describing the full configuration, e.g.,
 #'     created from editing the return value of
-#'     `avworkflow_configuration()` or
+#'     `avworkflow_configuration_set()` or
 #'     `avworkflow_configuration_template()`.
 #'
-#' @return `avworkflow_import_configuration()` returns an object
+#' @return `avworkflow_configuration_set()` returns an object
 #'     describing the updated configuration. The return value includes
 #'     invalid or unused elements of the `config` input. Invalid or
 #'     unused elements of `config` are also reported as a warning.
 #'
 #' @examples
 #' \dontrun{
-#' avworkflow_import_configuration(config)
+#' avworkflow_configuration_set(config)
 #' }
 #'
 #' @export
-avworkflow_import_configuration <-
+avworkflow_configuration_set <-
     function(config,
              namespace = avworkspace_namespace(), name = avworkspace_name())
 {
@@ -627,10 +665,55 @@ avworkflow_import_configuration <-
         namespace, name, config$namespace, config$name,
         .__body__ = config
     )
-    .avstop_for_status(response, "avworkflow_import_configuration")
+    .avstop_for_status(response, "avworkflow_configuration_set")
 
-    response <-
+    response <- 
         response %>%
         as.list()
-    .avworkflow_import_configuration_validate_response(response)
+    .avworkflow_configuration_set_validate_response(response)
 }
+
+## TODO: Document this function
+avworkflow_run <- 
+    function(config,
+        entityName,
+        entityType = config$rootEntityType,
+        deleteIntermediateOutputFiles = FALSE, useCallCache = TRUE,
+        namespace = avworkspace_namespace(), name = avworkspace_name())
+{
+    rawls <- Rawls()
+
+    run_workflow <- rawls$createSubmission(
+        workspaceNamespace = namespace, 
+        workspaceName = name, 
+        deleteIntermediateOutputFiles = deleteIntermediateOutputFiles,
+        entityName = entityName, 
+        entityType = entityType, 
+        #expression = "this",
+        methodConfigurationName = config$name, 
+        methodConfigurationNamespace = config$namespace, 
+        useCallCache = useCallCache, 
+        workflowFailureMode = "NoNewCalls")
+
+    .avstop_for_status(run_workflow, "avworkflow_run")
+
+}
+
+## TODO: Document this function
+avworkflow_stop <- 
+    function(namespace = avworkspace_namespace(), 
+        name = avworkspace_name())
+{
+    rawls <- Rawls()
+
+    submissionId <- avworkflow_jobs() |>
+        pull(submissionId) |>
+        head(1)
+    
+    abort_workflow <- rawls$abortSubmission(
+        workspaceNamespace = namespace,
+        workspaceName = name,
+        submissionId = submissionId)
+
+    .avstop_for_status(abort_workflow, "avworkflow_stop")
+} 
