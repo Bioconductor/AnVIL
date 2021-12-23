@@ -6,6 +6,8 @@
 \alias{avworkflow_files}
 \alias{avworkflow_localize}
 \alias{avworkflow_configuration_template}
+\alias{avworkflow_configuration_template_inputs}
+\alias{avworkflow_configuration_template_outputs}
 \alias{print.avworkflow_configuration}
 \alias{avworkflow_configuration_get}
 \alias{avworkflow_configuration_set}
@@ -26,6 +28,10 @@ avworkflow_localize(
 )
 
 avworkflow_configuration_template()
+
+avworkflow_configuration_template_inputs(config)
+
+avworkflow_configuration_template_outputs(config)
 
 \method{print}{avworkflow_configuration}(x, ...)
 
@@ -71,6 +77,11 @@ are synchronized from the workspace to a second bucket.}
 consequences but do not perform the action requested. When
 \code{FALSE}, perform the action.}
 
+\item{config}{a named list describing the full configuration, e.g.,
+created from editing the return value of
+\code{avworkflow_configuration_set()} or
+\code{avworkflow_configuration_template()}.}
+
 \item{x}{Object of class \code{avworkflow_configuration}.}
 
 \item{configuration_namespace}{character(1) namespace of the
@@ -80,11 +91,6 @@ information from \code{avworkflows()}.}
 
 \item{configuration_name}{character(1) name of the workflow, form
 \code{avworkflows()}.}
-
-\item{config}{a named list describing the full configuration, e.g.,
-created from editing the return value of
-\code{avworkflow_configuration_set()} or
-\code{avworkflow_configuration_template()}.}
 }
 \value{
 \code{avworkflows()} returns a tibble. Each workflow is in a
@@ -174,6 +180,31 @@ reported as a warning() about invalid inputs or outputs, and
 the solution is to provide a quoted string `unbox('"foo"')`.
 }
 
+\code{avworkflow_configuration_template_inputs()} returns a data.frame
+providing a template for the configuration inputs, with the following
+columns:
+\itemize{
+\item inputType
+\item name
+\item optional
+\item attribute
+}
+
+The only column of interest to the user is the attribute column,
+this is the column that should be changed for customization.
+
+\code{avworkflow_configuration_template_outputs()} returns a data.frame
+providing a template for the configuration outputs, with the following
+columns:
+\itemize{
+\item name
+\item outputType
+\item attribute
+}
+
+The only column of interest to the user is the attribute column,
+this is the column that should be changed for customization.
+
 none
 
 \code{avworkflow_configuration_get()} returns a list structure
@@ -204,6 +235,14 @@ and produced by the workflow.
 template for defining workflow configurations. This template
 can be used as a starting point for providing a custom
 configuration.
+
+\code{avworkflow_configuration_template_inputs()} returns a
+data.frame template for the inputs defined in a workflow configuration.
+This template can be used to provide custom inputs for a configuration.
+
+\code{avworkflow_configuration_template_outputs()} returns a
+data.frame template for the outputs defined in a workflow configuration.
+This template can be used to provide custom outputs for a configuration.
 
 Produce print method for class \code{avworkflow_configuration}.
 
@@ -257,6 +296,18 @@ if (gcloud_exists() && nzchar(avworkspace_name())) {
 }
 
 avworkflow_configuration_template()
+
+\dontrun{
+config <- 
+    avworkflow_configuration_get("biocondutor-anvil-rpci", "AnVILBulkRNASeq")
+avworkflow_configuration_template_inputs(config)
+}
+
+\dontrun{
+config <- 
+    avworkflow_configuration_get("bioconductor-anvil-rpci", "AnVILBulkRNASeq")
+avworkflow_configuration_template_outputs(config)
+}
 
 \dontrun{
 config <-

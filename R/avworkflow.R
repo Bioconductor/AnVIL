@@ -429,7 +429,32 @@ avworkflow_configuration_template <-
     .avstop_for_status(response)
 }
 
-## TODO: Document this function
+#' @rdname avworkflow
+#' @md
+#'
+#' @description `avworkflow_configuration_template_inputs()` returns a 
+#'     data.frame template for the inputs defined in a workflow configuration.
+#'     This template can be used to provide custom inputs for a configuration.
+#'
+#' @return `avworkflow_configuration_template_inputs()` returns a data.frame 
+#'     providing a template for the configuration inputs, with the following 
+#'     columns:
+#' - inputType
+#' - name
+#' - optional
+#' - attribute
+#'
+#' @return The only column of interest to the user is the attribute column, 
+#'     this is the column that should be changed for customization.
+#'
+#' @examples
+#' \dontrun{
+#' config <- 
+#'     avworkflow_configuration_get("biocondutor-anvil-rpci", "AnVILBulkRNASeq")
+#' avworkflow_configuration_template_inputs(config)
+#' }
+#'
+#' @export
 avworkflow_configuration_template_inputs <-
     function(config)
 {
@@ -451,7 +476,31 @@ avworkflow_configuration_template_inputs <-
     inputs_tmpl
 }
 
-## TODO: Document this function
+#' @rdname avworkflow
+#' @md
+#' 
+#' @description `avworkflow_configuration_template_outputs()` returns a 
+#'     data.frame template for the outputs defined in a workflow configuration.
+#'     This template can be used to provide custom outputs for a configuration.
+#'
+#' @return `avworkflow_configuration_template_outputs()` returns a data.frame 
+#'     providing a template for the configuration outputs, with the following
+#'     columns:
+#' - name
+#' - outputType
+#' - attribute
+#'
+#' @return The only column of interest to the user is the attribute column, 
+#'     this is the column that should be changed for customization.
+#'
+#' @examples
+#' \dontrun{
+#' config <- 
+#'     avworkflow_configuration_get("bioconductor-anvil-rpci", "AnVILBulkRNASeq")
+#' avworkflow_configuration_template_outputs(config)
+#' }
+#'
+#' @export
 avworkflow_configuration_template_outputs <-
     function(config)
 {

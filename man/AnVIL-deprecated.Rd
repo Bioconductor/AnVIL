@@ -2,11 +2,18 @@
 % Please edit documentation in R/avworkflow.R
 \name{avworkflow_configuration}
 \alias{avworkflow_configuration}
+\alias{avworkflow_import_configuration}
 \title{Deprecated functions in package \sQuote{AnVIL}}
 \usage{
 avworkflow_configuration(
   configuration_namespace,
   configuration_name,
+  namespace = avworkspace_namespace(),
+  name = avworkspace_name()
+)
+
+avworkflow_import_configuration(
+  config,
   namespace = avworkspace_namespace(),
   name = avworkspace_name()
 )
