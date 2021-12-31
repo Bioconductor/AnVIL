@@ -10,7 +10,10 @@
 \alias{avworkflow_configuration_template_outputs}
 \alias{print.avworkflow_configuration}
 \alias{avworkflow_configuration_get}
+\alias{avworkflow_configuration_update}
 \alias{avworkflow_configuration_set}
+\alias{avworkflow_run}
+\alias{avworkflow_stop}
 \title{Workflow submissions and file outputs}
 \usage{
 avworkflows(namespace = avworkspace_namespace(), name = avworkspace_name())
@@ -42,11 +45,29 @@ avworkflow_configuration_get(
   name = avworkspace_name()
 )
 
+avworkflow_configuration_update(
+  config,
+  inputs = avworkflow_configuration_template_inputs(config),
+  outputs = avworkflow_configuration_template_outputs(config)
+)
+
 avworkflow_configuration_set(
   config,
   namespace = avworkspace_namespace(),
   name = avworkspace_name()
 )
+
+avworkflow_run(
+  config,
+  entityName,
+  entityType = config$rootEntityType,
+  deleteIntermediateOutputFiles = FALSE,
+  useCallCache = TRUE,
+  namespace = avworkspace_namespace(),
+  name = avworkspace_name()
+)
+
+avworkflow_stop(namespace = avworkspace_namespace(), name = avworkspace_name())
 }
 \arguments{
 \item{namespace}{character(1) AnVIL workspace namespace as returned
@@ -77,10 +98,8 @@ are synchronized from the workspace to a second bucket.}
 consequences but do not perform the action requested. When
 \code{FALSE}, perform the action.}
 
-\item{config}{a named list describing the full configuration, e.g.,
-created from editing the return value of
-\code{avworkflow_configuration_set()} or
-\code{avworkflow_configuration_template()}.}
+\item{config}{a \code{avworkflow_configuration} object of the workflow that will
+be run.}
 
 \item{x}{Object of class \code{avworkflow_configuration}.}
 
@@ -91,6 +110,25 @@ information from \code{avworkflows()}.}
 
 \item{configuration_name}{character(1) name of the workflow, form
 \code{avworkflows()}.}
+
+\item{inputs}{the new inputs to be updated in the workflow configuration. If
+none are specified, the inputs from the original configuration will be
+used and no changes will be made.}
+
+\item{outputs}{the new outputs to be updated in the workflow configuration.
+If none are specified, the outputs from the original configuration will
+be used and no changes will be made.}
+
+\item{entityName}{character(1) name of the set of samples to be used when
+running the workflow.}
+
+\item{entityType}{character(1) type of root entity used for the workflow.}
+
+\item{deleteIntermediateOutputFiles}{logical(1) whether or not to delete
+intermediate output files when the workflow completes.}
+
+\item{useCallCache}{logical(1) whether or not to read from cache for this
+submission.}
 }
 \value{
 \code{avworkflows()} returns a tibble. Each workflow is in a
@@ -212,10 +250,17 @@ describing the configuration. See
 \code{avworkflow_configuration_template()} for the structure of a
 typical workflow.
 
+\code{avworkflow_configuration_update()} returns a list structure
+describing the updated configuration.
+
 \code{avworkflow_configuration_set()} returns an object
 describing the updated configuration. The return value includes
 invalid or unused elements of the \code{config} input. Invalid or
 unused elements of \code{config} are also reported as a warning.
+
+none
+
+none
 }
 \description{
 \code{avworkflows()} returns a tibble summarizing available
@@ -249,8 +294,16 @@ Produce print method for class \code{avworkflow_configuration}.
 \code{avworkflow_configuration_get()} returns a list structure
 describing an existing workflow configuration.
 
+\code{avworkflow_configuration_update()} returns a list structure
+describing a workflow configuration with updated inputs and / or outputs.
+
 \code{avworkflow_configuration_set()} updates an
 existing configuration, e.g., changing inputs to the workflow.
+
+\code{avworkflow_run()} runs the workflow of the configuration.
+
+\code{avworkflow_stop()} stops the most recently submitted workflow
+jub from running.
 }
 \details{
 For \code{avworkflow_files()}, the \code{submissionId} is the
@@ -320,7 +373,23 @@ config <-
 }
 
 \dontrun{
+    inputs$attribute[4] <- "\"new_index_name\""
+    new_config <- avworkflow_configuration_update(config, inputs)
+}
+
+\dontrun{
 avworkflow_configuration_set(config)
+}
+
+\dontrun{
+    entityName <- avtable("participant_set") |>
+        pull(participant_set_id) |>
+        head(1)
+    avworkflow_run(new_config, entityName)
+}
+
+\dontrun{
+    avworkflow_stop()
 }
 
 }

@@ -653,7 +653,32 @@ avworkflow_configuration_get <-
     invisible(response)
 }
 
-## TODO: Document this function
+#' @rdname avworkflow
+#' @md
+#'
+#' @description `avworkflow_configuration_update()` returns a list structure 
+#'     describing a workflow configuration with updated inputs and / or outputs. 
+#'
+#' @param config an `avworkflow_configuration` object to be updated.
+#'
+#' @param inputs the new inputs to be updated in the workflow configuration. If
+#'     none are specified, the inputs from the original configuration will be 
+#'     used and no changes will be made.
+#'
+#' @param outputs the new outputs to be updated in the workflow configuration. 
+#'     If none are specified, the outputs from the original configuration will 
+#'     be used and no changes will be made.
+#'
+#' @return `avworkflow_configuration_update()` returns a list structure 
+#'     describing the updated configuration.
+#'
+#' @examples
+#' \dontrun{
+#'     inputs$attribute[4] <- "\"new_index_name\""
+#'     new_config <- avworkflow_configuration_update(config, inputs)
+#' }
+#'
+#' @export
 avworkflow_configuration_update <- 
     function(config, inputs = avworkflow_configuration_template_inputs(config),
 outputs = avworkflow_configuration_template_outputs(config))
@@ -722,7 +747,36 @@ avworkflow_configuration_set <-
     .avworkflow_configuration_set_validate_response(response)
 }
 
-## TODO: Document this function
+#' @rdname avworkflow
+#' @md
+#'
+#' @description `avworkflow_run()` runs the workflow of the configuration.
+#'
+#' @param config a `avworkflow_configuration` object of the workflow that will 
+#'     be run.
+#'
+#' @param entityName character(1) name of the set of samples to be used when 
+#'     running the workflow.
+#'
+#' @param entityType character(1) type of root entity used for the workflow.
+#'
+#' @param deleteIntermediateOutputFiles logical(1) whether or not to delete 
+#'     intermediate output files when the workflow completes.
+#'
+#' @param useCallCache logical(1) whether or not to read from cache for this 
+#'     submission.
+#'
+#' @return none
+#'
+#' @examples
+#' \dontrun{
+#'     entityName <- avtable("participant_set") |>
+#'         pull(participant_set_id) |>
+#'         head(1)
+#'     avworkflow_run(new_config, entityName)
+#' }
+#'
+#' @export
 avworkflow_run <- 
     function(config,
         entityName,
@@ -748,7 +802,20 @@ avworkflow_run <-
 
 }
 
-## TODO: Document this function
+#' @rdname avworkflow
+#' @md
+#'
+#' @description `avworkflow_stop()` stops the most recently submitted workflow
+#'     jub from running.
+#'
+#' @return none
+#'
+#' @examples
+#' \dontrun{
+#'     avworkflow_stop()
+#' }
+#' 
+#' @export
 avworkflow_stop <- 
     function(namespace = avworkspace_namespace(), 
         name = avworkspace_name())
