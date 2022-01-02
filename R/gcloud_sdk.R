@@ -98,8 +98,13 @@ print.gcloud_sdk_result <-
     })
         
     if (!is.null(attr(value, "status"))) {
+        ## truncate command to maximum 400 characters, so 'value'
+        ## (describing error) is visible in stop condition.
+        command <- paste(command, paste(args, collapse = " "))
+        if (nchar(command) > 400L)
+            command <- paste0(substr(command, 1L, 397L), "...")
         msg <- paste0(
-            "'", command, " ", paste(args, collapse = " "), "' failed:",
+            "'", command, "' failed:",
             "\n  ", paste(as.vector(value), collapse = "\n    "),
             "\n  exit status: ", attr(value, "status")
         )
