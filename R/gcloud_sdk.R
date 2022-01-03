@@ -87,8 +87,13 @@ print.gcloud_sdk_result <-
         tryCatch({
             system2(bin, args, stdout = TRUE, stderr = TRUE, wait=TRUE)
         }, error = function(err) {
+            ## truncate command, so 'value' (describing error) is
+            ## visible in stop condition.
+            command <- .truncate(
+                paste(command, paste(args, collapse = " "))
+            )
             msg <- paste0(
-                "'", command, " ", paste(args, collapse = " "), "' failed:\n",
+                "'", command, "' failed:\n",
                 "  ", conditionMessage(err)
             )
             stop(msg, call. = FALSE)
@@ -98,15 +103,14 @@ print.gcloud_sdk_result <-
     })
         
     if (!is.null(attr(value, "status"))) {
-        ## truncate command to maximum 400 characters, so 'value'
-        ## (describing error) is visible in stop condition.
-        command <- paste(command, paste(args, collapse = " "))
-        if (nchar(command) > 400L)
-            command <- paste0(substr(command, 1L, 397L), "...")
+        ## truncate command, as above
+        command <- .truncate(
+            paste(command, paste(args, collapse = " "))
+        )
         msg <- paste0(
-            "'", command, "' failed:",
-            "\n  ", paste(as.vector(value), collapse = "\n    "),
-            "\n  exit status: ", attr(value, "status")
+            "'", command, "' failed:\n",
+            "  ", paste(as.vector(value), collapse = "\n    "), "\n",
+            "  exit status: ", attr(value, "status")
         )
         stop(msg, call. = FALSE)
     }

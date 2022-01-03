@@ -60,3 +60,13 @@
             paste0(pad, "# ... with ", len, " more elements")
     ), collapse = "\n")
 }
+
+## truncate scalar character 'x' to max_nchar characters, e.g., when
+## reporting error messages from long commands
+.truncate <-
+    function(x, max_nchar = 300L)
+{
+    if (nchar(x) > max_nchar)
+        x <- paste0(substr(x, 1L, max_nchar - 3L), "...")
+    x
+}
