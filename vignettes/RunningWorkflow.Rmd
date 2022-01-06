@@ -10,11 +10,11 @@ package: AnVIL
 output:
   BiocStyle::html_document
 abstract: |
-  This vignette will demonstrate how a user can edit, run, and stop a 
-  Terra / AnVIL workflow from within their R session. The configuration of the 
-  workflow can be retrieved and edited. Then this new configuration can be 
-  sent back to the Terra / AnVIL workspace for future use. With the new 
-  configuration defined the user will then be able to run the workflow as well 
+  This vignette will demonstrate how a user can edit, run, and stop a
+  Terra / AnVIL workflow from within their R session. The configuration of the
+  workflow can be retrieved and edited. Then this new configuration can be
+  sent back to the Terra / AnVIL workspace for future use. With the new
+  configuration defined the user will then be able to run the workflow as well
   as stop any jobs from running.
 vignette: |
   %\VignetteIndexEntry{Running an AnVIL workflow within R}
@@ -31,7 +31,7 @@ options(width=75)
 
 # Installation
 
-Install the _AnVIL_ package with 
+Install the _AnVIL_ package with
 
 ```{r, eval = FALSE}
 if (!requireNamespace("BiocManager", quietly = TRUE))
@@ -49,8 +49,8 @@ library(AnVIL)
 
 ## Setting up the workspace
 
-The first step will be to define the namespace and name of the workspace to be 
-used with the functions. In our case we will be using the Bioconductor AnVIL 
+The first step will be to define the namespace and name of the workspace to be
+used with the functions. In our case we will be using the Bioconductor AnVIL
 namespace and a DESeq2 workflow as the intened workspace.
 
 ```{r workspace}
@@ -61,8 +61,8 @@ avworkspace_name("Bioconductor-Workflow-DESeq2")
 ## Retriving the configuration
 
 Within a workspace there are workflows that define inputs, outputs and certain
-code execution. These workflows contain configurations that can be retrieved 
-with `avworkflow_configuration_get`. This function requires the namespace and 
+code execution. These workflows contain configurations that can be retrieved
+with `avworkflow_configuration_get`. This function requires the namespace and
 the name of the workflow.
 
 ```{r configuration}
@@ -72,17 +72,17 @@ config
 
 ## Changing the inputs / outputs
 
-There is a lot of information contained in the configuration but the only 
+There is a lot of information contained in the configuration but the only
 variables of interest to the user would be the inputs and outputs. In our case
-the inputs and outputs are pre-defined so we don't have to do anything to them. 
-But for some workflows these inputs / outputs maybe blank and therefore would 
+the inputs and outputs are pre-defined so we don't have to do anything to them.
+But for some workflows these inputs / outputs maybe blank and therefore would
 need to be defined by the user. We will change one of our inputs values to show
 how this would be done.
 
-There are two functions to help users easily see the content of the inputs and 
-outputs, they are `avworkflow_configuration_template_inputs` and 
-`avworkflow_configuration_template_outputs`. These functions display the 
-information in a `data.frame` structure which users are most likely familiar 
+There are two functions to help users easily see the content of the inputs and
+outputs, they are `avworkflow_configuration_template_inputs` and
+`avworkflow_configuration_template_outputs`. These functions display the
+information in a `data.frame` structure which users are most likely familiar
 with.
 
 ```{r inputs_outputs}
@@ -103,10 +103,10 @@ inputs
 
 ## Update configuration
 
-Since the inputs have been modified we need to put this information into 
-the configuration of the workflow. We can do this with 
-`avworkflow_configuration_update()`. By default this function will take the 
-inputs and outputs of the original configuration, just in case there were no 
+Since the inputs have been modified we need to put this information into
+the configuration of the workflow. We can do this with
+`avworkflow_configuration_update()`. By default this function will take the
+inputs and outputs of the original configuration, just in case there were no
 changes to one of them (like in our example our outputs weren't changed).
 
 ```{r update_config}
@@ -116,9 +116,9 @@ new_config
 
 ## Setting the new configuration
 
-Now that the configuration is updated we can set this new configuration with 
+Now that the configuration is updated we can set this new configuration with
 `avworkflow_configuration_set()`. This function will update the Terra / AnVIL
-workflow. 
+workflow.
 
 ```{r set_config}
 avworkflow_configuration_set(new_config)
@@ -126,8 +126,8 @@ avworkflow_configuration_set(new_config)
 
 ## Running the new workflow
 
-To finally run the new workflow we need to know the name of the data set to be 
-used in the workflow. This can be discovered by looking at the table of 
+To finally run the new workflow we need to know the name of the data set to be
+used in the workflow. This can be discovered by looking at the table of
 interest and grabbing the name of the data set.
 
 ```{r entityName}
@@ -145,7 +145,7 @@ avworkflow_jobs()
 
 ## Stopping the workflow
 
-If a user wants to stop a workflow from running they can utilize 
+If a user wants to stop a workflow from running they can utilize
 `avworkflow_stop()`. This will change the status of the job from 'Submitted' to
 'Aborted'.
 

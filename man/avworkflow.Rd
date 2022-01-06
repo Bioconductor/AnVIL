@@ -351,13 +351,13 @@ if (gcloud_exists() && nzchar(avworkspace_name())) {
 avworkflow_configuration_template()
 
 \dontrun{
-config <- 
+config <-
     avworkflow_configuration_get("biocondutor-anvil-rpci", "AnVILBulkRNASeq")
 avworkflow_configuration_template_inputs(config)
 }
 
 \dontrun{
-config <- 
+config <-
     avworkflow_configuration_get("bioconductor-anvil-rpci", "AnVILBulkRNASeq")
 avworkflow_configuration_template_outputs(config)
 }
