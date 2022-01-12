@@ -10,11 +10,11 @@ package: AnVIL
 output:
   BiocStyle::html_document
 abstract: |
-  This vignette will demonstrate how a user can edit, run, and stop a
+  This vignette demonstrates how a user can edit, run, and stop a
   Terra / AnVIL workflow from within their R session. The configuration of the
   workflow can be retrieved and edited. Then this new configuration can be
   sent back to the Terra / AnVIL workspace for future use. With the new
-  configuration defined the user will then be able to run the workflow as well
+  configuration defined by the user will then be able to run the workflow as well
   as stop any jobs from running.
 vignette: |
   %\VignetteIndexEntry{Running an AnVIL workflow within R}
@@ -47,57 +47,85 @@ library(AnVIL)
 
 # Demo with DESeq2 workspace
 
-## Setting up the workspace
+## Setting up the workspace and choosing a workflow
 
-The first step will be to define the namespace and name of the workspace to be
-used with the functions. In our case we will be using the Bioconductor AnVIL
-namespace and a DESeq2 workflow as the intened workspace.
+The first step will be to define the namespace (billing project) and
+name of the workspace to be used with the functions. In our case we
+will be using the Bioconductor AnVIL namespace and a DESeq2 workflow
+as the intended workspace.
 
 ```{r workspace}
-avworkspace_namespace("bioconductor-rpci-anvil")
-avworkspace_name("Bioconductor-Workflow-DESeq2")
+avworkspace("bioconductor-rpci-anvil/Bioconductor-Workflow-DESeq2")
+```
+
+Each workspace can have 0 or more workflows. The workflows have a
+`name` and `namespace`, just as workspaces. Discover the workflows
+available in a workspace
+
+```{r workflows}
+avworkflows()
+```
+
+From the table returned by `avworkflows()`, record the namespace and
+name of the workflow of interest using `avworkflow()`.
+
+```{r workflow}
+avworkflow("bioconductor-rpci-anvil/AnVILBulkRNASeq")
 ```
 
 ## Retriving the configuration
 
-Within a workspace there are workflows that define inputs, outputs and certain
-code execution. These workflows contain configurations that can be retrieved
-with `avworkflow_configuration_get`. This function requires the namespace and
-the name of the workflow.
+Each workflow defines inputs, outputs and certain code
+execution. These workflow 'configurations' that can be retrieved with
+`avworkflow_configuration_get`.
 
 ```{r configuration}
-config <- avworkflow_configuration_get("bioconductor-rpci-anvil", "AnVILBulkRNASeq")
+config <- avworkflow_configuration_get()
 config
 ```
 
+This function is using the workspace namespace, workspace name,
+workflow namespace, and workflow name we recorded above with
+`avworkspace()` and `avworkflow()`.
+
 ## Changing the inputs / outputs
 
-There is a lot of information contained in the configuration but the only
-variables of interest to the user would be the inputs and outputs. In our case
-the inputs and outputs are pre-defined so we don't have to do anything to them.
-But for some workflows these inputs / outputs maybe blank and therefore would
-need to be defined by the user. We will change one of our inputs values to show
-how this would be done.
+There is a lot of information contained in the configuration but the
+only variables of interest to the user would be the inputs and
+outputs. In our case the inputs and outputs are pre-defined so we
+don't have to do anything to them.  But for some workflows these
+inputs / outputs may be blank and therefore would need to be defined
+by the user. We will change one of our inputs values to show how this
+would be done.
 
-There are two functions to help users easily see the content of the inputs and
-outputs, they are `avworkflow_configuration_template_inputs` and
-`avworkflow_configuration_template_outputs`. These functions display the
-information in a `data.frame` structure which users are most likely familiar
-with.
+There are two functions to help users easily see the content of the
+inputs and outputs, they are `avworkflow_configuration_inputs` and
+`avworkflow_configuration_outputs`. These functions display the
+information in a `tibble` structure which users are most likely
+familiar with.
 
 ```{r inputs_outputs}
-inputs <- avworkflow_configuration_template_inputs(config)
-outputs <- avworkflow_configuration_template_outputs(config)
-
+inputs <- avworkflow_configuration_inputs(config)
 inputs
+
+outputs <- avworkflow_configuration_outputs(config)
 outputs
 ```
 
-We will change the fourth value of our inputs since this is an arbitrary string
-variable in our workflow.
+We will change the value of the input attribute associated with the
+`salmon.transcriptome_index_name` field; this is an arbitrary string
+identifier in our workflow.
 
 ```{r change_input}
-inputs$attribute[4] <- "\"new_index_name\""
+inputs <-
+    inputs |>
+    mutate(
+        attribute = ifelse(
+            name == "salmon.transcriptome_index_name",
+            '"new_index_name"',
+            attribute
+        )
+    )
 inputs
 ```
 
@@ -116,12 +144,20 @@ new_config
 
 ## Setting the new configuration
 
-Now that the configuration is updated we can set this new configuration with
-`avworkflow_configuration_set()`. This function will update the Terra / AnVIL
-workflow.
+Now that the configuration is updated we can set this new
+configuration with `avworkflow_configuration_set()`. This function
+will update the Terra / AnVIL workflow.
 
 ```{r set_config}
 avworkflow_configuration_set(new_config)
+```
+
+Actually, the previous command validates `new_config` only; to update
+the configuration in AnVIL (i.e., replacing the values in the
+workspace workflow graphical user interface), add the argument `dry = FALSE`.
+
+```{r set_config_not_dry}
+## avworkflow_configuration_set(new_config, dry = FALSE)
 ```
 
 ## Running the new workflow
@@ -137,7 +173,17 @@ entityName <- avtable("participant_set") |>
 avworkflow_run(new_config, entityName)
 ```
 
-We can see that the workflow is running by using the `avworkflow_jobs` function.
+Again, actually running the new configuration requires the argument
+`dry = FALSE`.
+
+```{r run_not_dry}
+## avworkflow_run(new_config, entityName, dry = FALSE)
+```
+
+We can see that the workflow is running by using the `avworkflow_jobs`
+function. The elements of the table are ordered chronologically, with
+the most recent submission (most likely the job we just started!)
+listed first.
 
 ```{r checking_workflow}
 avworkflow_jobs()
@@ -146,13 +192,35 @@ avworkflow_jobs()
 ## Stopping the workflow
 
 If a user wants to stop a workflow from running they can utilize
-`avworkflow_stop()`. This will change the status of the job from 'Submitted' to
-'Aborted'.
+`avworkflow_stop()`. This will change the status of the job from
+'Submitted' to 'Aborted'.
 
 ```{r stop_workflow}
-avworkflow_stop()
+avworkflow_stop() # dry = FALSE to stop
 
 avworkflow_jobs()
+```
+
+## Managing workflow output
+
+Workflows can generate a large number of intermediate files (including
+diagnostic logs), as well as final outputs for more interactive
+analysis. Use the `submissionId` from `avworkflow_jobs()` to discover
+files produced by a submission; the default behavior lists files
+produced by the most recent job.
+
+```{r files}
+avworkflow_files()
+```
+
+Workflow files are stored in the workspace bucket. The files can be
+localized to the persistent disk of the current runtime using
+`avworkflow_localize()`; the default is again to localize files from
+the most recently submitted job; use `type=` to influence which files
+('control' e.g., log files, 'output', or 'all') are localized.
+
+```{r localize}
+avworkflow_localize(type = "output") # dry = FALSE to localize
 ```
 
 ## Session info

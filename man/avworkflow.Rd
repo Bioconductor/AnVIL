@@ -5,13 +5,6 @@
 \alias{avworkflow_jobs}
 \alias{avworkflow_files}
 \alias{avworkflow_localize}
-\alias{avworkflow_configuration_template}
-\alias{avworkflow_configuration_template_inputs}
-\alias{avworkflow_configuration_template_outputs}
-\alias{print.avworkflow_configuration}
-\alias{avworkflow_configuration_get}
-\alias{avworkflow_configuration_update}
-\alias{avworkflow_configuration_set}
 \alias{avworkflow_run}
 \alias{avworkflow_stop}
 \title{Workflow submissions and file outputs}
@@ -30,33 +23,6 @@ avworkflow_localize(
   dry = TRUE
 )
 
-avworkflow_configuration_template()
-
-avworkflow_configuration_template_inputs(config)
-
-avworkflow_configuration_template_outputs(config)
-
-\method{print}{avworkflow_configuration}(x, ...)
-
-avworkflow_configuration_get(
-  configuration_namespace,
-  configuration_name,
-  namespace = avworkspace_namespace(),
-  name = avworkspace_name()
-)
-
-avworkflow_configuration_update(
-  config,
-  inputs = avworkflow_configuration_template_inputs(config),
-  outputs = avworkflow_configuration_template_outputs(config)
-)
-
-avworkflow_configuration_set(
-  config,
-  namespace = avworkspace_namespace(),
-  name = avworkspace_name()
-)
-
 avworkflow_run(
   config,
   entityName,
@@ -64,10 +30,16 @@ avworkflow_run(
   deleteIntermediateOutputFiles = FALSE,
   useCallCache = TRUE,
   namespace = avworkspace_namespace(),
-  name = avworkspace_name()
+  name = avworkspace_name(),
+  dry = TRUE
 )
 
-avworkflow_stop(namespace = avworkspace_namespace(), name = avworkspace_name())
+avworkflow_stop(
+  submissionId = NULL,
+  namespace = avworkspace_namespace(),
+  name = avworkspace_name(),
+  dry = TRUE
+)
 }
 \arguments{
 \item{namespace}{character(1) AnVIL workspace namespace as returned
@@ -100,24 +72,6 @@ consequences but do not perform the action requested. When
 
 \item{config}{a \code{avworkflow_configuration} object of the workflow that will
 be run.}
-
-\item{x}{Object of class \code{avworkflow_configuration}.}
-
-\item{configuration_namespace}{character(1) namespace of the
-workflow. Often the same as the namespace of the
-workspace. Discover configuration namespace and name
-information from \code{avworkflows()}.}
-
-\item{configuration_name}{character(1) name of the workflow, form
-\code{avworkflows()}.}
-
-\item{inputs}{the new inputs to be updated in the workflow configuration. If
-none are specified, the inputs from the original configuration will be
-used and no changes will be made.}
-
-\item{outputs}{the new outputs to be updated in the workflow configuration.
-If none are specified, the outputs from the original configuration will
-be used and no changes will be made.}
 
 \item{entityName}{character(1) name of the set of samples to be used when
 running the workflow.}
@@ -175,92 +129,9 @@ are not older than the bucket files), then no files are
 localized. \code{avworkflow_localize()} returns a tibble of file
 name and bucket path of files to be synchronized.
 
-\code{avworkflow_configuration_template()} returns a list
-providing a template for configuration lists, with the
-following structure:
-\itemize{
-\item namespace character(1) configuration namespace.
-\item name character(1) configuration name.
-\item rootEntityType character(1) or missing. the name of the table
-(from \code{avtables()}) containing the entitites referenced in
-inputs, etc., by the keyword 'this.'
-\item prerequisites named list (possibly empty) of prerequisites.
-\item inputs named list (possibly empty) of inputs. Form of input
-depends on method, and might include, e.g., a reference to a
-field in a table referenced by \code{avtables()} or a character string
-defining an input constant.
-\item outputs named list (possibly empty) of outputs.
-\item methodConfigVersion integer(1) identifier for the method
-configuration.
-\item methodRepoMethod named list describing the method, with
-character(1) elements described in the return value for \code{avworkflows()}.
-\itemize{
-\item methodUri
-\item sourceRepo
-\item methodPath
-\item methodVersion. The REST specification indicates that this has
-type \code{integer}, but the documentation indicates either
-\code{integer} or \code{string}.
-}
-\item deleted logical(1) of uncertain purpose.
-}
+\code{avworkflow_run()} returns \code{config}, invisibly.
 
-The exact format of the configuration is important.\preformatted{One common problem is that a scalar character vector `"bar"` is
-interpretted as a json 'array' `["bar"]` rather than a json
-string `"bar"`. Enclose the string with
-`jsonlite::unbox("bar")` in the configuration list if the
-length 1 character vector in R is to be interpretted as a json
-string.
-
-A second problem is that an unquoted unboxed character string
-`unbox("foo")` is required by AnVIL to be quoted. This is
-reported as a warning() about invalid inputs or outputs, and
-the solution is to provide a quoted string `unbox('"foo"')`.
-}
-
-\code{avworkflow_configuration_template_inputs()} returns a data.frame
-providing a template for the configuration inputs, with the following
-columns:
-\itemize{
-\item inputType
-\item name
-\item optional
-\item attribute
-}
-
-The only column of interest to the user is the attribute column,
-this is the column that should be changed for customization.
-
-\code{avworkflow_configuration_template_outputs()} returns a data.frame
-providing a template for the configuration outputs, with the following
-columns:
-\itemize{
-\item name
-\item outputType
-\item attribute
-}
-
-The only column of interest to the user is the attribute column,
-this is the column that should be changed for customization.
-
-none
-
-\code{avworkflow_configuration_get()} returns a list structure
-describing the configuration. See
-\code{avworkflow_configuration_template()} for the structure of a
-typical workflow.
-
-\code{avworkflow_configuration_update()} returns a list structure
-describing the updated configuration.
-
-\code{avworkflow_configuration_set()} returns an object
-describing the updated configuration. The return value includes
-invalid or unused elements of the \code{config} input. Invalid or
-unused elements of \code{config} are also reported as a warning.
-
-none
-
-none
+\code{avworkflow_stop()} returns NULL, invisibly.
 }
 \description{
 \code{avworkflows()} returns a tibble summarizing available
@@ -275,30 +146,6 @@ information and file paths to workflow outputs.
 \code{avworkflow_localize()} creates or synchronizes a
 local copy of files with files stored in the workspace bucket
 and produced by the workflow.
-
-\code{avworkflow_configuration_template()} returns a
-template for defining workflow configurations. This template
-can be used as a starting point for providing a custom
-configuration.
-
-\code{avworkflow_configuration_template_inputs()} returns a
-data.frame template for the inputs defined in a workflow configuration.
-This template can be used to provide custom inputs for a configuration.
-
-\code{avworkflow_configuration_template_outputs()} returns a
-data.frame template for the outputs defined in a workflow configuration.
-This template can be used to provide custom outputs for a configuration.
-
-Produce print method for class \code{avworkflow_configuration}.
-
-\code{avworkflow_configuration_get()} returns a list structure
-describing an existing workflow configuration.
-
-\code{avworkflow_configuration_update()} returns a list structure
-describing a workflow configuration with updated inputs and / or outputs.
-
-\code{avworkflow_configuration_set()} updates an
-existing configuration, e.g., changing inputs to the workflow.
 
 \code{avworkflow_run()} runs the workflow of the configuration.
 
@@ -348,48 +195,15 @@ if (gcloud_exists() && nzchar(avworkspace_name())) {
     avworkflow_localize(dry = TRUE)
 }
 
-avworkflow_configuration_template()
-
 \dontrun{
-config <-
-    avworkflow_configuration_get("biocondutor-anvil-rpci", "AnVILBulkRNASeq")
-avworkflow_configuration_template_inputs(config)
+entityName <- avtable("participant_set") |>
+    pull(participant_set_id) |>
+    head(1)
+avworkflow_run(new_config, entityName)
 }
 
 \dontrun{
-config <-
-    avworkflow_configuration_get("bioconductor-anvil-rpci", "AnVILBulkRNASeq")
-avworkflow_configuration_template_outputs(config)
-}
-
-\dontrun{
-config <-
-    avworkflow_configuration_get("bioconductor-anvil-rpci", "AnVILBulkRNASeq")
-}
-
-\dontrun{
-config <-
-    avworkflow_configuration_get("bioconductor-rpci-anvil", "AnVILBulkRNASeq")
-}
-
-\dontrun{
-    inputs$attribute[4] <- "\"new_index_name\""
-    new_config <- avworkflow_configuration_update(config, inputs)
-}
-
-\dontrun{
-avworkflow_configuration_set(config)
-}
-
-\dontrun{
-    entityName <- avtable("participant_set") |>
-        pull(participant_set_id) |>
-        head(1)
-    avworkflow_run(new_config, entityName)
-}
-
-\dontrun{
-    avworkflow_stop()
+avworkflow_stop()
 }
 
 }

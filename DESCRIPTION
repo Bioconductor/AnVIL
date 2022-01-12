@@ -40,8 +40,8 @@ Collate:
     utilities.R install.R authenticate.R api.R
     Service.R Services.R Leonardo.R Terra.R Rawls.R Dockstore.R Gen3.R
     Response.R
-    gcloud_sdk.R gcloud.R gsutil.R localize.R
-    av.R avworkspace.R avworkflow.R avnotebooks.R drs.R
+    gcloud_sdk.R gcloud.R gsutil.R localize.R drs.R
+    av.R avworkspace.R avworkflow.R avworkflow_configuration.R avnotebooks.R
     zzz.R
 VignetteBuilder: knitr
 biocViews: Infrastructure
