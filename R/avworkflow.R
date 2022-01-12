@@ -205,8 +205,15 @@ avworkflow_files <-
         submissionId <- submissionId$submissionId
 
     if (length(submissionId)) {
-        path0 <- paste0(bucket, "/", submissionId)
-        path <- gsutil_ls(path0, recursive = TRUE)
+        bucket_content <- gsutil_ls(bucket)
+        objects <- sub(paste0(bucket, "/([^/]+).*"), "\\1", bucket_content)
+        idx <- submissionId %in% objects
+        path0 <- paste0(bucket, "/", submissionId[idx])
+        if (any(idx)) {
+            path <- gsutil_ls(path0, recursive = TRUE)
+        } else {
+            path <- character()
+        }
     } else {
         path <- character()
     }
@@ -286,15 +293,18 @@ avworkflow_localize <-
     )
 {
     type <- match.arg(type)
-    stopifnot(
-        .is_scalar_logical(dry),
-        is.null(destination) || .is_scalar_character(destination)
-    )
     if (is.null(submissionId))
         submissionId <-
             avworkflow_jobs() %>%
             pull(submissionId) %>%
             head(1)
+
+    stopifnot(
+        .is_scalar_logical(dry),
+        is.null(destination) || .is_scalar_character(destination),
+        .is_scalar_character(submissionId)
+    )
+
     if (is.null(destination))
         destination <- paste0("./", submissionId)
     if (dry && !dir.exists(destination)) {
@@ -304,6 +314,14 @@ avworkflow_localize <-
     }
 
     fls <- avworkflow_files(submissionId, bucket)
+    objects <- sub(paste0(bucket, "/([^/]+).*"), "\\1", fls$file)
+    if (!submissionId %in% objects) {
+        message(
+            "'avworkflow_localize()' found no objects for submissionId ",
+            submissionId
+        )
+        return(invisible(tibble(file = character(), path = character())))
+    }
 
     source <- paste(avbucket(), submissionId, sep = "/")
     exclude <- NULL
