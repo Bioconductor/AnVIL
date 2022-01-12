@@ -1,10 +1,29 @@
+# AnVIL 1.8.0
+
+NEW FEATURES
+
+- (v 1.7.4) add `avworkflow_configuration_*()` functions for
+  manipulating workflow configurations, and a vignette describing use.
+
+USER VISIBLE CHANGES
+
+- (v 1.7.4) Deprecate `avworkflow_configuration()`,
+  `avworkflow_import_configuration()`.
+  
+- (v 1.7.4) Update Dockstore md5sum.
+
+BUG FIXES
+
+- (v 1.7.4) `avworkflow_files()` and `avworkflow_localize()` do not
+  fail when the workflow has produced no files.
+
 # AnVIL 1.6.0
 
 NEW FEATURES
 
 - (v. 1.5.5) add `repository()` to return the binary repository
   location, if available.
-  
+
 - (v. 1.5.7) `drs_stat()` and `drs_cp()` support signed URLs
 
 USER VISIBLE CHANGES
