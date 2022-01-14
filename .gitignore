@@ -2,6 +2,8 @@
 auth.json
 .Rproj.user
 *.Rproj
+*.Rcheck
+*.tar.gz
 .Rhistory
 vignettes/*.md
 vignettes/*ipynb

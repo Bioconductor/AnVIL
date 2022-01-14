@@ -9,7 +9,7 @@ USER VISIBLE CHANGES
 
 - (v 1.7.4) Deprecate `avworkflow_configuration()`,
   `avworkflow_import_configuration()`.
-  
+
 - (v 1.7.4) Update Dockstore md5sum.
 
 BUG FIXES
