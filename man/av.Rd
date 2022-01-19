@@ -9,6 +9,7 @@
 \alias{avtable_import_set}
 \alias{avtable_delete_values}
 \alias{avdata}
+\alias{avdata_import}
 \alias{avbucket}
 \alias{avfiles_ls}
 \alias{avfiles_backup}
@@ -59,6 +60,12 @@ avtable_delete_values(
 )
 
 avdata(namespace = avworkspace_namespace(), name = avworkspace_name())
+
+avdata_import(
+  .data,
+  namespace = avworkspace_namespace(),
+  name = avworkspace_name()
+)
 
 avbucket(
   namespace = avworkspace_namespace(),
@@ -223,6 +230,9 @@ associated with billing account), as returned by
     associated with the data element and the value (e.g., google
     bucket) of the element.
 
+`avdata_import()` returns, invisibly, the subset of the
+    input table used to update the AnVIL tables.
+
 `avbucket()` returns a `character(1)` bucket identifier,
     prefixed with `gs://` if `as_path = TRUE`.
 
@@ -288,7 +298,9 @@ the return value of \code{avruntimes()}.
 
 `avdata()` returns key-value tables representing the
     information visualized under the DATA tab, 'REFERENCE DATA' and
-    'OTHER DATA' items.
+    'OTHER DATA' items.  `avdata_import()` updates (modifies or
+    creates new, but does not delete) rows in 'REFERENCE DATA' or
+    'OTHER DATA' tables.
 
 `avbucket()` returns the workspace bucket, i.e., the
     google bucket associated with a workspace. Bucket content can
@@ -348,9 +360,15 @@ sample \%>\%                                   # new 'sample_set' table
     avtable_import_set("sample", "set", "name")
 }
 
-if (gcloud_exists() && nzchar(avworkspace_name()))
+if (gcloud_exists() && nzchar(avworkspace_name())) {
     ## from within AnVIL
-    avdata()
+    data <- avdata()
+    data
+}
+
+\dontrun{
+avdata_import(data)
+}
 
 if (gcloud_exists() && nzchar(avworkspace_name()))
     ## From within AnVIL...

@@ -444,7 +444,9 @@ avtable_delete_values <-
 #'
 #' @description `avdata()` returns key-value tables representing the
 #'     information visualized under the DATA tab, 'REFERENCE DATA' and
-#'     'OTHER DATA' items.
+#'     'OTHER DATA' items.  `avdata_import()` updates (modifies or
+#'     creates new, but does not delete) rows in 'REFERENCE DATA' or
+#'     'OTHER DATA' tables.
 #'
 #' @return `avdata()` returns a tibble with five columns: `"type"`
 #'     represents the origin of the data from the 'REFERENCE' or
@@ -455,9 +457,11 @@ avtable_delete_values <-
 #'     bucket) of the element.
 #'
 #' @examples
-#' if (gcloud_exists() && nzchar(avworkspace_name()))
+#' if (gcloud_exists() && nzchar(avworkspace_name())) {
 #'     ## from within AnVIL
-#'     avdata()
+#'     data <- avdata()
+#'     data
+#' }
 #'
 #' @export
 avdata <-
@@ -524,7 +528,57 @@ avdata <-
     bind_rows(otherData_tbl, referenceData_tbl)
 }
 
+#' @rdname av
+#'
+#' @return `avdata_import()` returns, invisibly, the subset of the
+#'     input table used to update the AnVIL tables.
+#'
+#' @examples
+#' \dontrun{
+#' avdata_import(data)
+#' }
+#'
+#' @export
+avdata_import <-
+    function(
+        .data, namespace = avworkspace_namespace(), name = avworkspace_name()
     )
+{
+    stopifnot(
+        is.data.frame(.data),
+        all(c("type", "table", "key", "value") %in% names(.data)),
+        all(vapply(
+            select(.data, "type", "table", "key", "value"),
+            is.character,
+            logical(1)
+        )),
+        .is_scalar_character(namespace),
+        .is_scalar_character(name)
+    )
+
+    .data <- filter(.data, type == "other", table %in% "workspace")
+
+    if (!nrow(.data)) {
+        message(
+            "'avdata_import()' has no rows of type 'other' and ",
+            "table 'workspace'"
+        )
+        return(invisible(.data))
+    }
+
+    ## create a 'wide' table, with keys as column names and values as
+    ## first row. Prefix "workspace:" to first column, for import
+    keys <- paste0("workspace:", paste(.data$key, collapse = "\t"))
+    values <- paste(.data$value, collapse = "\t")
+    destination <- tempfile()
+    writeLines(c(keys, values), destination)
+
+    ## upload the table to AnVIL
+    entities <- httr::upload_file(destination)
+    response <- Terra()$importAttributesTSV(namespace, name, entities)
+    .avstop_for_status(response, "avdata_import")
+
+    invisible(.data)
 }
 
 ##
