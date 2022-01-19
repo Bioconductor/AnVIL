@@ -1,9 +1,15 @@
 #' @rdname avworkflow
 #' @md
 #'
+#' @name avworkflows
+#'
 #' @title Workflow submissions and file outputs
 #'
 #' @inheritParams avworkspace
+NULL
+
+#' @rdname avworkflow
+#' @md
 #'
 #' @description `avworkflows()` returns a tibble summarizing available
 #'     workflows.
@@ -205,8 +211,15 @@ avworkflow_files <-
         submissionId <- submissionId$submissionId
 
     if (length(submissionId)) {
-        path0 <- paste0(bucket, "/", submissionId)
-        path <- gsutil_ls(path0, recursive = TRUE)
+        bucket_content <- gsutil_ls(bucket)
+        objects <- sub(paste0(bucket, "/([^/]+).*"), "\\1", bucket_content)
+        idx <- submissionId %in% objects
+        path0 <- paste0(bucket, "/", submissionId[idx])
+        if (any(idx)) {
+            path <- gsutil_ls(path0, recursive = TRUE)
+        } else {
+            path <- character()
+        }
     } else {
         path <- character()
     }
@@ -286,15 +299,18 @@ avworkflow_localize <-
     )
 {
     type <- match.arg(type)
-    stopifnot(
-        .is_scalar_logical(dry),
-        is.null(destination) || .is_scalar_character(destination)
-    )
     if (is.null(submissionId))
         submissionId <-
             avworkflow_jobs() %>%
             pull(submissionId) %>%
             head(1)
+
+    stopifnot(
+        .is_scalar_logical(dry),
+        is.null(destination) || .is_scalar_character(destination),
+        .is_scalar_character(submissionId)
+    )
+
     if (is.null(destination))
         destination <- paste0("./", submissionId)
     if (dry && !dir.exists(destination)) {
@@ -304,6 +320,14 @@ avworkflow_localize <-
     }
 
     fls <- avworkflow_files(submissionId, bucket)
+    objects <- sub(paste0(bucket, "/([^/]+).*"), "\\1", fls$file)
+    if (!submissionId %in% objects) {
+        message(
+            "'avworkflow_localize()' found no objects for submissionId ",
+            submissionId
+        )
+        return(invisible(tibble(file = character(), path = character())))
+    }
 
     source <- paste(avbucket(), submissionId, sep = "/")
     exclude <- NULL
@@ -342,206 +366,128 @@ avworkflow_localize <-
 #' @rdname avworkflow
 #' @md
 #'
-#' @description `avworkflow_configuration_template()` returns a
-#'     template for defining workflow configurations. This template
-#'     can be used as a starting point for providing a custom
-#'     configuration.
+#' @description `avworkflow_run()` runs the workflow of the configuration.
 #'
-#' @return `avworkflow_configuration_template()` returns a list
-#'     providing a template for configuration lists, with the
-#'     following structure:
+#' @param config a `avworkflow_configuration` object of the workflow that will
+#'     be run.
 #'
-#' - namespace character(1) configuration namespace.
-#' - name character(1) configuration name.
-#' - rootEntityType character(1) or missing. the name of the table
-#'   (from `avtables()`) containing the entitites referenced in
-#'   inputs, etc., by the keyword 'this.'
-#' - prerequisites named list (possibly empty) of prerequisites.
-#' - inputs named list (possibly empty) of inputs. Form of input
-#'   depends on method, and might include, e.g., a reference to a
-#'   field in a table referenced by `avtables()` or a character string
-#'   defining an input constant.
-#' - outputs named list (possibly empty) of outputs.
-#' - methodConfigVersion integer(1) identifier for the method
-#'   configuration.
-#' - methodRepoMethod named list describing the method, with
-#'   character(1) elements described in the return value for `avworkflows()`.
-#'   - methodUri
-#'   - sourceRepo
-#'   - methodPath
-#'   - methodVersion. The REST specification indicates that this has
-#'     type `integer`, but the documentation indicates either
-#'     `integer` or `string`.
-#' - deleted logical(1) of uncertain purpose.
+#' @param entityName character(1) name of the set of samples to be used when
+#'     running the workflow.
 #'
-#' @return The exact format of the configuration is important.
+#' @param entityType character(1) type of root entity used for the workflow.
 #'
-#'     One common problem is that a scalar character vector `"bar"` is
-#'     interpretted as a json 'array' `["bar"]` rather than a json
-#'     string `"bar"`. Enclose the string with
-#'     `jsonlite::unbox("bar")` in the configuration list if the
-#'     length 1 character vector in R is to be interpretted as a json
-#'     string.
+#' @param deleteIntermediateOutputFiles logical(1) whether or not to delete
+#'     intermediate output files when the workflow completes.
 #'
-#'     A second problem is that an unquoted unboxed character string
-#'     `unbox("foo")` is required by AnVIL to be quoted. This is
-#'     reported as a warning() about invalid inputs or outputs, and
-#'     the solution is to provide a quoted string `unbox('"foo"')`.
+#' @param useCallCache logical(1) whether or not to read from cache for this
+#'     submission.
 #'
-#' @examples
-#' avworkflow_configuration_template()
-#'
-#' @export
-
-avworkflow_configuration_template <-
-    function()
-{
-    list(
-        ## method namespace and name, not workspace namespace and name
-        namespace = character(1),
-        name = character(1),
-        rootEntityType = character(0),
-        prerequisites = setNames(list(), character()),
-        inputs = setNames(list(), character()),
-        outputs = setNames(list(), character()),
-        methodConfigVersion = integer(1),
-        methodRepoMethod = list(
-            methodUri = unbox(character(1)),
-            sourceRepo = unbox(character(1)),
-            methodPath = unbox(character(1)),
-            methodVersion = unbox(character(1))
-        ),
-        deleted = logical(1)
-    )
-}
-
-#' @rdname avworkflow
-#' @md
-#'
-#' @description `avworkflow_configuration()` returns a list structure
-#'     describing an existing workflow configuration.
-#'
-#' @param configuration_namespace character(1) namespace of the
-#'     workflow. Often the same as the namespace of the
-#'     workspace. Discover configuration namespace and name
-#'     information from `avworkflows()`.
-#'
-#' @param configuration_name character(1) name of the workflow, from
-#'     `avworkflows()`
-#'
-#' @return `avworkflow_configuration()` returns a list structure
-#'     describing the configuration. See
-#'     `avworkflow_configuration_template()` for the structure of a
-#'     typical workflow.
+#' @return `avworkflow_run()` returns `config`, invisibly.
 #'
 #' @examples
 #' \dontrun{
-#' config <-
-#'     avworkflow_configuration("bioconductor-anvil-rpci", "AnVILBulkRNASeq")
-#' str(config)
+#' entityName <- avtable("participant_set") |>
+#'     pull(participant_set_id) |>
+#'     head(1)
+#' avworkflow_run(new_config, entityName)
 #' }
 #'
 #' @export
-avworkflow_configuration <-
-    function(configuration_namespace, configuration_name,
-             namespace = avworkspace_namespace(),
-             name = avworkspace_name())
+avworkflow_run <-
+    function(config,
+        entityName,
+        entityType = config$rootEntityType,
+        deleteIntermediateOutputFiles = FALSE, useCallCache = TRUE,
+        namespace = avworkspace_namespace(), name = avworkspace_name(),
+        dry = TRUE)
 {
-    config <- Rawls()$get_method_configuration(
-        namespace, name,
-        configuration_namespace, configuration_name
-    )
-    .avstop_for_status(config, "avworkflow_methods")
-    config %>% as.list()
-}
-
-.avworkflow_MethodRepoMethod_validate <-
-    function(methodRepoMethod, .schema)
-{
-    args <- formals(.schema)
-    unknown <- setdiff(names(methodRepoMethod), names(args))
-    if (length(unknown))
-        stop(
-            "unknown 'methodRepoMethod' names: '",
-            paste(unknown, collapse = "' '"),
-            "'"
-        )
-    idx <- !names(methodRepoMethod) %in% "methodVersion"
-    ok <- vapply(methodRepoMethod[idx], .is_scalar_character, logical(1))
-    if (!all(ok))
-        stop(
-            "'methodRepoMethod' values must be character(1); bad values: '",
-            paste(names(ok)[!ok], collapse = "' '"),
-            "'"
-        )
-    methodVersion <- methodRepoMethod$methodVersion
     stopifnot(
-        `'methodRepoMethod$methodVersion' must be character(1) or integer(1)` =
-            .is_scalar_character(methodVersion) ||
-            .is_scalar_integer(as.integer(methodVersion))
+        inherits(config, "avworkflow_configuration"),
+        .is_scalar_character(entityName),
+        .is_scalar_character(entityType),
+        .is_scalar_logical(deleteIntermediateOutputFiles),
+        .is_scalar_logical(useCallCache),
+        .is_scalar_character(namespace),
+        .is_scalar_character(name),
+        .is_scalar_logical(dry)
     )
 
-    ## all elements are unboxed
-    lapply(methodRepoMethod, jsonlite::unbox)
-}
-
-.avworkflow_import_configuration_validate_response <-
-    function(response, op)
-{
-    lens <- lengths(response)
-    bad <- grepl("^(extra|invalid)", names(lens)) & lens != 0L
-    if (any(bad)) {
-        warning(
-            "'avworkflow_import_configuration' bad values:", immediate. = TRUE
+    if (dry) {
+        message(
+            "'avworkflow_run()' arguments validated, use 'dry = FALSE' ",
+            "to run the workflow"
         )
-        sink(stderr())
-        on.exit(sink(NULL))
-        print(response[bad])
+        return(invisible(config))
     }
 
-    invisible(response)
+    rawls <- Rawls()
+
+    run_workflow <- rawls$createSubmission(
+        workspaceNamespace = namespace,
+        workspaceName = name,
+        deleteIntermediateOutputFiles = deleteIntermediateOutputFiles,
+        entityName = entityName,
+        entityType = entityType,
+        #expression = "this",
+        methodConfigurationName = config$name,
+        methodConfigurationNamespace = config$namespace,
+        useCallCache = useCallCache,
+        workflowFailureMode = "NoNewCalls")
+
+    .avstop_for_status(run_workflow, "avworkflow_run")
+
+    invisible(config)
 }
 
 #' @rdname avworkflow
 #' @md
 #'
-#' @description `avworkflow_import_configuration()` updates an
-#'     existing configuration, e.g., changing inputs to the workflow.
+#' @description `avworkflow_stop()` stops the most recently submitted workflow
+#'     jub from running.
 #'
-#' @param config a named list describing the full configuration, e.g.,
-#'     created from editing the return value of
-#'     `avworkflow_configuration()` or
-#'     `avworkflow_configuration_template()`.
-#'
-#' @return `avworkflow_import_configuration()` returns an object
-#'     describing the updated configuration. The return value includes
-#'     invalid or unused elements of the `config` input. Invalid or
-#'     unused elements of `config` are also reported as a warning.
+#' @return `avworkflow_stop()` returns NULL, invisibly.
 #'
 #' @examples
 #' \dontrun{
-#' avworkflow_import_configuration(config)
+#' avworkflow_stop()
 #' }
 #'
 #' @export
-avworkflow_import_configuration <-
-    function(config,
-             namespace = avworkspace_namespace(), name = avworkspace_name())
+avworkflow_stop <-
+    function(submissionId = NULL,
+        namespace = avworkspace_namespace(),
+        name = avworkspace_name(),
+        dry = TRUE)
 {
+    if (is.null(submissionId)) {
+    submissionId <- avworkflow_jobs() |>
+        pull(submissionId) |>
+        head(1)
+    }
+
+    stopifnot(
+        .is_scalar_character(submissionId),
+        .is_scalar_character(namespace),
+        .is_scalar_character(name),
+        .is_scalar_logical(dry)
+    )
+
+    if (dry) {
+        message(
+            "'avworkflow_stop()' arguments validated, use 'dry = FALSE' ",
+            "to stop ", paste0(namespace, "/", name), " ",
+            "submissionId = ", submissionId
+        )
+        return(invisible(NULL))
+    }
+
     rawls <- Rawls()
+    abort_workflow <- rawls$abortSubmission(
+        workspaceNamespace = namespace,
+        workspaceName = name,
+        submissionId = submissionId)
 
-    config$methodRepoMethod <- .avworkflow_MethodRepoMethod_validate(
-        config$methodRepoMethod, schemas(rawls)$MethodRepoMethod
-    )
+    .avstop_for_status(abort_workflow, "avworkflow_stop")
 
-    response <- rawls$update_method_configuration(
-        namespace, name, config$namespace, config$name,
-        .__body__ = config
-    )
-    .avstop_for_status(response, "avworkflow_import_configuration")
-
-    response <-
-        response %>%
-        as.list()
-    .avworkflow_import_configuration_validate_response(response)
+    invisible(NULL)
 }

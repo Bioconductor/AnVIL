@@ -444,7 +444,9 @@ avtable_delete_values <-
 #'
 #' @description `avdata()` returns key-value tables representing the
 #'     information visualized under the DATA tab, 'REFERENCE DATA' and
-#'     'OTHER DATA' items.
+#'     'OTHER DATA' items.  `avdata_import()` updates (modifies or
+#'     creates new, but does not delete) rows in 'REFERENCE DATA' or
+#'     'OTHER DATA' tables.
 #'
 #' @return `avdata()` returns a tibble with five columns: `"type"`
 #'     represents the origin of the data from the 'REFERENCE' or
@@ -455,9 +457,11 @@ avtable_delete_values <-
 #'     bucket) of the element.
 #'
 #' @examples
-#' if (gcloud_exists() && nzchar(avworkspace_name()))
+#' if (gcloud_exists() && nzchar(avworkspace_name())) {
 #'     ## from within AnVIL
-#'     avdata()
+#'     data <- avdata()
+#'     data
+#' }
 #'
 #' @export
 avdata <-
@@ -469,28 +473,112 @@ avdata <-
     )
 
     name <- URLencode(name)
-    response <- Terra()$exportAttributesTSV(namespace, name)
+    response <- Terra()$getWorkspace(namespace, name, "workspace.attributes")
     .avstop_for_status(response, "avworkspace_data")
 
-    content <- content(response)
-    lines <- unlist(strsplit(content, "\n"))
-    fields <- strsplit(lines, "\t")
+    content <- content(response)[[1]][["attributes"]]
 
-    field1 <- sub("workspace:", "", fields[[1]])
-    is_referenceData <- startsWith(field1, "referenceData")
-    type <- ifelse(is_referenceData, "reference", "other")
-    table <- rep("workspace", length(field1))
-    table[is_referenceData] <- vapply(
-        strsplit(field1[is_referenceData], "_"), `[[`, character(1), 2L
-    )
-    key <- sub("^referenceData_[^_]+_", "", field1)
+    ## a workspace DATA element may be preceeded by the 'workspace:'
+    ## tag, remove it
+    names(content) <- sub("^workspace:", "", names(content))
+    ## remove non-DATA attributes. `description` is from the workspace
+    ## landing page. The `:` seems to be used as a delimiter, e.g.,
+    ## `tag:tags`
+    exclude <-
+        names(content) %in% "description" |
+        grepl("^[a-z]+:", names(content))
+    content <- content[!exclude]
 
-    tbl <- tibble(
-        type = type, table = table, key = key,
-        label = basename(fields[[2]]),
-        value = fields[[2]]
+    ## some elements are lists, e.g., a vector of google
+    ## buckets. Translate these to their character(1) representation,
+    ## so the tibble has a column of type <chr> and shows the value of
+    ## the character(1) entries, rather than a column of type list
+    ## showing "chr(1)" for most elements
+    is_character <- vapply(content, is.character, logical(1))
+    content[!is_character] <- vapply(
+        content[!is_character],
+        ## list-like elements usually have a key-value structure, use
+        ## the value
+        function(x) jsonlite::toJSON(unlist(x[["items"]], use.names = FALSE)),
+        character(1)
     )
-    arrange(tbl, type, table, key)
+
+    ## create the referenceData tibble; 'referenceData' keys start
+    ## with "referenceData_"
+    referenceData_id <- "referenceData_"
+    referenceData_regex <- "^referenceData_([^_]+)_(.*)$"
+    is_referenceData <- startsWith(names(content), referenceData_id)
+    referenceData <- content[is_referenceData]
+    referenceData_tbl <- tibble(
+        type = rep("reference", length(referenceData)),
+        table = sub(referenceData_regex, "\\1", names(referenceData)),
+        key = sub(referenceData_regex, "\\2", names(referenceData)),
+        value = as.character(unlist(referenceData, use.names = FALSE))
+    )
+
+    ## 'other' data
+    otherData <- content[!is_referenceData]
+    otherData_tbl <- tibble(
+        type = "other",
+        table = "workspace",
+        key = names(otherData),
+        value = as.character(unlist(otherData, use.names = FALSE))
+    )
+
+    bind_rows(otherData_tbl, referenceData_tbl)
+}
+
+#' @rdname av
+#'
+#' @return `avdata_import()` returns, invisibly, the subset of the
+#'     input table used to update the AnVIL tables.
+#'
+#' @examples
+#' \dontrun{
+#' avdata_import(data)
+#' }
+#'
+#' @export
+avdata_import <-
+    function(
+        .data, namespace = avworkspace_namespace(), name = avworkspace_name()
+    )
+{
+    stopifnot(
+        is.data.frame(.data),
+        all(c("type", "table", "key", "value") %in% names(.data)),
+        all(vapply(
+            select(.data, "type", "table", "key", "value"),
+            is.character,
+            logical(1)
+        )),
+        .is_scalar_character(namespace),
+        .is_scalar_character(name)
+    )
+
+    .data <- filter(.data, type == "other", table %in% "workspace")
+
+    if (!nrow(.data)) {
+        message(
+            "'avdata_import()' has no rows of type 'other' and ",
+            "table 'workspace'"
+        )
+        return(invisible(.data))
+    }
+
+    ## create a 'wide' table, with keys as column names and values as
+    ## first row. Prefix "workspace:" to first column, for import
+    keys <- paste0("workspace:", paste(.data$key, collapse = "\t"))
+    values <- paste(.data$value, collapse = "\t")
+    destination <- tempfile()
+    writeLines(c(keys, values), destination)
+
+    ## upload the table to AnVIL
+    entities <- httr::upload_file(destination)
+    response <- Terra()$importAttributesTSV(namespace, name, entities)
+    .avstop_for_status(response, "avdata_import")
+
+    invisible(.data)
 }
 
 ##
