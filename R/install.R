@@ -152,13 +152,6 @@ repository <-
     binary_repository
 }
 
-.repository_stats_package_format <-
-    function(x)
-{
-    msg <- paste(sort(x), collapse = " ")
-    paste(strwrap(msg, indent = 2L, exdent = 2L), collaspe = "\n")
-}
-
 #' @importFrom utils available.packages
 repository_stats <-
     function(
@@ -181,14 +174,44 @@ repository_stats <-
     n_out_of_date_binaries <- sum(binary_out_of_date)
     out_of_date_binaries <- found_binaries[binary_out_of_date]
 
+    result <- list(
+        container = NA_character_, # FIXME
+        bioconductor_version = version,
+        repository_exists = length(binary_repository) > 0L,
+        n_software_packages = nrow(db_bioc),
+        n_binary_packages = nrow(db_binary),
+        n_binary_software_packages = length(found_binaries),
+        missing_binaries = missing_binaries,
+        out_of_date_binaries = out_of_date_binaries
+    )
+    class(result) <- c("repository_stats", class(result))
+    result
+}
+
+.repository_stats_package_format <-
+    function(x)
+{
+    msg <- paste(sort(x), collapse = " ")
+    paste(strwrap(msg, indent = 2L, exdent = 2L), collaspe = "\n")
+}
+
+#' @export
+print.repository_stats <-
+    function(x, ...)
+{
     cat(
-        "Bioconductor software packages: ", nrow(db_bioc), "\n",
-        "Binary packages: ", nrow(db_binary), "\n",
-        "Binary software packages: ", length(found_binaries), "\n",
-        "Missing binary software packages: ", length(missing_binaries), "\n",
-        .repository_stats_package_format(missing_binaries),
-        "Out-of-date binary software packages: ", n_out_of_date_binaries, "\n",
-        .repository_stats_package_format(out_of_date_binaries),
+        "Container: ", x$container, "\n",
+        "Bioconductor version: ", as.character(x$bioconductor_version), "\n",
+        "Bioconductor software packages: ", x$n_software_packages, "\n",
+        "Binary packages: ", x$n_binary_packages, "\n",
+        "Binary software packages: ", x$n_binary_software_packages, "\n",
+        "Missing binary software packages: ", length(x$missing_binaries), "\n",
+        if (x$repository_exists)
+            .repository_stats_package_format(x$missing_binaries),
+        "Out-of-date binary software packages: ",
+            length(x$out_of_date_binaries), "\n",
+        if (x$repository_exists)
+            .repository_stats_package_format(x$out_of_date_binaries),
         sep = ""
     )
 }
