@@ -5,12 +5,20 @@ NEW FEATURES
 - (v 1.7.4) add `avworkflow_configuration_*()` functions for
   manipulating workflow configurations, and a vignette describing use.
 
+- (v 1.7.5) add `avdata_import()` to import 'REFERENCE DATA' and
+  'OTHER DATA' tables.
+
 USER VISIBLE CHANGES
 
 - (v 1.7.4) Deprecate `avworkflow_configuration()`,
   `avworkflow_import_configuration()`.
 
 - (v 1.7.4) Update Dockstore md5sum.
+
+- (v 1.7.5) `avdata()` is re-implemented to more faithfully report
+  only 'REFERENCE DATA' and 'OTHER DATA' workspace attributes;
+  previously, other attributes such as the description and tags (from
+  the workspace landing page) were also reported.
 
 BUG FIXES
 
