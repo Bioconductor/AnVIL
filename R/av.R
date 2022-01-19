@@ -469,28 +469,62 @@ avdata <-
     )
 
     name <- URLencode(name)
-    response <- Terra()$exportAttributesTSV(namespace, name)
+    response <- Terra()$getWorkspace(namespace, name, "workspace.attributes")
     .avstop_for_status(response, "avworkspace_data")
 
-    content <- content(response)
-    lines <- unlist(strsplit(content, "\n"))
-    fields <- strsplit(lines, "\t")
+    content <- content(response)[[1]][["attributes"]]
 
-    field1 <- sub("workspace:", "", fields[[1]])
-    is_referenceData <- startsWith(field1, "referenceData")
-    type <- ifelse(is_referenceData, "reference", "other")
-    table <- rep("workspace", length(field1))
-    table[is_referenceData] <- vapply(
-        strsplit(field1[is_referenceData], "_"), `[[`, character(1), 2L
-    )
-    key <- sub("^referenceData_[^_]+_", "", field1)
+    ## a workspace DATA element may be preceeded by the 'workspace:'
+    ## tag, remove it
+    names(content) <- sub("^workspace:", "", names(content))
+    ## remove non-DATA attributes. `description` is from the workspace
+    ## landing page. The `:` seems to be used as a delimiter, e.g.,
+    ## `tag:tags`
+    exclude <-
+        names(content) %in% "description" |
+        grepl("^[a-z]+:", names(content))
+    content <- content[!exclude]
 
-    tbl <- tibble(
-        type = type, table = table, key = key,
-        label = basename(fields[[2]]),
-        value = fields[[2]]
+    ## some elements are lists, e.g., a vector of google
+    ## buckets. Translate these to their character(1) representation,
+    ## so the tibble has a column of type <chr> and shows the value of
+    ## the character(1) entries, rather than a column of type list
+    ## showing "chr(1)" for most elements
+    is_character <- vapply(content, is.character, logical(1))
+    content[!is_character] <- vapply(
+        content[!is_character],
+        ## list-like elements usually have a key-value structure, use
+        ## the value
+        function(x) jsonlite::toJSON(unlist(x[["items"]], use.names = FALSE)),
+        character(1)
     )
-    arrange(tbl, type, table, key)
+
+    ## create the referenceData tibble; 'referenceData' keys start
+    ## with "referenceData_"
+    referenceData_id <- "referenceData_"
+    referenceData_regex <- "^referenceData_([^_]+)_(.*)$"
+    is_referenceData <- startsWith(names(content), referenceData_id)
+    referenceData <- content[is_referenceData]
+    referenceData_tbl <- tibble(
+        type = rep("reference", length(referenceData)),
+        table = sub(referenceData_regex, "\\1", names(referenceData)),
+        key = sub(referenceData_regex, "\\2", names(referenceData)),
+        value = as.character(unlist(referenceData, use.names = FALSE))
+    )
+
+    ## 'other' data
+    otherData <- content[!is_referenceData]
+    otherData_tbl <- tibble(
+        type = "other",
+        table = "workspace",
+        key = names(otherData),
+        value = as.character(unlist(otherData, use.names = FALSE))
+    )
+
+    bind_rows(otherData_tbl, referenceData_tbl)
+}
+
+    )
 }
 
 ##
