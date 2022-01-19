@@ -25,6 +25,9 @@ BUG FIXES
 - (v 1.7.4) `avworkflow_files()` and `avworkflow_localize()` do not
   fail when the workflow has produced no files.
 
+- (v 1.7.6) improve handling of authentication token for gcloud
+  utilities.
+
 # AnVIL 1.6.0
 
 NEW FEATURES
