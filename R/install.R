@@ -1,4 +1,4 @@
-BINARY_BASE_URL <- "https://bioconductor.org/packages/%s/container-binaries%s"
+BINARY_BASE_URL <- "https://bioconductor.org/packages/%s/container-binaries/%s"
 
 #' @rdname install
 #'
@@ -97,7 +97,7 @@ repositories <-
 
 ## are we running on a docker container?
 .platform_bioc_docker_version <- function() {
-    platform <- ""
+    platform <- "bioconductor_docker"
     bioconductor_docker_version <- Sys.getenv("BIOCONDUCTOR_DOCKER_VERSION")
     if (!nzchar(bioconductor_docker_version)) {
         platform <- Sys.getenv("TERRA_R_PLATFORM")
@@ -151,7 +151,7 @@ repository <-
     binary_repos0 <- sprintf(
         binary_base_url,
         bioconductor_version,
-        ifelse(nzchar(platform), paste0("/", platform), "")
+        platform
     )
     packages <- paste0(contrib.url(binary_repos0), "/PACKAGES.gz")
     url <- url(packages)
@@ -173,6 +173,8 @@ repository_stats <-
         version = BiocManager::version(),
         binary_base_url = BINARY_BASE_URL)
 {
+    platform_docker <- .platform_bioc_docker_version()
+    container <- platform_docker[["platform"]]
     bioc_repository <- suppressMessages({
         BiocManager::repositories()[["BioCsoft"]]
     })
@@ -190,8 +192,9 @@ repository_stats <-
     out_of_date_binaries <- found_binaries[binary_out_of_date]
 
     result <- list(
-        container = NA_character_, # FIXME
+        container = container,
         bioconductor_version = version,
+        bioconductor_binary_repository = binary_repository,
         repository_exists = length(binary_repository) > 0L,
         n_software_packages = nrow(db_bioc),
         n_binary_packages = nrow(db_binary),
@@ -217,6 +220,7 @@ print.repository_stats <-
     cat(
         "Container: ", x$container, "\n",
         "Bioconductor version: ", as.character(x$bioconductor_version), "\n",
+        "Bioconductor binary repos: ", x$bioconductor_binary_repository, "\n",
         "Bioconductor software packages: ", x$n_software_packages, "\n",
         "Binary packages: ", x$n_binary_packages, "\n",
         "Binary software packages: ", x$n_binary_software_packages, "\n",
