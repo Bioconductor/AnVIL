@@ -87,6 +87,28 @@ repositories <-
     repositories
 }
 
+## is the docker container configured correctly?
+.test_container_bioc_versions <- function(version, container_version) {
+    bioconductor_version <- package_version(version)
+    docker_version <- package_version(container_version)
+    (bioconductor_version$major == docker_version$major) &
+        (bioconductor_version$minor == docker_version$minor)
+}
+
+## are we running on a docker container?
+.platform_bioc_docker_version <- function() {
+    platform <- ""
+    bioconductor_docker_version <- Sys.getenv("BIOCONDUCTOR_DOCKER_VERSION")
+    if (!nzchar(bioconductor_docker_version)) {
+        platform <- Sys.getenv("TERRA_R_PLATFORM")
+        bioconductor_docker_version <-
+            Sys.getenv("TERRA_R_PLATFORM_BINARY_VERSION")
+    }
+    c(platform = platform,
+        bioconductor_docker_version = bioconductor_docker_version)
+}
+
+
 #' @rdname install
 #'
 #' @aliases BINARY_BASE_URL
@@ -111,26 +133,19 @@ repository <-
         version = BiocManager::version(),
         binary_base_url = BINARY_BASE_URL)
 {
-    ## are we running on a docker container?
-    platform <- ""
-    bioconductor_docker_version <- Sys.getenv("BIOCONDUCTOR_DOCKER_VERSION")
-    if (!nzchar(bioconductor_docker_version)) {
-        platform <- Sys.getenv("TERRA_R_PLATFORM")
-        bioconductor_docker_version <-
-            Sys.getenv("TERRA_R_PLATFORM_BINARY_VERSION")
-    }
-    if (!nzchar(bioconductor_docker_version))
-        return(character())
-
-    ## is the docker container configured correctly?
+    platform_docker <- .platform_bioc_docker_version()
+    
+    bioconductor_docker_version <-
+        platform_docker[["bioconductor_docker_version"]]
+    platform <- platform_docker[["platform"]]
     bioconductor_version <- package_version(version)
-    docker_version <- package_version(bioconductor_docker_version)
-    test <-
-        (bioconductor_version$major == docker_version$major) &
-        (bioconductor_version$minor == docker_version$minor)
-    if (!test) {
+    
+    if (!nzchar(bioconductor_docker_version) ||
+        !.test_container_bioc_versions(
+            bioconductor_version, bioconductor_docker_version
+        )
+    )
         return(character())
-    }
 
     ## does the binary repository exist?
     binary_repos0 <- sprintf(
