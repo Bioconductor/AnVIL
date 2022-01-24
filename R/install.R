@@ -134,12 +134,12 @@ repository <-
         binary_base_url = BINARY_BASE_URL)
 {
     platform_docker <- .platform_bioc_docker_version()
-    
+
     bioconductor_docker_version <-
         platform_docker[["bioconductor_docker_version"]]
     platform <- platform_docker[["platform"]]
     bioconductor_version <- package_version(version)
-    
+
     if (!nzchar(bioconductor_docker_version) ||
         !.test_container_bioc_versions(
             bioconductor_version, bioconductor_docker_version
@@ -167,7 +167,36 @@ repository <-
     binary_repository
 }
 
+#' @rdname repository_stats
+#'
+#' @title Obtain a comparative summary of the Bioconductor binary package
+#'     repository
+#'
+#' @aliases print.repository_stats
+#'
+#' @description `repository_stats` provides a summary of binary versus source
+#'     packages compatible with the Bioconductor containers and/or Terra
+#'     environments.
+#'
+#' @return A printout of metrics that include the Bioconductor repository
+#'     version and location URL, the number of binary and source packages
+#'     currently available, the number missing and out-of-date binaries,
+#'     among other metrics.
+#'
+#' @inheritParams install
+#'
+#' @param binary_base_url character(1) The base URL for installation of binary
+#'     packages. This argument is not usually set by the user.
+#'
 #' @importFrom utils available.packages
+#'
+#' @md
+#'
+#' @examples
+#'
+#' repository_stats()
+#'
+#' @export
 repository_stats <-
     function(
         version = BiocManager::version(),
@@ -213,14 +242,17 @@ repository_stats <-
     paste(strwrap(msg, indent = 2L, exdent = 2L), collaspe = "\n")
 }
 
+#' @describeIn repository_stats Show the summary of repositories
+#'
 #' @export
 print.repository_stats <-
-    function(x, ...)
+    function(x)
 {
     cat(
         "Container: ", x$container, "\n",
         "Bioconductor version: ", as.character(x$bioconductor_version), "\n",
-        "Bioconductor binary repos: ", x$bioconductor_binary_repository, "\n",
+        "Bioconductor binary repos: ",
+            "\n", x$bioconductor_binary_repository, "\n",
         "Bioconductor software packages: ", x$n_software_packages, "\n",
         "Binary packages: ", x$n_binary_packages, "\n",
         "Binary software packages: ", x$n_binary_software_packages, "\n",
