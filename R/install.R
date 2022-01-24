@@ -251,8 +251,8 @@ print.repository_stats <-
     cat(
         "Container: ", x$container, "\n",
         "Bioconductor version: ", as.character(x$bioconductor_version), "\n",
-        "Bioconductor binary repos: ",
-            "\n", x$bioconductor_binary_repository, "\n",
+        "Bioconductor binary repos:",
+            "\n  ", x$bioconductor_binary_repository, "\n",
         "Bioconductor software packages: ", x$n_software_packages, "\n",
         "Binary packages: ", x$n_binary_packages, "\n",
         "Binary software packages: ", x$n_binary_software_packages, "\n",
