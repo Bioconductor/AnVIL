@@ -28,7 +28,7 @@ NULL
             msg <- content$response$text
     } else if (nzchar(type) && grepl("text/html", type)) {
         ## these pages can be too long for a standard 'stop()' message
-        cat(as.character(response), file = stderr())
+        cat(as.character(response), fill = TRUE, file = stderr())
     }
 
     message <- paste0(
