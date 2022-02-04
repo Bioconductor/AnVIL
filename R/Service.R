@@ -40,7 +40,7 @@ setOldClass("request")
         add_headers(.headers = reference_headers),
         write_disk(fl)
     )
-    .avstop_for_status(response)
+    .avstop_for_status(response, ".service_validate_md5sum")
     md5sum <- md5sum(fl)
     test <-
         identical(unname(md5sum), reference_md5sum) ||
