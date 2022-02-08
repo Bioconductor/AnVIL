@@ -88,7 +88,7 @@ repositories <-
 }
 
 ## is the docker container configured correctly?
-.test_container_bioc_versions <- function(version, container_version) {
+.repository_container_version_test <- function(version, container_version) {
     bioconductor_version <- package_version(version)
     docker_version <- package_version(container_version)
     (bioconductor_version$major == docker_version$major) &
@@ -96,7 +96,7 @@ repositories <-
 }
 
 ## are we running on a docker container?
-.platform_bioc_docker_version <- function() {
+.repository_container_version <- function() {
     platform <- "bioconductor_docker"
     bioconductor_docker_version <- Sys.getenv("BIOCONDUCTOR_DOCKER_VERSION")
     if (!nzchar(bioconductor_docker_version)) {
@@ -104,7 +104,7 @@ repositories <-
         bioconductor_docker_version <-
             Sys.getenv("TERRA_R_PLATFORM_BINARY_VERSION")
     }
-    c(platform = platform,
+    list(platform = platform,
         bioconductor_docker_version = bioconductor_docker_version)
 }
 
@@ -133,18 +133,19 @@ repository <-
         version = BiocManager::version(),
         binary_base_url = BINARY_BASE_URL)
 {
-    platform_docker <- .platform_bioc_docker_version()
+    platform_docker <- .repository_container_version()
 
-    bioconductor_docker_version <-
-        platform_docker[["bioconductor_docker_version"]]
-    platform <- platform_docker[["platform"]]
+    bioconductor_docker_version <- platform_docker$bioconductor_docker_version
+    platform <- platform_docker$platform
     bioconductor_version <- package_version(version)
 
-    if (!nzchar(bioconductor_docker_version) ||
-        !.test_container_bioc_versions(
-            bioconductor_version, bioconductor_docker_version
-        )
+    if (!nzchar(bioconductor_docker_version))
+        return(character())
+
+    test <- !.repository_container_version_test(
+        bioconductor_version, bioconductor_docker_version
     )
+    if (test)
         return(character())
 
     ## does the binary repository exist?
@@ -202,7 +203,7 @@ repository_stats <-
         version = BiocManager::version(),
         binary_base_url = BINARY_BASE_URL)
 {
-    platform_docker <- .platform_bioc_docker_version()
+    platform_docker <- .repository_container_version()
     container <- platform_docker[["platform"]]
     bioc_repository <- suppressMessages({
         BiocManager::repositories()[["BioCsoft"]]
@@ -246,7 +247,7 @@ repository_stats <-
 #'
 #' @export
 print.repository_stats <-
-    function(x)
+    function(x, ...)
 {
     cat(
         "Container: ", x$container, "\n",

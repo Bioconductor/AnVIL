@@ -11,7 +11,7 @@ repository_stats(
   binary_base_url = BINARY_BASE_URL
 )
 
-\method{print}{repository_stats}(x)
+\method{print}{repository_stats}(x, ...)
 }
 \arguments{
 \item{version}{`character(1)` or `package_version` Bioconductor
