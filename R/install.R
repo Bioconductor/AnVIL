@@ -1,4 +1,4 @@
-BINARY_BASE_URL <- "https://bioconductor.org/packages/%s/container-binaries%s"
+BINARY_BASE_URL <- "https://bioconductor.org/packages/%s/container-binaries/%s"
 
 #' @rdname install
 #'
@@ -112,9 +112,10 @@ repository <-
         binary_base_url = BINARY_BASE_URL)
 {
     ## are we running on a docker container?
-    platform <- ""
     bioconductor_docker_version <- Sys.getenv("BIOCONDUCTOR_DOCKER_VERSION")
-    if (!nzchar(bioconductor_docker_version)) {
+    if (nzchar(bioconductor_docker_version)) {
+        platform <- "bioconductor_docker"
+    } else {
         platform <- Sys.getenv("TERRA_R_PLATFORM")
         bioconductor_docker_version <-
             Sys.getenv("TERRA_R_PLATFORM_BINARY_VERSION")
@@ -133,11 +134,7 @@ repository <-
     }
 
     ## does the binary repository exist?
-    binary_repos0 <- sprintf(
-        binary_base_url,
-        bioconductor_version,
-        ifelse(nzchar(platform), paste0("/", platform), "")
-    )
+    binary_repos0 <- sprintf(binary_base_url, bioconductor_version, platform)
     packages <- paste0(contrib.url(binary_repos0), "/PACKAGES.gz")
     url <- url(packages)
     binary_repository <- tryCatch({
