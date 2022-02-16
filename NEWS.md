@@ -7,6 +7,9 @@ NEW FEATURES
 
 - (v 1.7.5) add `avdata_import()` to import 'REFERENCE DATA' and
   'OTHER DATA' tables.
+  
+- (v 1.7.9) export `repository_stats()` to summarize binary package
+  availability.
 
 USER VISIBLE CHANGES
 

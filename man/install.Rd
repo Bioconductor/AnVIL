@@ -2,11 +2,13 @@
 % Please edit documentation in R/install.R
 \name{install}
 \alias{install}
-\alias{repositories}
 \alias{repository}
 \alias{BINARY_BASE_URL}
+\alias{repositories}
+\alias{repository_stats}
+\alias{print.repository_stats}
 \alias{add_libpaths}
-\title{Discover and install binary packages for fast installation}
+\title{Discover binary packages for fast installation}
 \usage{
 install(
   pkgs = character(),
@@ -15,19 +17,29 @@ install(
   binary_base_url = BINARY_BASE_URL
 )
 
+repository(version = BiocManager::version(), binary_base_url = BINARY_BASE_URL)
+
 repositories(
   version = BiocManager::version(),
   binary_base_url = BINARY_BASE_URL
 )
 
-repository(version = BiocManager::version(), binary_base_url = BINARY_BASE_URL)
+repository_stats(
+  version = BiocManager::version(),
+  binary_base_url = BINARY_BASE_URL
+)
+
+\method{print}{repository_stats}(x, ...)
 
 add_libpaths(paths)
 }
 \arguments{
 \item{pkgs}{`character()` packages to install from binary repository.}
 
-\item{...}{additional arguments, passed to `BiocManager::install()`.}
+\item{...}{additional arguments. `install()` passes additional
+arguments to
+`BiocManager::install()`. `print.repository_stats()` ignores
+the additional arguments.}
 
 \item{version}{`character(1)` or `package_version` Bioconductor
 version, e.g., "3.12".}
@@ -36,17 +48,61 @@ version, e.g., "3.12".}
 package 'CRAN-style' repository; not usually required by the
 end-user.}
 
+\item{x}{the object returned by `repository_stats()`.}
+
 \item{paths}{`character()`: vector of directories to add to
 `.libPaths()`. Paths that do not exist will be created.}
 }
 \value{
 `install()`: return value of `BiocManager::install()`.
 
+`repository()`: character(1) location of binary repository,
+    if available, or character(0) if not.
+
 `repositories()`: character() of binary (if available),
     Bioconductor, and CRAN repositories.
 
-`repository()`: character(1) location of binary repository,
-    if available, or character(0) if not.
+`repository_stats()` returns a list of class
+    `repository_stats` with the following fields:
+\itemize{
+
+\item{container: }{character(1) container label, e.g.,
+\code{bioconductor_docker}, or NA if not evaluated on a supported
+container}
+
+\item{bioconductor_version: }{\code{package_version} the
+Bioconductor version provided by the user.}
+
+\item{repository_exists: }{logical(1) TRUE if a binary repository
+exists for the container and Bioconductor_Version version.}
+
+\item{bioconductor_binary_repository: }{character(1) repository
+location, if available, or NA if the repository does not exist.}
+
+\item{n_software_packages: }{integer(1) number of software packages
+in the Bioconductor source repository.}
+
+\item{n_binary_packages: }{integer(1) number of binary packages
+available. When a binary repository exists, this number is likely
+to be larger than the number of source software packages, because
+it includes the binary version of the source software packages, as
+well as the (possibly CRAN) dependencies of the binary packages}
+
+\item{n_binary_software_packages: }{integer(1) number of binary
+packages derived from Bioconductor source packages. This number is
+less than or equal to \code{n_software_packages}.}
+
+\item{missing_binaries: }{integer(1) the number of Bioconductor
+source software packages that are not present in the binary
+repository.}
+
+\item{out_of_date_binaries: }{integer(1) the number of Bioconductor
+source software packages that are newer than their binary
+counterpart. A newer source software package
+might occur when the main Bioconductor build system has
+updated a package after the most recent run of the binary
+build system.}
+}
 
 `add_libpaths()`: updated .libPaths(), invisibly.
 }
@@ -54,16 +110,22 @@ end-user.}
 `install()`: install R / Bioconductor packages, using
     fast pre-built 'binary' libraries if available.
 
+`repository()`: the location of the repository of
+    binary packages for fast installation, if available.
+
 `repositories()`: repositories to search for binary
     (if available), Bioconductor, and CRAN packages.
 
-`repository()`: the location of the repository of
-    binary packages for fast installation, if available.
+`repository_stats():` summarize binary packages
+    compatible with the Bioconductor or Terra container in use.
 
 `add_libpaths()`: Add local library paths to
     `.libPaths()`.
 }
 \details{
+The unexported URL to the base repository is available
+    with `AnVIL:::BINARY_BASE_URL`.
+
 `repositories()` prepends an additional repository URI to
     `BiocManager::repositories()`. The URI is formed by
     concatenating `binary_base_url`, the environment variables
@@ -72,16 +134,23 @@ end-user.}
     `BiocManager::version()`. The URI is only prepended if a
     CRAN-style repostiory exists at that location, with binary
     package tar.gz content described by `src/contrib/PACKAGES.gz`.
-
-The unexported URL to the base repository is available
-    with `AnVIL:::BINARY_BASE_URL`.
 }
+\section{Methods (by generic)}{
+\itemize{
+\item \code{print}: Print a summary of package
+availability in binary repositories.
+}}
+
 \examples{
 \dontrun{install(c('BiocParallel', 'BiocGenerics'))}
 
+repository()
+
 repositories()
 
-repository()
+stats <- repository_stats() # obtain statistics
+stats                       # display a summary
+stats$container             # access an element for further computation
 
 \dontrun{add_libpaths("/tmp/host-site-library")}
 
