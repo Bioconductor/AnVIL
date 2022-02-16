@@ -556,7 +556,7 @@ avdata_import <-
         .is_scalar_character(name)
     )
 
-    .data <- filter(.data, type == "other", table %in% "workspace")
+    .data <- filter(.data, .data$type == "other", table %in% "workspace")
 
     if (!nrow(.data)) {
         message(

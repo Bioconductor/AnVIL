@@ -2,14 +2,17 @@ BINARY_BASE_URL <- "https://bioconductor.org/packages/%s/container-binaries/%s"
 
 #' @rdname install
 #'
-#' @title Discover and install binary packages for fast installation
+#' @title Discover binary packages for fast installation
 #'
 #' @description `install()`: install R / Bioconductor packages, using
 #'     fast pre-built 'binary' libraries if available.
 #'
 #' @param pkgs `character()` packages to install from binary repository.
 #'
-#' @param ... additional arguments, passed to `BiocManager::install()`.
+#' @param ... additional arguments. `install()` passes additional
+#'     arguments to
+#'     `BiocManager::install()`. `print.repository_stats()` ignores
+#'     the additional arguments.
 #'
 #' @param version `character(1)` or `package_version` Bioconductor
 #'     version, e.g., "3.12".
@@ -46,6 +49,91 @@ install <-
                      site_repository = site_repository,
                      version = version
                  )
+}
+
+## is the docker container configured correctly?
+.repository_container_version_test <-
+    function(bioconductor_version, container_version)
+{
+    bioconductor_version <- package_version(bioconductor_version)
+    docker_version <- package_version(container_version)
+    (bioconductor_version$major == docker_version$major) &&
+        (bioconductor_version$minor == docker_version$minor)
+}
+
+## are we running on a docker container?
+.repository_container_version <-
+    function()
+{
+    container_version <- Sys.getenv("BIOCONDUCTOR_DOCKER_VERSION")
+    if (nzchar(container_version)) {
+        platform <- "bioconductor_docker"
+    } else {
+        platform <- Sys.getenv("TERRA_R_PLATFORM")
+        container_version <- Sys.getenv("TERRA_R_PLATFORM_BINARY_VERSION")
+    }
+
+    list(platform = platform, container_version = container_version)
+}
+
+#' @rdname install
+#'
+#' @aliases BINARY_BASE_URL
+#'
+#' @description `repository()`: the location of the repository of
+#'     binary packages for fast installation, if available.
+#'
+#' @details The unexported URL to the base repository is available
+#'     with `AnVIL:::BINARY_BASE_URL`.
+#'
+#' @return `repository()`: character(1) location of binary repository,
+#'     if available, or character(0) if not.
+#'
+#' @examples
+#' repository()
+#'
+#' @importFrom utils contrib.url
+#'
+#' @export
+repository <-
+    function(
+        version = BiocManager::version(),
+        binary_base_url = BINARY_BASE_URL)
+{
+    stopifnot(
+        ## 'version' validated in '.repository_container_version_test()'
+        .is_scalar_character(binary_base_url)
+    )
+
+    platform_docker <- .repository_container_version()
+    container_version <- platform_docker$container_version
+    platform <- platform_docker$platform
+
+    ## are we running on a known container?
+    if (!nzchar(container_version))
+        return(character())
+
+    ## do the versions of BiocManager::version() and the container match?
+    versions_match <- .repository_container_version_test(
+        version, container_version
+    )
+    if (!versions_match)
+        return(character())
+
+    ## does the binary repository exist?
+    binary_repos0 <- sprintf(binary_base_url, version, platform)
+    packages <- paste0(contrib.url(binary_repos0), "/PACKAGES.gz")
+    url <- url(packages)
+    binary_repository <- tryCatch({
+        suppressWarnings(open(url, "rb"))
+        close(url)
+        binary_repos0
+    }, error = function(...) {
+        close(url)
+        character()
+    })
+
+    binary_repository
 }
 
 #' @rdname install
@@ -87,120 +175,61 @@ repositories <-
     repositories
 }
 
-## is the docker container configured correctly?
-.repository_container_version_test <-
-    function(bioconductor_version, container_version)
-{
-    bioconductor_version <- package_version(bioconductor_version)
-    docker_version <- package_version(container_version)
-    (bioconductor_version$major == docker_version$major) &&
-        (bioconductor_version$minor == docker_version$minor)
-}
-
-## are we running on a docker container?
-.repository_container_version <-
-    function()
-{
-    container_version <- Sys.getenv("BIOCONDUCTOR_DOCKER_VERSION")
-    if (nzchar(container_version)) {
-        platform <- "bioconductor_docker"
-    } else {
-        platform <- Sys.getenv("TERRA_R_PLATFORM")
-        container_version <- Sys.getenv("TERRA_R_PLATFORM_BINARY_VERSION")
-    }
-
-    list(platform = platform, container_version = container_version)
-}
-
-
 #' @rdname install
-#'
-#' @aliases BINARY_BASE_URL
-#'
-#' @description `repository()`: the location of the repository of
-#'     binary packages for fast installation, if available.
-#'
-#' @details The unexported URL to the base repository is available
-#'     with `AnVIL:::BINARY_BASE_URL`.
-#'
-#' @return `repository()`: character(1) location of binary repository,
-#'     if available, or character(0) if not.
-#'
-#' @examples
-#' repository()
-#'
-#' @importFrom utils contrib.url
-#'
-#' @export
-repository <-
-    function(
-        version = BiocManager::version(),
-        binary_base_url = BINARY_BASE_URL)
-{
-    stopifnot(
-        ## 'version' validated in '.repository_container_version_test()'
-        .is_scalar_character(binary_base_url)
-    )
-
-    platform_docker <- .repository_container_version()
-    container_version <- platform_docker[["container_version"]]
-    platform <- platform_docker[["platform"]]
-
-    ## are we running on a known container?
-    if (!nzchar(container_version))
-        return(character())
-
-    ## do the versions of BiocManager::version() and the container match?
-    versions_match <- .repository_container_version_test(
-        bioconductor_version, container_version
-    )
-    if (!versions_match)
-        return(character())
-
-    ## does the binary repository exist?
-    binary_repos0 <- sprintf(binary_base_url, bioconductor_version, platform)
-    packages <- paste0(contrib.url(binary_repos0), "/PACKAGES.gz")
-    url <- url(packages)
-    binary_repository <- tryCatch({
-        suppressWarnings(open(url, "rb"))
-        close(url)
-        binary_repos0
-    }, error = function(...) {
-        close(url)
-        character()
-    })
-
-    binary_repository
-}
-
-#' @rdname repository_stats
-#'
-#' @title Obtain a comparative summary of the Bioconductor binary package
-#'     repository
 #'
 #' @aliases print.repository_stats
 #'
-#' @description `repository_stats` provides a summary of binary versus source
-#'     packages compatible with the Bioconductor containers and/or Terra
-#'     environments.
+#' @description `repository_stats():` summarize binary packages
+#'     compatible with the Bioconductor or Terra container in use.
 #'
-#' @return A printout of metrics that include the Bioconductor repository
-#'     version and location URL, the number of binary and source packages
-#'     currently available, the number missing and out-of-date binaries,
-#'     among other metrics.
+#' @return `repository_stats()` returns a list of class
+#'     `repository_stats` with the following fields:
+#' \itemize{
 #'
-#' @inheritParams install
+#' \item{container: }{character(1) container label, e.g.,
+#' \code{bioconductor_docker}, or NA if not evaluated on a supported
+#' container}
 #'
-#' @param binary_base_url character(1) The base URL for installation of binary
-#'     packages. This argument is not usually set by the user.
+#' \item{bioconductor_version: }{\code{package_version} the
+#' Bioconductor version provided by the user.}
+#'
+#' \item{repository_exists: }{logical(1) TRUE if a binary repository
+#' exists for the container and Bioconductor_Version version.}
+#'
+#' \item{bioconductor_binary_repository: }{character(1) repository
+#' location, if available, or NA if the repository does not exist.}
+#'
+#' \item{n_software_packages: }{integer(1) number of software packages
+#' in the Bioconductor source repository.}
+#'
+#' \item{n_binary_packages: }{integer(1) number of binary packages
+#' available. When a binary repository exists, this number is likely
+#' to be larger than the number of source software packages, because
+#' it includes the binary version of the source software packages, as
+#' well as the (possibly CRAN) dependencies of the binary packages}
+#'
+#' \item{n_binary_software_packages: }{integer(1) number of binary
+#' packages derived from Bioconductor source packages. This number is
+#' less than or equal to \code{n_software_packages}.}
+#'
+#' \item{missing_binaries: }{integer(1) the number of Bioconductor
+#' source software packages that are not present in the binary
+#' repository.}
+#'
+#' \item{out_of_date_binaries: }{integer(1) the number of Bioconductor
+#' source software packages that are newer than their binary
+#' counterpart. A newer source software package
+#' might occur when the main Bioconductor build system has
+#' updated a package after the most recent run of the binary
+#' build system.}
+#' }
 #'
 #' @importFrom utils available.packages
 #'
-#' @md
-#'
 #' @examples
-#'
-#' repository_stats()
+#' stats <- repository_stats() # obtain statistics
+#' stats                       # display a summary
+#' stats$container             # access an element for further computation
 #'
 #' @export
 repository_stats <-
@@ -209,13 +238,17 @@ repository_stats <-
         binary_base_url = BINARY_BASE_URL)
 {
     platform_docker <- .repository_container_version()
-    container <- platform_docker[["platform"]]
+    container <- platform_docker$platform
     bioc_repository <- suppressMessages({
         BiocManager::repositories()[["BioCsoft"]]
     })
     binary_repository <- repository(version, binary_base_url)
     db_bioc <- available.packages(repos = bioc_repository)
-    db_binary <- available.packages(repos = binary_repository)
+    if (length(binary_repository)) {
+        db_binary <- available.packages(repos = binary_repository)
+    } else {
+        db_binary <- db_bioc[NULL,]
+    }
 
     missing_binaries <- setdiff(rownames(db_bioc), rownames(db_binary))
     found_binaries <- intersect(rownames(db_bioc), rownames(db_binary))
@@ -227,9 +260,10 @@ repository_stats <-
     out_of_date_binaries <- found_binaries[binary_out_of_date]
 
     result <- list(
-        container = container,
+        container = if (nzchar(container)) container else NA_character_,
         bioconductor_version = version,
-        bioconductor_binary_repository = binary_repository,
+        bioconductor_binary_repository =
+            if (length(binary_repository)) binary_repository else NA_character_,
         repository_exists = length(binary_repository) > 0L,
         n_software_packages = nrow(db_bioc),
         n_binary_packages = nrow(db_binary),
@@ -248,17 +282,24 @@ repository_stats <-
     paste(strwrap(msg, indent = 2L, exdent = 2L), collaspe = "\n")
 }
 
-#' @describeIn repository_stats Show the summary of repositories
+#' @describeIn install Print a summary of package
+#'     availability in binary repositories.
+#'
+#' @param x the object returned by `repository_stats()`.
 #'
 #' @export
 print.repository_stats <-
     function(x, ...)
 {
+    bioconductor_binary_repository <- ifelse(
+        is.na(x$bioconductor_binary_repository),
+        paste(" ", x$bioconductor_binary_repository),
+        paste("\n  ", x$bioconductor_binary_repository)
+    )
     cat(
         "Container: ", x$container, "\n",
         "Bioconductor version: ", as.character(x$bioconductor_version), "\n",
-        "Bioconductor binary repos:",
-            "\n  ", x$bioconductor_binary_repository, "\n",
+        "Bioconductor binary repos:", bioconductor_binary_repository, "\n",
         "Bioconductor software packages: ", x$n_software_packages, "\n",
         "Binary packages: ", x$n_binary_packages, "\n",
         "Binary software packages: ", x$n_binary_software_packages, "\n",

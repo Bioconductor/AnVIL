@@ -5,11 +5,13 @@ test_that("repositories() works", {
     expect_identical(object, BiocManager::repositories())
 
     ## existing repository
-    envvars <- c(BIOCONDUCTOR_DOCKER_VERSION = "3.13.0")
-    object <- withr::with_envvar(envvars, repositories("3.13"))
+    envvars <- c(BIOCONDUCTOR_DOCKER_VERSION = "3.14.0")
+    object <- withr::with_envvar(envvars, repositories("3.14"))
     expected <- c(
-        BiocBinaries =
-            "https://bioconductor.org/packages/3.13/container-binaries",
+        BiocBinaries = paste0(
+            "https://bioconductor.org/packages/3.14/container-binaries/",
+            "bioconductor_docker"
+        ),
         BiocManager::repositories()
     )
     expect_identical(object, expected)
