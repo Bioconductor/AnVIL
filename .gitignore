@@ -4,6 +4,7 @@ auth.json
 *.Rproj
 *.Rcheck
 *.tar.gz
+*.R
 .Rhistory
 vignettes/*.md
 vignettes/*ipynb
