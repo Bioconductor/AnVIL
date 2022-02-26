@@ -1,7 +1,7 @@
 .avnotebooks_runtime_path <-
     function(name)
 {
-    path.expand(file.path("~", name, "notebooks"))
+    path.expand(file.path("~", name, "edit"))
 }
 
 .avnotebooks_workspace_path <-

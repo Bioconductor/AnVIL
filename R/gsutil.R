@@ -65,8 +65,9 @@ gsutil_requesterpays <-
 .gsutil_requesterpays_flag <-
     function(source)
 {
+    source <- source[.gsutil_is_uri(source)]
     tryCatch({
-        if (any(gsutil_requesterpays(source))) {
+        if (length(source) && any(gsutil_requesterpays(source))) {
             c("-u", gcloud_project())
         } else NULL
     }, error = function(e) {
