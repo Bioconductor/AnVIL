@@ -45,7 +45,7 @@ Once installed, load the package with
 library(AnVIL)
 ```
 
-# Demo with DESeq2 workspace
+# Workflow setup: DESeq2
 
 ## Setting up the workspace and choosing a workflow
 
@@ -88,6 +88,8 @@ This function is using the workspace namespace, workspace name,
 workflow namespace, and workflow name we recorded above with
 `avworkspace()` and `avworkflow()`.
 
+# Updating workflows
+
 ## Changing the inputs / outputs
 
 There is a lot of information contained in the configuration but the
@@ -112,9 +114,8 @@ outputs <- avworkflow_configuration_outputs(config)
 outputs
 ```
 
-We will change the value of the input attribute associated with the
-`salmon.transcriptome_index_name` field; this is an arbitrary string
-identifier in our workflow.
+Let's change the `salmon.transcriptome_index_name` field; this is an
+arbitrary string identifier in our workflow.
 
 ```{r change_input}
 inputs <-
@@ -142,25 +143,9 @@ new_config <- avworkflow_configuration_update(config, inputs)
 new_config
 ```
 
-## Setting the new configuration
+# Running and stopping workflows
 
-Now that the configuration is updated we can set this new
-configuration with `avworkflow_configuration_set()`. This function
-will update the Terra / AnVIL workflow.
-
-```{r set_config}
-avworkflow_configuration_set(new_config)
-```
-
-Actually, the previous command validates `new_config` only; to update
-the configuration in AnVIL (i.e., replacing the values in the
-workspace workflow graphical user interface), add the argument `dry = FALSE`.
-
-```{r set_config_not_dry}
-## avworkflow_configuration_set(new_config, dry = FALSE)
-```
-
-## Running the new workflow
+## Running a workflow
 
 To finally run the new workflow we need to know the name of the data set to be
 used in the workflow. This can be discovered by looking at the table of
@@ -189,11 +174,30 @@ listed first.
 avworkflow_jobs()
 ```
 
-## Stopping the workflow
+## Setting a workflow configuration for reuse in AnVIL
 
-If a user wants to stop a workflow from running they can utilize
-`avworkflow_stop()`. This will change the status of the job from
-'Submitted' to 'Aborted'.
+The steps we have taken so far allow us to run an existing workflow,
+but with updated paramaters. Use `avworkflow_configuration_set()` to
+permanently update the workflow to new paramters values.
+
+
+```{r set_config}
+avworkflow_configuration_set(new_config)
+```
+
+Actually, the previous command validates `new_config` only; to update
+the configuration in AnVIL (i.e., replacing the values in the
+workspace workflow graphical user interface), add the argument `dry = FALSE`.
+
+```{r set_config_not_dry}
+## avworkflow_configuration_set(new_config, dry = FALSE)
+```
+
+## Stopping workflows
+
+Use `avworkflow_stop()` to stop a currently running workflow. This
+will change the status of the job, reported by `avworkflow_jobs()`,
+from 'Submitted' to 'Aborted'.
 
 ```{r stop_workflow}
 avworkflow_stop() # dry = FALSE to stop
@@ -201,7 +205,7 @@ avworkflow_stop() # dry = FALSE to stop
 avworkflow_jobs()
 ```
 
-## Managing workflow output
+# Managing workflow output
 
 Workflows can generate a large number of intermediate files (including
 diagnostic logs), as well as final outputs for more interactive
@@ -223,7 +227,7 @@ the most recently submitted job; use `type=` to influence which files
 avworkflow_localize(type = "output") # dry = FALSE to localize
 ```
 
-## Session info
+# Session information
 
 ```{r sessionInfo}
 sessionInfo()

@@ -461,8 +461,8 @@ runtime version.
 
 ## Using `avworkflows_*()` for workflows
 
-Example work flows will be developed as experience with the AnVIL
-cloud increases.
+See the vignette "Running an AnVIL workflow within R", in this
+package, for details on running workflows and managing output.
 
 ## Using `avworkspace_*()` for workspaces
 

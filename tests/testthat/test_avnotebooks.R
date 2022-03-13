@@ -4,7 +4,7 @@ test_that("'avnotebooks()' works", {
 
     expect_identical(
         .avnotebooks_runtime_path(name),
-        path.expand(file.path("~", name, "notebooks"))
+        path.expand(file.path("~", name, "edit"))
     )
 
     path <- with_mock(
