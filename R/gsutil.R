@@ -55,7 +55,7 @@ gsutil_requesterpays <-
     function(source)
 {
     stopifnot(all(.gsutil_is_uri(source)))
-    project <- gcloud_project()
+    project <- gcloud_project()[2]
     buckets <- regmatches(source, regexpr("^gs://[^/]+", source))
     args <- c("-u", project, "requesterpays", "get", buckets)
     result <- .gsutil_do(args)
