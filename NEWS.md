@@ -7,7 +7,7 @@ NEW FEATURES
 
 - (v 1.7.5) add `avdata_import()` to import 'REFERENCE DATA' and
   'OTHER DATA' tables.
-  
+
 - (v 1.7.9) export `repository_stats()` to summarize binary package
   availability.
 
@@ -30,6 +30,13 @@ BUG FIXES
 
 - (v 1.7.6) improve handling of authentication token for gcloud
   utilities.
+
+# AnVIL 1.6.7 / 1.7.13
+
+BUG FIXES
+
+- Correct gcloud_project() when user environment variable set.
+  https://github.com/Bioconductor/AnVIL/pull/52
 
 # AnVIL 1.6.6
 

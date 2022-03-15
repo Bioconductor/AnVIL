@@ -88,6 +88,20 @@ gcloud_exists <-
     nchar(result) > 0L
 }
 
+.gcloud_get_value_check <-
+    function(result, function_name)
+{
+    value <- tail(result, 1L)
+    if (identical(value, "(unset)")) {
+        message <- paste0(
+            "'", function_name, "()' returned '(unset)'; this may indicate ",
+            "that the gcloud active configuration is incorrect"
+        )
+        message(paste(strwrap(message), collapse = "\n"))
+    }
+    value
+}
+
 #' @rdname gcloud
 #'
 #' @description `gcloud_account()`: report the current gcloud account
@@ -110,7 +124,8 @@ gcloud_account <- function(account = NULL) {
 
     if (!is.null(account))
         .gcloud_do("config", "set", "account", account)
-    .gcloud_do("config", "get-value", "account")
+    result <- .gcloud_do("config", "get-value", "account")
+    .gcloud_get_value_check(result, "gcloud_account")
 }
 
 #' @rdname gcloud
@@ -131,7 +146,11 @@ gcloud_project <- function(project = NULL) {
 
     if (!is.null(project))
         .gcloud_do("config", "set", "project", project)
-    .gcloud_do("config", "get-value", "project")
+    result <- .gcloud_do("config", "get-value", "project")
+    ## returns two lines when `CLOUDSDK_ACTIVE_CONFIG_NAME=`
+    ## envirionment variable is set
+    value <- tail(result, 1L)
+    .gcloud_get_value_check(result, "gcloud_account")
 }
 
 #' @rdname gcloud
