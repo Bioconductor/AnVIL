@@ -1,3 +1,10 @@
+# AnVIL 1.6.7
+
+BUG FIXES
+
+- Correct gcloud_project() when user environment variable set.
+  https://github.com/Bioconductor/AnVIL/pull/52
+
 # AnVIL 1.6.6
 
 BUG FIXES
