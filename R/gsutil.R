@@ -465,12 +465,11 @@ gsutil_pipe <-
     )
 
     is_read <- identical(substr(open, 1, 1), "r")
-    source <- shQuote(source)
     args <- c(
         if (is_read) .gsutil_requesterpays_flag(source),
         "cp",
         ...,
-        if (is_read) c(source, "-") else c("-", source)
+        if (is_read) c(shQuote(source), "-") else c("-", shQuote(source))
     )
 
     bin <- .gcloud_sdk_find_binary("gsutil")

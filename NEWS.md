@@ -1,3 +1,10 @@
+# AnVIL 1.6.6
+
+BUG FIXES
+
+- Correct gsutil_pipe() argument mis-match, see
+  https://support.bioconductor.org/p/9141780/
+
 # AnVIL 1.6.0
 
 NEW FEATURES
