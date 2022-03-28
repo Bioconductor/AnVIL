@@ -149,7 +149,6 @@ gcloud_project <- function(project = NULL) {
     result <- .gcloud_do("config", "get-value", "project")
     ## returns two lines when `CLOUDSDK_ACTIVE_CONFIG_NAME=`
     ## envirionment variable is set
-    value <- tail(result, 1L)
     .gcloud_get_value_check(result, "gcloud_account")
 }
 
