@@ -246,8 +246,16 @@ repository_stats <-
     db_bioc <- available.packages(repos = bioc_repository)
     if (length(binary_repository)) {
         db_binary <- available.packages(repos = binary_repository)
+        packages <- paste0(contrib.url(binary_repository), "/PACKAGES")
+        response <- HEAD(packages)
+        last_modified <- headers(response)$`last-modified`
+        PACKAGES_mtime <-
+            format(strptime(
+                last_modified, "%a, %d %b %Y %H:%M", tz = "UTC"
+            ), usetz = TRUE)
     } else {
         db_binary <- db_bioc[NULL,]
+        PACKAGES_mtime <- NA_character_
     }
 
     missing_binaries <- setdiff(rownames(db_bioc), rownames(db_binary))
@@ -259,11 +267,17 @@ repository_stats <-
     n_out_of_date_binaries <- sum(binary_out_of_date)
     out_of_date_binaries <- found_binaries[binary_out_of_date]
 
+    query_timestamp = format(
+        Sys.time(), "%Y-%m-%d %H:%M", tz = "UTC", usetz = TRUE
+    )
+
     result <- list(
         container = if (nzchar(container)) container else NA_character_,
         bioconductor_version = version,
         bioconductor_binary_repository =
             if (length(binary_repository)) binary_repository else NA_character_,
+        PACKAGES_mtime = PACKAGES_mtime,
+        query_timestamp = query_timestamp,
         repository_exists = length(binary_repository) > 0L,
         n_software_packages = nrow(db_bioc),
         n_binary_packages = nrow(db_binary),
@@ -300,6 +314,8 @@ print.repository_stats <-
         "Container: ", x$container, "\n",
         "Bioconductor version: ", as.character(x$bioconductor_version), "\n",
         "Bioconductor binary repos:", bioconductor_binary_repository, "\n",
+        "PACKAGES timestamp: ", x$PACKAGES_mtime, "\n",
+        "Query timestamp: ", x$query_timestamp, "\n",
         "Bioconductor software packages: ", x$n_software_packages, "\n",
         "Binary packages: ", x$n_binary_packages, "\n",
         "Binary software packages: ", x$n_binary_software_packages, "\n",

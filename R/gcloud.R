@@ -88,6 +88,7 @@ gcloud_exists <-
     nchar(result) > 0L
 }
 
+#' @importFrom utils tail
 .gcloud_get_value_check <-
     function(result, function_name)
 {
