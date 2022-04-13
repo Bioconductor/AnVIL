@@ -9,14 +9,13 @@
     drs = character(),
     fileName = character(),
     size = integer(),
-    url = character(),
-    timeCreated = character(),
+    gsUri = character(),
+    accessUrl = character(),
     timeUpdated = character(),
-    urlType = character(),
-    hashes = list()
-    ## bucket = character(),
-    ## name = character(),
-    ## googleServiceAccount = list()
+    hashes = list(),
+    bucket = character(),
+    name = character(),
+    googleServiceAccount = list()
 )
 
 .drs_is_uri <-
@@ -35,31 +34,76 @@
     )
 
     body <- list(
-        fields = c(
-            "fileName", "hashes", "size", "gsUri",
-            "timeUpdated", "accessUrl"),
+        fields = setdiff(names(template), "drs"),
         url = jsonlite::unbox(drs)
     )
     body_json <- jsonlite::toJSON(body)
     response <- POST(.DRS_MARTHA, headers, body = body_json, encode="raw")
     .avstop_for_status(response, "DRS resolution")
-    lst <- as.list(response)
-    if (is.null(lst$accessUrl)) {
-        url <- lst$gsUri
-        urlType <- "gs"
-    } else {
-        url <- lst$accessUrl$url
-        urlType <- "signed"
-    }
-    lst[c("drs", "url", "urlType")] <- list(drs, url, urlType)
-    is_list <- # nest list elements so length == 1L
+
+    ## add drs field to response
+    lst <- c(as.list(response), list(drs = drs))
+
+    ## nest list elements so length == 1L
+    is_list <-
         vapply(lst, is.list, logical(1))
     lst[is_list] <- lapply(lst[is_list], list)
-    tbl <- as_tibble(lst[lengths(lst) == 1L])
 
+    ## return as tibble
+    tbl <- as_tibble(lst[lengths(lst) == 1L])
     .tbl_with_template(tbl, template)
 }
 
+.drs_stat_impl <-
+    function(source, template)
+{
+    access_token <- .gcloud_access_token("drs")
+
+    if (identical(.Platform$OS.type, "windows")) {
+        mc.cores <- 1L
+    } else {
+        mc.cores <- getOption("mc.cores", max(min(length(source), 8L), 1L))
+    }
+    response <- withCallingHandlers({
+        mclapply(
+            source, .martha_v3, template, access_token,
+            mc.cores = mc.cores
+        )
+    }, warning = function(condition) {
+        ## handled below
+        invokeRestart("muffleWarning")
+    })
+    if (!length(response))
+        ## length(source) == 0L
+        response <- list(
+            .tbl_with_template(as_tibble(list()), template)
+        )
+
+    ## validate response
+    ok <- vapply(response, inherits, logical(1), "tbl_df")
+    if (!all(ok)) {
+        first_error_idx <- head(which(!ok), 1L)
+        first_error <-
+            conditionMessage(attr(response[[first_error_idx]], "condition"))
+        warning(
+            "failed to resolve ", sum(!ok), " DRS url(s):\n",
+            "url(s):\n",
+            "  ", paste(source[!ok], collapse = "\n"), "\n",
+            "first error:\n",
+            first_error
+        )
+        ## remember ok and failed drs rows
+        failed_drs <- .tbl_with_template(tibble(drs = source[!ok]), template)
+        response <- c(response[ok], list(failed_drs))
+    }
+
+    ## ensure tbl order matches input order
+    tbl <- bind_rows(response)
+    order_idx <- match(source, tbl$drs)
+    tbl <- tbl[order_idx, ]
+    class(tbl) <- c("drs_stat_tbl", class(tbl))
+    tbl
+}
 
 #' @rdname drs
 #' @md
@@ -120,27 +164,79 @@ drs_stat <-
     function(source = character())
 {
     stopifnot(
-        `'source' must be DRS URIs, e.g., starting with "drs://"` =
+        `'source' must be DRS URIs, i.e., starting with "drs://"` =
             all(.drs_is_uri(source))
     )
 
-    access_token <- .gcloud_access_token("drs")
+    tbl <- .drs_stat_impl(source, .DRS_STAT_TEMPLATE)
 
-    if (identical(.Platform$OS.type, "windows")) {
-        mc.cores <- 1L
-    } else {
-        mc.cores <- getOption("mc.cores", min(length(source), 8L))
-    }
-    response <- mclapply(
-        source, .martha_v3, .DRS_STAT_TEMPLATE, access_token,
-        mc.cores = mc.cores
+    ## accessUrl
+    needAccess <- tbl |> filter(is.na(.data$accessUrl))
+    access_url <- .drs_access_url(needAccess)
+    tbl |>
+        mutate(
+            accessUrl = as.character(ifelse(
+                is.na(.data$accessUrl), access_url, .data$accessUrl
+            ))
+        ) |>
+        select(-c("googleServiceAccount"))
+}
+
+.drs_access_url_1 <-
+    function(gsUri, data, project)
+{
+    ## write the service account credentials to a temporary file
+    key_file <- tempfile()
+    on.exit(unlink(key_file))
+    writeLines(jsonlite::toJSON(data[[1]], auto_unbox = TRUE), key_file)
+
+    ## invoke gsutil signurl
+    response <- .gsutil_do(c(
+        "signurl",
+        "-r", "US", # multi-region US location; probably not correct
+        "-b", project, # project to be billed
+        key_file, gsUri
+    ))
+
+    ## signed url in last line, fourth tab-delimited field
+    strsplit(tail(response, 1L), "\t")[[1]][[4]]
+}
+
+.drs_access_url <-
+    function(tbl)
+{
+    as.character(unlist(
+        Map(
+            .drs_access_url_1, tbl$gsUri, tbl$googleServiceAccount,
+            MoreArgs = list(project = gcloud_project())
+        ),
+        use.names = FALSE
+    ))
+}
+
+#' @rdname drs
+#'
+#' @description `drs_access_url()` returns a vector of 'signed' URLs
+#'     that allow access to restricted resources via standard https
+#'     protocols.
+#'
+#' @return `drs_access_url()` returns a vector of https URLs
+#'     corresponding to the vector of DRS URIs provided as inputs to
+#'     the function.
+#'
+#' @export
+drs_access_url <-
+    function(source = character())
+{
+    stopifnot(
+        `'source' must be DRS URIs, i.e., starting with "drs://"` =
+            all(.drs_is_uri(source))
     )
-    tbl <- bind_rows(response)
-    tbl <- .tbl_with_template(tbl, .DRS_STAT_TEMPLATE)
-    order_idx <- match(source, tbl$drs)
-    tbl <- tbl[order_idx, ]
-    class(tbl) <- c("drs_stat_tbl", class(tbl))
-    tbl
+
+    template_idx <- c("drs", "gsUri", "googleServiceAccount")
+    template <- .DRS_STAT_TEMPLATE[template_idx]
+    tbl <- .drs_stat_impl(source, template)
+    .drs_access_url(tbl)
 }
 
 .drs_check_local_path_exists <-

@@ -2,10 +2,13 @@
 % Please edit documentation in R/drs.R
 \name{drs_stat}
 \alias{drs_stat}
+\alias{drs_access_url}
 \alias{drs_cp}
 \title{DRS (Data Repository Service) URL management}
 \usage{
 drs_stat(source = character())
+
+drs_access_url(source = character())
 
 drs_cp(source, destination, ...)
 }
@@ -38,6 +41,10 @@ a Bond supported host).
 value; if unknown. it returns null)
 }
 
+`drs_access_url()` returns a vector of https URLs
+    corresponding to the vector of DRS URIs provided as inputs to
+    the function.
+
 \code{drs_cp()} returns a tibble like \code{drs_stat()}, but with
 additional columns
 \itemize{
@@ -49,6 +56,10 @@ simple signed URL (\code{TRUE}) or auxilliary service account.
 \description{
 \code{drs_stat()} resolves zero or more DRS URLs to their
 google bucket location.
+
+`drs_access_url()` returns a vector of 'signed' URLs
+    that allow access to restricted resources via standard https
+    protocols.
 
 \code{drs_cp()} copies 0 or more DRS URIs to a google
 bucket or local folder
