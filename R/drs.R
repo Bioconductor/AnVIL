@@ -236,7 +236,10 @@ drs_access_url <-
     template_idx <- c("drs", "gsUri", "googleServiceAccount")
     template <- .DRS_STAT_TEMPLATE[template_idx]
     tbl <- .drs_stat_impl(source, template)
-    .drs_access_url(tbl)
+    result <- .drs_access_url(tbl)
+    if (!is.null(names(source)))
+        names(result) <- names(source)
+    result
 }
 
 .drs_check_local_path_exists <-
