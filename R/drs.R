@@ -127,6 +127,12 @@
 #' @param source character() DRS URLs (beginning with 'drs://') to
 #'     resources managed by the 'martha' DRS resolution server.
 #'
+#' @param region character(1) Google cloud 'region' in which the DRS
+#'     resource is located. Most data is located in \code{"US"} (the
+#'     default); in principle \code{"auto"} allows for discovery of
+#'     the region, but sometimes fails. Regions are enumerated at
+#'     \url{https://cloud.google.com/storage/docs/locations#available-locations}.
+#'
 #' @return `drs_stat()` returns a tbl with the following columns:
 #'
 #' - fileName: character() (resolver sometimes returns null).
@@ -161,7 +167,7 @@
 #'
 #' @export
 drs_stat <-
-    function(source = character())
+    function(source = character(), region = "US")
 {
     stopifnot(
         `'source' must be DRS URIs, i.e., starting with "drs://"` =
@@ -174,7 +180,7 @@ drs_stat <-
 }
 
 .drs_access_url_1 <-
-    function(gsUri, data, project)
+    function(gsUri, data, project, region)
 {
     ## write the service account credentials to a temporary file
     key_file <- tempfile()
@@ -184,7 +190,7 @@ drs_stat <-
     ## invoke gsutil signurl
     response <- .gsutil_do(c(
         "signurl",
-        "-r", "US", # multi-region US location; probably not correct
+        "-r", region,  # 'auto' fails when not using a service account
         "-b", project, # project to be billed
         key_file, gsUri
     ))
@@ -194,12 +200,12 @@ drs_stat <-
 }
 
 .drs_access_url <-
-    function(tbl)
+    function(tbl, region)
 {
     as.character(unlist(
         Map(
             .drs_access_url_1, tbl$gsUri, tbl$googleServiceAccount,
-            MoreArgs = list(project = gcloud_project())
+            MoreArgs = list(project = gcloud_project(), region = region)
         ),
         use.names = FALSE
     ))
@@ -217,7 +223,7 @@ drs_stat <-
 #'
 #' @export
 drs_access_url <-
-    function(source = character())
+    function(source = character(), region = "US")
 {
     stopifnot(
         `'source' must be DRS URIs, i.e., starting with "drs://"` =

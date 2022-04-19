@@ -6,15 +6,21 @@
 \alias{drs_cp}
 \title{DRS (Data Repository Service) URL management}
 \usage{
-drs_stat(source = character())
+drs_stat(source = character(), region = "US")
 
-drs_access_url(source = character())
+drs_access_url(source = character(), region = "US")
 
 drs_cp(source, destination, ...)
 }
 \arguments{
 \item{source}{character() DRS URLs (beginning with 'drs://') to
 resources managed by the 'martha' DRS resolution server.}
+
+\item{region}{character(1) Google cloud 'region' in which the DRS
+resource is located. Most data is located in \code{"US"} (the
+default); in principle \code{"auto"} allows for discovery of
+the region, but sometimes fails. Regions are enumerated at
+\url{https://cloud.google.com/storage/docs/locations#available-locations}.}
 
 \item{destination}{character(1) directory path in which to retrieve
 files.}

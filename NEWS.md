@@ -23,6 +23,9 @@ USER VISIBLE CHANGES
   previously, other attributes such as the description and tags (from
   the workspace landing page) were also reported.
 
+- (v 1.7.15) `drs_access_url()` derives signed (https) URLs from DRS
+  URIs.
+
 BUG FIXES
 
 - (v 1.7.4) `avworkflow_files()` and `avworkflow_localize()` do not
