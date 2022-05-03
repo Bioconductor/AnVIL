@@ -170,16 +170,7 @@ drs_stat <-
 
     tbl <- .drs_stat_impl(source, .DRS_STAT_TEMPLATE)
 
-    ## accessUrl
-    needAccess <- tbl |> filter(is.na(.data$accessUrl))
-    access_url <- .drs_access_url(needAccess)
-    tbl |>
-        mutate(
-            accessUrl = as.character(ifelse(
-                is.na(.data$accessUrl), access_url, .data$accessUrl
-            ))
-        ) |>
-        select(-c("googleServiceAccount"))
+    select(tbl, -c("googleServiceAccount"))
 }
 
 .drs_access_url_1 <-
@@ -236,7 +227,16 @@ drs_access_url <-
     template_idx <- c("drs", "gsUri", "googleServiceAccount")
     template <- .DRS_STAT_TEMPLATE[template_idx]
     tbl <- .drs_stat_impl(source, template)
-    result <- .drs_access_url(tbl)
+    result <- rep(NA_character_, NROW(tbl))
+
+    available <- lengths(tbl$googleServiceAccount) != 0L
+    if (!all(available))
+        warning(
+            "'source' not available as signed URLs:\n",
+            paste0("  '", source[!available], "'\n"),
+            call. = FALSE
+        )
+    result[available] <- .drs_access_url(filter(tbl, available), region)
     if (!is.null(names(source)))
         names(result) <- names(source)
     result
@@ -304,7 +304,7 @@ drs_access_url <-
         return(tbl)
 
     path <- paste(destination, tbl$fileName, sep = "/")
-    .drs_cp(tbl$url, path, FUN = gsutil_cp)
+    .drs_cp(tbl$gsUri, path, FUN = gsutil_cp)
     mutate(tbl, destination = path)
 }
 
