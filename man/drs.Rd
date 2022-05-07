@@ -10,7 +10,7 @@ drs_stat(source = character(), region = "US")
 
 drs_access_url(source = character(), region = "US")
 
-drs_cp(source, destination, ...)
+drs_cp(source, destination, ..., overwrite = FALSE)
 }
 \arguments{
 \item{source}{character() DRS URLs (beginning with 'drs://') to
@@ -27,6 +27,9 @@ files.}
 
 \item{...}{additional arguments, passed to \code{gsutil_cp()} for file
 copying.}
+
+\item{overwrite}{logical(1) indicating that source \code{fileName}s
+present in \code{destination} should downloaded again.}
 }
 \value{
 \code{drs_stat()} returns a tbl with the following columns:
