@@ -87,9 +87,9 @@
             conditionMessage(attr(response[[first_error_idx]], "condition"))
         warning(
             "failed to resolve ", sum(!ok), " DRS url(s):\n",
-            "url(s):\n",
-            "  ", paste(source[!ok], collapse = "\n"), "\n",
-            "first error:\n",
+            "  url(s):\n",
+            "    ", paste(source[!ok], collapse = "\n    "), "\n",
+            "first error:\n  ",
             first_error
         )
         ## remember ok and failed drs rows
@@ -248,83 +248,20 @@ drs_access_url <-
     result
 }
 
-.drs_check_local_path_exists <-
-    function(path)
-{
-    file_exists <- file.exists(path)
-    if (any(file_exists)) {
-        stop(
-            "'destination' file paths already exist:",
-            "\n  ", paste0(path[file_exists], collapse = "\n  ")
-        )
-    }
-}
-
-.drs_cp <-
-    function(source, destination, ..., FUN)
-{
-    Map(function(source, destination, ...) {
-        status <- "OK"
-        tryCatch({
-            message(basename(destination), " ", appendLF = FALSE)
-            if (.is_local_directory(dirname(destination)))
-                .drs_check_local_path_exists(destination)
-            FUN(source, destination, ...)
-        }, error = function(err) {
-            msg <- paste0(
-                "failed to download drs resource:",
-                "\n  source: ", source,
-                "\n  reason: ", conditionMessage(err)
-            )
-            warning(msg, call. = FALSE)
-            status <<- "FAIL"
-            NULL
-        })
-        message("[", status, "]")
-    }, source, destination, ...)
-}
-
-.drs_download <-
-    function(tbl, destination)
-{
-    tbl <-
-        tbl |>
-        filter( .is_https(tbl$url) & .is_local_directory(destination) )
-    if (!nrow(tbl))
-        return(tbl)
-
-    path <- file.path(destination, tbl$fileName)
-    .drs_cp(tbl$url, path, MoreArgs = list(quiet = TRUE), FUN = download.file)
-
-    mutate(tbl, destination = path)
-}
-
-.drs_gsutil_cp <-
-    function(tbl, destination)
-{
-    tbl <-
-        tbl |>
-        filter( !(.is_https(tbl$url) & .is_local_directory(destination)) )
-
-    if (!nrow(tbl))
-        return(tbl)
-
-    path <- paste(destination, tbl$fileName, sep = "/")
-    .drs_cp(tbl$gsUri, path, FUN = gsutil_cp)
-    mutate(tbl, destination = path)
-}
-
 #' @rdname drs
 #' @md
 #'
 #' @description `drs_cp()` copies 0 or more DRS URIs to a google
 #'     bucket or local folder
 #'
-#' @param destination character(1) directory path in which to retrieve
-#'     files.
+#' @param destination `character(1)`, google cloud bucket or local
+#'     file system destination path.
 #'
 #' @param ... additional arguments, passed to `gsutil_cp()` for file
 #'     copying.
+#'
+#' @param overwrite logical(1) indicating that source `fileName`s
+#'     present in `destination` should downloaded again.
 #'
 #' @return `drs_cp()` returns a tibble like `drs_stat()`, but with
 #'     additional columns
@@ -336,34 +273,42 @@ drs_access_url <-
 #' @examples
 #'
 #' @export
-drs_cp <- function(source, destination, ...)
+drs_cp <- function(source, destination, ..., overwrite = FALSE)
     UseMethod("drs_cp")
 
 #' @export
 drs_cp.drs_stat_tbl <-
-    function(source, destination, ...)
+    function(source, destination, ..., overwrite = FALSE)
 {
     stopifnot(
+        `'source' contains duplicate 'fileName's` =
+            anyDuplicated(source$fileName) == 0L,
         `'destination' must be a google bucket or existing local directory` =
-            .gsutil_is_uri(destination) || .is_local_directory(destination)
+            .gsutil_is_uri(destination) || .is_local_directory(destination),
+        .is_scalar_logical(overwrite)
     )
     destination <- sub("/$", "", destination)
     tbl <- source
 
-    ## download (https to local file system) or gsutil_cp each resource
-    tbl <- bind_rows(
-        .drs_download(tbl, destination),
-        .drs_gsutil_cp(tbl, destination)
+    ## use gsutil_cp to copy each resource
+    result <- gsutil_cp(
+        tbl$gsUri,
+        destination,
+        if (!overwrite) "-n",
+        ...
     )
-    template <- c(.DRS_STAT_TEMPLATE, list(destination = character()))
-    tbl <- .tbl_with_template(tbl, template)
-    order_idx <- match(source$drs, tbl$drs)
-    tbl[order_idx, ]
+
+    ## add to drs_stat_tbl
+    tbl <-
+        tbl |>
+        mutate(destination = file.path(destination, basename(.data$gsUri)))
+
+    tbl
 }
 
 #' @export
 drs_cp.character <-
-    function(source, destination, ...)
+    function(source, destination, ..., region = "US", overwrite = FALSE)
 {
     stopifnot(
         `'source' must be DRS URIs, e.g., starting with "drs://"` =
@@ -372,6 +317,6 @@ drs_cp.character <-
             .gsutil_is_uri(destination) || .is_local_directory(destination)
     )
 
-    tbl <- drs_stat(source)
-    drs_cp(tbl, destination, ...)
+    tbl <- drs_stat(source, region)
+    drs_cp(tbl, destination, ..., overwrite = overwrite)
 }
