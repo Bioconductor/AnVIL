@@ -475,6 +475,83 @@ set individual elements of the workspace.
 includes the 'DATA', 'NOTEBOOK', and 'WORKFLOWS' elements of the
 workspace.
 
+## Using `drs_*()` for resolving DRS (Data Repository Service) URIs
+
+The Data Repository Service (DRS) is a GA4GH standard that separates a
+resource location (e.g., google bucket of a VCF file) from the URI
+that identifies the resource. A URI with the form `drs://...` is submitted to the Terra / AnVIL DRS, and translated to bucket (e.g., `gs://...`) or
+`https://...` URIs. One use case for DRS is when the location (e.g.,
+google bucket) of the resouce moves. In this case the DRS identifier
+does not change, so no changes are needed to code or data resources
+that referenced the object. A second use case is when access to a
+resource is restricted. The DRS URI in conjunction with appropriate
+credentials can then be translated to a 'signed' https URL that
+encodes authentication information, allowing standard software like a
+web browser, or R commands like `download.file()` or
+`VariantAnnotation::readVcf()` to access the resource. A Terra [support
+article][DRS] provides more information, though not about DRS in R!
+
+[DRS]: https://support.terra.bio/hc/en-us/articles/360039330211
+
+The following DRS URIs identify a 1000 Genomes VCF file and it's index
+
+```{r}
+uri <- c(
+    vcf = "drs://dg.ANV0/6f633518-f2de-4460-aaa4-a27ee6138ab5",
+    tbi = "drs://dg.ANV0/4fb9e77f-c92a-4deb-ac90-db007dc633aa"
+)
+```
+
+Information about the URIs can be discovered with `drs_stat()`
+
+```{r, eval = FALSE}
+tbl <- drs_stat(uri)
+```
+Column names indicate the information that is avaialable, e.g., the
+google object (`gsUri`) and size (`size`) of the object, and the
+object's file name (`fileName`)
+
+```
+> names(tbl)
+[1] "drs"         "fileName"    "size"        "gsUri"       "accessUrl"
+[6] "timeUpdated" "hashes"      "bucket"      "name"
+```
+
+`drs_cp()` provides a convient way to translate DRS URIs to `gs://`
+URIs, and to copy files from their cloud location to the local disk or
+another bucket, e.g.,
+
+```{r, eval = FALSE}
+drs_cp(uri, "/tmp")     # local temporary directory
+drs_cp(uri, avbucket()) # workspace bucket
+```
+
+`drs_access_url()` translates the DRS URI to a standard HTTPS URI, but
+with additional authentication information embedded. These HTTPS URIs
+are usually time-limited. They can be used like regular HTTPS URIs, e.g, 
+
+```{r, eval = FALSE}
+suppressPackageStartupMessages({
+    library(VariantAnnotation)
+})
+https <- drs_access_url(uri)
+vcffile <- VcfFile(https[["vcf"]], https[["tbi"]])
+## class: VCFHeader 
+## samples(1): NA21144
+## meta(3): fileformat reference contig
+## fixed(2): FILTER ALT
+## info(16): BaseQRankSum ClippingRankSum ... ReadPosRankSum VariantType
+## geno(11): GT AB ... PL SB
+
+variants <- readVcf(vcffile, param = GRanges("chr1:1-1000000"))
+nrow(variants)
+## [1] 123077
+```
+
+The buckets are both 'requester pays' (see
+`gsutil_requesterpays(uri)`), so these queries are billed to the
+current project.
+
 # For developers
 
 ## Set-up
