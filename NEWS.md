@@ -1,3 +1,10 @@
+# AnVIL 1.10.0
+
+NEW FEATURES
+
+- (v 1.9.1) add `drs_access_url()` to returned signed `https://` URLs
+  from `drs://` URIs. Enhance `drs_cp()`.
+
 # AnVIL 1.8.0
 
 NEW FEATURES

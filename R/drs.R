@@ -9,14 +9,13 @@
     drs = character(),
     fileName = character(),
     size = integer(),
-    url = character(),
-    timeCreated = character(),
+    gsUri = character(),
+    accessUrl = character(),
     timeUpdated = character(),
-    urlType = character(),
-    hashes = list()
-    ## bucket = character(),
-    ## name = character(),
-    ## googleServiceAccount = list()
+    hashes = list(),
+    bucket = character(),
+    name = character(),
+    googleServiceAccount = list()
 )
 
 .drs_is_uri <-
@@ -35,31 +34,76 @@
     )
 
     body <- list(
-        fields = c(
-            "fileName", "hashes", "size", "gsUri",
-            "timeUpdated", "accessUrl"),
+        fields = setdiff(names(template), "drs"),
         url = jsonlite::unbox(drs)
     )
     body_json <- jsonlite::toJSON(body)
     response <- POST(.DRS_MARTHA, headers, body = body_json, encode="raw")
     .avstop_for_status(response, "DRS resolution")
-    lst <- as.list(response)
-    if (is.null(lst$accessUrl)) {
-        url <- lst$gsUri
-        urlType <- "gs"
-    } else {
-        url <- lst$accessUrl$url
-        urlType <- "signed"
-    }
-    lst[c("drs", "url", "urlType")] <- list(drs, url, urlType)
-    is_list <- # nest list elements so length == 1L
+
+    ## add drs field to response
+    lst <- c(as.list(response), list(drs = drs))
+
+    ## nest list elements so length == 1L
+    is_list <-
         vapply(lst, is.list, logical(1))
     lst[is_list] <- lapply(lst[is_list], list)
-    tbl <- as_tibble(lst[lengths(lst) == 1L])
 
+    ## return as tibble
+    tbl <- as_tibble(lst[lengths(lst) == 1L])
     .tbl_with_template(tbl, template)
 }
 
+.drs_stat_impl <-
+    function(source, template)
+{
+    access_token <- .gcloud_access_token("drs")
+
+    if (identical(.Platform$OS.type, "windows")) {
+        mc.cores <- 1L
+    } else {
+        mc.cores <- getOption("mc.cores", max(min(length(source), 8L), 1L))
+    }
+    response <- withCallingHandlers({
+        mclapply(
+            source, .martha_v3, template, access_token,
+            mc.cores = mc.cores
+        )
+    }, warning = function(condition) {
+        ## handled below
+        invokeRestart("muffleWarning")
+    })
+    if (!length(response))
+        ## length(source) == 0L
+        response <- list(
+            .tbl_with_template(as_tibble(list()), template)
+        )
+
+    ## validate response
+    ok <- vapply(response, inherits, logical(1), "tbl_df")
+    if (!all(ok)) {
+        first_error_idx <- head(which(!ok), 1L)
+        first_error <-
+            conditionMessage(attr(response[[first_error_idx]], "condition"))
+        warning(
+            "failed to resolve ", sum(!ok), " DRS url(s):\n",
+            "  url(s):\n",
+            "    ", paste(source[!ok], collapse = "\n    "), "\n",
+            "first error:\n  ",
+            first_error
+        )
+        ## remember ok and failed drs rows
+        failed_drs <- .tbl_with_template(tibble(drs = source[!ok]), template)
+        response <- c(response[ok], list(failed_drs))
+    }
+
+    ## ensure tbl order matches input order
+    tbl <- bind_rows(response)
+    order_idx <- match(source, tbl$drs)
+    tbl <- tbl[order_idx, ]
+    class(tbl) <- c("drs_stat_tbl", class(tbl))
+    tbl
+}
 
 #' @rdname drs
 #' @md
@@ -82,6 +126,12 @@
 #'
 #' @param source character() DRS URLs (beginning with 'drs://') to
 #'     resources managed by the 'martha' DRS resolution server.
+#'
+#' @param region character(1) Google cloud 'region' in which the DRS
+#'     resource is located. Most data is located in \code{"US"} (the
+#'     default); in principle \code{"auto"} allows for discovery of
+#'     the region, but sometimes fails. Regions are enumerated at
+#'     \url{https://cloud.google.com/storage/docs/locations#available-locations}.
 #'
 #' @return `drs_stat()` returns a tbl with the following columns:
 #'
@@ -117,96 +167,85 @@
 #'
 #' @export
 drs_stat <-
-    function(source = character())
+    function(source = character(), region = "US")
 {
     stopifnot(
-        `'source' must be DRS URIs, e.g., starting with "drs://"` =
+        `'source' must be DRS URIs, i.e., starting with "drs://"` =
             all(.drs_is_uri(source))
     )
 
-    access_token <- .gcloud_access_token("drs")
+    tbl <- .drs_stat_impl(source, .DRS_STAT_TEMPLATE)
 
-    if (identical(.Platform$OS.type, "windows")) {
-        mc.cores <- 1L
-    } else {
-        mc.cores <- getOption("mc.cores", min(length(source), 8L))
-    }
-    response <- mclapply(
-        source, .martha_v3, .DRS_STAT_TEMPLATE, access_token,
-        mc.cores = mc.cores
+    select(tbl, -c("googleServiceAccount"))
+}
+
+.drs_access_url_1 <-
+    function(gsUri, data, project, region)
+{
+    ## write the service account credentials to a temporary file
+    key_file <- tempfile()
+    on.exit(unlink(key_file))
+    writeLines(jsonlite::toJSON(data[[1]], auto_unbox = TRUE), key_file)
+
+    ## invoke gsutil signurl
+    response <- .gsutil_do(c(
+        "signurl",
+        "-r", region,  # 'auto' fails when not using a service account
+        "-b", project, # project to be billed
+        key_file, gsUri
+    ))
+
+    ## signed url in last line, fourth tab-delimited field
+    strsplit(tail(response, 1L), "\t")[[1]][[4]]
+}
+
+.drs_access_url <-
+    function(tbl, region)
+{
+    as.character(unlist(
+        Map(
+            .drs_access_url_1, tbl$gsUri, tbl$googleServiceAccount,
+            MoreArgs = list(project = gcloud_project(), region = region)
+        ),
+        use.names = FALSE
+    ))
+}
+
+#' @rdname drs
+#'
+#' @description `drs_access_url()` returns a vector of 'signed' URLs
+#'     that allow access to restricted resources via standard https
+#'     protocols.
+#'
+#' @return `drs_access_url()` returns a vector of https URLs
+#'     corresponding to the vector of DRS URIs provided as inputs to
+#'     the function.
+#'
+#' @export
+drs_access_url <-
+    function(source = character(), region = "US")
+{
+    stopifnot(
+        `'source' must be DRS URIs, i.e., starting with "drs://"` =
+            all(.drs_is_uri(source))
     )
-    tbl <- bind_rows(response)
-    tbl <- .tbl_with_template(tbl, .DRS_STAT_TEMPLATE)
-    order_idx <- match(source, tbl$drs)
-    tbl <- tbl[order_idx, ]
-    class(tbl) <- c("drs_stat_tbl", class(tbl))
-    tbl
-}
 
-.drs_check_local_path_exists <-
-    function(path)
-{
-    file_exists <- file.exists(path)
-    if (any(file_exists)) {
-        stop(
-            "'destination' file paths already exist:",
-            "\n  ", paste0(path[file_exists], collapse = "\n  ")
+    template_idx <- c("drs", "gsUri", "googleServiceAccount")
+    template <- .DRS_STAT_TEMPLATE[template_idx]
+    tbl <- .drs_stat_impl(source, template)
+    result <- rep(NA_character_, NROW(tbl))
+
+    available <- lengths(tbl$googleServiceAccount) != 0L
+    if (!all(available))
+        warning(
+            "'source' not available as signed URLs:\n",
+            paste0("  '", source[!available], "'\n"),
+            call. = FALSE
         )
-    }
-}
-
-.drs_cp <-
-    function(source, destination, ..., FUN)
-{
-    Map(function(source, destination, ...) {
-        status <- "OK"
-        tryCatch({
-            message(basename(destination), " ", appendLF = FALSE)
-            if (.is_local_directory(dirname(destination)))
-                .drs_check_local_path_exists(destination)
-            FUN(source, destination, ...)
-        }, error = function(err) {
-            msg <- paste0(
-                "failed to download drs resource:",
-                "\n  source: ", source,
-                "\n  reason: ", conditionMessage(err)
-            )
-            warning(msg, call. = FALSE)
-            status <<- "FAIL"
-            NULL
-        })
-        message("[", status, "]")
-    }, source, destination, ...)
-}
-
-.drs_download <-
-    function(tbl, destination)
-{
-    tbl <-
-        tbl |>
-        filter( .is_https(tbl$url) & .is_local_directory(destination) )
-    if (!nrow(tbl))
-        return(tbl)
-
-    path <- file.path(destination, tbl$fileName)
-    .drs_cp(tbl$url, path, MoreArgs = list(quiet = TRUE), FUN = download.file)
-
-    mutate(tbl, destination = path)
-}
-
-.drs_gsutil_cp <-
-    function(tbl, destination)
-{
-    tbl <-
-        tbl |>
-        filter( !(.is_https(tbl$url) & .is_local_directory(destination)) )
-
-    if (!nrow(tbl))
-        return(tbl)
-
-    path <- paste(destination, tbl$fileName, sep = "/")
-    .drs_cp(tbl$url, path, FUN = gsutil_cp)
-    mutate(tbl, destination = path)
+    result[available] <- .drs_access_url(filter(tbl, available), region)
+    if (!is.null(names(source)))
+        names(result) <- names(source)
+    result
 }
 
 #' @rdname drs
@@ -215,11 +254,14 @@ drs_stat <-
 #' @description `drs_cp()` copies 0 or more DRS URIs to a google
 #'     bucket or local folder
 #'
-#' @param destination character(1) directory path in which to retrieve
-#'     files.
+#' @param destination `character(1)`, google cloud bucket or local
+#'     file system destination path.
 #'
 #' @param ... additional arguments, passed to `gsutil_cp()` for file
 #'     copying.
+#'
+#' @param overwrite logical(1) indicating that source `fileName`s
+#'     present in `destination` should downloaded again.
 #'
 #' @return `drs_cp()` returns a tibble like `drs_stat()`, but with
 #'     additional columns
@@ -231,34 +273,42 @@ drs_stat <-
 #' @examples
 #'
 #' @export
-drs_cp <- function(source, destination, ...)
+drs_cp <- function(source, destination, ..., overwrite = FALSE)
     UseMethod("drs_cp")
 
 #' @export
 drs_cp.drs_stat_tbl <-
-    function(source, destination, ...)
+    function(source, destination, ..., overwrite = FALSE)
 {
     stopifnot(
+        `'source' contains duplicate 'fileName's` =
+            anyDuplicated(source$fileName) == 0L,
         `'destination' must be a google bucket or existing local directory` =
-            .gsutil_is_uri(destination) || .is_local_directory(destination)
+            .gsutil_is_uri(destination) || .is_local_directory(destination),
+        .is_scalar_logical(overwrite)
     )
     destination <- sub("/$", "", destination)
     tbl <- source
 
-    ## download (https to local file system) or gsutil_cp each resource
-    tbl <- bind_rows(
-        .drs_download(tbl, destination),
-        .drs_gsutil_cp(tbl, destination)
+    ## use gsutil_cp to copy each resource
+    result <- gsutil_cp(
+        tbl$gsUri,
+        destination,
+        if (!overwrite) "-n",
+        ...
     )
-    template <- c(.DRS_STAT_TEMPLATE, list(destination = character()))
-    tbl <- .tbl_with_template(tbl, template)
-    order_idx <- match(source$drs, tbl$drs)
-    tbl[order_idx, ]
+
+    ## add to drs_stat_tbl
+    tbl <-
+        tbl |>
+        mutate(destination = file.path(destination, basename(.data$gsUri)))
+
+    tbl
 }
 
 #' @export
 drs_cp.character <-
-    function(source, destination, ...)
+    function(source, destination, ..., region = "US", overwrite = FALSE)
 {
     stopifnot(
         `'source' must be DRS URIs, e.g., starting with "drs://"` =
@@ -267,6 +317,6 @@ drs_cp.character <-
             .gsutil_is_uri(destination) || .is_local_directory(destination)
     )
 
-    tbl <- drs_stat(source)
-    drs_cp(tbl, destination, ...)
+    tbl <- drs_stat(source, region)
+    drs_cp(tbl, destination, ..., overwrite = overwrite)
 }
