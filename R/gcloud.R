@@ -96,9 +96,10 @@ gcloud_exists <-
     if (identical(value, "(unset)")) {
         message <- paste0(
             "'", function_name, "()' returned '(unset)'; this may indicate ",
-            "that the gcloud active configuration is incorrect"
+            "that the gcloud active configuration is incorrect. Try ",
+            "`gcloud auth application-default login` at the command line"
         )
-        message(paste(strwrap(message), collapse = "\n"))
+        warning(paste(strwrap(message), collapse = "\n"))
     }
     value
 }

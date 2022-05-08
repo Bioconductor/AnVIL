@@ -11,6 +11,9 @@ NEW FEATURES
 - (v 1.7.9) export `repository_stats()` to summarize binary package
   availability.
 
+- (v 1.8.1) add `drs_access_url()` to returned signed `https://` URLs
+  from `drs://` URIs. Enhance `drs_cp()`.
+
 USER VISIBLE CHANGES
 
 - (v 1.7.4) Deprecate `avworkflow_configuration()`,

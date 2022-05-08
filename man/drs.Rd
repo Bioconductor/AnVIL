@@ -2,22 +2,34 @@
 % Please edit documentation in R/drs.R
 \name{drs_stat}
 \alias{drs_stat}
+\alias{drs_access_url}
 \alias{drs_cp}
 \title{DRS (Data Repository Service) URL management}
 \usage{
-drs_stat(source = character())
+drs_stat(source = character(), region = "US")
 
-drs_cp(source, destination, ...)
+drs_access_url(source = character(), region = "US")
+
+drs_cp(source, destination, ..., overwrite = FALSE)
 }
 \arguments{
 \item{source}{character() DRS URLs (beginning with 'drs://') to
 resources managed by the 'martha' DRS resolution server.}
+
+\item{region}{character(1) Google cloud 'region' in which the DRS
+resource is located. Most data is located in \code{"US"} (the
+default); in principle \code{"auto"} allows for discovery of
+the region, but sometimes fails. Regions are enumerated at
+\url{https://cloud.google.com/storage/docs/locations#available-locations}.}
 
 \item{destination}{character(1) directory path in which to retrieve
 files.}
 
 \item{...}{additional arguments, passed to \code{gsutil_cp()} for file
 copying.}
+
+\item{overwrite}{logical(1) indicating that source \code{fileName}s
+present in \code{destination} should downloaded again.}
 }
 \value{
 \code{drs_stat()} returns a tbl with the following columns:
@@ -38,6 +50,10 @@ a Bond supported host).
 value; if unknown. it returns null)
 }
 
+`drs_access_url()` returns a vector of https URLs
+    corresponding to the vector of DRS URIs provided as inputs to
+    the function.
+
 \code{drs_cp()} returns a tibble like \code{drs_stat()}, but with
 additional columns
 \itemize{
@@ -49,6 +65,10 @@ simple signed URL (\code{TRUE}) or auxilliary service account.
 \description{
 \code{drs_stat()} resolves zero or more DRS URLs to their
 google bucket location.
+
+`drs_access_url()` returns a vector of 'signed' URLs
+    that allow access to restricted resources via standard https
+    protocols.
 
 \code{drs_cp()} copies 0 or more DRS URIs to a google
 bucket or local folder

@@ -123,7 +123,11 @@ gsutil_ls <-
 .gsutil_exists_1 <-
     function(source, gsutil)
 {
-    args <- c("ls", source)
+    args <- c(
+        .gsutil_requesterpays_flag(source),
+        "ls",
+        shQuote(source)
+    )
     value <- withCallingHandlers({
         system2(gsutil, args, stdout = TRUE, stderr = TRUE, wait=TRUE)
     }, warning = function(w) {
@@ -151,7 +155,7 @@ gsutil_exists <-
     gsutil <- .gcloud_sdk_find_binary("gsutil")
     stopifnot(file.exists(gsutil))      # bad environment variables
 
-    source <- setNames(shQuote(source), source)
+    source <- setNames(source, source)
     vapply(source, .gsutil_exists_1, logical(1), gsutil)
 }
 
