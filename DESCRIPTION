@@ -1,12 +1,13 @@
 Package: AnVIL
 Title: Bioconductor on the AnVIL compute environment
-Version: 1.9.1
+Version: 1.9.2
 Authors@R: 
     c(person(
         "Martin", "Morgan", role = c("aut", "cre"),
         email = "mtmorgan.bioc@gmail.com",
         comment = c(ORCID = "0000-0002-5874-8148")
      ),
+     person("Kayla", "Interdonato", role = "aut"),
      person("Nitesh", "Turaga", role = "aut"),
      person("BJ", "Stubbs", role =  "ctb"),
      person("Vincent", "Carey", role = "ctb"),

@@ -5,6 +5,12 @@ NEW FEATURES
 - (v 1.9.1) add `drs_access_url()` to returned signed `https://` URLs
   from `drs://` URIs. Enhance `drs_cp()`.
 
+USER VISIBLE CHANGES
+
+- (v 1.9.2) Deprecate AnVIL::install() & friends in favor of
+  BiocManager::install(), which now knows about container binary
+  repositories.
+
 # AnVIL 1.8.0
 
 NEW FEATURES

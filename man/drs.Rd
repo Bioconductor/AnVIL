@@ -22,8 +22,8 @@ default); in principle \code{"auto"} allows for discovery of
 the region, but sometimes fails. Regions are enumerated at
 \url{https://cloud.google.com/storage/docs/locations#available-locations}.}
 
-\item{destination}{character(1) directory path in which to retrieve
-files.}
+\item{destination}{\code{character(1)}, google cloud bucket or local
+file system destination path.}
 
 \item{...}{additional arguments, passed to \code{gsutil_cp()} for file
 copying.}

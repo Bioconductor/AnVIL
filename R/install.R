@@ -4,8 +4,8 @@ BINARY_BASE_URL <- "https://bioconductor.org/packages/%s/container-binaries/%s"
 #'
 #' @title Discover binary packages for fast installation
 #'
-#' @description `install()`: install R / Bioconductor packages, using
-#'     fast pre-built 'binary' libraries if available.
+#' @description `install()` is deprecated in favor of
+#'     `BiocManager::install()`.
 #'
 #' @param pkgs `character()` packages to install from binary repository.
 #'
@@ -21,11 +21,6 @@ BINARY_BASE_URL <- "https://bioconductor.org/packages/%s/container-binaries/%s"
 #'     package 'CRAN-style' repository; not usually required by the
 #'     end-user.
 #'
-#' @return `install()`: return value of `BiocManager::install()`.
-#'
-#' @examples
-#' \dontrun{install(c('BiocParallel', 'BiocGenerics'))}
-#'
 #' @export
 install <-
     function(
@@ -33,6 +28,7 @@ install <-
         version = BiocManager::version(), binary_base_url = BINARY_BASE_URL
     )
 {
+    .Deprecated("BiocManager::install()")
     stopifnot(
         .is_character(pkgs),
         .is_scalar_character(version) || is.package_version(version),
@@ -80,17 +76,8 @@ install <-
 #'
 #' @aliases BINARY_BASE_URL
 #'
-#' @description `repository()`: the location of the repository of
-#'     binary packages for fast installation, if available.
-#'
-#' @details The unexported URL to the base repository is available
-#'     with `AnVIL:::BINARY_BASE_URL`.
-#'
-#' @return `repository()`: character(1) location of binary repository,
-#'     if available, or character(0) if not.
-#'
-#' @examples
-#' repository()
+#' @description `repository()` is deprecated in favor of
+#'     `BiocManager::containerRepository()`.
 #'
 #' @importFrom utils contrib.url
 #'
@@ -100,11 +87,17 @@ repository <-
         version = BiocManager::version(),
         binary_base_url = BINARY_BASE_URL)
 {
+    .Deprecated("BiocManager::containerRepository()")
     stopifnot(
         ## 'version' validated in '.repository_container_version_test()'
         .is_scalar_character(binary_base_url)
     )
+    .repository(version, binary_base_url)
+}
 
+.repository <-
+    function(version, binary_base_url)
+{
     platform_docker <- .repository_container_version()
     container_version <- platform_docker$container_version
     platform <- platform_docker$platform
@@ -138,23 +131,8 @@ repository <-
 
 #' @rdname install
 #'
-#' @description `repositories()`: repositories to search for binary
-#'     (if available), Bioconductor, and CRAN packages.
-#'
-#' @details `repositories()` prepends an additional repository URI to
-#'     `BiocManager::repositories()`. The URI is formed by
-#'     concatenating `binary_base_url`, the environment variables
-#'     `TERRA_R_PLATFORM` and the 'major' and 'minor' components of
-#'     `TERRA_R_PLATFORM_BINARY_VERSION` and
-#'     `BiocManager::version()`. The URI is only prepended if a
-#'     CRAN-style repostiory exists at that location, with binary
-#'     package tar.gz content described by `src/contrib/PACKAGES.gz`.
-#'
-#' @return `repositories()`: character() of binary (if available),
-#'     Bioconductor, and CRAN repositories.
-#'
-#' @examples
-#' repositories()
+#' @description `repositories()` is deprecated in favor of
+#'     `BiocManager::repositories()`.
 #'
 #' @export
 repositories <-
@@ -162,6 +140,7 @@ repositories <-
         version = BiocManager::version(),
         binary_base_url = BINARY_BASE_URL)
 {
+    .Deprecated("BiocManager::repositories()")
     stopifnot(
         .is_scalar_character(version) || is.package_version(version),
         .is_scalar_character(binary_base_url)
@@ -242,7 +221,7 @@ repository_stats <-
     bioc_repository <- suppressMessages({
         BiocManager::repositories()[["BioCsoft"]]
     })
-    binary_repository <- repository(version, binary_base_url)
+    binary_repository <- .repository(version, binary_base_url)
     db_bioc <- available.packages(repos = bioc_repository)
     if (length(binary_repository)) {
         db_binary <- available.packages(repos = binary_repository)

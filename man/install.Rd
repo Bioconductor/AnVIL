@@ -54,14 +54,6 @@ end-user.}
 `.libPaths()`. Paths that do not exist will be created.}
 }
 \value{
-`install()`: return value of `BiocManager::install()`.
-
-`repository()`: character(1) location of binary repository,
-    if available, or character(0) if not.
-
-`repositories()`: character() of binary (if available),
-    Bioconductor, and CRAN repositories.
-
 `repository_stats()` returns a list of class
     `repository_stats` with the following fields:
 \itemize{
@@ -107,33 +99,20 @@ build system.}
 `add_libpaths()`: updated .libPaths(), invisibly.
 }
 \description{
-`install()`: install R / Bioconductor packages, using
-    fast pre-built 'binary' libraries if available.
+`install()` is deprecated in favor of
+    `BiocManager::install()`.
 
-`repository()`: the location of the repository of
-    binary packages for fast installation, if available.
+`repository()` is deprecated in favor of
+    `BiocManager::containerRepository()`.
 
-`repositories()`: repositories to search for binary
-    (if available), Bioconductor, and CRAN packages.
+`repositories()` is deprecated in favor of
+    `BiocManager::repositories()`.
 
 `repository_stats():` summarize binary packages
     compatible with the Bioconductor or Terra container in use.
 
 `add_libpaths()`: Add local library paths to
     `.libPaths()`.
-}
-\details{
-The unexported URL to the base repository is available
-    with `AnVIL:::BINARY_BASE_URL`.
-
-`repositories()` prepends an additional repository URI to
-    `BiocManager::repositories()`. The URI is formed by
-    concatenating `binary_base_url`, the environment variables
-    `TERRA_R_PLATFORM` and the 'major' and 'minor' components of
-    `TERRA_R_PLATFORM_BINARY_VERSION` and
-    `BiocManager::version()`. The URI is only prepended if a
-    CRAN-style repostiory exists at that location, with binary
-    package tar.gz content described by `src/contrib/PACKAGES.gz`.
 }
 \section{Methods (by generic)}{
 \itemize{
@@ -142,12 +121,6 @@ availability in binary repositories.
 }}
 
 \examples{
-\dontrun{install(c('BiocParallel', 'BiocGenerics'))}
-
-repository()
-
-repositories()
-
 stats <- repository_stats() # obtain statistics
 stats                       # display a summary
 stats$container             # access an element for further computation
