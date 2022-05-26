@@ -33,6 +33,14 @@
 .is_https <- function(x)
     .is_character(x) & startsWith(x, "https://")
 
+.is_workspace <-
+    function(x)
+{
+    .is_scalar_character(x) &&
+        ## exactly 1 `/`
+        identical(lengths(regmatches(x, gregexpr("/", x, fixed = TRUE))), 1L)
+}
+
 #' @importFrom dplyr full_join
 .tbl_with_template <-
     function(tbl, tmpl)
