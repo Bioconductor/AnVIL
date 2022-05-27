@@ -38,6 +38,8 @@ empty_object
 
 operations(x, ..., .deprecated = FALSE)
 
+\S4method{operations}{Service}(x, ..., auto_unbox = FALSE, .deprecated = FALSE)
+
 schemas(x)
 
 tags(x, .tags, .deprecated = FALSE)
@@ -70,6 +72,10 @@ package and documented on this page, e.g., \code{leonardo} or
 function.}
 
 \item{.deprecated}{optional logical(1) include deprecated operations?}
+
+\item{auto_unbox}{logical(1) If FALSE (default) do not
+automatically 'unbox' R scalar values from JSON arrays to JSON
+scalers.}
 
 \item{.tags}{optional character() of tags to use to filter operations.}
 

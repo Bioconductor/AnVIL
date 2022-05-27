@@ -95,5 +95,4 @@ if (gcloud_exists() && startsWith(gcloud_account(), "pet-")) {
     drs_stat(drs_eg_anvil)
 }
 
-
 }

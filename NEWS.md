@@ -5,6 +5,10 @@ NEW FEATURES
 - (v 1.9.1) add `drs_access_url()` to returned signed `https://` URLs
   from `drs://` URIs. Enhance `drs_cp()`.
 
+- (v 1.9.4) add `auto_unbox=` argument to Service class, allowing
+  other developers flexibility in unboxing values passed to REST
+  APIs.
+
 USER VISIBLE CHANGES
 
 - (v 1.9.2) Deprecate AnVIL::install() & friends in favor of

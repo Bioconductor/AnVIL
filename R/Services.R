@@ -40,11 +40,20 @@ setGeneric(
     signature = "x"
 )
 
+#' @rdname Services
+#'
+#' @param auto_unbox logical(1) If FALSE (default) do not
+#'     automatically 'unbox' R scalar values from JSON arrays to JSON
+#'     scalers.
+#'
 #' @export
 setMethod(
     "operations", "Service",
-    function(x, ..., .deprecated = FALSE)
+    function(x, ..., auto_unbox = FALSE, .deprecated = FALSE)
 {
+    stopifnot(
+        .is_scalar_logical(auto_unbox)
+    )
     operations <- .api_get_operations(.api(x), ...)
     deprecated <- .operation_field(operations, "deprecated")
     keep <- .deprecated | !vapply(deprecated, isTRUE, logical(1))
