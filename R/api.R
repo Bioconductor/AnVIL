@@ -105,7 +105,7 @@
 
 #' @importFrom jsonlite unbox
 .api_get_message_body <-
-    function(op_def, body)
+    function(op_def, body, auto_unbox)
 {
     if (identical(op_def$consumes, "multipart/form-data")) {
         json <- body
@@ -128,7 +128,7 @@
             if (type[idx] %in% c("string", "number", "integer", "boolean"))
                 body[[nm]] <- unbox(body[[nm]])
         }
-        json <- jsonlite::toJSON(body, pretty = TRUE)
+        json <- jsonlite::toJSON(body, pretty = TRUE, auto_unbox = auto_unbox)
     }
 
     json
@@ -137,7 +137,9 @@
 #' @importFrom rapiclient get_operation_definitions
 #' @importFrom httr POST PATCH PUT GET HEAD DELETE
 .api_get_operations <-
-    function(api, .headers = NULL, path = NULL, handle_response = identity)
+    function(api, .headers = NULL, path = NULL, handle_response = identity,
+        auto_unbox = FALSE
+    )
 {
     operation_defs <- get_operation_definitions(api, path)
 
@@ -153,7 +155,7 @@
             PUT = function(..., .__body__ = list()) {
                 args <- .api_args(formals(), environment())
                 body0 <- .api_body(formals(), ..., .__body__ = .__body__)
-                body <-  .api_get_message_body(op_def, body0)
+                body <-  .api_get_message_body(op_def, body0, auto_unbox)
                 result <- HTTR_FUN(
                     url = .api_get_url(api, op_def, args),
                     config = .api_get_config(api),
