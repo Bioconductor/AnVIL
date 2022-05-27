@@ -1,5 +1,4 @@
 #' @rdname avworkflow_configuration
-#' @md
 #'
 #' @name avworkflow_configurations
 #'
@@ -30,7 +29,6 @@ NULL
 })
 
 #' @rdname avworkflow_configuration
-#' @md
 #'
 #' @description `avworkflow_namespace()` and `avworkflow_name()` are
 #'     utility functions to record the workflow namespace and name
@@ -128,7 +126,6 @@ avworkflow <-
 }
 
 #' @rdname avworkflow_configuration
-#' @md
 #'
 #' @description `avworkflow_configuration_get()` returns a list structure
 #'     describing an existing workflow configuration.
@@ -163,7 +160,6 @@ avworkflow_configuration_get <-
 }
 
 #' @rdname avworkflow_configuration
-#' @md
 #'
 #' @description `avworkflow_configuration_inputs()` returns a
 #'     data.frame template for the inputs defined in a workflow
@@ -194,7 +190,6 @@ avworkflow_configuration_inputs <-
 }
 
 #' @rdname avworkflow_configuration
-#' @md
 #'
 #' @description `avworkflow_configuration_outputs()` returns a
 #'     data.frame template for the outputs defined in a workflow
@@ -267,7 +262,6 @@ avworkflow_configuration_outputs <-
 }
 
 #' @rdname avworkflow_configuration
-#' @md
 #'
 #' @description `avworkflow_configuration_update()` returns a list structure
 #'     describing a workflow configuration with updated inputs and / or outputs.
@@ -305,7 +299,6 @@ avworkflow_configuration_update <-
 }
 
 #' @rdname avworkflow_configuration
-#' @md
 #'
 #' @description `avworkflow_configuration_set()` updates an
 #'     existing configuration, e.g., changing inputs to the workflow.
@@ -414,7 +407,6 @@ avworkflow_configuration_set <-
 }
 
 #' @rdname avworkflow_configuration
-#' @md
 #'
 #' @description `avworkflow_configuration_template()` returns a
 #'     template for defining workflow configurations. This template
@@ -423,17 +415,16 @@ avworkflow_configuration_set <-
 #'
 #' @details The exact format of the configuration is important.
 #'
-#'     One common problem is that a scalar character vector `"bar"` is
-#'     interpretted as a json 'array' `["bar"]` rather than a json
-#'     string `"bar"`. Enclose the string with
-#'     `jsonlite::unbox("bar")` in the configuration list if the
-#'     length 1 character vector in R is to be interpretted as a json
-#'     string.
+#' One common problem is that a scalar character vector `"bar"` is
+#' interpretted as a json 'array' `["bar"]` rather than a json string
+#' `"bar"`. Enclose the string with `jsonlite::unbox("bar")` in the
+#' configuration list if the length 1 character vector in R is to be
+#' interpretted as a json string.
 #'
-#'     A second problem is that an unquoted unboxed character string
-#'     `unbox("foo")` is required by AnVIL to be quoted. This is
-#'     reported as a warning() about invalid inputs or outputs, and
-#'     the solution is to provide a quoted string `unbox('"foo"')`.
+#' A second problem is that an unquoted unboxed character string
+#' `unbox("foo")` is required by AnVIL to be quoted. This is reported
+#' as a warning() about invalid inputs or outputs, and the solution is
+#' to provide a quoted string `unbox('"foo"')`.
 #'
 #' @return `avworkflow_configuration_template()` returns a list
 #'     providing a template for configuration lists, with the
@@ -489,7 +480,6 @@ avworkflow_configuration_template <-
 }
 
 #' @rdname avworkflow_configuration
-#' @md
 #'
 #' @param x Object of class `avworkflow_configuration`.
 #'
@@ -503,14 +493,13 @@ print.avworkflow_configuration <-
 }
 
 #' @rdname AnVIL-deprecated
-#' @md
 #'
 #' @name AnVIL-deprecated
 #'
 #' @title Deprecated functions in package \sQuote{AnVIL}
 #'
 #' @description These functions are provided for compatibility with
-#'     older versions ofi \sQuote{AnVIL} only, and will be defunct at
+#'     older versions of \sQuote{AnVIL} only, and will be defunct at
 #'     the next release.
 #'
 #' @param configuration_namespace character(1).
@@ -526,10 +515,8 @@ print.avworkflow_configuration <-
 #' @details The following functions are deprecated and will be made
 #'     defunct; use the replacement indicated below:
 #'
-#'     \itemize{
-#'         \item{avworkflow_configuration: \code{\link{avworkflow_configuration_get}}}
-#'         \item{avworkflow_import_configuration: \code{\link{avworkflow_configuration_set}}}
-#'     }
+#' - `avworkflow_configuration()`: \code{\link{avworkflow_configuration_get}}
+#' - `avworkflow_import_configuration()`: \code{\link{avworkflow_configuration_set}}
 avworkflow_configuration <-
     function(configuration_namespace, configuration_name,
              namespace = avworkspace_namespace(),
@@ -543,7 +530,6 @@ avworkflow_configuration <-
 }
 
 #' @rdname AnVIL-deprecated
-#' @md
 avworkflow_import_configuration <-
     function(config,
              namespace = avworkspace_namespace(), name = avworkspace_name())

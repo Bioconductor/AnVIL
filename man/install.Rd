@@ -34,28 +34,28 @@ repository_stats(
 add_libpaths(paths)
 }
 \arguments{
-\item{pkgs}{`character()` packages to install from binary repository.}
+\item{pkgs}{\code{character()} packages to install from binary repository.}
 
-\item{...}{additional arguments. `install()` passes additional
+\item{...}{additional arguments. \code{install()} passes additional
 arguments to
-`BiocManager::install()`. `print.repository_stats()` ignores
+\code{BiocManager::install()}. \code{print.repository_stats()} ignores
 the additional arguments.}
 
-\item{version}{`character(1)` or `package_version` Bioconductor
+\item{version}{\code{character(1)} or \code{package_version} Bioconductor
 version, e.g., "3.12".}
 
-\item{binary_base_url}{`character(1)` host and base path for binary
+\item{binary_base_url}{\code{character(1)} host and base path for binary
 package 'CRAN-style' repository; not usually required by the
 end-user.}
 
-\item{x}{the object returned by `repository_stats()`.}
+\item{x}{the object returned by \code{repository_stats()}.}
 
-\item{paths}{`character()`: vector of directories to add to
-`.libPaths()`. Paths that do not exist will be created.}
+\item{paths}{\code{character()}: vector of directories to add to
+\code{.libPaths()}. Paths that do not exist will be created.}
 }
 \value{
-`repository_stats()` returns a list of class
-    `repository_stats` with the following fields:
+\code{repository_stats()} returns a list of class
+\code{repository_stats} with the following fields:
 \itemize{
 
 \item{container: }{character(1) container label, e.g.,
@@ -96,23 +96,23 @@ updated a package after the most recent run of the binary
 build system.}
 }
 
-`add_libpaths()`: updated .libPaths(), invisibly.
+\code{add_libpaths()}: updated .libPaths(), invisibly.
 }
 \description{
-`install()` is deprecated in favor of
-    `BiocManager::install()`.
+\code{install()} is deprecated in favor of
+\code{BiocManager::install()}.
 
-`repository()` is deprecated in favor of
-    `BiocManager::containerRepository()`.
+\code{repository()} is deprecated in favor of
+\code{BiocManager::containerRepository()}.
 
-`repositories()` is deprecated in favor of
-    `BiocManager::repositories()`.
+\code{repositories()} is deprecated in favor of
+\code{BiocManager::repositories()}.
 
-`repository_stats():` summarize binary packages
-    compatible with the Bioconductor or Terra container in use.
+\verb{repository_stats():} summarize binary packages
+compatible with the Bioconductor or Terra container in use.
 
-`add_libpaths()`: Add local library paths to
-    `.libPaths()`.
+\code{add_libpaths()}: Add local library paths to
+\code{.libPaths()}.
 }
 \section{Methods (by generic)}{
 \itemize{

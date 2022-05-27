@@ -115,12 +115,12 @@ avdisks()
 }
 \arguments{
 \item{namespace}{character(1) AnVIL workspace namespace as returned
-by, e.g., `avworkspace_namespace()`}
+by, e.g., \code{avworkspace_namespace()}}
 
 \item{name}{character(1) AnVIL workspace name as returned by, eg.,
-`avworkspace_name()`.}
+\code{avworkspace_name()}.}
 
-\item{table}{character(1) table name as returned by, e.g., `avtables()`.}
+\item{table}{character(1) table name as returned by, e.g., \code{avtables()}.}
 
 \item{n}{numeric(1) maximum number of rows to return}
 
@@ -133,67 +133,60 @@ larger page sizes are more efficient.}
 determining page order. Default is the entity field.}
 
 \item{sortDirection}{character(1) direction to sort entities
-(`"asc"`ending or `"desc"`ending) when paging.}
+(\code{"asc"}ending or \code{"desc"}ending) when paging.}
 
 \item{filterTerms}{character(1) string literal to select rows with
 an exact (substring) matches in column.}
 
 \item{.data}{A tibble or data.frame for import as an AnVIL table.}
 
-\item{entity}{`character(1)` column name of `.data` to be used as
+\item{entity}{\code{character(1)} column name of \code{.data} to be used as
 imported table name. When the table comes from R, this is
-usually a column name such as `sample`. The data will be
-imported into AnVIL as a table `sample`, with the `sample`
-column included with suffix `_id`, e.g., `sample_id`. A column
-in `.data` with suffix `_id` can also be used, e.g., `entity =
-"sample_id"`, creating the table `sample` with column
-`sample_id` in AnVIL. Finally, a value of `entity` that is not
-a column in `.data`, e.g., `entity = "unknown"`, will cause a
-new table with name `entity` and entity values
-`seq_len(nrow(.data))`.}
+usually a column name such as \code{sample}. The data will be
+imported into AnVIL as a table \code{sample}, with the \code{sample}
+column included with suffix \verb{_id}, e.g., \code{sample_id}. A column
+in \code{.data} with suffix \verb{_id} can also be used, e.g., \code{entity = "sample_id"}, creating the table \code{sample} with column
+\code{sample_id} in AnVIL. Finally, a value of \code{entity} that is not
+a column in \code{.data}, e.g., \code{entity = "unknown"}, will cause a
+new table with name \code{entity} and entity values
+\code{seq_len(nrow(.data))}.}
 
 \item{origin}{character(1) name of the entity (table) used to
 create the set e.g "sample", "participant",
 etc.}
 
-\item{set}{`character(1)` column name of `.data` identifying the
+\item{set}{\code{character(1)} column name of \code{.data} identifying the
 set(s) to be created.}
 
-\item{member}{`character()` vector of entity from the avtable
-identified by `origin`. The values may repeat if an ID is in
+\item{member}{\code{character()} vector of entity from the avtable
+identified by \code{origin}. The values may repeat if an ID is in
 more than one set}
 
 \item{values}{vector of values in the entity (key) column of
-`table` to be deleted. A table `sample` has an associated
-entity column with suffix `_id`, e.g., `sample_id`. Rows with
-entity column entries matching `values` are deleted.}
+\code{table} to be deleted. A table \code{sample} has an associated
+entity column with suffix \verb{_id}, e.g., \code{sample_id}. Rows with
+entity column entries matching \code{values} are deleted.}
 
 \item{as_path}{logical(1) when TRUE (default) return bucket with
-prefix `gs://` (for `avbucket()`) or `gs://<bucket-id>` (for
-`avfiles_ls()`).}
+prefix \verb{gs://} (for \code{avbucket()}) or \verb{gs://<bucket-id>} (for
+\code{avfiles_ls()}).}
 
-\item{path}{For `avfiles_ls(), the character(1) file or directory path
-    to list.
+\item{path}{For \verb{avfiles_ls(), the character(1) file or directory path to list. For }avfiles_rm()\verb{, the character() (perhaps with length greater than 1) of files or directory paths to be removed. The elements of }path\verb{can contain glob-style patterns, e.g.,}vign*`.}
 
-    For `avfiles_rm()`, the character() (perhaps with length
-    greater than 1) of files or directory paths to be removed. The
-    elements of `path` can contain glob-style patterns, e.g.,
-    `vign*`.}
-
-\item{full_names}{logical(1) return names relative to `path`
-(`FALSE`, default) or root of the workspace bucket?}
+\item{full_names}{logical(1) return names relative to \code{path}
+(\code{FALSE}, default) or root of the workspace bucket?}
 
 \item{recursive}{logical(1) list files recursively?}
 
-\item{source}{character() file paths. for `avfiles_backup()`,
-`source` can include directory names when `recursive = TRUE`.}
+\item{source}{character() file paths. for \code{avfiles_backup()},
+\code{source} can include directory names when \code{recursive = TRUE}.}
 
 \item{destination}{character(1) a google bucket
-(`gs://<bucket-id>/...`) to write files. The default is the
+(\verb{gs://<bucket-id>/...}) to write files. The default is the
 workspace bucket.}
 
 \item{parallel}{logical(1) backup files using parallel transfer?
-See `?gsutil_cp()`.}
+See \code{?gsutil_cp()}.}
 
 \item{project}{\code{character(1)} project (billing account) name, as
 returned by, e.g., \code{gcloud_project()} or
@@ -204,46 +197,46 @@ associated with billing account), as returned by
 \code{gcloud_account()}.}
 }
 \value{
-`avtables()`: A tibble with columns identifying the table,
-    the number of records, and the column names.
+\code{avtables()}: A tibble with columns identifying the table,
+the number of records, and the column names.
 
-`avtable()`: a tibble of data corresponding to the AnVIL
-    table `table` in the specified workspace.
+\code{avtable()}: a tibble of data corresponding to the AnVIL
+table \code{table} in the specified workspace.
 
-`avtable_paged()`: a tibble of data corresponding to the
-    AnVIL table `table` in the specified workspace.
+\code{avtable_paged()}: a tibble of data corresponding to the
+AnVIL table \code{table} in the specified workspace.
 
-`avtable_import()` returns a `character(1)` name of the
-    imported AnVIL tibble.
+\code{avtable_import()} returns a \code{character(1)} name of the
+imported AnVIL tibble.
 
-`avtable_import_set()` returns a `character(1)` name of the
-    imported AnVIL tibble.
+\code{avtable_import_set()} returns a \code{character(1)} name of the
+imported AnVIL tibble.
 
-`avtable_delete_values()` returns a `tibble` representing
-    deleted entities, invisibly.
+\code{avtable_delete_values()} returns a \code{tibble} representing
+deleted entities, invisibly.
 
-`avdata()` returns a tibble with five columns: `"type"`
-    represents the origin of the data from the 'REFERENCE' or
-    'OTHER' data menus. `"table"` is the table name in the
-    `REFERENCE` menu, or 'workspace' for the table in the 'OTHER'
-    menu, the key used to access the data element, the value label
-    associated with the data element and the value (e.g., google
-    bucket) of the element.
+\code{avdata()} returns a tibble with five columns: \code{"type"}
+represents the origin of the data from the 'REFERENCE' or
+'OTHER' data menus. \code{"table"} is the table name in the
+\code{REFERENCE} menu, or 'workspace' for the table in the 'OTHER'
+menu, the key used to access the data element, the value label
+associated with the data element and the value (e.g., google
+bucket) of the element.
 
-`avdata_import()` returns, invisibly, the subset of the
-    input table used to update the AnVIL tables.
+\code{avdata_import()} returns, invisibly, the subset of the
+input table used to update the AnVIL tables.
 
-`avbucket()` returns a `character(1)` bucket identifier,
-    prefixed with `gs://` if `as_path = TRUE`.
+\code{avbucket()} returns a \code{character(1)} bucket identifier,
+prefixed with \verb{gs://} if \code{as_path = TRUE}.
 
-`avfiles_ls()` returns a character vector of files in the
-    workspace bucket.
+\code{avfiles_ls()} returns a character vector of files in the
+workspace bucket.
 
-`avfiles_backup()` returns, invisibly, the status code of the
-    `gsutil_cp()` command used to back up the files.
+\code{avfiles_backup()} returns, invisibly, the status code of the
+\code{gsutil_cp()} command used to back up the files.
 
-`avfiles_rm()` on success, returns a list of the return
-    codes of `gsutil_rm()`, invisibly.
+\code{avfiles_rm()} on success, returns a list of the return
+codes of \code{gsutil_rm()}, invisibly.
 
 \code{avruntimes()} returns a tibble with columns
 \itemize{
@@ -286,32 +279,32 @@ the return value of \code{avruntimes()}.
 }
 }
 \description{
-`avtables()` describes tables available in a
-    workspace. Tables can be visualized under the DATA tab, TABLES
-    item.  `avtable()` returns an AnVIL table.  `avtable_paged()`
-    retrieves an AnVIL table by requesting the table in 'chunks',
-    and may be appropriate for large tables. `avtable_import()`
-    imports a data.frame to an AnVIL table.  `avtable_import_set()`
-    imports set membership (i.e., a subset of an existing table)
-    information to an AnVIL table.  `avtable_delete_values()`
-    removes rows from an AnVIL table.
+\code{avtables()} describes tables available in a
+workspace. Tables can be visualized under the DATA tab, TABLES
+item.  \code{avtable()} returns an AnVIL table.  \code{avtable_paged()}
+retrieves an AnVIL table by requesting the table in 'chunks',
+and may be appropriate for large tables. \code{avtable_import()}
+imports a data.frame to an AnVIL table.  \code{avtable_import_set()}
+imports set membership (i.e., a subset of an existing table)
+information to an AnVIL table.  \code{avtable_delete_values()}
+removes rows from an AnVIL table.
 
-`avdata()` returns key-value tables representing the
-    information visualized under the DATA tab, 'REFERENCE DATA' and
-    'OTHER DATA' items.  `avdata_import()` updates (modifies or
-    creates new, but does not delete) rows in 'REFERENCE DATA' or
-    'OTHER DATA' tables.
+\code{avdata()} returns key-value tables representing the
+information visualized under the DATA tab, 'REFERENCE DATA' and
+'OTHER DATA' items.  \code{avdata_import()} updates (modifies or
+creates new, but does not delete) rows in 'REFERENCE DATA' or
+'OTHER DATA' tables.
 
-`avbucket()` returns the workspace bucket, i.e., the
-    google bucket associated with a workspace. Bucket content can
-    be visualized under the 'DATA' tab, 'Files' item.
+\code{avbucket()} returns the workspace bucket, i.e., the
+google bucket associated with a workspace. Bucket content can
+be visualized under the 'DATA' tab, 'Files' item.
 
-`avfiles_ls()` returns the paths of files in the
-    workspace bucket.  `avfiles_backup()` copies files from the
-    compute node file system to the workspace bucket.
-    `avfiles_restore()` copies files from the workspace bucket to
-    the compute node file system.  `avfiles_rm()` removes files or
-    directories from the workspace bucket.
+\code{avfiles_ls()} returns the paths of files in the
+workspace bucket.  \code{avfiles_backup()} copies files from the
+compute node file system to the workspace bucket.
+\code{avfiles_restore()} copies files from the workspace bucket to
+the compute node file system.  \code{avfiles_rm()} removes files or
+directories from the workspace bucket.
 
 \code{avruntimes()} returns a tibble containing information
 about runtimes (notebooks or RStudio instances, for example)
@@ -326,26 +319,22 @@ and it is the runtime active in AnVIL.
 about persistent disks associatd with the current user.
 }
 \details{
-`avtable_import_set()` creates new rows in a table
-    `<origin>_set`. One row will be created for each distinct value
-    in the column identified by `set`. Each row entry has a
-    corresponding column `<origin>` linking to one or more rows in
-    the `<origin>` table, as given in the `member` column. The
-    operation is somewhat like `split(member, set)`.
+\code{avtable_import_set()} creates new rows in a table
+\verb{<origin>_set}. One row will be created for each distinct value
+in the column identified by \code{set}. Each row entry has a
+corresponding column \verb{<origin>} linking to one or more rows in
+the \verb{<origin>} table, as given in the \code{member} column. The
+operation is somewhat like \code{split(member, set)}.
 
-`avfiles_backup()` can be used to back-up individual files
-    or entire directories, recursively.  When `recursive = FALSE`,
-    files are backed up to the bucket with names approximately
-    `paste0(destination, "/", basename(source))`.  When `recursive
-    = TRUE` and source is a directory `path/to/foo/', files are
-    backed up to bucket names that include the directory name,
-    approximately `paste0(destination, "/", dir(basename(source),
-    full.names = TRUE))`.  Naming conventions are described in
-    detail in `gsutil_help("cp")`.
+\code{avfiles_backup()} can be used to back-up individual files
+or entire directories, recursively.  When \code{recursive = FALSE},
+files are backed up to the bucket with names approximately
+\code{paste0(destination, "/", basename(source))}.  When \code{recursive = TRUE} and source is a directory \verb{path/to/foo/', files are backed up to bucket names that include the directory name, approximately }paste0(destination, "/", dir(basename(source),
+full.names = TRUE))\verb{.  Naming conventions are described in detail in }gsutil_help("cp")`.
 
-`avfiles_restore()` behaves in a manner analogous to
-    `avfiles_backup()`, copying files from the workspace bucket to
-    the compute node file system.
+\code{avfiles_restore()} behaves in a manner analogous to
+\code{avfiles_backup()}, copying files from the workspace bucket to
+the compute node file system.
 }
 \examples{
 \dontrun{

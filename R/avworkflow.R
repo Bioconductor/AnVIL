@@ -1,5 +1,4 @@
 #' @rdname avworkflow
-#' @md
 #'
 #' @name avworkflows
 #'
@@ -9,7 +8,6 @@
 NULL
 
 #' @rdname avworkflow
-#' @md
 #'
 #' @description `avworkflows()` returns a tibble summarizing available
 #'     workflows.
@@ -63,7 +61,6 @@ avworkflows <-
 }
 
 #' @rdname avworkflow
-#' @md
 #'
 #' @description `avworkflow_jobs()` returns a tibble summarizing
 #'     submitted workflow jobs for a namespace and name.
@@ -148,7 +145,6 @@ avworkflow_jobs <-
 }
 
 #' @rdname avworkflow
-#' @md
 #'
 #' @description `avworkflow_files()` returns a tibble containing
 #'     information and file paths to workflow outputs.
@@ -244,7 +240,6 @@ avworkflow_files <-
 }
 
 #' @rdname avworkflow
-#' @md
 #'
 #' @description `avworkflow_localize()` creates or synchronizes a
 #'     local copy of files with files stored in the workspace bucket
@@ -258,9 +253,9 @@ avworkflow_files <-
 #'     large, e.g., aligned reads in bam files. See `gsutil_cp()` to
 #'     copy individual files from the bucket to the local drive.
 #'
-#'     `avworkflow_localize()` treats `submissionId=` in the same way
-#'     as `avworkflow_files()`: when missing, files from the most
-#'     recent workflow job are candidates for localization.
+#' `avworkflow_localize()` treats `submissionId=` in the same way as
+#' `avworkflow_files()`: when missing, files from the most recent
+#' workflow job are candidates for localization.
 #'
 #' @param destination character(1) file path to the location where
 #'     files will be synchronized. For directories in the current
@@ -364,7 +359,6 @@ avworkflow_localize <-
 }
 
 #' @rdname avworkflow
-#' @md
 #'
 #' @description `avworkflow_run()` runs the workflow of the configuration.
 #'
@@ -440,7 +434,6 @@ avworkflow_run <-
 }
 
 #' @rdname avworkflow
-#' @md
 #'
 #' @description `avworkflow_stop()` stops the most recently submitted workflow
 #'     jub from running.

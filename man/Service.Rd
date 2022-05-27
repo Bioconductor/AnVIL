@@ -18,10 +18,10 @@ Service(
 )
 }
 \arguments{
-\item{service}{character(1) The `Service` class name, e.g., `"terra"`.}
+\item{service}{character(1) The \code{Service} class name, e.g., \code{"terra"}.}
 
 \item{host}{character(1) host name that provides the API resource,
-e.g., `"api.firecloud.org"`.}
+e.g., \code{"api.firecloud.org"}.}
 
 \item{config}{httr::config() curl options}
 
@@ -29,9 +29,9 @@ e.g., `"api.firecloud.org"`.}
 service file 'auth.json' in the specified package?}
 
 \item{api_url}{optional character(1) url location of OpenAPI
-`.json` or `.yaml` service definition.}
+\code{.json} or \code{.yaml} service definition.}
 
-\item{package}{character(1) (default `AnVIL`) The package where
+\item{package}{character(1) (default \code{AnVIL}) The package where
 'api.json' yaml and (optionally) 'auth.json' files are located.}
 
 \item{schemes}{character(1) (default 'https') Specifies the
@@ -41,10 +41,10 @@ transfer protocol supported by the API service.}
 Details.}
 
 \item{api_reference_md5sum}{character(1) the result of
-`tools::md5sum()` applied to the reference API.}
+\code{tools::md5sum()} applied to the reference API.}
 
 \item{api_reference_headers}{character() header(s) to be used
-(e.g., `c(Authorization = paste("Bearer", token))`) when
+(e.g., \code{c(Authorization = paste("Bearer", token))}) when
 retrieving the API reference for validation.}
 }
 \value{
@@ -55,19 +55,19 @@ RESTful service constructor
 }
 \details{
 This function creates a RESTful interface to a service
-    provided by a host, e.g., "api.firecloud.org". The function
-    requires an OpenAPI `.json` or `.yaml` specifcation as well as
-    an (optional) `.json` authentication token. These files are
-    located in the source directory of a pacakge, at
-    `<package>/inst/service/<service>/api.json` and
-    `<package>/inst/service/<service>/auth.json`, or at `api_url`.
+provided by a host, e.g., "api.firecloud.org". The function
+requires an OpenAPI \code{.json} or \code{.yaml} specifcation as well as
+an (optional) \code{.json} authentication token. These files are
+located in the source directory of a pacakge, at
+\verb{<package>/inst/service/<service>/api.json} and
+\verb{<package>/inst/service/<service>/auth.json}, or at \code{api_url}.
 
-    When provided, the `api_reference_md5sum` is used to check that
-    the file described at `api_reference_url` has the same checksum
-    as an author-validated version.
+When provided, the \code{api_reference_md5sum} is used to check that
+the file described at \code{api_reference_url} has the same checksum
+as an author-validated version.
 
-    The service is usually a singleton, created at the package
-    level during `.onLoad()`.
+The service is usually a singleton, created at the package
+level during \code{.onLoad()}.
 }
 \examples{
 .MyService <- setClass("MyService", contains = "Service")

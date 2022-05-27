@@ -61,12 +61,12 @@ Gen3Sheepdog()
 Gen3Peregrine()
 }
 \arguments{
-\item{x}{A `Service` instance, usually a singleton provided by the
-package and documented on this page, e.g., `leonardo` or
-`terra`.}
+\item{x}{A \code{Service} instance, usually a singleton provided by the
+package and documented on this page, e.g., \code{leonardo} or
+\code{terra}.}
 
 \item{...}{additional arguments passed to methods or, for
-`operations,Service-method`, to the internal `get_operation()`
+\verb{operations,Service-method}, to the internal \code{get_operation()}
 function.}
 
 \item{.deprecated}{optional logical(1) include deprecated operations?}
@@ -74,50 +74,50 @@ function.}
 \item{.tags}{optional character() of tags to use to filter operations.}
 
 \item{name}{A symbol representing a defined operation, e.g.,
-`leonardo$listClusters()`.}
+\code{leonardo$listClusters()}.}
 }
 \value{
-`empty_object` returns a representation to be used as
-    arguments in function calls expecting the empty json object
-    `\{\}`.
+\code{empty_object} returns a representation to be used as
+arguments in function calls expecting the empty json object
+\verb{\\\{\\\}}.
 
-`Leonardo()` creates the API of the Leonard container
-    deployment service at
-    https://notebooks.firecloud.org/api-docs.yaml.
+\code{Leonardo()} creates the API of the Leonard container
+deployment service at
+https://notebooks.firecloud.org/api-docs.yaml.
 
-`Terra()` creates the API of the Terra cloud computational
-    environemnt at https://api.firecloud.org/.
+\code{Terra()} creates the API of the Terra cloud computational
+environemnt at https://api.firecloud.org/.
 
-`Rawls()` creates the API of the Rawls cloud computational
-    environemnt at https://rawls.dsde-prod.broadinstitute.org.
+\code{Rawls()} creates the API of the Rawls cloud computational
+environemnt at https://rawls.dsde-prod.broadinstitute.org.
 
-`Dockstore()` represents the API of the Dockstore platform to
-    share Docker-based tools in CWL or WDL or Nextflow at
-    https://dockstore.org
+\code{Dockstore()} represents the API of the Dockstore platform to
+share Docker-based tools in CWL or WDL or Nextflow at
+https://dockstore.org
 
-`gen3_*` APIs are not fully implemented, because a service
-    endpoint has not been identifiied.
+\verb{gen3_*} APIs are not fully implemented, because a service
+endpoint has not been identified.
 
-    `Gen3Fence()` returns the authentication API at
-    https://raw.githubusercontent.com/uc-cdis/fence/master/openapis/swagger.yaml
+\code{Gen3Fence()} returns the authentication API at
+https://raw.githubusercontent.com/uc-cdis/fence/master/openapis/swagger.yaml
 
-`Gen3Indexd()` returns the indexing service API documented at
-    https://raw.githubusercontent.com/uc-cdis/indexd/master/openapis/swagger.yaml
+\code{Gen3Indexd()} returns the indexing service API documented at
+https://raw.githubusercontent.com/uc-cdis/indexd/master/openapis/swagger.yaml
 
-`Gen3Sheepdog` returns the submission services API at
-    https://raw.githubusercontent.com/uc-cdis/sheepdog/master/openapi/swagger.yml
+\code{Gen3Sheepdog} returns the submission services API at
+https://raw.githubusercontent.com/uc-cdis/sheepdog/master/openapi/swagger.yml
 
-`Gen3Peregrine` returns the graphQL query services API at
-    https://raw.githubusercontent.com/uc-cdis/peregrine/master/openapis/swagger.yaml
+\code{Gen3Peregrine} returns the graphQL query services API at
+https://raw.githubusercontent.com/uc-cdis/peregrine/master/openapis/swagger.yaml
 }
 \description{
 RESTful services useful for AnVIL developers
 }
 \details{
-When using `$` to select a service, some arguments appear
-    in 'body' of the REST request. Specify these using the
-    `.__body__=` argument, as illustrated for
-    `createBillingProjectFull()`, below.
+When using \code{$} to select a service, some arguments appear
+in 'body' of the REST request. Specify these using the
+\verb{.__body__=} argument, as illustrated for
+\code{createBillingProjectFull()}, below.
 }
 \examples{
 empty_object

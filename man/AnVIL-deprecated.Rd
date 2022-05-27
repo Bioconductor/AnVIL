@@ -32,14 +32,14 @@ avworkflow_import_configuration(
 }
 \description{
 These functions are provided for compatibility with
-older versions ofi \sQuote{AnVIL} only, and will be defunct at
+older versions of \sQuote{AnVIL} only, and will be defunct at
 the next release.
 }
 \details{
 The following functions are deprecated and will be made
-defunct; use the replacement indicated below:\preformatted{\\itemize\{
-    \\item\{avworkflow_configuration: \code{\link{avworkflow_configuration_get}}\}
-    \\item\{avworkflow_import_configuration: \code{\link{avworkflow_configuration_set}}\}
-\}
+defunct; use the replacement indicated below:
+\itemize{
+\item \code{avworkflow_configuration()}: \code{\link{avworkflow_configuration_get}}
+\item \code{avworkflow_import_configuration()}: \code{\link{avworkflow_configuration_set}}
 }
 }

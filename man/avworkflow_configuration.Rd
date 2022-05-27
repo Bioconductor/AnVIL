@@ -192,18 +192,18 @@ can be used as a starting point for providing a custom
 configuration.
 }
 \details{
-The exact format of the configuration is important.\preformatted{One common problem is that a scalar character vector `"bar"` is
-interpretted as a json 'array' `["bar"]` rather than a json
-string `"bar"`. Enclose the string with
-`jsonlite::unbox("bar")` in the configuration list if the
-length 1 character vector in R is to be interpretted as a json
-string.
+The exact format of the configuration is important.
+
+One common problem is that a scalar character vector \code{"bar"} is
+interpretted as a json 'array' \verb{["bar"]} rather than a json string
+\code{"bar"}. Enclose the string with \code{jsonlite::unbox("bar")} in the
+configuration list if the length 1 character vector in R is to be
+interpretted as a json string.
 
 A second problem is that an unquoted unboxed character string
-`unbox("foo")` is required by AnVIL to be quoted. This is
-reported as a warning() about invalid inputs or outputs, and
-the solution is to provide a quoted string `unbox('"foo"')`.
-}
+\code{unbox("foo")} is required by AnVIL to be quoted. This is reported
+as a warning() about invalid inputs or outputs, and the solution is
+to provide a quoted string \code{unbox('"foo"')}.
 }
 \examples{
 ## set the namespace and name as appropriate

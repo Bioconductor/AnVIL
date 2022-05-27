@@ -682,13 +682,11 @@ avbucket <-
 #'     the compute node file system.  `avfiles_rm()` removes files or
 #'     directories from the workspace bucket.
 #'
-#' @param path For `avfiles_ls(), the character(1) file or directory path
-#'     to list.
-#'
-#'     For `avfiles_rm()`, the character() (perhaps with length
-#'     greater than 1) of files or directory paths to be removed. The
-#'     elements of `path` can contain glob-style patterns, e.g.,
-#'     `vign*`.
+#' @param path For `avfiles_ls(), the character(1) file or directory
+#'     path to list. For `avfiles_rm()`, the character() (perhaps with
+#'     length greater than 1) of files or directory paths to be
+#'     removed. The elements of `path` can contain glob-style
+#'     patterns, e.g., `vign*`.
 #'
 #' @param full_names logical(1) return names relative to `path`
 #'     (`FALSE`, default) or root of the workspace bucket?
@@ -859,7 +857,6 @@ avfiles_rm <-
 ##
 
 #' @rdname av
-#' @md
 #'
 #' @description `avruntimes()` returns a tibble containing information
 #'     about runtimes (notebooks or RStudio instances, for example)
@@ -925,7 +922,6 @@ avruntimes <-
 }
 
 #' @rdname av
-#' @md
 #'
 #' @description `avruntime()` returns a tibble with the runtimes
 #'     associated with a particular google project and account number;
@@ -984,7 +980,6 @@ avruntime <-
 }
 
 #' @name av
-#' @md
 #'
 #' @description 'avdisks()` returns a tibble containing information
 #'     about persistent disks associatd with the current user.

@@ -98,12 +98,12 @@ setOldClass("request")
 #'     `<package>/inst/service/<service>/api.json` and
 #'     `<package>/inst/service/<service>/auth.json`, or at `api_url`.
 #'
-#'     When provided, the `api_reference_md5sum` is used to check that
-#'     the file described at `api_reference_url` has the same checksum
-#'     as an author-validated version.
+#' When provided, the `api_reference_md5sum` is used to check that
+#' the file described at `api_reference_url` has the same checksum
+#' as an author-validated version.
 #'
-#'     The service is usually a singleton, created at the package
-#'     level during `.onLoad()`.
+#' The service is usually a singleton, created at the package
+#' level during `.onLoad()`.
 #'
 #' @return An object of class \code{Service}.
 #'

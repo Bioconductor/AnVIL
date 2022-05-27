@@ -168,10 +168,11 @@ frequently small and quickly syncronized. \code{type = "output"}
 files are the output products of the workflow stored in the
 workspace bucket. Depending on the workflow, outputs may be
 large, e.g., aligned reads in bam files. See \code{gsutil_cp()} to
-copy individual files from the bucket to the local drive.\preformatted{`avworkflow_localize()` treats `submissionId=` in the same way
-as `avworkflow_files()`: when missing, files from the most
-recent workflow job are candidates for localization.
-}
+copy individual files from the bucket to the local drive.
+
+\code{avworkflow_localize()} treats \verb{submissionId=} in the same way as
+\code{avworkflow_files()}: when missing, files from the most recent
+workflow job are candidates for localization.
 }
 \examples{
 if (gcloud_exists() && nzchar(avworkspace_name()))

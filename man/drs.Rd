@@ -50,9 +50,9 @@ a Bond supported host).
 value; if unknown. it returns null)
 }
 
-`drs_access_url()` returns a vector of https URLs
-    corresponding to the vector of DRS URIs provided as inputs to
-    the function.
+\code{drs_access_url()} returns a vector of https URLs
+corresponding to the vector of DRS URIs provided as inputs to
+the function.
 
 \code{drs_cp()} returns a tibble like \code{drs_stat()}, but with
 additional columns
@@ -66,9 +66,9 @@ simple signed URL (\code{TRUE}) or auxilliary service account.
 \code{drs_stat()} resolves zero or more DRS URLs to their
 google bucket location.
 
-`drs_access_url()` returns a vector of 'signed' URLs
-    that allow access to restricted resources via standard https
-    protocols.
+\code{drs_access_url()} returns a vector of 'signed' URLs
+that allow access to restricted resources via standard https
+protocols.
 
 \code{drs_cp()} copies 0 or more DRS URIs to a google
 bucket or local folder
@@ -77,12 +77,12 @@ bucket or local folder
 \code{drs_stat()} sends requests in parallel to the DRS server,
 using 8 forked processes (by default) to speed up queries. Use
 \code{options(mc.cores = 16L)}, for instance, to set the number of
-processes to use.\preformatted{`drs_stat()` uses the AnVIL 'pet' account associated with a
-runtime. The pet account is discovered by default when
-evaluated on an AnVIL runtime (e.g., in RStudio or a Jupyter
-notebook in the AnVIL), or can be found in the return value of
-`avruntimes()`.
-}
+processes to use.
+
+\code{drs_stat()} uses the AnVIL 'pet' account associated with a
+runtime. The pet account is discovered by default when evaluated on
+an AnVIL runtime (e.g., in RStudio or a Jupyter notebook in the
+AnVIL), or can be found in the return value of \code{avruntimes()}.
 }
 \examples{
 drs_eg_anvil <- c(

@@ -106,7 +106,6 @@
 }
 
 #' @rdname drs
-#' @md
 #'
 #' @title DRS (Data Repository Service) URL management
 #'
@@ -118,11 +117,10 @@
 #'     `options(mc.cores = 16L)`, for instance, to set the number of
 #'     processes to use.
 #'
-#'     `drs_stat()` uses the AnVIL 'pet' account associated with a
-#'     runtime. The pet account is discovered by default when
-#'     evaluated on an AnVIL runtime (e.g., in RStudio or a Jupyter
-#'     notebook in the AnVIL), or can be found in the return value of
-#'     `avruntimes()`.
+#' `drs_stat()` uses the AnVIL 'pet' account associated with a
+#' runtime. The pet account is discovered by default when evaluated on
+#' an AnVIL runtime (e.g., in RStudio or a Jupyter notebook in the
+#' AnVIL), or can be found in the return value of `avruntimes()`.
 #'
 #' @param source character() DRS URLs (beginning with 'drs://') to
 #'     resources managed by the 'martha' DRS resolution server.
@@ -249,7 +247,6 @@ drs_access_url <-
 }
 
 #' @rdname drs
-#' @md
 #'
 #' @description `drs_cp()` copies 0 or more DRS URIs to a google
 #'     bucket or local folder

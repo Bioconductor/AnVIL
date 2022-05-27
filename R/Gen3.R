@@ -1,9 +1,9 @@
 #' @rdname Services
 #'
 #' @return `gen3_*` APIs are not fully implemented, because a service
-#'     endpoint has not been identifiied.
+#'     endpoint has not been identified.
 #'
-#'     `Gen3Fence()` returns the authentication API at
+#' @return `Gen3Fence()` returns the authentication API at
 #'     https://raw.githubusercontent.com/uc-cdis/fence/master/openapis/swagger.yaml
 #' @format NULL
 #'

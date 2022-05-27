@@ -69,16 +69,15 @@ workspace, possibly into a new namespace (billing account).
 \details{
 \code{avworkspace_namespace()} is the billing account. If the
 \verb{namespace=} argument is not provided, try \code{gcloud_project()},
-and if that fails try \code{Sys.getenv("WORKSPACE_NAMESPACE")}.\preformatted{`avworkspace_name()` is the name of the workspace as it appears
-in \url{https://app.terra.bio/#workspaces}. If not provided,
-`avworkspace_name()` tries to use
-`Sys.getenv("WORKSPACE_NAME")`.
+and if that fails try \code{Sys.getenv("WORKSPACE_NAMESPACE")}.
 
-Namespace and name values are cached across sessions, so
-explicitly providing `avworkspace_name*()` is required at most
-once per session. Revert to system settings with arguments
-`NA`.
-}
+\code{avworkspace_name()} is the name of the workspace as it appears in
+\url{https://app.terra.bio/#workspaces}. If not provided,
+\code{avworkspace_name()} tries to use \code{Sys.getenv("WORKSPACE_NAME")}.
+
+Namespace and name values are cached across sessions, so explicitly
+providing \verb{avworkspace_name*()} is required at most once per
+session. Revert to system settings with arguments \code{NA}.
 }
 \examples{
 avworkspace_namespace()

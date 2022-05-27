@@ -15,24 +15,24 @@ flatten(x)
 \method{as.list}{response}(x, ..., as = c("text", "raw", "parsed"))
 }
 \arguments{
-\item{x}{A `response` object returned by the service.}
+\item{x}{A \code{response} object returned by the service.}
 
-\item{object}{A `response` object returned by the service.}
+\item{object}{A \code{response} object returned by the service.}
 
 \item{\dots}{not currently used}
 
 \item{as}{character(1); one of 'raw', 'text', 'parsed'}
 }
 \value{
-`flatten()` returns a `tibble` where each row correseponds
-    to a top-level list element of the return value, and columns
-    are the unlisted second and more-nested elements.
+\code{flatten()} returns a \code{tibble} where each row correseponds
+to a top-level list element of the return value, and columns
+are the unlisted second and more-nested elements.
 
-`str()` displays a compact representation of the list-like
-    JSON response; it returns `NULL`.
+\code{str()} displays a compact representation of the list-like
+JSON response; it returns \code{NULL}.
 
-`as.list()` retruns the content of the web service request
-    as a list.
+\code{as.list()} retruns the content of the web service request
+as a list.
 }
 \description{
 Process service responses to tibble and other data structures.

@@ -28,7 +28,6 @@ NULL
 })
 
 #' @rdname avworkspace
-#' @md
 #'
 #' @description `avworkspaces()` returns a tibble with available
 #'     workspaces.
@@ -64,7 +63,6 @@ avworkspaces <-
 }
 
 #' @rdname avworkspace
-#' @md
 #'
 #' @description `avworkspace_namespace()` and `avworkspace_name()` are
 #'     utiliity functions to retrieve workspace namespace and name
@@ -77,15 +75,13 @@ avworkspaces <-
 #'     `namespace=` argument is not provided, try `gcloud_project()`,
 #'     and if that fails try `Sys.getenv("WORKSPACE_NAMESPACE")`.
 #'
-#'     `avworkspace_name()` is the name of the workspace as it appears
-#'     in \url{https://app.terra.bio/#workspaces}. If not provided,
-#'     `avworkspace_name()` tries to use
-#'     `Sys.getenv("WORKSPACE_NAME")`.
+#' `avworkspace_name()` is the name of the workspace as it appears in
+#' \url{https://app.terra.bio/#workspaces}. If not provided,
+#' `avworkspace_name()` tries to use `Sys.getenv("WORKSPACE_NAME")`.
 #'
-#'     Namespace and name values are cached across sessions, so
-#'     explicitly providing `avworkspace_name*()` is required at most
-#'     once per session. Revert to system settings with arguments
-#'     `NA`.
+#' Namespace and name values are cached across sessions, so explicitly
+#' providing `avworkspace_name*()` is required at most once per
+#' session. Revert to system settings with arguments `NA`.
 #'
 #' @param namespace character(1) AnVIL workspace namespace as returned
 #'     by, e.g., `avworkspace_namespace()`
@@ -159,7 +155,6 @@ avworkspace <-
 }
 
 #' @rdname avworkspace
-#' @md
 #'
 #' @description `avworkspace_clone()` clones (copies) an existing
 #'     workspace, possibly into a new namespace (billing account).

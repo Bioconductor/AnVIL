@@ -10,34 +10,34 @@ localize(source, destination, dry = TRUE)
 delocalize(source, destination, unlink = FALSE, dry = TRUE)
 }
 \arguments{
-\item{source}{`character(1)`, a google storage bucket or local file
+\item{source}{\code{character(1)}, a google storage bucket or local file
 system directory location.}
 
-\item{destination}{`character(1)`, a google storage bucket or local
+\item{destination}{\code{character(1)}, a google storage bucket or local
 file system directory location.}
 
-\item{dry}{`logical(1)`, when `TRUE` (default), return the
+\item{dry}{\code{logical(1)}, when \code{TRUE} (default), return the
 consequences of the operation without actually performing the
 operation.}
 
-\item{unlink}{`logical(1)` remove (unlink) the file or directory
-in `source`. Default: `FALSE`.}
+\item{unlink}{\code{logical(1)} remove (unlink) the file or directory
+in \code{source}. Default: \code{FALSE}.}
 }
 \value{
-`localize()`: exit status of function `gsutil_rsync()`.
+\code{localize()}: exit status of function \code{gsutil_rsync()}.
 
-`delocalize()`: exit status of function `gsutil_rsync()`
+\code{delocalize()}: exit status of function \code{gsutil_rsync()}
 }
 \description{
-`localize()`: recursively synchronizes files from a
-    Google storage bucket (`source`) to the local file system
-    (`destination`). This command acts recursively on the `source`
-    directory, and does not delete files in `destination` that are
-    not in `source.
+\code{localize()}: recursively synchronizes files from a
+Google storage bucket (\code{source}) to the local file system
+(\code{destination}). This command acts recursively on the \code{source}
+directory, and does not delete files in \code{destination} that are
+not in `source.
 
-`delocalize()`: synchronize files from a local file
-    system (`source`) to a Google storage bucket
-    (`destination`). This command acts recursively on the `source`
-    directory, and does not delete files in `destination` that are
-    not in `source`.
+\code{delocalize()}: synchronize files from a local file
+system (\code{source}) to a Google storage bucket
+(\code{destination}). This command acts recursively on the \code{source}
+directory, and does not delete files in \code{destination} that are
+not in \code{source}.
 }

@@ -44,131 +44,130 @@ gsutil_help(cmd = character(0))
 gsutil_pipe(source, open = "r", ...)
 }
 \arguments{
-\item{source}{`character(1)`, (`character()` for
-`gsutil_requesterpays()`, `gsutil_ls()`, `gsutil_exists()`,
-`gsutil_cp()`) paths to a google storage bucket, possibly with
+\item{source}{\code{character(1)}, (\code{character()} for
+\code{gsutil_requesterpays()}, \code{gsutil_ls()}, \code{gsutil_exists()},
+\code{gsutil_cp()}) paths to a google storage bucket, possibly with
 wild-cards for file-level pattern matching.}
 
-\item{...}{additional arguments passed as-is to the `gsutil` subcommand.}
+\item{...}{additional arguments passed as-is to the \code{gsutil} subcommand.}
 
-\item{recursive}{`logical(1)`; perform operation recursively from
-`source`?. Default: `FALSE`.}
+\item{recursive}{\code{logical(1)}; perform operation recursively from
+\code{source}?. Default: \code{FALSE}.}
 
-\item{destination}{`character(1)`, google cloud bucket or local
+\item{destination}{\code{character(1)}, google cloud bucket or local
 file system destination path.}
 
-\item{parallel}{`logical(1)`, perform parallel multi-threaded /
-multi-processing (default is `TRUE`).}
+\item{parallel}{\code{logical(1)}, perform parallel multi-threaded /
+multi-processing (default is \code{TRUE}).}
 
-\item{force}{`logical(1)`: continue silently despite errors when
-removing multiple objects. Default: `FALSE`.}
+\item{force}{\code{logical(1)}: continue silently despite errors when
+removing multiple objects. Default: \code{FALSE}.}
 
-\item{exclude}{`character(1)` a python regular expression of bucket
+\item{exclude}{\code{character(1)} a python regular expression of bucket
 paths to exclude from synchronization. E.g.,
-`'.*(\\.png|\\.txt)$"` excludes '.png' and .txt' files.}
+\verb{'.*(\\\\.png|\\\\.txt)$"} excludes '.png' and .txt' files.}
 
-\item{dry}{`logical(1)`, when `TRUE` (default), return the
+\item{dry}{\code{logical(1)}, when \code{TRUE} (default), return the
 consequences of the operation without actually performing the
 operation.}
 
-\item{delete}{`logical(1)`, when `TRUE`, remove files in
-`destination` that are not in `source`. Exercise caution when
+\item{delete}{\code{logical(1)}, when \code{TRUE}, remove files in
+\code{destination} that are not in \code{source}. Exercise caution when
 you use this option: it's possible to delete large amounts of
 data accidentally if, for example, you erroneously reverse
 source and destination.}
 
-\item{header}{`logical(1)` when `TRUE` annotate each}
+\item{header}{\code{logical(1)} when \code{TRUE} annotate each}
 
-\item{range}{(optional) `integer(2)` vector used to form a range
-from-to of bytes to concatenate. `NA` values signify
+\item{range}{(optional) \code{integer(2)} vector used to form a range
+from-to of bytes to concatenate. \code{NA} values signify
 concatenation from the start (first position) or to the end
 (second position) of the file.}
 
-\item{cmd}{`character()` (optional) command name, e.g.,
-`"ls"` for help.}
+\item{cmd}{\code{character()} (optional) command name, e.g.,
+\code{"ls"} for help.}
 
-\item{open}{`character(1)` either `"r"` (read) or `"w"` (write)
+\item{open}{\code{character(1)} either \code{"r"} (read) or \code{"w"} (write)
 from the bucket.}
 }
 \value{
-`gsutil_requesterpays()`: named `logical()` vector TRUE
-    when requester-pays is enabled.
+\code{gsutil_requesterpays()}: named \code{logical()} vector TRUE
+when requester-pays is enabled.
 
-`gsutil_ls()`: `character()` listing of `source` content.
+\code{gsutil_ls()}: \code{character()} listing of \code{source} content.
 
-`gsutil_exists()`: logical(1) TRUE if bucket or object exists.
+\code{gsutil_exists()}: logical(1) TRUE if bucket or object exists.
 
-`gsutil_stat()`: `tibble()` summarizing status of each
-    bucket member.
+\code{gsutil_stat()}: \code{tibble()} summarizing status of each
+bucket member.
 
-`gsutil_cp()`: exit status of `gsutil_cp()`, invisibly.
+\code{gsutil_cp()}: exit status of \code{gsutil_cp()}, invisibly.
 
-`gsutil_rm()`: exit status of `gsutil_rm()`, invisibly.
+\code{gsutil_rm()}: exit status of \code{gsutil_rm()}, invisibly.
 
-`gsutil_rsync()`: exit status of `gsutil_rsync()`, invisbly.
+\code{gsutil_rsync()}: exit status of \code{gsutil_rsync()}, invisbly.
 
-`gsutil_cat()` returns the content as a character vector.
+\code{gsutil_cat()} returns the content as a character vector.
 
-`gsutil_help()`: `character()` help text for subcommand `cmd`.
+\code{gsutil_help()}: \code{character()} help text for subcommand \code{cmd}.
 
-`gsutil_pipe()` an unopened R `pipe()`; the mode is
-    \emph{not} specified, and the pipe must be used in the
-    appropriate context (e.g., a pipe created with `open = "r"` for
-    input as `read.csv()`)
+\code{gsutil_pipe()} an unopened R \code{pipe()}; the mode is
+\emph{not} specified, and the pipe must be used in the
+appropriate context (e.g., a pipe created with \code{open = "r"} for
+input as \code{read.csv()})
 }
 \description{
-These functions invoke the `gsutil` command line
-    utility. See the "Details:" section if you have gsutil
-    installed but the package cannot find it.
+These functions invoke the \code{gsutil} command line
+utility. See the "Details:" section if you have gsutil
+installed but the package cannot find it.
 
-`gsutil_requesterpays()`: does the google bucket
-    require that the requester pay for access?
+\code{gsutil_requesterpays()}: does the google bucket
+require that the requester pay for access?
 
-`gsutil_ls()`: List contents of a google cloud bucket
-    or, if `source` is missing, all Cloud Storage buckets under
-    your default project ID
+\code{gsutil_ls()}: List contents of a google cloud bucket
+or, if \code{source} is missing, all Cloud Storage buckets under
+your default project ID
 
-`gsutil_exists()`: check if the bucket or object
-    exists.
+\code{gsutil_exists()}: check if the bucket or object
+exists.
 
-`gsutil_stat()`: print, as a side effect, the status
-    of a bucket, directory, or file.
+\code{gsutil_stat()}: print, as a side effect, the status
+of a bucket, directory, or file.
 
-`gsutil_cp()`: copy contents of `source` to
-    `destination`. At least one of `source` or `destination` must
-    be Google cloud bucket; `source` can be a character vector with
-    length greater than 1. Use `gsutil_help("cp")` for `gsutil` help.
+\code{gsutil_cp()}: copy contents of \code{source} to
+\code{destination}. At least one of \code{source} or \code{destination} must
+be Google cloud bucket; \code{source} can be a character vector with
+length greater than 1. Use \code{gsutil_help("cp")} for \code{gsutil} help.
 
-`gsutil_rm()`: remove contents of a google cloud
-    bucket.
+\code{gsutil_rm()}: remove contents of a google cloud
+bucket.
 
-`gsutil_rsync()`: synchronize a source and a destination.
+\code{gsutil_rsync()}: synchronize a source and a destination.
 
-`gsutil_cat()`: concatenate bucket objects to standard output
+\code{gsutil_cat()}: concatenate bucket objects to standard output
 
-`gsutil_help()`: print 'man' page for the `gsutil`
-    command or subcommand. Note that only commandes documented on this
-    R help page are supported.
+\code{gsutil_help()}: print 'man' page for the \code{gsutil}
+command or subcommand. Note that only commandes documented on this
+R help page are supported.
 
-`gsutil_pipe()`: create a pipe to read from or write
-    to a gooogle bucket object.
+\code{gsutil_pipe()}: create a pipe to read from or write
+to a gooogle bucket object.
 }
 \details{
-The `gsutil` system command is required.  The search for
-    `gsutil` starts with environment variable `GCLOUD_SDK_PATH`
-    providing a path to a directory containing a `bin` directory
-    containingin `gsutil`, `gcloud`, etc. The path variable is
-    searched for first as an `option()` and then system
-    variable. If no option or global variable is found,
-    `Sys.which()` is tried. If that fails, `gsutil` is searched for
-    on defined paths. On Windows, the search tries to find
-    `Google\\Cloud SDK\\google-cloud-sdk\\bin\\gsutil.cmd` in the
-    `LOCAL APP DATA`, `Program Files`, and `Program Files (x86)`
-    directories.  On linux / macOS, the search continues with
-    `~/google-cloud-sdk`.
+The \code{gsutil} system command is required.  The search for
+\code{gsutil} starts with environment variable \code{GCLOUD_SDK_PATH}
+providing a path to a directory containing a \code{bin} directory
+containingin \code{gsutil}, \code{gcloud}, etc. The path variable is
+searched for first as an \code{option()} and then system
+variable. If no option or global variable is found,
+\code{Sys.which()} is tried. If that fails, \code{gsutil} is searched for
+on defined paths. On Windows, the search tries to find
+\verb{Google\\\\Cloud SDK\\\\google-cloud-sdk\\\\bin\\\\gsutil.cmd} in the
+\verb{LOCAL APP DATA}, \verb{Program Files}, and \verb{Program Files (x86)}
+directories.  On linux / macOS, the search continues with
+\verb{~/google-cloud-sdk}.
 
-`gsutil_rsync()': To make `"gs://mybucket/data"` match the contents
-of the local directory `"data"` you could do:
+\verb{gsutil_rsync()': To make }"gs://mybucket/data"\verb{match the contents of the local directory}"data"` you could do:
 
 \code{gsutil_rsync("data", "gs://mybucket/data", delete = TRUE)}
 
@@ -177,7 +176,7 @@ gs://mybucket/data:
 
 \code{gsutil_rsync("gs://mybucket/data", "data", delete = TRUE)}
 
-If `destination` is a local path and does not exist, it will be
+If \code{destination} is a local path and does not exist, it will be
 created.
 }
 \examples{

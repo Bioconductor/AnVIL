@@ -11,7 +11,6 @@
 }
 
 #' @rdname avnotebooks
-#' @md
 #'
 #' @title Notebook management
 #'
@@ -55,7 +54,6 @@ avnotebooks <-
 }
 
 #' @rdname avnotebooks
-#' @md
 #'
 #' @description `avnotebooks_localize()` synchronizes the content of
 #'     the workspace bucket to the local file system.
@@ -102,7 +100,6 @@ avnotebooks_localize <-
 }
 
 #' @rdname avnotebooks
-#' @md
 #'
 #' @description `avnotebooks_delocalize()` synchronizes the content of
 #'     the notebook location of the local file system to the workspace
