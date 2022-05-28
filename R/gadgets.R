@@ -1,5 +1,5 @@
 #' @importFrom DT renderDT datatable formatStyle
-.gadgets_renderDT <-
+.gadget_renderDT <-
     function(tbl)
 {
     force(tbl) # necessary/
@@ -14,72 +14,112 @@
     )
 }
 
-##
-## workspaces
-##
-
-.workspaces <- local({
-    ## a little more responsive -- only retrieve workspaces once per session
-    workspaces <- NULL
-    function() {
-        if (is.null(workspaces))
-            workspaces <<- avworkspaces()
-        workspaces
-    }
-})
-
 #' @importFrom miniUI miniPage gadgetTitleBar miniContentPanel
 #' @importFrom DT DTOutput renderDT
-.workspace_ui <-
-    function()
+.gadget_ui <-
+    function(title)
 {
-    miniPage(
-        miniContentPanel(
-            DTOutput("workspaces", height = "100%")
-        ),
-        gadgetTitleBar("AnVIL Workspaces")
-    )
+    force(title)
+    function() {
+        miniPage(
+            p(
+                strong("Current workspace:"),
+                textOutput("workspace", inline = TRUE)
+            ),
+            miniContentPanel(
+                DTOutput("gadget_tibble", height = "100%")
+            ),
+            gadgetTitleBar(title)
+        )
+    }
 }
 
 #' @importFrom shiny observeEvent stopApp
-.workspace_server <-
-    function(input, output, session)
+.gadget_server <-
+    function(tibble, DONE_FUN)
 {
-    workspaces <- .workspaces()
-    output$workspaces <- .gadgets_renderDT(workspaces)
+    force(tibble) # using force() improves display rendering
+    force(DONE_FUN)
+    function(input, output, session) {
+        output$workspace <-renderText({
+            if (nzchar(avworkspace_name(warn = FALSE))) {
+                avworkspace()
+            }
+        })
 
-    observeEvent(input$done, {
-        selected <- input$workspaces_rows_selected
-        if (is.integer(selected)) {
-            workspace <- workspaces |> slice(selected)
-            returnValue <- paste0(workspace$namespace, "/", workspace$name)
-        } else {
-            returnValue <- character()
-        }
-        stopApp(returnValue)
-    })
+        output$gadget_tibble <- .gadget_renderDT(tibble)
 
-    observeEvent(input$cancel, {
-        stopApp(character())
-    })
+        observeEvent(input$done, {
+            row_selected <- input$gadget_tibble_rows_selected
+            if (is.integer(row_selected)) {
+                returnValue <- DONE_FUN(tibble, row_selected)
+            } else {
+                returnValue <- character()
+            }
+            stopApp(returnValue)
+        })
+
+        observeEvent(input$cancel, {
+            stopApp(NULL)
+        })
+    }
 }
 
+#' @rdname gadgets_developer
+#'
+#' @title Functions to implement AnVIL gadget interfaces
+#'
+#' @description Functions documented on this page are primarily
+#'     intended for package developers wishing to implement gadgets
+#'     (graphical interfaces) to navigating AnVIL-generated tables.
+#'
+#' @description `.gadget_run()` presents the user with a
+#'     tibble-navigating gadget, returning the value of `DONE_FUN` if
+#'     a row of the tibble is selected, or NULL.
+#'
+#' @param title character(1) (required) title to appear at the base of
+#'     the gadget, e.g., "AnVIL Workspaces".
+#'
+#' @param tibble a `tibble` or `data.frame` to be displayed in the
+#'     gadget.
+#'
+#' @param DONE_FUN a function of two arguments, `tibble` and
+#'     `row_selected`. The tibble is the `tibble` provided as an
+#'     argument to `.gadget_run()`. `row_selected` is the row
+#'     selected in the gadget by the user. The function is only
+#'     invoked when the user selects a valid row.
+#'
+#' @return `.gadget_run()` returns the result of `DONE_FUN()` if a row
+#'     has been selected by the user, or `NULL` if no row is selected
+#'     (the user presses `Cancel`, or `Done` prior to selecting any
+#'     row).
+#'
+#' @examples
+#' \dontrun{
+#' tibble <- avworkspaces()
+#' DONE_FUN <- function(tibble, row_selected) {
+#'     selected <- slice(tibble, row_selected)
+#'     with(selected, paste0(namespace, "/", name))
+#' }
+#' .gadget_run("AnVIL Example", tibble, DONE_FUN)
+#' }
 #' @importFrom shiny runGadget
-.workspace_impl <-
-    function(use_avworkspace = TRUE)
+#'
+#' @export
+.gadget_run <-
+    function(title, tibble, DONE_FUN)
 {
+    stopifnot(
+        .is_scalar_character(title),
+        is.data.frame(tibble)
+    )
     suppressMessages({
-        workspace <- runGadget(
-            .workspace_ui, .workspace_server,
+        runGadget(
+            .gadget_ui(title),
+            .gadget_server(tibble, DONE_FUN),
             stopOnCancel = FALSE
         )
     })
-
-    if (length(workspace) && use_avworkspace) {
-        avworkspace(workspace) # set workspace to selected value
-        message("workspace set to '", avworkspace(), "'")
-    }
-    invisible(workspace)
 }
 
 #' @rdname gadgets
@@ -110,14 +150,40 @@ workspace <-
     .workspace_impl()
 }
 
+.workspaces <- local({
+    ## a little more responsive -- only retrieve workspaces once per session
+    workspaces <- NULL
+    function() {
+        if (is.null(workspaces))
+            workspaces <<- avworkspaces()
+        workspaces
+    }
+})
+
+.workspace_impl <-
+    function(use_avworkspace = TRUE)
+{
+    DONE_FUN <- function(tibble, row_selected)
+        paste0(tibble$namespace[row_selected], "/", tibble$name[row_selected])
+
+    workspace <- .gadget_run("AnVIL Workspaces", .workspaces(), DONE_FUN)
+
+    if (length(workflow)) {
+        avworkspace(workspace) # set workflow to selected value
+        message("workspace set to '", avworkspace(), "'")
+    }
+
+    invisible(workspace)
+}
+
 .workspace_get <-
     function(use_avworkspace = TRUE)
 {
     if (use_avworkspace && nzchar(avworkspace_name(warn = FALSE))) {
         workspace <- avworkspace()
     } else {
-        ## no workspace selected
-        workspace <- .workspace_impl(use_avworkspace = FALSE)
+        ## no workspace currently selected
+        workspace <- .workspace_impl(use_avworkspace = TRUE)
     }
     if (!length(workspace))
         stop("select a workspace to visit", call. = FALSE)
@@ -149,48 +215,6 @@ browse_workspace <-
     browseURL(url)
 }
 
-#
-# tables
-#
-
-.table_ui <-
-    function(input, output, session)
-{
-    miniPage(
-        miniContentPanel(
-            p(strong("Workspace:"), textOutput("workspace", inline = TRUE)),
-            DTOutput("tables", height = "100%")
-        ),
-        gadgetTitleBar("AnVIL Tables")
-    )
-}
-
-.table_server <-
-    function(input, output, session)
-{
-    tables <- avtables()
-
-    output$workspace <-renderText({
-        avworkspace()
-    })
-
-    output$tables <- .gadgets_renderDT(tables)
-
-    observeEvent(input$done, {
-        selected <- input$tables_rows_selected
-        if (is.integer(selected)) {
-            returnValue <- tables |> slice(selected) |> pull(.data$table)
-        } else {
-            returnValue <- character()
-        }
-        stopApp(returnValue)
-    })
-
-    observeEvent(input$cancel, {
-        stopApp(character())
-    })
-}
-
 #' @rdname gadgets
 #'
 #' @description `table()` allows choice of table in the current
@@ -206,58 +230,18 @@ browse_workspace <-
 table <-
     function()
 {
-    workspace <- .workspace_get()
-    suppressMessages({
-        table <- runGadget(.table_ui, .table_server, stopOnCancel = FALSE)
-    })
+    DONE_FUN <- function(tibble, row_selected)
+        tibble$table[row_selected]
+
+    workspace <- .workspace_get() # maybe prompt for workspace
+
+    table <- .gadget_run("AnVIL Tables", avtables(), DONE_FUN)
 
     if (length(table)) {
         avtable(table)
     } else {
         invisible()
     }
-}
-
-##
-## workflows()
-##
-
-.workflow_ui <-
-    function()
-{
-    miniPage(
-        miniContentPanel(
-            p(strong("Workspace:"), textOutput("workspace", inline = TRUE)),
-            DTOutput("workflows", height = "100%")
-        ),
-        gadgetTitleBar("AnVIL Workflows")
-    )
-}
-
-#' @importFrom shiny observeEvent stopApp
-.workflow_server <-
-    function(input, output, session)
-{
-    output$workspace <-renderText({
-        avworkspace()
-    })
-    workflows <- avworkflows()
-    output$workflows <- .gadgets_renderDT(workflows)
-
-    observeEvent(input$done, {
-        selected <- input$workflows_rows_selected
-        if (is.integer(selected)) {
-            workflow <- workflows |> slice(selected)
-            returnValue <- paste0(workflow$namespace, "/", workflow$name)
-        } else {
-            returnValue <- character()
-        }
-        stopApp(returnValue)
-    })
-
-    observeEvent(input$cancel, {
-        stopApp(character())
-    })
 }
 
 #' @rdname gadgets
@@ -276,12 +260,12 @@ table <-
 workflow <-
     function()
 {
-    .workspace_get()
-    suppressMessages({
-        workflow <- runGadget(
-            .workflow_ui, .workflow_server, stopOnCancel = FALSE
-        )
-    })
+    DONE_FUN <- function(tibble, row_selected)
+        paste0(tibble$namespace[row_selected], "/", tibble$name[row_selected])
+
+    workspace <- .workspace_get()
+
+    workflow <- .gadget_run("AnVIL Workflows", avworkflows(), DONE_FUN)
 
     if (length(workflow)) {
         avworkflow(workflow) # set workflow to selected value
