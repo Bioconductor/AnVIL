@@ -44,6 +44,9 @@ BUG FIXES
 - (v 1.7.6) improve handling of authentication token for gcloud
   utilities.
 
+- (v 1.8.2) `avworkflow_localize()` looks for `submissionId` files
+  correctly.
+
 # AnVIL 1.6.7 / 1.7.13
 
 BUG FIXES
