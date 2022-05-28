@@ -320,7 +320,7 @@ avworkflow_localize <-
     }
 
     fls <- avworkflow_files(submissionId, bucket)
-    objects <- sub(paste0(bucket, "/([^/]+).*"), "\\1", fls$file)
+    objects <- sub(paste0(bucket, "/([^/]+).*"), "\\1", fls$path)
     if (!submissionId %in% objects) {
         message(
             "'avworkflow_localize()' found no objects for submissionId ",
@@ -329,7 +329,7 @@ avworkflow_localize <-
         return(invisible(tibble(file = character(), path = character())))
     }
 
-    source <- paste(avbucket(), submissionId, sep = "/")
+    source <- paste(bucket, submissionId, sep = "/")
     exclude <- NULL
     exclude0 <- unique(fls$file[!fls$type %in% type])
     exclude1 <- gsub(".", "\\.", paste0(exclude0, collapse = "|"), fixed = TRUE)
@@ -344,7 +344,7 @@ avworkflow_localize <-
         idx <- startsWith(result, "Would copy ")
         result <- sub("Would copy (.*) to .*", "\\1", result[idx])
         n_files <- length(result)
-        warning(
+        message(
             "use 'dry = FALSE' to localize ", n_files, " workflow files",
             call. = FALSE
         )
