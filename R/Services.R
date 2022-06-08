@@ -30,6 +30,10 @@ empty_object <- setNames(list(), character())
 #'     `operations,Service-method`, to the internal `get_operation()`
 #'     function.
 #'
+#' @param auto_unbox logical(1) If FALSE (default) do not
+#'     automatically 'unbox' R scalar values from JSON arrays to JSON
+#'     scalers.
+#'
 #' @param .deprecated optional logical(1) include deprecated operations?
 #'
 #' @export
@@ -40,11 +44,15 @@ setGeneric(
     signature = "x"
 )
 
+#' @describeIn Services List all operations available in the API
 #' @export
 setMethod(
     "operations", "Service",
-    function(x, ..., .deprecated = FALSE)
+    function(x, ..., auto_unbox = FALSE, .deprecated = FALSE)
 {
+    stopifnot(
+        .is_scalar_logical(auto_unbox)
+    )
     operations <- .api_get_operations(.api(x), ...)
     deprecated <- .operation_field(operations, "deprecated")
     keep <- .deprecated | !vapply(deprecated, isTRUE, logical(1))
