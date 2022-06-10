@@ -149,14 +149,20 @@
 #'   value; if unknown. it returns null)
 #'
 #' @examples
-#' drs_eg_anvil <- c(
-#'     "drs://dg.ANV0/975bd45f-f022-4fad-b9a2-3a00c3b8792c",
-#'     "drs://dg.ANV0/00008531-03d7-418c-b3d3-b7b22b5381a0"
+#' drs <- c(
+#'     vcf = "drs://dg.ANV0/6f633518-f2de-4460-aaa4-a27ee6138ab5",
+#'     tbi = "drs://dg.ANV0/4fb9e77f-c92a-4deb-ac90-db007dc633aa"
 #' )
 #'
 #' if (gcloud_exists() && startsWith(gcloud_account(), "pet-")) {
 #'     ## from within AnVIL
-#'     drs_stat(drs_eg_anvil)
+#'     tbl <- drs_stat(uri)
+#'     urls <- drs_access_url(uri)
+#'     ## library(VariantAnnotation)
+#'     ## vcffile <- VcfFile(urls[["vcf"]], urls[["tbi"]])
+#'     ##
+#'     ## header <- scanVcfHeader(vcffile)
+#'     ## meta(header)[["contig"]]
 #' }
 #'
 #' @importFrom rlang .data
@@ -266,8 +272,6 @@ drs_access_url <-
 #' - simple: logical() value indicating whether resolution used a
 #'   simple signed URL (`TRUE`) or auxilliary service account.
 #' - destination: character() full path to retrieved object(s)
-#'
-#' @examples
 #'
 #' @export
 drs_cp <- function(source, destination, ..., overwrite = FALSE)
