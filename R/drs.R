@@ -44,6 +44,9 @@
     ## add drs field to response
     lst <- c(as.list(response), list(drs = drs))
 
+    ## unbox accessUrl; if accessUrl == NULL, then this is a no-op
+    lst$accessUrl <- unlist(lst$accessUrl, use.names = FALSE)
+
     ## nest list elements so length == 1L
     is_list <-
         vapply(lst, is.list, logical(1))
@@ -121,6 +124,17 @@
 #' runtime. The pet account is discovered by default when evaluated on
 #' an AnVIL runtime (e.g., in RStudio or a Jupyter notebook in the
 #' AnVIL), or can be found in the return value of `avruntimes()`.
+#'
+#' Errors reported by the DRS service are communicated to the user,
+#' but can be cryptic. The DRS service itself is called
+#' 'martha'. Errors mentioning martha might commonly involve a
+#' mal-formed DRS uri. Martha uses a service called 'bond' to
+#' establish credentials with registered third party entities such as
+#' Gen3 or Kids First. Errors mentioning bond might involve absence of
+#' credentials, within Terra, to access the resource; check that, in
+#' the Terra / AnVIL graphical user interface, the user profiles
+#' 'External Entities' includes the organization to which the DRS uri
+#' is being resolved.
 #'
 #' @param source character() DRS URLs (beginning with 'drs://') to
 #'     resources managed by the 'martha' DRS resolution server.
