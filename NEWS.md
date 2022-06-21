@@ -37,6 +37,9 @@ BUG FIXES
 - (v 1.8.2) `avworkflow_localize()` looks for `submissionId` files
   correctly.
 
+- (v 1.8.3) `drs_stat()` works when `accessUrl` is included in
+  response.
+
 # AnVIL 1.6.7 / 1.7.13
 
 BUG FIXES
