@@ -22,8 +22,8 @@ default); in principle \code{"auto"} allows for discovery of
 the region, but sometimes fails. Regions are enumerated at
 \url{https://cloud.google.com/storage/docs/locations#available-locations}.}
 
-\item{destination}{character(1) directory path in which to retrieve
-files.}
+\item{destination}{\code{character(1)}, google cloud bucket or local
+file system destination path.}
 
 \item{...}{additional arguments, passed to \code{gsutil_cp()} for file
 copying.}
@@ -77,12 +77,23 @@ bucket or local folder
 \code{drs_stat()} sends requests in parallel to the DRS server,
 using 8 forked processes (by default) to speed up queries. Use
 \code{options(mc.cores = 16L)}, for instance, to set the number of
-processes to use.\preformatted{`drs_stat()` uses the AnVIL 'pet' account associated with a
-runtime. The pet account is discovered by default when
-evaluated on an AnVIL runtime (e.g., in RStudio or a Jupyter
-notebook in the AnVIL), or can be found in the return value of
-`avruntimes()`.
-}
+processes to use.
+
+\code{drs_stat()} uses the AnVIL 'pet' account associated with a
+runtime. The pet account is discovered by default when evaluated on
+an AnVIL runtime (e.g., in RStudio or a Jupyter notebook in the
+AnVIL), or can be found in the return value of \code{avruntimes()}.
+
+Errors reported by the DRS service are communicated to the user,
+but can be cryptic. The DRS service itself is called
+'martha'. Errors mentioning martha might commonly involve a
+mal-formed DRS uri. Martha uses a service called 'bond' to
+establish credentials with registered third party entities such as
+Gen3 or Kids First. Errors mentioning bond might involve absence of
+credentials, within Terra, to access the resource; check that, in
+the Terra / AnVIL graphical user interface, the user profiles
+'External Entities' includes the organization to which the DRS uri
+is being resolved.
 }
 \examples{
 drs_eg_anvil <- c(
@@ -94,6 +105,5 @@ if (gcloud_exists() && startsWith(gcloud_account(), "pet-")) {
     ## from within AnVIL
     drs_stat(drs_eg_anvil)
 }
-
 
 }
