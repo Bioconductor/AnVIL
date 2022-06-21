@@ -15,6 +15,14 @@ USER VISIBLE CHANGES
   BiocManager::install(), which now knows about container binary
   repositories.
 
+BUG FIXES
+
+- (v 1.9.3 / 1.8.2) `avworkflow_localize()` looks for `submissionId`
+  files correctly.
+
+- (v 1.9.5 / 1.8.3) `drs_stat()` works when `accessUrl` is included in
+  response.
+
 # AnVIL 1.8.0
 
 NEW FEATURES
@@ -50,6 +58,9 @@ BUG FIXES
 
 - (v 1.8.2) `avworkflow_localize()` looks for `submissionId` files
   correctly.
+
+- (v 1.8.3) `drs_stat()` works when `accessUrl` is included in
+  response.
 
 # AnVIL 1.6.7 / 1.7.13
 
