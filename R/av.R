@@ -381,8 +381,14 @@ avtable_import_set <-
     tbl <-
         .data %>%
         select(set, member)
-    names(tbl)[[1]] <- paste0("membership:", origin, "_set_id")
+    tname <- paste0(origin, "_set")
+    cname <- paste0(tname, "_id")
+    mname <- paste0("membership:", cname)
+    names(tbl)[[1]] <- mname
     names(tbl)[[2]] <- origin
+
+    if (all(unique(tbl[[mname]]) %in% avtable(tname)[[cname]]))
+        stop("Duplicate operation, delete rows or '", tname, "' from 'Data'")
 
     destination <- tempfile()
     write.table(tbl, destination, quote = FALSE, sep="\t", row.names=FALSE)
