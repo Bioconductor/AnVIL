@@ -114,12 +114,12 @@ compatible with the Bioconductor or Terra container in use.
 \code{add_libpaths()}: Add local library paths to
 \code{.libPaths()}.
 }
-\section{Methods (by generic)}{
+\section{Functions}{
 \itemize{
-\item \code{print}: Print a summary of package
+\item \code{print(repository_stats)}: Print a summary of package
 availability in binary repositories.
-}}
 
+}}
 \examples{
 stats <- repository_stats() # obtain statistics
 stats                       # display a summary
