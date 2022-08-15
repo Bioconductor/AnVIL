@@ -142,7 +142,10 @@ length greater than 1. Use \code{gsutil_help("cp")} for \code{gsutil} help.
 \code{gsutil_rm()}: remove contents of a google cloud
 bucket.
 
-\code{gsutil_rsync()}: synchronize a source and a destination.
+\code{gsutil_rsync()}: synchronize a source and a
+destination. If the destination is on the local file system, it
+must be a directory or not yet exist (in which case a directory
+will be created).
 
 \code{gsutil_cat()}: concatenate bucket objects to standard output
 
