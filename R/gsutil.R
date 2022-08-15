@@ -38,6 +38,18 @@ NULL
     .is_character(source) & grepl("gs://[^/]+", source)
 }
 
+.gsutil_sh_quote <-
+    function(source)
+{
+    ## Expand local paths with ~ or . or ... to full path names.
+    ## Needed because we also use shQuote() (to allow for spaces in
+    ## file names), and shQuote() would otherwise use paths with ~ or
+    ## . in the current working directory.
+    is_local <- !.gsutil_is_uri(source)
+    source[is_local] <- normalizePath(source[is_local])
+    shQuote(source)
+}
+
 #' @rdname gsutil
 #'
 #' @description `gsutil_requesterpays()`: does the google bucket
@@ -254,8 +266,8 @@ gsutil_cp <-
         "cp", ## cp command
         if (recursive) "-r",
         ...,
-        shQuote(source),
-        shQuote(destination)
+        .gsutil_sh_quote(source),
+        .gsutil_sh_quote(destination)
     )
     result <- .gsutil_do(args)
     .gcloud_sdk_result(result)
@@ -298,7 +310,10 @@ gsutil_rm <-
 
 #' @rdname gsutil
 #'
-#' @description `gsutil_rsync()`: synchronize a source and a destination.
+#' @description `gsutil_rsync()`: synchronize a source and a
+#'     destination. If the destination is on the local file system, it
+#'     must be a directory or not yet exist (in which case a directory
+#'     will be created).
 #'
 #' @param exclude `character(1)` a python regular expression of bucket
 #'     paths to exclude from synchronization. E.g.,
@@ -361,8 +376,8 @@ gsutil_rsync <-
         if (delete) "-d",
         if (recursive) "-r",
         ...,
-        shQuote(source),
-        shQuote(destination)
+        .gsutil_sh_quote(source),
+        .gsutil_sh_quote(destination)
     )
     result <- .gsutil_do(args)
     .gcloud_sdk_result(result)

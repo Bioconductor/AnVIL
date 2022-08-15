@@ -142,7 +142,10 @@ These functions invoke the `gsutil` command line
 `gsutil_rm()`: remove contents of a google cloud
     bucket.
 
-`gsutil_rsync()`: synchronize a source and a destination.
+\code{gsutil_rsync()}: synchronize a source and a
+destination. If the destination is on the local file system, it
+must be a directory or not yet exist (in which case a directory
+will be created).
 
 `gsutil_cat()`: concatenate bucket objects to standard output
 
