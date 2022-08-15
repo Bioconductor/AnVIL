@@ -80,19 +80,25 @@ billing account.
 
 ## Use in the AnVIL cloud
 
-In the AnVIL cloud environment, click on the `RUNTIME` button
-illustrated below and choose the 'Bioconductor' runtime. When creating
-a Jupyter notebook, choose `R` as the engine. For _RStudio_ use,
-choose `Custom environment` and enter the current
-`anvil-rstudio-bioconductor` image and version tag. A time of writing,
-the image is
+In the AnVIL cloud environment, clone or create a new workspace. Click
+on the `Cloud Environment` button at the top right of the
+screen. Choose the `R / Bioconductor` runtime to use in a Jupyter
+notebook, or `RStudio` to use in RStudio. When creating a Jupyter
+notebook, choose `R` as the engine.
 
-```
-us.gcr.io/anvil-gcr-public/anvil-rstudio-bioconductor:0.0.3
-```
-Images are available at Google Cloud Platform [container registry][].
+A new layout is being introduced in Fall of 2022. If the workspace has
+an 'Analyses' tab, navigate to it and look for the 'Environment
+Configuration' button to the right of the screen. For a Jupyter
+notebook-based environment, select `jupyter` 'Environment Settings'
+followed by `Customize` and the `R / Bioconductor` application
+configuration. _RStudio_ is available by clicking on the `RStudio /
+Bioconductor` 'Environment Settings' button.
 
-[container registry]: http://us.gcr.io/anvil-gcr-public/anvil-rstudio-bioconductor
+For tasks more complicated than manipulation and visualization of
+tabular data (e.g., performing steps of a single-cell work flow) the
+default Jupyter notebook configuration of 1 CPU and 3.75 GB of memory
+will be insufficient; the RStudio image defaults to 4 CPU and 15 GB of
+memory
 
 ## Local use
 
