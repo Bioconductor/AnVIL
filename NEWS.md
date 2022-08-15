@@ -23,6 +23,11 @@ BUG FIXES
 - (v 1.9.5 / 1.8.3) `drs_stat()` works when `accessUrl` is included in
   response.
 
+- (v 1.9.6 / 1.8.5) `gsutil_cp()` and `gsutil_rsync()` use
+  `normalizePath()` on source and destination arguments to avoid
+  creating directories in unexpected locations when provided with
+  paths containing `~`, `.` or `..`.
+
 # AnVIL 1.8.0
 
 NEW FEATURES
