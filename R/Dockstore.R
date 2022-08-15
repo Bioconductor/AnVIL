@@ -38,7 +38,7 @@ Dockstore <-
         Service(
             "dockstore", host="dockstore.org", authenticate = FALSE,
             api_url = "https://dockstore.org/swagger.json",
-            api_reference_md5sum = "8fad1a938aeac5b12a11a197a76f5205"
+            api_reference_md5sum = "c8643528a26fbf33ed300d2ff7fbee59"
         ),
         api_header = api_header
     )
