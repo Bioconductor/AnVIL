@@ -107,7 +107,9 @@ billing account used by AnVIL can be authenticated with the
 user. These requirements are satisfied when using the AnVIL compute
 cloud. For local use, one must
 
-- [Install][install-gcloud-sdk] the gcloud sdk
+- [Install][install-gcloud-sdk] the gcloud sdk (for Linux and Windows,
+  `cloudml::gcloud_install()` provides an alternative way to install
+  gcloud).
 - Define an environment variable or `option()` named `GCLOUD_SDK_PATH`
   pointing to the root of the SDK installation, e.g,
 
