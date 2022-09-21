@@ -685,6 +685,58 @@ str(lst$systems)
 
 <!-- FIXME: good flatten() example -->
 
+### Test endpoints {.unnumbered}
+
+Testing endpoints is challenging. Endpoints cannot be evaluated
+directly because they required credentialed access, and because remote
+calls involve considerable latency and sometimes
+bandwidth. Traditional 'mocks' are difficult to implement because of
+the auto-generated nature of endpoints from APIs. Simply checking for
+identical API YAML files (e.g., using md5sums) only indicates a change
+in the file without assessing whether the R code invoking the endpoint
+is the same (e.g., because arguments were added, removed, or renamed).
+
+The approach adopted here is to take a 'snapshot' of the current
+API. This is then compared to the updated API. Endpoints that are used
+in the code but that have been removed or have updated arguments are
+then manually checked for conformance to the updated API. Once
+endpoints are brought into line with the new API, the snapshot is
+updated to reflect the new API.
+
+Non-exported functions in the AnVIL package facilitate these steps. For
+instance, `AnVIL:::.api_test_write(Terra(), "Terra")` creates a
+snapshot of the current API. This is saved as
+`tests/testthat/api-Terra.rds`. The service is then updated (following
+the README of `inst/services/terra`) and the updated API compared to
+the original with `AnVIL::.api_test_check(Terra(), "Terra")`. The
+result is a list of functions that are common to both APIs, or added,
+removed, or updated (different arguments) in the new API. A static
+example is
+```
+> .api_test_check(Terra(), "Terra") |> lengths()
+        common          added        removed        updated  common_in_use
+           135             24              3             11              9
+removed_in_use updated_in_use
+             0              3
+```
+with the `removed_in_use` and `updated_in_use` endpoints
+```
+> .api_test_check(Terra(), "Terra")[c("removed_in_use", "updated_in_use")]
+$removed_in_use
+character(0)
+
+$updated_in_use
+[1] "cloneWorkspace"         "entityQuery"            "flexibleImportEntities"
+```
+requiring manual inspection. Manual inspection means that each use in
+the AnVIL R package code is examined and updated to match the new
+API. Once the R code is aligned with the new API, `.api_test_write()`
+is re-run. The commit consists of the updated API files in
+`inst/services`, updated R code, and the updated snapshot.
+
+Unit tests (in `test_api.R`) are implemented to fail when the
+`removed_in_use` or `updated_in_use` fields are not zero-length.
+
 [httr]: https://cran.r-project.org/package=httr
 
 ## Service implementations
