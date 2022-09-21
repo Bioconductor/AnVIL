@@ -1,20 +1,63 @@
 {
   "swagger": "2.0",
   "info": {
-    "contact": {
-      "email": "workspace@broadinstitute.org"
-    },
-    "description": "Workspace",
+    "description": "Rawls API",
     "license": {
       "name": "BSD",
       "url": "http://opensource.org/licenses/BSD-3-Clause"
     },
     "termsOfService": "http://www.github.com/broadinstitute/rawls",
-    "title": "Workspace API",
+    "title": "Rawls",
     "version": "1.0.0"
   },
   "basePath": "/",
   "paths": {
+    "/api/admin/migrations": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "schema": {
+              "$ref": "#/definitions/BatchMigrateRequestBody"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Workspace scheduled for migration",
+            "schema": {
+              "$ref": "#/definitions/WorkspaceMigrationMetadata"
+            }
+          },
+          "403": {
+            "description": "You must be an admin to list migration attempts",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          },
+          "500": {
+            "description": "Rawls Internal Error",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          }
+        },
+        "tags": [
+          "admin",
+          "workspaces"
+        ],
+        "description": "batch start migration attempts for workspaces",
+        "operationId": "batchStartMigration",
+        "summary": "batch start workspace migrations"
+      }
+    },
     "/api/admin/project/registration": {
       "post": {
         "consumes": [
@@ -45,15 +88,6 @@
             "description": "Internal Server Error"
           }
         },
-        "security": [
-          {
-            "authorization": [
-              "openid",
-              "email",
-              "profile"
-            ]
-          }
-        ],
         "tags": [
           "admin"
         ],
@@ -112,123 +146,12 @@
             "description": "Internal Server Error"
           }
         },
-        "security": [
-          {
-            "authorization": [
-              "openid",
-              "email",
-              "profile"
-            ]
-          }
-        ],
         "tags": [
           "admin"
         ],
         "operationId": "unregisterBillingProject",
         "summary": "remove the record for a billing project",
         "x-codegen-request-body-name": "ownerInfo"
-      }
-    },
-    "/api/admin/refreshToken/{userSubjectId}": {
-      "delete": {
-        "produces": [
-          "application/json"
-        ],
-        "parameters": [
-          {
-            "description": "user's subject id",
-            "in": "path",
-            "name": "userSubjectId",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "user's refresh token revoked and removed"
-          },
-          "500": {
-            "description": "Rawls Internal Error",
-            "schema": {
-              "$ref": "#/definitions/ErrorReport"
-            }
-          }
-        },
-        "security": [
-          {
-            "authorization": [
-              "openid",
-              "email",
-              "profile"
-            ]
-          }
-        ],
-        "tags": [
-          "admin"
-        ],
-        "description": "revoke and remove a user's refresh token",
-        "operationId": "admin_delete_refresh_token",
-        "summary": "Admin revoke and remove a user's refresh token"
-      }
-    },
-    "/api/admin/statistics": {
-      "get": {
-        "parameters": [
-          {
-            "description": "start date (YYYY-MM-DD, or any string valid for Java's DateTime.parse())",
-            "format": "date",
-            "in": "query",
-            "name": "startDate",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "description": "end date (YYYY-MM-DD, or any string valid for Java's DateTime.parse())",
-            "format": "date",
-            "in": "query",
-            "name": "endDate",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "description": "namespace to query when calculating entity statistics; leave blank for all",
-            "in": "query",
-            "name": "workspaceNamespace",
-            "type": "string"
-          },
-          {
-            "description": "name to query when calculating entity statistics; leave blank for all",
-            "in": "query",
-            "name": "workspaceName",
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "FireCloud statistics"
-          },
-          "403": {
-            "description": "You must be an admin"
-          },
-          "500": {
-            "description": "Rawls Internal Error"
-          }
-        },
-        "security": [
-          {
-            "authorization": [
-              "openid",
-              "email",
-              "profile"
-            ]
-          }
-        ],
-        "tags": [
-          "admin"
-        ],
-        "description": "retrieve statistics for a window on FireCloud",
-        "operationId": "admin_statistics_get",
-        "summary": "retrieve statistics on FireCloud"
       }
     },
     "/api/admin/submissions": {
@@ -266,15 +189,6 @@
             }
           }
         },
-        "security": [
-          {
-            "authorization": [
-              "openid",
-              "email",
-              "profile"
-            ]
-          }
-        ],
         "tags": [
           "admin",
           "submissions"
@@ -310,15 +224,6 @@
             }
           }
         },
-        "security": [
-          {
-            "authorization": [
-              "openid",
-              "email",
-              "profile"
-            ]
-          }
-        ],
         "tags": [
           "admin",
           "submissions"
@@ -335,21 +240,21 @@
         ],
         "parameters": [
           {
-            "description": "workspaceNamespace of the submission",
+            "description": "The workspace namespace",
             "in": "path",
             "name": "workspaceNamespace",
             "required": true,
             "type": "string"
           },
           {
-            "description": "workspaceName of the submission",
+            "description": "The workspace name",
             "in": "path",
             "name": "workspaceName",
             "required": true,
             "type": "string"
           },
           {
-            "description": "id of the submission",
+            "description": "Submission Id",
             "in": "path",
             "name": "submissionId",
             "required": true,
@@ -379,15 +284,6 @@
             }
           }
         },
-        "security": [
-          {
-            "authorization": [
-              "openid",
-              "email",
-              "profile"
-            ]
-          }
-        ],
         "tags": [
           "admin",
           "submissions"
@@ -422,18 +318,8 @@
             }
           }
         },
-        "security": [
-          {
-            "authorization": [
-              "openid",
-              "email",
-              "profile"
-            ]
-          }
-        ],
         "tags": [
-          "admin",
-          "users"
+          "admin"
         ],
         "description": "removes a user from the list of curators",
         "operationId": "adminRemoveCurator",
@@ -463,18 +349,8 @@
             }
           }
         },
-        "security": [
-          {
-            "authorization": [
-              "openid",
-              "email",
-              "profile"
-            ]
-          }
-        ],
         "tags": [
-          "admin",
-          "users"
+          "admin"
         ],
         "description": "adds a user to the list of curators",
         "operationId": "adminAddCurator",
@@ -535,15 +411,6 @@
             }
           }
         },
-        "security": [
-          {
-            "authorization": [
-              "openid",
-              "email",
-              "profile"
-            ]
-          }
-        ],
         "tags": [
           "admin",
           "workspaces"
@@ -551,6 +418,226 @@
         "description": "List all workspaces",
         "operationId": "listAllWorkspaces",
         "summary": "list all workspaces"
+      }
+    },
+    "/api/admin/workspaces/{workspaceNamespace}/{workspaceName}/flags": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "The workspace namespace",
+            "in": "path",
+            "name": "workspaceNamespace",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "The workspace name",
+            "in": "path",
+            "name": "workspaceName",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Request",
+            "schema": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            }
+          },
+          "403": {
+            "description": "You must be an admin to list feature flags",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          },
+          "500": {
+            "description": "Rawls Internal Error",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          }
+        },
+        "tags": [
+          "admin",
+          "workspaces"
+        ],
+        "description": "list feature flags for workspace",
+        "operationId": "listWorkspaceFlags",
+        "summary": "list feature flags for workspace"
+      },
+      "put": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "The workspace namespace",
+            "in": "path",
+            "name": "workspaceNamespace",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "The workspace name",
+            "in": "path",
+            "name": "workspaceName",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "full set of flags for this workspace",
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Request",
+            "schema": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            }
+          },
+          "403": {
+            "description": "You must be an admin to overwrite feature flags",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          },
+          "500": {
+            "description": "Rawls Internal Error",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          }
+        },
+        "tags": [
+          "admin",
+          "workspaces"
+        ],
+        "description": "overwrite feature flags for workspace",
+        "operationId": "overwriteWorkspaceFlags",
+        "summary": "overwrite feature flags for workspace"
+      }
+    },
+    "/api/admin/workspaces/{workspaceNamespace}/{workspaceName}/migrations": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "The workspace namespace",
+            "in": "path",
+            "name": "workspaceNamespace",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "The workspace name",
+            "in": "path",
+            "name": "workspaceName",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Request",
+            "schema": {
+              "items": {
+                "$ref": "#/definitions/WorkspaceMigrationMetadata"
+              },
+              "type": "array"
+            }
+          },
+          "403": {
+            "description": "You must be an admin to list migration attempts",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          },
+          "500": {
+            "description": "Rawls Internal Error",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          }
+        },
+        "tags": [
+          "admin",
+          "workspaces"
+        ],
+        "description": "list migration attempts for workspace",
+        "operationId": "listMigrations",
+        "summary": "list migration attempts for workspace"
+      },
+      "post": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "The workspace namespace",
+            "in": "path",
+            "name": "workspaceNamespace",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "The workspace name",
+            "in": "path",
+            "name": "workspaceName",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Workspace scheduled for migration",
+            "schema": {
+              "$ref": "#/definitions/WorkspaceMigrationMetadata"
+            }
+          },
+          "403": {
+            "description": "You must be an admin to list migration attempts",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          },
+          "500": {
+            "description": "Rawls Internal Error",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          }
+        },
+        "tags": [
+          "admin",
+          "workspaces"
+        ],
+        "description": "start migration attempt for workspace",
+        "operationId": "startMigration",
+        "summary": "start migration attempt for workspace"
       }
     },
     "/api/billing": {
@@ -600,7 +687,7 @@
         },
         "security": [
           {
-            "authorization": [
+            "googleoauth": [
               "openid",
               "email",
               "profile",
@@ -617,14 +704,251 @@
         "x-codegen-request-body-name": "createProjectRequest"
       }
     },
-    "/api/billing/{projectId}/members": {
+    "/api/billing/v2": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "create project request",
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/CreateRawlsV2BillingProjectFullRequest"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successfully Created Billing Project in Rawls"
+          },
+          "400": {
+            "description": "both you and firecloud billing user must be a user of the billing account",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          },
+          "409": {
+            "description": "project already exists in rawls"
+          },
+          "500": {
+            "description": "Rawls Internal Error",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          }
+        },
+        "security": [
+          {
+            "googleoauth": [
+              "openid",
+              "email",
+              "profile",
+              "https://www.googleapis.com/auth/cloud-billing"
+            ]
+          }
+        ],
+        "tags": [
+          "billing_v2"
+        ],
+        "description": "create new billing project in rawls; the client must provide either Azure managed app coordinates or a Google billing account ID. Providing both will result in an error.",
+        "operationId": "createBillingProjectFullV2",
+        "summary": "create billing project in rawls",
+        "x-codegen-request-body-name": "createProjectRequest"
+      }
+    },
+    "/api/billing/v2/{projectId}": {
+      "delete": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "Billing Project ID",
+            "in": "path",
+            "name": "projectId",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "Project Not Found",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          },
+          "500": {
+            "description": "Rawls Internal Error",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          }
+        },
+        "tags": [
+          "billing_v2"
+        ],
+        "description": "delete billing project",
+        "operationId": "deleteBillingProjectV2",
+        "summary": "delete billing project"
+      },
       "get": {
         "produces": [
           "application/json"
         ],
         "parameters": [
           {
-            "description": "Project ID",
+            "description": "Billing Project ID",
+            "in": "path",
+            "name": "projectId",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/RawlsBillingProjectResponse"
+            }
+          },
+          "404": {
+            "description": "Project Not Found",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          },
+          "500": {
+            "description": "Rawls Internal Error",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          }
+        },
+        "tags": [
+          "billing_v2"
+        ],
+        "description": "get billing project",
+        "operationId": "getBillingProject",
+        "summary": "get billing project"
+      }
+    },
+    "/api/billing/v2/{projectId}/billingAccount": {
+      "delete": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "Billing Project ID",
+            "in": "path",
+            "name": "projectId",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/RawlsBillingProjectResponse"
+            }
+          },
+          "404": {
+            "description": "Project Not Found",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          },
+          "500": {
+            "description": "Rawls Internal Error",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          }
+        },
+        "tags": [
+          "billing_v2"
+        ],
+        "description": "removes the billing account from the billing project",
+        "operationId": "removeBillingProjectBillingAccount",
+        "summary": "removes the billing account from the billing project"
+      },
+      "put": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "Billing Project ID",
+            "in": "path",
+            "name": "projectId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "update billing account request",
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/UpdateRawlsBillingAccountRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/RawlsBillingProjectResponse"
+            }
+          },
+          "400": {
+            "description": "Billing account not found",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          },
+          "404": {
+            "description": "Project Not Found",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          },
+          "500": {
+            "description": "Rawls Internal Error",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          }
+        },
+        "tags": [
+          "billing_v2"
+        ],
+        "description": "update billing account on billing project",
+        "operationId": "updateBillingProjectBillingAccount",
+        "summary": "update billing account on billing project"
+      }
+    },
+    "/api/billing/v2/{projectId}/members": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "Billing Project ID",
             "in": "path",
             "name": "projectId",
             "required": true,
@@ -642,7 +966,7 @@
             }
           },
           "403": {
-            "description": "You must be a project owner to view the members of a project",
+            "description": "You must be a project member to view the members of a project",
             "schema": {
               "$ref": "#/definitions/ErrorReport"
             }
@@ -654,31 +978,22 @@
             }
           }
         },
-        "security": [
-          {
-            "authorization": [
-              "openid",
-              "email",
-              "profile"
-            ]
-          }
-        ],
         "tags": [
-          "billing"
+          "billing_v2"
         ],
-        "description": "list members of billing project the caller owns",
-        "operationId": "listBillingProjectMembers",
-        "summary": "list members of billing project the caller owns"
+        "description": "list members of billing project. owners can view all members, users will only be able to view owners",
+        "operationId": "listBillingProjectMembersV2",
+        "summary": "list members of billing project"
       }
     },
-    "/api/billing/{projectId}/{workbenchRole}/{email}": {
+    "/api/billing/v2/{projectId}/members/{workbenchRole}/{email}": {
       "delete": {
         "produces": [
           "application/json"
         ],
         "parameters": [
           {
-            "description": "Project ID",
+            "description": "Billing Project ID",
             "in": "path",
             "name": "projectId",
             "required": true,
@@ -726,20 +1041,11 @@
             }
           }
         },
-        "security": [
-          {
-            "authorization": [
-              "openid",
-              "email",
-              "profile"
-            ]
-          }
-        ],
         "tags": [
-          "billing"
+          "billing_v2"
         ],
         "description": "remove user or group from billing project the caller owns",
-        "operationId": "removeUserFromBillingProject",
+        "operationId": "removeUserFromBillingProjectV2",
         "summary": "remove user or group from billing project the caller owns"
       },
       "put": {
@@ -748,7 +1054,7 @@
         ],
         "parameters": [
           {
-            "description": "Project ID",
+            "description": "Billing Project ID",
             "in": "path",
             "name": "projectId",
             "required": true,
@@ -796,15 +1102,404 @@
             }
           }
         },
-        "security": [
+        "tags": [
+          "billing_v2"
+        ],
+        "description": "add user or group to billing project the caller owns",
+        "operationId": "addUserToBillingProjectV2",
+        "summary": "add user or group to billing project the caller owns"
+      }
+    },
+    "/api/billing/v2/{projectId}/spendReport": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
           {
-            "authorization": [
-              "openid",
-              "email",
-              "profile"
-            ]
+            "description": "Billing Project ID",
+            "in": "path",
+            "name": "projectId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "start date of report (YYYY-MM-DD). Data included in report will start at 12 AM UTC on this date.",
+            "format": "date",
+            "in": "query",
+            "name": "startDate",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "end date of report (YYYY-MM-DD). Data included in report will end at 11:59 PM UTC on this date.",
+            "format": "date",
+            "in": "query",
+            "name": "endDate",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "collectionFormat": "multi",
+            "description": "Key(s) indicating how to aggregate spend data in results. Will return only summary data (spendDetails is empty) if aggregationKey is not present. Aggregation can be sub-aggregated one level by appending a second aggregation key separated by a '~' as follows 'Aggregation~SubAggregation'. Aggregation key options are [Workspace, Category, Daily]",
+            "in": "query",
+            "items": {
+              "type": "string"
+            },
+            "name": "aggregationKey",
+            "required": false,
+            "type": "array"
           }
         ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/SpendReport"
+            }
+          },
+          "400": {
+            "description": "invalid spend report parameters",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          },
+          "403": {
+            "description": "You must be a project owner to view the spend report of a project",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          },
+          "404": {
+            "description": "The specified billing project could not be found",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          },
+          "500": {
+            "description": "Rawls Internal Error",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          }
+        },
+        "tags": [
+          "billing_v2"
+        ],
+        "description": "get spend report for the billing project",
+        "operationId": "getSpendReport",
+        "summary": "get spend report for the billing project"
+      }
+    },
+    "/api/billing/v2/{projectId}/spendReportConfiguration": {
+      "delete": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "Billing Project ID",
+            "in": "path",
+            "name": "projectId",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successfully cleared spend configuration"
+          },
+          "403": {
+            "description": "You must be a billing project owner to alter the spend configuration of the billing project",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          },
+          "500": {
+            "description": "Rawls Internal Error",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          }
+        },
+        "tags": [
+          "billing_v2"
+        ],
+        "description": "clear the spend configuration for the billing project",
+        "operationId": "clearSpendReportConfiguration",
+        "summary": "clear the spend configuration for the billing project"
+      },
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "Billing Project ID",
+            "in": "path",
+            "name": "projectId",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved spend report configuration",
+            "schema": {
+              "$ref": "#/definitions/SpendReportConfiguration"
+            }
+          },
+          "204": {
+            "description": "The specified billing project exists but does not have spend reporting configured"
+          },
+          "403": {
+            "description": "You must be a billing project owner to view the spend report configuration of the billing project",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          },
+          "404": {
+            "description": "The specified billing project could not be found",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          },
+          "500": {
+            "description": "Rawls Internal Error",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          }
+        },
+        "tags": [
+          "billing_v2"
+        ],
+        "description": "get the spend report configuration for the billing project",
+        "operationId": "getSpendReportConfiguration",
+        "summary": "get the spend report configuration for the billing project"
+      },
+      "put": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "Billing Project ID",
+            "in": "path",
+            "name": "projectId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "billing project spend configuration information",
+            "in": "body",
+            "name": "body",
+            "schema": {
+              "$ref": "#/definitions/SpendReportConfiguration"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successfully updated spend configuration"
+          },
+          "400": {
+            "description": "Either the billing project does not have an active billing account, the specified dataset does not exist, or the specified table does not exist",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          },
+          "403": {
+            "description": "You must be a billing project owner to alter the spend configuration of the billing project",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          },
+          "404": {
+            "description": "The specified billing project could not be found",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          },
+          "500": {
+            "description": "Rawls Internal Error",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          }
+        },
+        "tags": [
+          "billing_v2"
+        ],
+        "description": "set the spend configuration for the billing project",
+        "operationId": "setSpendReportConfiguration",
+        "summary": "set the spend configuration for the billing project"
+      }
+    },
+    "/api/billing/{projectId}/members": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "Billing Project ID",
+            "in": "path",
+            "name": "projectId",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "items": {
+                "$ref": "#/definitions/RawlsBillingProjectMember"
+              },
+              "type": "array"
+            }
+          },
+          "403": {
+            "description": "You must be a project member to view the members of a project",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          },
+          "500": {
+            "description": "Rawls Internal Error",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          }
+        },
+        "tags": [
+          "billing"
+        ],
+        "description": "list members of billing project. owners can view all members, users will only be able to view owners",
+        "operationId": "listBillingProjectMembers",
+        "summary": "list members of billing project"
+      }
+    },
+    "/api/billing/{projectId}/{workbenchRole}/{email}": {
+      "delete": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "Billing Project ID",
+            "in": "path",
+            "name": "projectId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "role of user for project",
+            "enum": [
+              "user",
+              "owner"
+            ],
+            "in": "path",
+            "name": "workbenchRole",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "email of user or group to remove",
+            "in": "path",
+            "name": "email",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully Removed User From Billing Project"
+          },
+          "403": {
+            "description": "You must be a project owner to add a user to a billing project",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          },
+          "500": {
+            "description": "Rawls Internal Error",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          }
+        },
+        "tags": [
+          "billing"
+        ],
+        "description": "remove user or group from billing project the caller owns",
+        "operationId": "removeUserFromBillingProject",
+        "summary": "remove user or group from billing project the caller owns"
+      },
+      "put": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "Billing Project ID",
+            "in": "path",
+            "name": "projectId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "role of user for project",
+            "enum": [
+              "user",
+              "owner"
+            ],
+            "in": "path",
+            "name": "workbenchRole",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "email of user or group to add",
+            "in": "path",
+            "name": "email",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully Added User/Group To Billing Project"
+          },
+          "403": {
+            "description": "You must be a project owner to add a user to a billing project",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          },
+          "500": {
+            "description": "Rawls Internal Error",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          }
+        },
         "tags": [
           "billing"
         ],
@@ -870,15 +1565,6 @@
             }
           }
         },
-        "security": [
-          {
-            "authorization": [
-              "openid",
-              "email",
-              "profile"
-            ]
-          }
-        ],
         "tags": [
           "methodconfigs"
         ],
@@ -951,15 +1637,6 @@
             }
           }
         },
-        "security": [
-          {
-            "authorization": [
-              "openid",
-              "email",
-              "profile"
-            ]
-          }
-        ],
         "tags": [
           "methodconfigs"
         ],
@@ -1008,15 +1685,6 @@
             }
           }
         },
-        "security": [
-          {
-            "authorization": [
-              "openid",
-              "email",
-              "profile"
-            ]
-          }
-        ],
         "tags": [
           "methodconfigs"
         ],
@@ -1065,15 +1733,6 @@
             }
           }
         },
-        "security": [
-          {
-            "authorization": [
-              "openid",
-              "email",
-              "profile"
-            ]
-          }
-        ],
         "tags": [
           "methodconfigs"
         ],
@@ -1122,15 +1781,6 @@
             }
           }
         },
-        "security": [
-          {
-            "authorization": [
-              "openid",
-              "email",
-              "profile"
-            ]
-          }
-        ],
         "tags": [
           "methodconfigs"
         ],
@@ -1157,15 +1807,6 @@
             }
           }
         },
-        "security": [
-          {
-            "authorization": [
-              "openid",
-              "email",
-              "profile"
-            ]
-          }
-        ],
         "tags": [
           "notifications"
         ],
@@ -1180,14 +1821,14 @@
         ],
         "parameters": [
           {
-            "description": "workspace namespace",
+            "description": "The workspace namespace",
             "in": "path",
             "name": "workspaceNamespace",
             "required": true,
             "type": "string"
           },
           {
-            "description": "workspace name",
+            "description": "The workspace name",
             "in": "path",
             "name": "workspaceName",
             "required": true,
@@ -1205,15 +1846,6 @@
             }
           }
         },
-        "security": [
-          {
-            "authorization": [
-              "openid",
-              "email",
-              "profile"
-            ]
-          }
-        ],
         "tags": [
           "notifications"
         ],
@@ -1243,8 +1875,8 @@
           }
         ],
         "responses": {
-          "202": {
-            "description": "Successful request, check the project's status for completion"
+          "204": {
+            "description": "Project has been added to the perimeter"
           },
           "400": {
             "description": "Project is already in perimeter or is not in 'Ready' state",
@@ -1271,15 +1903,6 @@
             }
           }
         },
-        "security": [
-          {
-            "authorization": [
-              "openid",
-              "email",
-              "profile"
-            ]
-          }
-        ],
         "tags": [
           "servicePerimeters"
         ],
@@ -1308,15 +1931,6 @@
             }
           }
         },
-        "security": [
-          {
-            "authorization": [
-              "openid",
-              "email",
-              "profile"
-            ]
-          }
-        ],
         "tags": [
           "submissions"
         ],
@@ -1355,15 +1969,6 @@
             }
           }
         },
-        "security": [
-          {
-            "authorization": [
-              "openid",
-              "email",
-              "profile"
-            ]
-          }
-        ],
         "tags": [
           "billing",
           "users"
@@ -1388,7 +1993,7 @@
           }
         ],
         "responses": {
-          "200": {
+          "204": {
             "description": "Successfully delete billing project"
           },
           "400": {
@@ -1410,15 +2015,6 @@
             }
           }
         },
-        "security": [
-          {
-            "authorization": [
-              "openid",
-              "email",
-              "profile"
-            ]
-          }
-        ],
         "tags": [
           "billing",
           "users"
@@ -1454,15 +2050,6 @@
             "description": "Internal Server Error"
           }
         },
-        "security": [
-          {
-            "authorization": [
-              "openid",
-              "email",
-              "profile"
-            ]
-          }
-        ],
         "tags": [
           "billing",
           "users"
@@ -1477,7 +2064,16 @@
         "produces": [
           "application/json"
         ],
-        "parameters": [],
+        "parameters": [
+          {
+            "description": "Whether the Firecloud service has been given access to the billing accounts. Optional.\n",
+            "in": "query",
+            "name": "firecloudHasAccess",
+            "required": false,
+            "type": "boolean",
+            "x-example": true
+          }
+        ],
         "responses": {
           "200": {
             "description": "Successful Request",
@@ -1504,7 +2100,7 @@
         },
         "security": [
           {
-            "authorization": [
+            "googleoauth": [
               "openid",
               "email",
               "profile",
@@ -1519,103 +2115,6 @@
         "description": "list billing accounts for a user",
         "operationId": "listUserBillingAccounts",
         "summary": "list billing accounts for a user"
-      }
-    },
-    "/api/user/refreshToken": {
-      "put": {
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "parameters": [
-          {
-            "description": "refresh token",
-            "in": "body",
-            "name": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/UserRefreshToken"
-            }
-          }
-        ],
-        "responses": {
-          "201": {
-            "description": "Successful Request"
-          },
-          "500": {
-            "description": "Rawls Internal Error",
-            "schema": {
-              "$ref": "#/definitions/ErrorReport"
-            }
-          }
-        },
-        "security": [
-          {
-            "authorization": [
-              "openid",
-              "email",
-              "profile"
-            ]
-          }
-        ],
-        "tags": [
-          "users"
-        ],
-        "description": "store a user's refresh token",
-        "operationId": "refreshToken",
-        "summary": "Store refresh token",
-        "x-codegen-request-body-name": "refreshToken"
-      }
-    },
-    "/api/user/refreshTokenDate": {
-      "get": {
-        "produces": [
-          "application/json"
-        ],
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": "Successful Request",
-            "schema": {
-              "$ref": "#/definitions/UserRefreshTokenDate"
-            }
-          },
-          "400": {
-            "description": "Token for the user is invalid",
-            "schema": {
-              "$ref": "#/definitions/ErrorReport"
-            }
-          },
-          "404": {
-            "description": "There is no refresh token for the user",
-            "schema": {
-              "$ref": "#/definitions/ErrorReport"
-            }
-          },
-          "500": {
-            "description": "Rawls Internal Error",
-            "schema": {
-              "$ref": "#/definitions/ErrorReport"
-            }
-          }
-        },
-        "security": [
-          {
-            "authorization": [
-              "openid",
-              "email",
-              "profile"
-            ]
-          }
-        ],
-        "tags": [
-          "users"
-        ],
-        "description": "get the date the refresh token last updated",
-        "operationId": "refreshTokenDate",
-        "summary": "Get refresh token date"
       }
     },
     "/api/user/role/admin": {
@@ -1638,15 +2137,6 @@
             }
           }
         },
-        "security": [
-          {
-            "authorization": [
-              "openid",
-              "email",
-              "profile"
-            ]
-          }
-        ],
         "tags": [
           "users"
         ],
@@ -1675,15 +2165,6 @@
             }
           }
         },
-        "security": [
-          {
-            "authorization": [
-              "openid",
-              "email",
-              "profile"
-            ]
-          }
-        ],
         "tags": [
           "users"
         ],
@@ -1730,15 +2211,6 @@
             }
           }
         },
-        "security": [
-          {
-            "authorization": [
-              "openid",
-              "email",
-              "profile"
-            ]
-          }
-        ],
         "tags": [
           "workflows"
         ],
@@ -1787,15 +2259,6 @@
             }
           }
         },
-        "security": [
-          {
-            "authorization": [
-              "openid",
-              "email",
-              "profile"
-            ]
-          }
-        ],
         "tags": [
           "workspaces"
         ],
@@ -1859,15 +2322,6 @@
             }
           }
         },
-        "security": [
-          {
-            "authorization": [
-              "openid",
-              "email",
-              "profile"
-            ]
-          }
-        ],
         "tags": [
           "workspaces"
         ],
@@ -1935,15 +2389,6 @@
             }
           }
         },
-        "security": [
-          {
-            "authorization": [
-              "openid",
-              "email",
-              "profile"
-            ]
-          }
-        ],
         "tags": [
           "entities"
         ],
@@ -1951,6 +2396,64 @@
         "operationId": "copy_entities",
         "summary": "copy entities from one workspace into another workspace",
         "x-codegen-request-body-name": "entityCopyDefinition"
+      }
+    },
+    "/api/workspaces/id/{workspaceId}": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "Workspace Id",
+            "in": "path",
+            "name": "workspaceId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "collectionFormat": "csv",
+            "description": "When specified, include only these keys in the response payload and exclude other keys. Accepts a comma-delimited list of values. To include a nested key, specify the key's path using a dot delimiter; for example, to include {\"workspace\": {\"attributes\": {}}}, specify \"workspace.attributes\". Legal values are any first-level key in the response, any first-level key inside the {\"workspace\": {}} object, and any first-level key inside the {\"workspace\": {\"attributes\": {}}} object. If omitted, will return the full response payload.\n",
+            "in": "query",
+            "items": {
+              "type": "string"
+            },
+            "name": "fields",
+            "type": "array"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Request",
+            "schema": {
+              "$ref": "#/definitions/WorkspaceResponse"
+            }
+          },
+          "400": {
+            "description": "Unrecognized query parameters",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          },
+          "404": {
+            "description": "Workspace not found",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          },
+          "500": {
+            "description": "Rawls Internal Error",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          }
+        },
+        "tags": [
+          "workspaces"
+        ],
+        "description": "Get a single workspace's details, optionally filtered to only the specified fields. See additional GET methods in this section to retrieve additional details about the workspace. For instance, this API only returns the workspace's owners; use the GET .../acl method to retrieve the full list of all users at all permission levels.\n",
+        "operationId": "getWorkspaceById",
+        "summary": "Get workspace details by id"
       }
     },
     "/api/workspaces/tags": {
@@ -1964,13 +2467,19 @@
             "in": "query",
             "name": "q",
             "type": "string"
+          },
+          {
+            "description": "Maximum number of tags to return",
+            "in": "query",
+            "name": "limit",
+            "type": "integer"
           }
         ],
         "responses": {
           "200": {
             "description": "Successful Request",
             "schema": {
-              "description": "list of all tags used in FireCloud and their associated frequencies",
+              "description": "list of all tags used by workspaces that the user has access to and their associated frequencies",
               "items": {
                 "$ref": "#/definitions/WorkspaceTag"
               },
@@ -1984,19 +2493,10 @@
             }
           }
         },
-        "security": [
-          {
-            "authorization": [
-              "openid",
-              "email",
-              "profile"
-            ]
-          }
-        ],
         "tags": [
           "workspaces"
         ],
-        "description": "Get all tags used in FireCloud (for autocomplete)",
+        "description": "Get all tags for workspaces that a user has access to (for autocomplete)",
         "operationId": "getTags",
         "summary": "Get tags"
       }
@@ -2008,14 +2508,14 @@
         ],
         "parameters": [
           {
-            "description": "Workspace Namespace",
+            "description": "The workspace namespace",
             "in": "path",
             "name": "workspaceNamespace",
             "required": true,
             "type": "string"
           },
           {
-            "description": "Workspace Name",
+            "description": "The workspace name",
             "in": "path",
             "name": "workspaceName",
             "required": true,
@@ -2045,15 +2545,6 @@
             }
           }
         },
-        "security": [
-          {
-            "authorization": [
-              "openid",
-              "email",
-              "profile"
-            ]
-          }
-        ],
         "tags": [
           "workspaces"
         ],
@@ -2067,14 +2558,14 @@
         ],
         "parameters": [
           {
-            "description": "Workspace Namespace",
+            "description": "The workspace namespace",
             "in": "path",
             "name": "workspaceNamespace",
             "required": true,
             "type": "string"
           },
           {
-            "description": "Workspace Name",
+            "description": "The workspace name",
             "in": "path",
             "name": "workspaceName",
             "required": true,
@@ -2117,15 +2608,6 @@
             }
           }
         },
-        "security": [
-          {
-            "authorization": [
-              "openid",
-              "email",
-              "profile"
-            ]
-          }
-        ],
         "tags": [
           "workspaces"
         ],
@@ -2142,14 +2624,14 @@
         ],
         "parameters": [
           {
-            "description": "Workspace Namespace",
+            "description": "The workspace namespace",
             "in": "path",
             "name": "workspaceNamespace",
             "required": true,
             "type": "string"
           },
           {
-            "description": "Workspace Name",
+            "description": "The workspace name",
             "in": "path",
             "name": "workspaceName",
             "required": true,
@@ -2197,15 +2679,6 @@
             }
           }
         },
-        "security": [
-          {
-            "authorization": [
-              "openid",
-              "email",
-              "profile"
-            ]
-          }
-        ],
         "tags": [
           "workspaces"
         ],
@@ -2222,14 +2695,14 @@
         ],
         "parameters": [
           {
-            "description": "workspace namespace",
+            "description": "The workspace namespace",
             "in": "path",
             "name": "workspaceNamespace",
             "required": true,
             "type": "string"
           },
           {
-            "description": "workspace name",
+            "description": "The workspace name",
             "in": "path",
             "name": "workspaceName",
             "required": true,
@@ -2247,15 +2720,6 @@
             }
           }
         },
-        "security": [
-          {
-            "authorization": [
-              "openid",
-              "email",
-              "profile"
-            ]
-          }
-        ],
         "tags": [
           "workspaces"
         ],
@@ -2270,14 +2734,14 @@
         ],
         "parameters": [
           {
-            "description": "Workspace Namespace",
+            "description": "The workspace namespace",
             "in": "path",
             "name": "workspaceNamespace",
             "required": true,
             "type": "string"
           },
           {
-            "description": "Workspace Name",
+            "description": "The workspace name",
             "in": "path",
             "name": "workspaceName",
             "required": true,
@@ -2310,15 +2774,6 @@
             }
           }
         },
-        "security": [
-          {
-            "authorization": [
-              "openid",
-              "email",
-              "profile"
-            ]
-          }
-        ],
         "tags": [
           "workspaces"
         ],
@@ -2335,14 +2790,14 @@
         ],
         "parameters": [
           {
-            "description": "Workspace Namespace",
+            "description": "The workspace namespace",
             "in": "path",
             "name": "workspaceNamespace",
             "required": true,
             "type": "string"
           },
           {
-            "description": "Workspace Name",
+            "description": "The workspace name",
             "in": "path",
             "name": "workspaceName",
             "required": true,
@@ -2401,15 +2856,6 @@
             }
           }
         },
-        "security": [
-          {
-            "authorization": [
-              "openid",
-              "email",
-              "profile"
-            ]
-          }
-        ],
         "tags": [
           "workspaces"
         ],
@@ -2426,14 +2872,14 @@
         ],
         "parameters": [
           {
-            "description": "Workspace Namespace",
+            "description": "The workspace namespace",
             "in": "path",
             "name": "workspaceNamespace",
             "required": true,
             "type": "string"
           },
           {
-            "description": "Workspace Name",
+            "description": "The workspace name",
             "in": "path",
             "name": "workspaceName",
             "required": true,
@@ -2460,15 +2906,6 @@
             }
           }
         },
-        "security": [
-          {
-            "authorization": [
-              "openid",
-              "email",
-              "profile"
-            ]
-          }
-        ],
         "tags": [
           "workspaces"
         ],
@@ -2484,14 +2921,14 @@
         ],
         "parameters": [
           {
-            "description": "Workspace Namespace",
+            "description": "The workspace namespace",
             "in": "path",
             "name": "workspaceNamespace",
             "required": true,
             "type": "string"
           },
           {
-            "description": "Workspace Name",
+            "description": "The workspace name",
             "in": "path",
             "name": "workspaceName",
             "required": true,
@@ -2506,15 +2943,6 @@
             }
           }
         },
-        "security": [
-          {
-            "authorization": [
-              "openid",
-              "email",
-              "profile"
-            ]
-          }
-        ],
         "tags": [
           "workspaces"
         ],
@@ -2530,14 +2958,14 @@
         ],
         "parameters": [
           {
-            "description": "Workspace Namespace",
+            "description": "The workspace namespace",
             "in": "path",
             "name": "workspaceNamespace",
             "required": true,
             "type": "string"
           },
           {
-            "description": "Workspace Name",
+            "description": "The workspace name",
             "in": "path",
             "name": "workspaceName",
             "required": true,
@@ -2567,15 +2995,6 @@
             }
           }
         },
-        "security": [
-          {
-            "authorization": [
-              "openid",
-              "email",
-              "profile"
-            ]
-          }
-        ],
         "tags": [
           "workspaces"
         ],
@@ -2592,14 +3011,14 @@
         ],
         "parameters": [
           {
-            "description": "Workspace Namespace",
+            "description": "The workspace namespace",
             "in": "path",
             "name": "workspaceNamespace",
             "required": true,
             "type": "string"
           },
           {
-            "description": "Workspace Name",
+            "description": "The workspace name",
             "in": "path",
             "name": "workspaceName",
             "required": true,
@@ -2638,15 +3057,6 @@
             }
           }
         },
-        "security": [
-          {
-            "authorization": [
-              "openid",
-              "email",
-              "profile"
-            ]
-          }
-        ],
         "tags": [
           "workspaces"
         ],
@@ -2663,14 +3073,14 @@
         ],
         "parameters": [
           {
-            "description": "Workspace Namespace",
+            "description": "The workspace namespace",
             "in": "path",
             "name": "workspaceNamespace",
             "required": true,
             "type": "string"
           },
           {
-            "description": "Workspace Name",
+            "description": "The workspace name",
             "in": "path",
             "name": "workspaceName",
             "required": true,
@@ -2700,15 +3110,6 @@
             }
           }
         },
-        "security": [
-          {
-            "authorization": [
-              "openid",
-              "email",
-              "profile"
-            ]
-          }
-        ],
         "tags": [
           "workspaces"
         ],
@@ -2724,14 +3125,14 @@
         ],
         "parameters": [
           {
-            "description": "Workspace Namespace",
+            "description": "The workspace namespace",
             "in": "path",
             "name": "workspaceNamespace",
             "required": true,
             "type": "string"
           },
           {
-            "description": "Workspace Name",
+            "description": "The workspace name",
             "in": "path",
             "name": "workspaceName",
             "required": true,
@@ -2759,15 +3160,6 @@
             }
           }
         },
-        "security": [
-          {
-            "authorization": [
-              "openid",
-              "email",
-              "profile"
-            ]
-          }
-        ],
         "tags": [
           "workspaces"
         ],
@@ -2786,14 +3178,14 @@
         ],
         "parameters": [
           {
-            "description": "Workspace Namespace",
+            "description": "The workspace namespace",
             "in": "path",
             "name": "workspaceNamespace",
             "required": true,
             "type": "string"
           },
           {
-            "description": "Workspace Name",
+            "description": "The workspace name",
             "in": "path",
             "name": "workspaceName",
             "required": true,
@@ -2859,15 +3251,6 @@
             }
           }
         },
-        "security": [
-          {
-            "authorization": [
-              "openid",
-              "email",
-              "profile"
-            ]
-          }
-        ],
         "tags": [
           "workspaces"
         ],
@@ -2884,14 +3267,14 @@
         ],
         "parameters": [
           {
-            "description": "Workspace Namespace",
+            "description": "The workspace namespace",
             "in": "path",
             "name": "workspaceNamespace",
             "required": true,
             "type": "string"
           },
           {
-            "description": "Workspace Name",
+            "description": "The workspace name",
             "in": "path",
             "name": "workspaceName",
             "required": true,
@@ -2909,15 +3292,6 @@
             }
           }
         },
-        "security": [
-          {
-            "authorization": [
-              "openid",
-              "email",
-              "profile"
-            ]
-          }
-        ],
         "tags": [
           "workspaces"
         ],
@@ -2933,14 +3307,14 @@
         ],
         "parameters": [
           {
-            "description": "Workspace Namespace",
+            "description": "The workspace namespace",
             "in": "path",
             "name": "workspaceNamespace",
             "required": true,
             "type": "string"
           },
           {
-            "description": "Workspace Name",
+            "description": "The workspace name",
             "in": "path",
             "name": "workspaceName",
             "required": true,
@@ -2970,15 +3344,6 @@
             }
           }
         },
-        "security": [
-          {
-            "authorization": [
-              "openid",
-              "email",
-              "profile"
-            ]
-          }
-        ],
         "tags": [
           "workspaces"
         ],
@@ -2994,17 +3359,30 @@
         ],
         "parameters": [
           {
-            "description": "Workspace Namespace",
+            "description": "The workspace namespace",
             "in": "path",
             "name": "workspaceNamespace",
             "required": true,
             "type": "string"
           },
           {
-            "description": "Workspace Name",
+            "description": "The workspace name",
             "in": "path",
             "name": "workspaceName",
             "required": true,
+            "type": "string"
+          },
+          {
+            "default": true,
+            "description": "True to read entity statistics from cache if cache is up to date, false to bypass cache (slower). Default is true.",
+            "in": "query",
+            "name": "useCache",
+            "type": "boolean"
+          },
+          {
+            "description": "Data reference name to query for entity metadata",
+            "in": "query",
+            "name": "dataReference",
             "type": "string"
           }
         ],
@@ -3012,6 +3390,9 @@
           "200": {
             "description": "Successful Request",
             "schema": {
+              "additionalProperties": {
+                "$ref": "#/definitions/EntityTypeMetadata"
+              },
               "description": "Map[String,EntityTypeMetadata]",
               "type": "object"
             }
@@ -3029,15 +3410,6 @@
             }
           }
         },
-        "security": [
-          {
-            "authorization": [
-              "openid",
-              "email",
-              "profile"
-            ]
-          }
-        ],
         "tags": [
           "entities"
         ],
@@ -3054,14 +3426,14 @@
         ],
         "parameters": [
           {
-            "description": "Workspace Namespace",
+            "description": "The workspace namespace",
             "in": "path",
             "name": "workspaceNamespace",
             "required": true,
             "type": "string"
           },
           {
-            "description": "Workspace Name",
+            "description": "The workspace name",
             "in": "path",
             "name": "workspaceName",
             "required": true,
@@ -3115,15 +3487,6 @@
             }
           }
         },
-        "security": [
-          {
-            "authorization": [
-              "openid",
-              "email",
-              "profile"
-            ]
-          }
-        ],
         "tags": [
           "entities"
         ],
@@ -3143,14 +3506,14 @@
         ],
         "parameters": [
           {
-            "description": "Workspace Namespace",
+            "description": "The workspace namespace",
             "in": "path",
             "name": "workspaceNamespace",
             "required": true,
             "type": "string"
           },
           {
-            "description": "Workspace Name",
+            "description": "The workspace name",
             "in": "path",
             "name": "workspaceName",
             "required": true,
@@ -3195,15 +3558,6 @@
             }
           }
         },
-        "security": [
-          {
-            "authorization": [
-              "openid",
-              "email",
-              "profile"
-            ]
-          }
-        ],
         "tags": [
           "entities"
         ],
@@ -3223,14 +3577,14 @@
         ],
         "parameters": [
           {
-            "description": "Workspace Namespace",
+            "description": "The workspace namespace",
             "in": "path",
             "name": "workspaceNamespace",
             "required": true,
             "type": "string"
           },
           {
-            "description": "Workspace Name",
+            "description": "The workspace name",
             "in": "path",
             "name": "workspaceName",
             "required": true,
@@ -3278,15 +3632,6 @@
             }
           }
         },
-        "security": [
-          {
-            "authorization": [
-              "openid",
-              "email",
-              "profile"
-            ]
-          }
-        ],
         "tags": [
           "entities"
         ],
@@ -3306,14 +3651,14 @@
         ],
         "parameters": [
           {
-            "description": "Workspace Namespace",
+            "description": "The workspace namespace",
             "in": "path",
             "name": "workspaceNamespace",
             "required": true,
             "type": "string"
           },
           {
-            "description": "Workspace Name",
+            "description": "The workspace name",
             "in": "path",
             "name": "workspaceName",
             "required": true,
@@ -3358,15 +3703,6 @@
             }
           }
         },
-        "security": [
-          {
-            "authorization": [
-              "openid",
-              "email",
-              "profile"
-            ]
-          }
-        ],
         "tags": [
           "entities"
         ],
@@ -3377,20 +3713,81 @@
       }
     },
     "/api/workspaces/{workspaceNamespace}/{workspaceName}/entities/{entityType}": {
-      "get": {
+      "delete": {
         "produces": [
           "application/json"
         ],
         "parameters": [
           {
-            "description": "Workspace Namespace",
+            "description": "The workspace namespace",
             "in": "path",
             "name": "workspaceNamespace",
             "required": true,
             "type": "string"
           },
           {
-            "description": "Workspace Name",
+            "description": "The workspace name",
+            "in": "path",
+            "name": "workspaceName",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Entity Type",
+            "in": "path",
+            "name": "entityType",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "collectionFormat": "csv",
+            "description": "A comma-delimited list of attribute names to delete. Required.\n",
+            "in": "query",
+            "items": {
+              "type": "string"
+            },
+            "name": "attributeNames",
+            "type": "array"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Request"
+          },
+          "400": {
+            "description": "Attributes do not exist",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          },
+          "500": {
+            "description": "Rawls Internal Error",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          }
+        },
+        "tags": [
+          "entities"
+        ],
+        "description": "Delete entity column",
+        "operationId": "delete_entity_column",
+        "summary": "delete column in entity table"
+      },
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "The workspace namespace",
+            "in": "path",
+            "name": "workspaceNamespace",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "The workspace name",
             "in": "path",
             "name": "workspaceName",
             "required": true,
@@ -3427,15 +3824,6 @@
             }
           }
         },
-        "security": [
-          {
-            "authorization": [
-              "openid",
-              "email",
-              "profile"
-            ]
-          }
-        ],
         "tags": [
           "entities"
         ],
@@ -3451,14 +3839,14 @@
         ],
         "parameters": [
           {
-            "description": "Workspace Namespace",
+            "description": "The workspace namespace",
             "in": "path",
             "name": "workspaceNamespace",
             "required": true,
             "type": "string"
           },
           {
-            "description": "Workspace Name",
+            "description": "The workspace name",
             "in": "path",
             "name": "workspaceName",
             "required": true,
@@ -3476,6 +3864,18 @@
             "in": "path",
             "name": "entityName",
             "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Data reference name to query for entity metadata",
+            "in": "query",
+            "name": "dataReference",
+            "type": "string"
+          },
+          {
+            "description": "Billing project to use for queries to the data reference",
+            "in": "query",
+            "name": "billingProject",
             "type": "string"
           }
         ],
@@ -3499,15 +3899,6 @@
             }
           }
         },
-        "security": [
-          {
-            "authorization": [
-              "openid",
-              "email",
-              "profile"
-            ]
-          }
-        ],
         "tags": [
           "entities"
         ],
@@ -3524,14 +3915,14 @@
         ],
         "parameters": [
           {
-            "description": "Workspace Namespace",
+            "description": "The workspace namespace",
             "in": "path",
             "name": "workspaceNamespace",
             "required": true,
             "type": "string"
           },
           {
-            "description": "Workspace Name",
+            "description": "The workspace name",
             "in": "path",
             "name": "workspaceName",
             "required": true,
@@ -3593,15 +3984,6 @@
             }
           }
         },
-        "security": [
-          {
-            "authorization": [
-              "openid",
-              "email",
-              "profile"
-            ]
-          }
-        ],
         "tags": [
           "entities"
         ],
@@ -3621,14 +4003,14 @@
         ],
         "parameters": [
           {
-            "description": "Workspace Namespace",
+            "description": "The workspace namespace",
             "in": "path",
             "name": "workspaceNamespace",
             "required": true,
             "type": "string"
           },
           {
-            "description": "Workspace Name",
+            "description": "The workspace name",
             "in": "path",
             "name": "workspaceName",
             "required": true,
@@ -3669,7 +4051,7 @@
             }
           },
           "404": {
-            "description": "Workspace or Entity not found",
+            "description": "Workspace or Entity Type not found",
             "schema": {
               "$ref": "#/definitions/ErrorReport"
             }
@@ -3681,15 +4063,6 @@
             }
           }
         },
-        "security": [
-          {
-            "authorization": [
-              "openid",
-              "email",
-              "profile"
-            ]
-          }
-        ],
         "tags": [
           "entities"
         ],
@@ -3709,14 +4082,14 @@
         ],
         "parameters": [
           {
-            "description": "Workspace Namespace",
+            "description": "The workspace namespace",
             "in": "path",
             "name": "workspaceNamespace",
             "required": true,
             "type": "string"
           },
           {
-            "description": "Workspace Name",
+            "description": "The workspace name",
             "in": "path",
             "name": "workspaceName",
             "required": true,
@@ -3769,15 +4142,6 @@
             }
           }
         },
-        "security": [
-          {
-            "authorization": [
-              "openid",
-              "email",
-              "profile"
-            ]
-          }
-        ],
         "tags": [
           "entities"
         ],
@@ -3794,14 +4158,14 @@
         ],
         "parameters": [
           {
-            "description": "Workspace Namespace",
+            "description": "The workspace namespace",
             "in": "path",
             "name": "workspaceNamespace",
             "required": true,
             "type": "string"
           },
           {
-            "description": "Workspace Name",
+            "description": "The workspace name",
             "in": "path",
             "name": "workspaceName",
             "required": true,
@@ -3853,6 +4217,39 @@
             "in": "query",
             "name": "filterTerms",
             "type": "string"
+          },
+          {
+            "default": "and",
+            "description": "Filter operator to use with multiple terms in filterTerms (AND or OR, default AND)",
+            "enum": [
+              "and",
+              "or"
+            ],
+            "in": "query",
+            "name": "filterOperator",
+            "type": "string"
+          },
+          {
+            "collectionFormat": "csv",
+            "description": "When specified, include only these attributes in the response payload and exclude other attributes. Accepts a comma-delimited list of values. If omitted, will return the full response payload.\n",
+            "in": "query",
+            "items": {
+              "type": "string"
+            },
+            "name": "fields",
+            "type": "array"
+          },
+          {
+            "description": "Data reference name to query for entity metadata",
+            "in": "query",
+            "name": "dataReference",
+            "type": "string"
+          },
+          {
+            "description": "Billing project to use for queries to the data reference",
+            "in": "query",
+            "name": "billingProject",
+            "type": "string"
           }
         ],
         "responses": {
@@ -3866,23 +4263,268 @@
             "description": "Workspace or entity type does not exist"
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "Rawls Internal Error",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
           }
         },
-        "security": [
-          {
-            "authorization": [
-              "openid",
-              "email",
-              "profile"
-            ]
-          }
-        ],
         "tags": [
           "entities"
         ],
         "operationId": "entityQuery",
         "summary": "Paginated query for entities in a workspace"
+      }
+    },
+    "/api/workspaces/{workspaceNamespace}/{workspaceName}/entityTypes/{entityType}": {
+      "delete": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "The workspace namespace",
+            "in": "path",
+            "name": "workspaceNamespace",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "The workspace name",
+            "in": "path",
+            "name": "workspaceName",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Entity Type",
+            "in": "path",
+            "name": "entityType",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Request"
+          },
+          "409": {
+            "description": "Cannot create dangling references when deleting an entity type"
+          },
+          "500": {
+            "description": "Rawls Internal Error",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          }
+        },
+        "tags": [
+          "entities"
+        ],
+        "description": "Delete entities of type",
+        "operationId": "deleteEntitiesOfType",
+        "summary": "delete all entities of a type in a workspace"
+      },
+      "patch": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "The workspace namespace",
+            "in": "path",
+            "name": "workspaceNamespace",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "The workspace name",
+            "in": "path",
+            "name": "workspaceName",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Entity Type",
+            "in": "path",
+            "name": "entityType",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Old entity type name and the name you'd like to change it to",
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/EntityTypeRename"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Request"
+          },
+          "404": {
+            "description": "Workspace or Entity Type not found",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          },
+          "409": {
+            "description": "New name for entity type already exists in workspace",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          },
+          "500": {
+            "description": "Rawls Internal Error",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          }
+        },
+        "tags": [
+          "entities"
+        ],
+        "description": "Rename an entity type",
+        "operationId": "renameEntityType",
+        "summary": "rename entity type in a workspace",
+        "x-codegen-request-body-name": "entityTypeRenameJson"
+      }
+    },
+    "/api/workspaces/{workspaceNamespace}/{workspaceName}/entityTypes/{entityType}/attributes/{attributeName}": {
+      "patch": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "The workspace namespace",
+            "in": "path",
+            "name": "workspaceNamespace",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "The workspace name",
+            "in": "path",
+            "name": "workspaceName",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Entity Type",
+            "in": "path",
+            "name": "entityType",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Attribute Name",
+            "in": "path",
+            "name": "attributeName",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "New attribute name",
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/AttributeRename"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Attribute name updated"
+          },
+          "403": {
+            "description": "User does not have permission to update Attribute names",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          },
+          "404": {
+            "description": "Workspace, Entity or Attribute not found",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          },
+          "409": {
+            "description": "Invalid Attribute name update. New Attribute conflicts with existing Attribute name.",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          },
+          "500": {
+            "description": "Rawls Internal Error",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          }
+        },
+        "tags": [
+          "entities"
+        ],
+        "description": "Change the attribute name for an entity type in a workspace. If the old name doesn't exist the update will fail. If the new name already exists, the update will fail, and no records will be updated.",
+        "operationId": "rename_entity_attributes",
+        "summary": "Change attribute name for an entity type",
+        "x-codegen-request-body-name": "renameEntityAttribute"
+      }
+    },
+    "/api/workspaces/{workspaceNamespace}/{workspaceName}/fileTransfers": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "The workspace namespace",
+            "in": "path",
+            "name": "workspaceNamespace",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "The workspace name",
+            "in": "path",
+            "name": "workspaceName",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Request",
+            "schema": {
+              "items": {
+                "$ref": "#/definitions/PendingCloneWorkspaceFileTransfer"
+              },
+              "type": "array"
+            }
+          },
+          "404": {
+            "description": "Workspace Not Found",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          }
+        },
+        "tags": [
+          "workspaces"
+        ],
+        "description": "List incoming file transfers that are pending for this workspace",
+        "operationId": "listPendingFileTransfers",
+        "summary": "List incoming file transfers that are pending for this workspace"
       }
     },
     "/api/workspaces/{workspaceNamespace}/{workspaceName}/lock": {
@@ -3892,14 +4534,14 @@
         ],
         "parameters": [
           {
-            "description": "Workspace Namespace",
+            "description": "The workspace namespace",
             "in": "path",
             "name": "workspaceNamespace",
             "required": true,
             "type": "string"
           },
           {
-            "description": "Workspace Name",
+            "description": "The workspace name",
             "in": "path",
             "name": "workspaceName",
             "required": true,
@@ -3935,15 +4577,6 @@
             }
           }
         },
-        "security": [
-          {
-            "authorization": [
-              "openid",
-              "email",
-              "profile"
-            ]
-          }
-        ],
         "tags": [
           "workspaces"
         ],
@@ -3959,14 +4592,14 @@
         ],
         "parameters": [
           {
-            "description": "Workspace Namespace",
+            "description": "The workspace namespace",
             "in": "path",
             "name": "workspaceNamespace",
             "required": true,
             "type": "string"
           },
           {
-            "description": "Workspace Name",
+            "description": "The workspace name",
             "in": "path",
             "name": "workspaceName",
             "required": true,
@@ -4003,15 +4636,6 @@
             }
           }
         },
-        "security": [
-          {
-            "authorization": [
-              "openid",
-              "email",
-              "profile"
-            ]
-          }
-        ],
         "tags": [
           "methodconfigs"
         ],
@@ -4028,14 +4652,14 @@
         ],
         "parameters": [
           {
-            "description": "Workspace Namespace",
+            "description": "The workspace namespace",
             "in": "path",
             "name": "workspaceNamespace",
             "required": true,
             "type": "string"
           },
           {
-            "description": "Workspace Name",
+            "description": "The workspace name",
             "in": "path",
             "name": "workspaceName",
             "required": true,
@@ -4089,15 +4713,6 @@
             }
           }
         },
-        "security": [
-          {
-            "authorization": [
-              "openid",
-              "email",
-              "profile"
-            ]
-          }
-        ],
         "tags": [
           "methodconfigs"
         ],
@@ -4114,14 +4729,14 @@
         ],
         "parameters": [
           {
-            "description": "Workspace Namespace",
+            "description": "The workspace namespace",
             "in": "path",
             "name": "workspaceNamespace",
             "required": true,
             "type": "string"
           },
           {
-            "description": "Workspace Name",
+            "description": "The workspace name",
             "in": "path",
             "name": "workspaceName",
             "required": true,
@@ -4159,15 +4774,6 @@
             }
           }
         },
-        "security": [
-          {
-            "authorization": [
-              "openid",
-              "email",
-              "profile"
-            ]
-          }
-        ],
         "tags": [
           "methodconfigs"
         ],
@@ -4181,14 +4787,14 @@
         ],
         "parameters": [
           {
-            "description": "Workspace Namespace",
+            "description": "The workspace namespace",
             "in": "path",
             "name": "workspaceNamespace",
             "required": true,
             "type": "string"
           },
           {
-            "description": "Workspace Name",
+            "description": "The workspace name",
             "in": "path",
             "name": "workspaceName",
             "required": true,
@@ -4229,15 +4835,6 @@
             }
           }
         },
-        "security": [
-          {
-            "authorization": [
-              "openid",
-              "email",
-              "profile"
-            ]
-          }
-        ],
         "tags": [
           "methodconfigs"
         ],
@@ -4254,14 +4851,14 @@
         ],
         "parameters": [
           {
-            "description": "Workspace Namespace",
+            "description": "The workspace namespace",
             "in": "path",
             "name": "workspaceNamespace",
             "required": true,
             "type": "string"
           },
           {
-            "description": "Workspace Name",
+            "description": "The workspace name",
             "in": "path",
             "name": "workspaceName",
             "required": true,
@@ -4323,15 +4920,6 @@
             }
           }
         },
-        "security": [
-          {
-            "authorization": [
-              "openid",
-              "email",
-              "profile"
-            ]
-          }
-        ],
         "tags": [
           "methodconfigs"
         ],
@@ -4349,14 +4937,14 @@
         ],
         "parameters": [
           {
-            "description": "Workspace Namespace",
+            "description": "The workspace namespace",
             "in": "path",
             "name": "workspaceNamespace",
             "required": true,
             "type": "string"
           },
           {
-            "description": "Workspace Name",
+            "description": "The workspace name",
             "in": "path",
             "name": "workspaceName",
             "required": true,
@@ -4412,15 +5000,6 @@
             }
           }
         },
-        "security": [
-          {
-            "authorization": [
-              "openid",
-              "email",
-              "profile"
-            ]
-          }
-        ],
         "tags": [
           "methodconfigs"
         ],
@@ -4440,14 +5019,14 @@
         ],
         "parameters": [
           {
-            "description": "Workspace Namespace",
+            "description": "The workspace namespace",
             "in": "path",
             "name": "workspaceNamespace",
             "required": true,
             "type": "string"
           },
           {
-            "description": "Workspace Name",
+            "description": "The workspace name",
             "in": "path",
             "name": "workspaceName",
             "required": true,
@@ -4506,15 +5085,6 @@
             }
           }
         },
-        "security": [
-          {
-            "authorization": [
-              "openid",
-              "email",
-              "profile"
-            ]
-          }
-        ],
         "tags": [
           "methodconfigs"
         ],
@@ -4531,14 +5101,14 @@
         ],
         "parameters": [
           {
-            "description": "Workspace Namespace",
+            "description": "The workspace namespace",
             "in": "path",
             "name": "workspaceNamespace",
             "required": true,
             "type": "string"
           },
           {
-            "description": "Workspace Name",
+            "description": "The workspace name",
             "in": "path",
             "name": "workspaceName",
             "required": true,
@@ -4567,7 +5137,7 @@
             }
           },
           "404": {
-            "description": "Workspace or Method Configuration not found",
+            "description": "Workspace, Method Configuration, or Data Reference not found",
             "schema": {
               "$ref": "#/definitions/ErrorReport"
             }
@@ -4579,15 +5149,6 @@
             }
           }
         },
-        "security": [
-          {
-            "authorization": [
-              "openid",
-              "email",
-              "profile"
-            ]
-          }
-        ],
         "tags": [
           "methodconfigs"
         ],
@@ -4600,14 +5161,14 @@
       "post": {
         "parameters": [
           {
-            "description": "workspace namespace",
+            "description": "The workspace namespace",
             "in": "path",
             "name": "workspaceNamespace",
             "required": true,
             "type": "string"
           },
           {
-            "description": "workspace name",
+            "description": "The workspace name",
             "in": "path",
             "name": "workspaceName",
             "required": true,
@@ -4619,20 +5180,319 @@
             "description": "Success"
           }
         },
-        "security": [
-          {
-            "authorization": [
-              "openid",
-              "email",
-              "profile"
-            ]
-          }
-        ],
         "tags": [
           "workspaces"
         ],
         "operationId": "sendChangeNotification",
         "summary": "Send Notification of data added to Workspace"
+      }
+    },
+    "/api/workspaces/{workspaceNamespace}/{workspaceName}/snapshots/v2": {
+      "parameters": [
+        {
+          "description": "The workspace namespace",
+          "in": "path",
+          "name": "workspaceNamespace",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "description": "The workspace name",
+          "in": "path",
+          "name": "workspaceName",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "get": {
+        "produces": [
+          "application/octet-stream",
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "The number of items to skip before starting to collect the result set.",
+            "in": "query",
+            "name": "offset",
+            "required": true,
+            "type": "integer",
+            "x-example": 0
+          },
+          {
+            "description": "The number of items to return.",
+            "in": "query",
+            "name": "limit",
+            "required": true,
+            "type": "integer",
+            "x-example": 10
+          },
+          {
+            "description": "Optional; UUID of the Data Repo snapshot being referenced",
+            "in": "query",
+            "name": "referencedSnapshotId",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/SnapshotListResponse"
+            }
+          },
+          "404": {
+            "description": "Workspace not found or user lacks permissions",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          },
+          "500": {
+            "description": "Rawls Internal Error",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          }
+        },
+        "tags": [
+          "snapshots_v2"
+        ],
+        "description": "Enumerate references to snapshots in the Terra Data Repo, or return only those that reference a given TDR snapshot id",
+        "operationId": "enumerateDataRepoSnapshot_v2",
+        "summary": "List snapshots"
+      },
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/octet-stream",
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "Reference to the Data Repo snapshot",
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/NamedDataRepoSnapshot"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "schema": {
+              "$ref": "#/definitions/DataRepoSnapshotResource"
+            }
+          },
+          "404": {
+            "description": "Workspace or snapshot not found",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          },
+          "500": {
+            "description": "Rawls Internal Error",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          }
+        },
+        "tags": [
+          "snapshots_v2"
+        ],
+        "description": "Add a reference to a snapshot in the Terra Data Repo",
+        "operationId": "createDataRepoSnapshot_v2",
+        "summary": "Create a snapshot"
+      }
+    },
+    "/api/workspaces/{workspaceNamespace}/{workspaceName}/snapshots/v2/name/{referenceName}": {
+      "parameters": [
+        {
+          "description": "The workspace namespace",
+          "in": "path",
+          "name": "workspaceNamespace",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "description": "The workspace name",
+          "in": "path",
+          "name": "workspaceName",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "description": "The snapshot reference's name",
+          "in": "path",
+          "name": "referenceName",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "get": {
+        "produces": [
+          "application/octet-stream",
+          "application/json"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/DataRepoSnapshotResource"
+            }
+          },
+          "404": {
+            "description": "Workspace or snapshot not found",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          },
+          "500": {
+            "description": "Rawls Internal Error",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          }
+        },
+        "tags": [
+          "snapshots_v2"
+        ],
+        "description": "Get a reference to a snapshot in the Terra Data Repo by its name",
+        "operationId": "getDataRepoSnapshotByName_v2",
+        "summary": "Get a snapshot by name"
+      }
+    },
+    "/api/workspaces/{workspaceNamespace}/{workspaceName}/snapshots/v2/{snapshotId}": {
+      "parameters": [
+        {
+          "description": "The workspace namespace",
+          "in": "path",
+          "name": "workspaceNamespace",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "description": "The workspace name",
+          "in": "path",
+          "name": "workspaceName",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "description": "The snapshot's referenceId",
+          "in": "path",
+          "name": "snapshotId",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "delete": {
+        "produces": [
+          "application/octet-stream",
+          "application/json"
+        ],
+        "parameters": [],
+        "responses": {
+          "204": {
+            "description": "Successful Request"
+          },
+          "404": {
+            "description": "Workspace or snapshot not found",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          },
+          "500": {
+            "description": "Rawls Internal Error",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          }
+        },
+        "tags": [
+          "snapshots_v2"
+        ],
+        "description": "Delete a workspace's reference to a snapshot in the Terra Data Repo",
+        "operationId": "deleteDataRepoSnapshot_v2",
+        "summary": "Delete a snapshot"
+      },
+      "get": {
+        "produces": [
+          "application/octet-stream",
+          "application/json"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/DataRepoSnapshotResource"
+            }
+          },
+          "404": {
+            "description": "Workspace or snapshot not found",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          },
+          "500": {
+            "description": "Rawls Internal Error",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          }
+        },
+        "tags": [
+          "snapshots_v2"
+        ],
+        "description": "Get a reference to a snapshot in the Terra Data Repo",
+        "operationId": "getDataRepoSnapshot_v2",
+        "summary": "Get a snapshot"
+      },
+      "patch": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/octet-stream",
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/UpdateDataReferenceRequestBody"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Request"
+          },
+          "404": {
+            "description": "Workspace or snapshot not found",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          },
+          "500": {
+            "description": "Rawls Internal Error",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          }
+        },
+        "tags": [
+          "snapshots_v2"
+        ],
+        "operationId": "updateDataRepoSnapshot_v2",
+        "summary": "Update name or description of a reference to a snapshot in the Terra Data Repo."
       }
     },
     "/api/workspaces/{workspaceNamespace}/{workspaceName}/submissions": {
@@ -4642,14 +5502,14 @@
         ],
         "parameters": [
           {
-            "description": "Workspace Namespace",
+            "description": "The workspace namespace",
             "in": "path",
             "name": "workspaceNamespace",
             "required": true,
             "type": "string"
           },
           {
-            "description": "Workspace Name",
+            "description": "The workspace name",
             "in": "path",
             "name": "workspaceName",
             "required": true,
@@ -4679,15 +5539,6 @@
             }
           }
         },
-        "security": [
-          {
-            "authorization": [
-              "openid",
-              "email",
-              "profile"
-            ]
-          }
-        ],
         "tags": [
           "submissions"
         ],
@@ -4704,14 +5555,14 @@
         ],
         "parameters": [
           {
-            "description": "Workspace Namespace",
+            "description": "The workspace namespace",
             "in": "path",
             "name": "workspaceNamespace",
             "required": true,
             "type": "string"
           },
           {
-            "description": "Workspace Name",
+            "description": "The workspace name",
             "in": "path",
             "name": "workspaceName",
             "required": true,
@@ -4759,15 +5610,6 @@
             }
           }
         },
-        "security": [
-          {
-            "authorization": [
-              "openid",
-              "email",
-              "profile"
-            ]
-          }
-        ],
         "tags": [
           "submissions"
         ],
@@ -4787,14 +5629,14 @@
         ],
         "parameters": [
           {
-            "description": "Workspace Namespace",
+            "description": "The workspace namespace",
             "in": "path",
             "name": "workspaceNamespace",
             "required": true,
             "type": "string"
           },
           {
-            "description": "Workspace Name",
+            "description": "The workspace name",
             "in": "path",
             "name": "workspaceName",
             "required": true,
@@ -4824,7 +5666,7 @@
             }
           },
           "404": {
-            "description": "Workspace, Method Configuration or Entity not found",
+            "description": "Workspace, Method Configuration, Data Reference, or Entity not found",
             "schema": {
               "$ref": "#/definitions/ErrorReport"
             }
@@ -4842,15 +5684,6 @@
             }
           }
         },
-        "security": [
-          {
-            "authorization": [
-              "openid",
-              "email",
-              "profile"
-            ]
-          }
-        ],
         "tags": [
           "submissions"
         ],
@@ -4867,14 +5700,14 @@
         ],
         "parameters": [
           {
-            "description": "Workspace Namespace",
+            "description": "The workspace namespace",
             "in": "path",
             "name": "workspaceNamespace",
             "required": true,
             "type": "string"
           },
           {
-            "description": "Workspace Name",
+            "description": "The workspace name",
             "in": "path",
             "name": "workspaceName",
             "required": true,
@@ -4911,15 +5744,6 @@
             }
           }
         },
-        "security": [
-          {
-            "authorization": [
-              "openid",
-              "email",
-              "profile"
-            ]
-          }
-        ],
         "tags": [
           "submissions"
         ],
@@ -4933,14 +5757,14 @@
         ],
         "parameters": [
           {
-            "description": "Workspace Namespace",
+            "description": "The workspace namespace",
             "in": "path",
             "name": "workspaceNamespace",
             "required": true,
             "type": "string"
           },
           {
-            "description": "Workspace Name",
+            "description": "The workspace name",
             "in": "path",
             "name": "workspaceName",
             "required": true,
@@ -4974,21 +5798,211 @@
             }
           }
         },
-        "security": [
-          {
-            "authorization": [
-              "openid",
-              "email",
-              "profile"
-            ]
-          }
-        ],
         "tags": [
           "submissions"
         ],
         "description": "Monitor submission status",
         "operationId": "getSubmissionStatus",
         "summary": "Monitor submission status"
+      },
+      "patch": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "The workspace namespace",
+            "in": "path",
+            "name": "workspaceNamespace",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "The workspace name",
+            "in": "path",
+            "name": "workspaceName",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Submission Id",
+            "in": "path",
+            "name": "submissionId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "User comment to be updated",
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/UserCommentUpdateOperation"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Request"
+          },
+          "404": {
+            "description": "Workspace or submission not found",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          },
+          "500": {
+            "description": "Rawls Internal Error",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          }
+        },
+        "tags": [
+          "submissions"
+        ],
+        "description": "Update user comment for a submission",
+        "operationId": "updateSubmissionUserComment",
+        "summary": "Update user comment for a submission"
+      }
+    },
+    "/api/workspaces/{workspaceNamespace}/{workspaceName}/submissions/{submissionId}/configuration": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "The workspace namespace",
+            "in": "path",
+            "name": "workspaceNamespace",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "The workspace name",
+            "in": "path",
+            "name": "workspaceName",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Submission Id",
+            "in": "path",
+            "name": "submissionId",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Request",
+            "schema": {
+              "$ref": "#/definitions/MethodConfiguration"
+            }
+          },
+          "404": {
+            "description": "Workspace or submission not found",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          },
+          "500": {
+            "description": "Rawls Internal Error",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          }
+        },
+        "tags": [
+          "submissions"
+        ],
+        "description": "Get the method configuration that was used to launch this submission",
+        "operationId": "getSubmissionConfiguration",
+        "summary": "Get the method configuration for submission"
+      }
+    },
+    "/api/workspaces/{workspaceNamespace}/{workspaceName}/submissions/{submissionId}/retry": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "The workspace namespace",
+            "in": "path",
+            "name": "workspaceNamespace",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "The workspace name",
+            "in": "path",
+            "name": "workspaceName",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Submission Id",
+            "in": "path",
+            "name": "submissionId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Status of workflows to retry",
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/SubmissionRetry"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful Request",
+            "schema": {
+              "$ref": "#/definitions/RetriedSubmissionReport"
+            }
+          },
+          "400": {
+            "description": "Expression evaluation failed or entities are not of type required by method config",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          },
+          "404": {
+            "description": "Workspace or submission not found",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          },
+          "500": {
+            "description": "Rawls Internal Error",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          },
+          "502": {
+            "description": "Trouble talking to Agora",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          }
+        },
+        "tags": [
+          "submissions"
+        ],
+        "description": "Retry aborted or failed workflows from the previous submission and omit the remaining workflows",
+        "operationId": "retrySubmission",
+        "summary": "Retry certain workflows in previous submission"
       }
     },
     "/api/workspaces/{workspaceNamespace}/{workspaceName}/submissions/{submissionId}/workflows/{workflowId}": {
@@ -4998,14 +6012,14 @@
         ],
         "parameters": [
           {
-            "description": "Workspace Namespace",
+            "description": "The workspace namespace",
             "in": "path",
             "name": "workspaceNamespace",
             "required": true,
             "type": "string"
           },
           {
-            "description": "Workspace Name",
+            "description": "The workspace name",
             "in": "path",
             "name": "workspaceName",
             "required": true,
@@ -5070,15 +6084,6 @@
             }
           }
         },
-        "security": [
-          {
-            "authorization": [
-              "openid",
-              "email",
-              "profile"
-            ]
-          }
-        ],
         "tags": [
           "submissions"
         ],
@@ -5094,14 +6099,14 @@
         ],
         "parameters": [
           {
-            "description": "Workspace Namespace",
+            "description": "The workspace namespace",
             "in": "path",
             "name": "workspaceNamespace",
             "required": true,
             "type": "string"
           },
           {
-            "description": "Workspace Name",
+            "description": "The workspace name",
             "in": "path",
             "name": "workspaceName",
             "required": true,
@@ -5142,15 +6147,6 @@
             }
           }
         },
-        "security": [
-          {
-            "authorization": [
-              "openid",
-              "email",
-              "profile"
-            ]
-          }
-        ],
         "tags": [
           "submissions"
         ],
@@ -5166,14 +6162,14 @@
         ],
         "parameters": [
           {
-            "description": "Workspace Namespace",
+            "description": "The workspace namespace",
             "in": "path",
             "name": "workspaceNamespace",
             "required": true,
             "type": "string"
           },
           {
-            "description": "Workspace Name",
+            "description": "The workspace name",
             "in": "path",
             "name": "workspaceName",
             "required": true,
@@ -5220,15 +6216,6 @@
             }
           }
         },
-        "security": [
-          {
-            "authorization": [
-              "openid",
-              "email",
-              "profile"
-            ]
-          }
-        ],
         "tags": [
           "submissions"
         ],
@@ -5244,14 +6231,14 @@
         ],
         "parameters": [
           {
-            "description": "Workspace Namespace",
+            "description": "The workspace namespace",
             "in": "path",
             "name": "workspaceNamespace",
             "required": true,
             "type": "string"
           },
           {
-            "description": "Workspace Name",
+            "description": "The workspace name",
             "in": "path",
             "name": "workspaceName",
             "required": true,
@@ -5279,15 +6266,6 @@
             }
           }
         },
-        "security": [
-          {
-            "authorization": [
-              "openid",
-              "email",
-              "profile"
-            ]
-          }
-        ],
         "tags": [
           "submissions"
         ],
@@ -5303,14 +6281,14 @@
         ],
         "parameters": [
           {
-            "description": "Workspace Namespace",
+            "description": "The workspace namespace",
             "in": "path",
             "name": "workspaceNamespace",
             "required": true,
             "type": "string"
           },
           {
-            "description": "Workspace Name",
+            "description": "The workspace name",
             "in": "path",
             "name": "workspaceName",
             "required": true,
@@ -5340,15 +6318,6 @@
             }
           }
         },
-        "security": [
-          {
-            "authorization": [
-              "openid",
-              "email",
-              "profile"
-            ]
-          }
-        ],
         "tags": [
           "workspaces"
         ],
@@ -5374,6 +6343,7 @@
             }
           }
         },
+        "security": [],
         "tags": [
           "status"
         ],
@@ -5418,6 +6388,7 @@
             }
           }
         },
+        "security": [],
         "tags": [
           "version"
         ],
@@ -5564,6 +6535,19 @@
       ],
       "type": "object"
     },
+    "AttributeRename": {
+      "description": "New attribute name",
+      "properties": {
+        "newAttributeName": {
+          "description": "The new name for the attribute",
+          "type": "string"
+        }
+      },
+      "required": [
+        "newAttributeName"
+      ],
+      "type": "object"
+    },
     "AttributeUpdateOperation": {
       "discriminator": "op",
       "properties": {
@@ -5593,6 +6577,37 @@
       },
       "type": "array"
     },
+    "AzureManagedAppCoordinates": {
+      "properties": {
+        "managedResourceGroupId": {
+          "description": "ID of the Azure managed resource group for this managed application deployment.",
+          "type": "string"
+        },
+        "subscriptionId": {
+          "description": "UUID of the Azure subscription for this managed application deployment.",
+          "format": "uuid",
+          "type": "string"
+        },
+        "tenantId": {
+          "description": "UUID of the Azure tenant for this managed application deployment",
+          "format": "uuid",
+          "type": "string"
+        }
+      },
+      "required": [
+        "tenantId",
+        "subscriptionId",
+        "managedResourceGroupId"
+      ],
+      "type": "object"
+    },
+    "BatchMigrateRequestBody": {
+      "description": "List of workspace names to migrate",
+      "items": {
+        "$ref": "#/definitions/WorkspaceName"
+      },
+      "type": "array"
+    },
     "BillingAccount": {
       "description": "Details for a single billing account",
       "properties": {
@@ -5619,6 +6634,11 @@
     "BucketUsageResponse": {
       "description": "",
       "properties": {
+        "lastUpdated": {
+          "description": "timestamp (UTC) marking the date that the bucket usage was last updated (YYYY-MM-DDThh:mm:ss.fffZ)",
+          "format": "timestamp",
+          "type": "string"
+        },
         "usageInBytes": {
           "description": "The current storage bucket usage in bytes",
           "type": "integer"
@@ -5764,12 +6784,85 @@
       ],
       "type": "object"
     },
+    "CreateRawlsV2BillingProjectFullRequest": {
+      "description": "",
+      "properties": {
+        "billingAccount": {
+          "description": "the id of the Google billing account to use, must start with 'billingAccounts/'",
+          "type": "string"
+        },
+        "managedAppCoordinates": {
+          "$ref": "#/definitions/AzureManagedAppCoordinates"
+        },
+        "projectName": {
+          "description": "the name of the project to create",
+          "type": "string"
+        },
+        "servicePerimeter": {
+          "description": "The fully qualified name of the GCP service perimeter to put this project into in the form accessPolicies/[POLICY NUMBER]/servicePerimeters/[NAME]. Caller must have the add_project action for this service perimeter in Sam.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "projectName"
+      ],
+      "type": "object"
+    },
+    "DataRepoSnapshot": {
+      "description": "A raw data repo snapshot reference from workspace manager.",
+      "properties": {
+        "instanceName": {
+          "description": "The name of the Data Repo instance",
+          "type": "string"
+        },
+        "snapshot": {
+          "description": "The ID of the Data Repo snapshot",
+          "type": "string"
+        }
+      },
+      "required": [
+        "instanceName",
+        "snapshot"
+      ],
+      "type": "object"
+    },
+    "DataRepoSnapshotAttributes": {
+      "properties": {
+        "instanceName": {
+          "type": "string"
+        },
+        "snapshot": {
+          "description": "The snapshot id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "instanceName",
+        "snapshot"
+      ],
+      "type": "object"
+    },
+    "DataRepoSnapshotResource": {
+      "properties": {
+        "attributes": {
+          "$ref": "#/definitions/DataRepoSnapshotAttributes"
+        },
+        "metadata": {
+          "$ref": "#/definitions/ResourceMetadata"
+        }
+      },
+      "required": [
+        "metadata",
+        "attributes"
+      ],
+      "type": "object"
+    },
     "Entity": {
       "description": "",
       "properties": {
         "attributes": {
+          "additionalProperties": true,
           "description": "Map[String,Attribute]",
-          "properties": {},
           "type": "object"
         },
         "entityType": {
@@ -5883,6 +6976,10 @@
     "EntityQuery": {
       "description": "",
       "properties": {
+        "filterOperator": {
+          "description": "operator (\"and\" or \"or\") to use when filtering for multiple terms in filterTerms",
+          "type": "string"
+        },
         "filterTerms": {
           "description": "terms to filter results by",
           "type": "string"
@@ -6006,6 +7103,18 @@
       "required": [
         "attributeNames",
         "count"
+      ],
+      "type": "object"
+    },
+    "EntityTypeRename": {
+      "properties": {
+        "newName": {
+          "description": "the new entity type name",
+          "type": "string"
+        }
+      },
+      "required": [
+        "newName"
       ],
       "type": "object"
     },
@@ -6382,6 +7491,29 @@
       ],
       "type": "object"
     },
+    "NamedDataRepoSnapshot": {
+      "description": "A Data Repo snapshot",
+      "properties": {
+        "description": {
+          "default": "",
+          "description": "A description for the snapshot",
+          "type": "string"
+        },
+        "name": {
+          "description": "The name of the snapshot",
+          "type": "string"
+        },
+        "snapshotId": {
+          "description": "The ID of the snapshot in Terra Data Repo",
+          "type": "string"
+        }
+      },
+      "required": [
+        "snapshotId",
+        "name"
+      ],
+      "type": "object"
+    },
     "NotificationType": {
       "description": "key and description of a notification",
       "properties": {
@@ -6396,6 +7528,31 @@
         "description",
         "notificationKey"
       ],
+      "type": "object"
+    },
+    "PendingCloneWorkspaceFileTransfer": {
+      "properties": {
+        "copyFilesWithPrefix": {
+          "description": "The file prefix indicating which files to copy to the destination workspace",
+          "type": "string"
+        },
+        "destWorkspaceBucketName": {
+          "description": "The name of the bucket that the files will be copied to",
+          "type": "string"
+        },
+        "destWorkspaceGoogleProjectId": {
+          "description": "The Google project that the destination workspace belongs to",
+          "type": "string"
+        },
+        "destWorkspaceId": {
+          "description": "The ID of the workspace that the files will be copied to",
+          "type": "string"
+        },
+        "sourceWorkspaceBucketName": {
+          "description": "The name of the bucket that the files will be copied from",
+          "type": "string"
+        }
+      },
       "type": "object"
     },
     "RawlsBillingProjectMember": {
@@ -6435,7 +7592,8 @@
           "enum": [
             "Creating",
             "Ready",
-            "Error"
+            "Error",
+            "AddingToPerimeter"
           ],
           "type": "string"
         }
@@ -6447,6 +7605,58 @@
       ],
       "type": "object"
     },
+    "RawlsBillingProjectResponse": {
+      "properties": {
+        "azureManagedAppCoordinates": {
+          "$ref": "#/definitions/AzureManagedAppCoordinates"
+        },
+        "billingAccount": {
+          "description": "the billing account to use in google projects",
+          "type": "string"
+        },
+        "invalidBillingAccount": {
+          "description": "whether or not the billing account is usable by Terra",
+          "type": "boolean"
+        },
+        "message": {
+          "description": "informational message about the project",
+          "type": "string",
+          "x-deprecated": true
+        },
+        "projectName": {
+          "description": "the name of the project",
+          "type": "string"
+        },
+        "roles": {
+          "description": "the roles the caller has on the project",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "servicePerimeter": {
+          "description": "the name of the service permeters for google project",
+          "type": "string"
+        },
+        "status": {
+          "description": "the status of allocating the billing project's resources.",
+          "enum": [
+            "Creating",
+            "Ready",
+            "Error",
+            "AddingToPerimeter"
+          ],
+          "type": "string",
+          "x-deprecated": true
+        }
+      },
+      "required": [
+        "projectName",
+        "invalidBillingAccount",
+        "roles"
+      ],
+      "type": "object"
+    },
     "RawlsBillingProjectStatus": {
       "description": "a billing project status",
       "properties": {
@@ -6454,7 +7664,8 @@
           "enum": [
             "Creating",
             "Ready",
-            "Error"
+            "Error",
+            "AddingToPerimeter"
           ],
           "type": "string"
         },
@@ -6557,6 +7768,227 @@
         }
       ]
     },
+    "ResourceMetadata": {
+      "properties": {
+        "cloningInstructions": {
+          "type": "string"
+        },
+        "cloudPlatform": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "resourceId": {
+          "type": "string"
+        },
+        "resourceType": {
+          "type": "string"
+        },
+        "stewardshipType": {
+          "type": "string"
+        },
+        "workspaceId": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "workspaceId",
+        "resourceId",
+        "name",
+        "description",
+        "resourceType",
+        "stewardshipType",
+        "cloudPlatform",
+        "cloningIntructions"
+      ],
+      "type": "object"
+    },
+    "RetriedSubmissionReport": {
+      "description": "information on a retried submission",
+      "properties": {
+        "originalSubmissionId": {
+          "description": "unique identifier for the submission to retry",
+          "type": "string"
+        },
+        "status": {
+          "description": "status",
+          "type": "string"
+        },
+        "submissionDate": {
+          "description": "SubmissionRequest date",
+          "format": "date-time",
+          "type": "string"
+        },
+        "submissionId": {
+          "description": "unique identifier for submission created from this retry operation",
+          "type": "string"
+        },
+        "submitter": {
+          "description": "user that created the submission",
+          "type": "string"
+        },
+        "workflows": {
+          "description": "workflows initiated by this submission",
+          "items": {
+            "$ref": "#/definitions/Workflow"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "originalSubmissionId",
+        "status",
+        "submissionDate",
+        "submissionId",
+        "submitter",
+        "workflows",
+        "retryType"
+      ],
+      "type": "object"
+    },
+    "RetryStatus": {
+      "description": "what workflows to retry",
+      "enum": [
+        "Failed",
+        "Aborted",
+        "FailedAndAborted"
+      ],
+      "type": "string"
+    },
+    "SnapshotListResponse": {
+      "description": "List of snapshot resources",
+      "properties": {
+        "gcpDataRepoSnapshots": {
+          "description": "A list of DataRepoSnapshotResources from Workspace Manager",
+          "items": {
+            "$ref": "#/definitions/DataRepoSnapshotResource"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "gcpDataRepoSnapshots"
+      ],
+      "type": "object"
+    },
+    "SpendReport": {
+      "properties": {
+        "spendDetails": {
+          "description": "details of spend data, categorized by given key",
+          "items": {
+            "$ref": "#/definitions/SpendReportingAggregation"
+          },
+          "type": "array"
+        },
+        "spendSummary": {
+          "$ref": "#/definitions/SpendReportingForDateRange"
+        }
+      },
+      "required": [
+        "spendDetails",
+        "spendSummary"
+      ],
+      "type": "object"
+    },
+    "SpendReportConfiguration": {
+      "description": "",
+      "properties": {
+        "datasetGoogleProject": {
+          "description": "the name of the Google Project where the BigQuery dataset resides",
+          "type": "string"
+        },
+        "datasetName": {
+          "description": "the name of the BigQuery dataset containing project spend data",
+          "type": "string"
+        }
+      },
+      "required": [
+        "datasetGoogleProject",
+        "datasetName"
+      ],
+      "type": "object"
+    },
+    "SpendReportingAggregation": {
+      "properties": {
+        "aggregationKey": {
+          "description": "Key indicating how spendData has been aggregated. Ex. 'workspace' if all data in spendData is for a particular workspace",
+          "enum": [
+            "Daily",
+            "Workspace",
+            "Category"
+          ],
+          "type": "string"
+        },
+        "spendData": {
+          "items": {
+            "$ref": "#/definitions/SpendReportingForDateRange"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "aggregationKey",
+        "spendData"
+      ],
+      "type": "object"
+    },
+    "SpendReportingForDateRange": {
+      "properties": {
+        "category": {
+          "description": "if present, Terra spend category that cost falls into",
+          "enum": [
+            "Storage",
+            "Compute",
+            "Other"
+          ],
+          "type": "string"
+        },
+        "cost": {
+          "description": "total cost for date range",
+          "type": "string"
+        },
+        "credits": {
+          "description": "credits towards reported cost. cost - credits = amount billed to users",
+          "type": "string"
+        },
+        "currency": {
+          "description": "currency that cost and credits uses",
+          "type": "string"
+        },
+        "endTime": {
+          "description": "timestamp (UTC) marking the end of reported spend range (YYYY-MM-DDThh:mm:ss.fffZ)",
+          "format": "timestamp",
+          "type": "string"
+        },
+        "googleProjectId": {
+          "description": "if present, Google project of workspace where cost was generated",
+          "type": "string"
+        },
+        "startTime": {
+          "description": "timestamp (UTC) marking the start of reported spend range (YYYY-MM-DDThh:mm:ss.fffZ)",
+          "format": "timestamp",
+          "type": "string"
+        },
+        "subAggregation": {
+          "$ref": "#/definitions/SpendReportingAggregation"
+        },
+        "workspace": {
+          "$ref": "#/definitions/WorkspaceName"
+        }
+      },
+      "required": [
+        "cost",
+        "credits",
+        "currency",
+        "startTime",
+        "endTime"
+      ],
+      "type": "object"
+    },
     "StackTraceElement": {
       "description": "",
       "properties": {
@@ -6623,6 +8055,10 @@
           "description": "SubmissionRequest unique identifier",
           "type": "string"
         },
+        "submissionRoot": {
+          "description": "The GCS root for the submission.",
+          "type": "string"
+        },
         "submitter": {
           "description": "user that created the submission",
           "type": "string"
@@ -6630,6 +8066,10 @@
         "useCallCache": {
           "description": "Whether or not to read from cache for this submission",
           "type": "boolean"
+        },
+        "userComment": {
+          "description": "Comment for the submission",
+          "type": "string"
         },
         "workflowFailureMode": {
           "default": "NoNewCalls",
@@ -6679,8 +8119,16 @@
           "description": "Submission unique identifier",
           "type": "string"
         },
+        "submissionRoot": {
+          "description": "The GCS root for the submission.",
+          "type": "string"
+        },
         "submitter": {
           "description": "user that created the submission",
+          "type": "string"
+        },
+        "userComment": {
+          "description": "Comment for the submission",
           "type": "string"
         },
         "workflowFailureMode": {
@@ -6764,6 +8212,11 @@
           "description": "Expression that resolves to one or more entities matching the entity type in the method configuration. Optional if the method configuration has no root entity.",
           "type": "string"
         },
+        "memoryRetryMultiplier": {
+          "default": 1,
+          "description": "If a task fails due to running out of memory and the `stderr` of the task contains one of error keys that is set in Cromwell config along with `maxRetries` in its runtime attributes, then it will be retried with its memory multiplied by this amount.  See [Cromwell docs](https://cromwell.readthedocs.io/en/develop/cromwell_features/RetryWithMoreMemory/#retry-with-more-memory) for more information.",
+          "type": "number"
+        },
         "methodConfigurationName": {
           "description": "Name of the method configuration to execute.",
           "type": "string"
@@ -6775,6 +8228,14 @@
         "useCallCache": {
           "description": "Whether or not to read from cache for this submission",
           "type": "boolean"
+        },
+        "useReferenceDisks": {
+          "description": "Whether or not to use pre-built disks for common genome references",
+          "type": "boolean"
+        },
+        "userComment": {
+          "description": "Comment for the submission (max length 1000 characters)",
+          "type": "string"
         },
         "workflowFailureMode": {
           "default": "NoNewCalls",
@@ -6789,6 +8250,17 @@
       "required": [
         "methodConfigurationName",
         "methodConfigurationNamespace"
+      ],
+      "type": "object"
+    },
+    "SubmissionRetry": {
+      "properties": {
+        "retryType": {
+          "$ref": "#/definitions/RetryStatus"
+        }
+      },
+      "required": [
+        "retryType"
       ],
       "type": "object"
     },
@@ -6998,12 +8470,6 @@
             },
             "GooglePubSub": {
               "ok": true
-            },
-            "LDAP": {
-              "messages": [
-                "LDAP is down :("
-              ],
-              "ok": false
             }
           },
           "properties": {},
@@ -7034,23 +8500,40 @@
       },
       "type": "object"
     },
-    "UserRefreshToken": {
-      "description": "payload to put a refresh token",
+    "UpdateDataReferenceRequestBody": {
       "properties": {
-        "refreshToken": {
+        "description": {
+          "type": "string"
+        },
+        "name": {
           "type": "string"
         }
       },
       "type": "object"
     },
-    "UserRefreshTokenDate": {
-      "description": "date a refresh token was stored",
+    "UpdateRawlsBillingAccountRequest": {
       "properties": {
-        "refreshTokenUpdatedDate": {
-          "format": "date-time",
+        "billingAccount": {
+          "description": "The name of the billing account to use",
           "type": "string"
         }
       },
+      "required": [
+        "billingAccount"
+      ],
+      "type": "object"
+    },
+    "UserCommentUpdateOperation": {
+      "description": "Update user comment for submission",
+      "properties": {
+        "userComment": {
+          "description": "The updated value for user comment (max length 1000 characters)",
+          "type": "string"
+        }
+      },
+      "required": [
+        "userComment"
+      ],
       "type": "object"
     },
     "ValidatedMethodConfiguration": {
@@ -7362,6 +8845,22 @@
       ],
       "type": "string"
     },
+    "WorkspaceBillingAccount": {
+      "properties": {
+        "currentBillingAccountOnGoogleProject": {
+          "description": "the billing project associated with the workspace",
+          "type": "string"
+        },
+        "workspaceName": {
+          "description": "the name of the workspace",
+          "type": "string"
+        }
+      },
+      "required": [
+        "workspaceName"
+      ],
+      "type": "object"
+    },
     "WorkspaceBucketOptions": {
       "description": "Extra information about a GCS bucket attached to a workspace",
       "properties": {
@@ -7450,8 +8949,21 @@
           },
           "type": "array"
         },
+        "billingAccount": {
+          "description": "The current billing account being charged for activity within this workspace. For desired billing account, look to the billing account specified on this workspace's billing project",
+          "type": "string"
+        },
+        "billingAccountErrorMessage": {
+          "description": "Error message received during most recent attempt to update the current billing account on workspace's Google project. Empty if update was successful.",
+          "type": "string"
+        },
         "bucketName": {
           "description": "The name of the bucket associated with the workspace",
+          "type": "string"
+        },
+        "completedCloneWorkspaceFileTransfer": {
+          "description": "The date all files were successfully transferred to the workspace bucket if applicable in yyyy-MM-ddTHH:mm:ss.SSSZZ format",
+          "format": "date-time",
           "type": "string"
         },
         "createdBy": {
@@ -7464,7 +8976,11 @@
           "type": "string"
         },
         "googleProject": {
-          "description": "the google project used by the workspace for compute and storage",
+          "description": "Google Project ID of the google project used by the workspace for compute and storage",
+          "type": "string"
+        },
+        "googleProjectNumber": {
+          "description": "A different google project identifier for the same project identified by the googleProject; required by google for certain actions",
           "type": "string"
         },
         "isLocked": {
@@ -7529,6 +9045,71 @@
       },
       "type": "object"
     },
+    "WorkspaceMigrationFailure": {
+      "properties": {
+        "failure": {
+          "description": "Supplementary failure information",
+          "type": "string"
+        }
+      },
+      "required": [
+        "failure"
+      ],
+      "type": "object"
+    },
+    "WorkspaceMigrationMetadata": {
+      "description": "Represents the status of a workspace migration",
+      "properties": {
+        "created": {
+          "description": "when the migration was scheduled",
+          "format": "date-time",
+          "type": "string"
+        },
+        "finished": {
+          "description": "when the system finished executing the migration",
+          "format": "date-time",
+          "type": "string"
+        },
+        "id": {
+          "description": "migration attempt number for this workspace",
+          "type": "integer"
+        },
+        "outcome": {
+          "$ref": "#/definitions/WorkspaceMigrationOutcome"
+        },
+        "started": {
+          "description": "when the system started the migration",
+          "format": "date-time",
+          "type": "string"
+        },
+        "updated": {
+          "description": "when the system last updated the migration",
+          "format": "date-time",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "created",
+        "updated"
+      ],
+      "type": "object"
+    },
+    "WorkspaceMigrationOutcome": {
+      "description": "Represents the result of a workspace migration attempt",
+      "properties": {
+        "failure": {
+          "description": "Supplementary failure information",
+          "type": "string"
+        }
+      }
+    },
+    "WorkspaceMigrationSuccess": {
+      "enum": [
+        "success"
+      ],
+      "type": "string"
+    },
     "WorkspaceName": {
       "description": "",
       "properties": {
@@ -7560,6 +9141,10 @@
             "$ref": "#/definitions/ManagedGroupRef"
           },
           "type": "array"
+        },
+        "bucketLocation": {
+          "description": "Region (NOT multi-region) in which bucket attached to the workspace should be created. If not provided, the bucket will be created in the 'US' multi-region.",
+          "type": "string"
         },
         "name": {
           "description": "The name of the workspace",
@@ -7595,6 +9180,10 @@
             "$ref": "#/definitions/ManagedGroupRef"
           },
           "type": "array"
+        },
+        "bucketLocation": {
+          "description": "Region (NOT multi-region) in which bucket attached to the workspace should be created. If not provided, the bucket will be created in the 'US' multi-region.",
+          "type": "string"
         },
         "copyFilesWithPrefix": {
           "description": "Used for clone operations only; the prefix for files to copy between source and destination workspace buckets",
@@ -7698,7 +9287,7 @@
     }
   },
   "securityDefinitions": {
-    "authorization": {
+    "googleoauth": {
       "authorizationUrl": "https://accounts.google.com/o/oauth2/auth",
       "flow": "implicit",
       "scopes": {
@@ -7708,49 +9297,200 @@
         "profile": "profile authorization"
       },
       "type": "oauth2"
+    },
+    "oidc": {
+      "authorizationUrl": "/oauth2/authorize",
+      "flow": "accessCode",
+      "scopes": {
+        "email": "email authorization",
+        "openid": "open id authorization",
+        "profile": "profile authorization"
+      },
+      "tokenUrl": "/oauth2/token",
+      "type": "oauth2"
     }
   },
+  "security": [
+    {
+      "googleoauth": [
+        "openid",
+        "email",
+        "profile"
+      ]
+    },
+    {
+      "oidc": [
+        "openid",
+        "email",
+        "profile"
+      ]
+    }
+  ],
   "tags": [
     {
-      "description": "Administrative API",
       "name": "admin"
     },
     {
-      "description": "Submissions API",
-      "name": "submissions"
-    },
-    {
-      "description": "Entity manipulation API",
-      "name": "entities"
-    },
-    {
-      "description": "Method Configuration manipulation API",
-      "name": "methodconfigs"
-    },
-    {
-      "description": "Workspace manipulation API",
-      "name": "workspaces"
-    },
-    {
-      "description": "User and Group API",
-      "name": "users"
-    },
-    {
-      "description": "Billing Project API",
       "name": "billing"
     },
     {
-      "description": "Group manipulation API",
-      "name": "groups"
+      "name": "billing_v2"
     },
     {
-      "description": "Notifications API",
+      "name": "entities"
+    },
+    {
+      "name": "methodconfigs"
+    },
+    {
       "name": "notifications"
     },
     {
-      "description": "Data Repo snapshot API",
-      "name": "snapshots"
+      "name": "servicePerimeters"
+    },
+    {
+      "name": "snapshots_v2"
+    },
+    {
+      "name": "status"
+    },
+    {
+      "name": "submissions"
+    },
+    {
+      "name": "users"
+    },
+    {
+      "name": "version"
+    },
+    {
+      "name": "workflows"
+    },
+    {
+      "name": "workspaces"
     }
   ],
-  "x-components": {}
+  "x-components": {
+    "parameters": {
+      "AttributeNamePathParam": {
+        "description": "Attribute Name",
+        "in": "path",
+        "name": "attributeName",
+        "required": true,
+        "type": "string"
+      },
+      "billingProjectIdPathParam": {
+        "description": "Billing Project ID",
+        "in": "path",
+        "name": "projectId",
+        "required": true,
+        "type": "string"
+      },
+      "billingProjectQueryParam": {
+        "description": "Billing project to use for queries to the data reference",
+        "in": "query",
+        "name": "billingProject",
+        "type": "string"
+      },
+      "configNamePathParam": {
+        "description": "Method Configuration Name",
+        "in": "path",
+        "name": "configName",
+        "required": true,
+        "type": "string"
+      },
+      "configNamespacePathParam": {
+        "description": "Method Configuration Namespace",
+        "in": "path",
+        "name": "configNamespace",
+        "required": true,
+        "type": "string"
+      },
+      "dataReferenceQueryParam": {
+        "description": "Data reference name to query for entity metadata",
+        "in": "query",
+        "name": "dataReference",
+        "type": "string"
+      },
+      "entityNamePathParam": {
+        "description": "Entity Name",
+        "in": "path",
+        "name": "entityName",
+        "required": true,
+        "type": "string"
+      },
+      "entityTypePathParam": {
+        "description": "Entity Type",
+        "in": "path",
+        "name": "entityType",
+        "required": true,
+        "type": "string"
+      },
+      "referenceNamePathParam": {
+        "description": "The snapshot reference's name",
+        "in": "path",
+        "name": "referenceName",
+        "required": true,
+        "type": "string"
+      },
+      "snapshotIdPathParam": {
+        "description": "The snapshot's referenceId",
+        "in": "path",
+        "name": "snapshotId",
+        "required": true,
+        "type": "string"
+      },
+      "submissionIdPathParam": {
+        "description": "Submission Id",
+        "in": "path",
+        "name": "submissionId",
+        "required": true,
+        "type": "string"
+      },
+      "workbenchRolePathParam": {
+        "description": "role of user for project",
+        "enum": [
+          "user",
+          "owner"
+        ],
+        "in": "path",
+        "name": "workbenchRole",
+        "required": true,
+        "type": "string"
+      },
+      "workflowIdPathParam": {
+        "description": "Workflow Id",
+        "in": "path",
+        "name": "workflowId",
+        "required": true,
+        "type": "string"
+      },
+      "workspaceNamePathParam": {
+        "description": "The workspace name",
+        "in": "path",
+        "name": "workspaceName",
+        "required": true,
+        "type": "string"
+      },
+      "workspaceNamespacePathParam": {
+        "description": "The workspace namespace",
+        "in": "path",
+        "name": "workspaceNamespace",
+        "required": true,
+        "type": "string"
+      }
+    },
+    "responses": {
+      "RawlsInternalError": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          }
+        },
+        "description": "Rawls Internal Error"
+      }
+    }
+  }
 }

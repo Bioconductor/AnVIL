@@ -123,7 +123,7 @@ tags <-
 #' @rdname Services
 #'
 #' @param name A symbol representing a defined operation, e.g.,
-#'     `leonardo$listClusters()`.
+#'     `leonardo$listRuntimes()`.
 #'
 #' @details When using `$` to select a service, some arguments appear
 #'     in 'body' of the REST request. Specify these using the
@@ -133,9 +133,8 @@ tags <-
 #' @examples
 #' if (gcloud_exists()) {
 #'     ## Arguments to be used as the 'body' (`.__body__=`) of a REST query
-#'     terra <- Terra()
-#'     terra$createBillingProjectFull       # 6 arguments...
-#'     args(terra$createBillingProjectFull) # ... passed as `.__body__ = list(...)`
+#'     Terra()$createBillingProjectFull       # 6 arguments...
+#'     args(Terra()$createBillingProjectFull) # ... passed as `.__body__ = list(...)`
 #' }
 #' @export
 setMethod(

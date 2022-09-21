@@ -28,7 +28,7 @@ NULL
 #' @examples
 #' if (gcloud_exists()) {
 #'     leonardo <- Leonardo()
-#'     leonardo$listClusters() %>% flatten()
+#'     leonardo$listRuntimes() %>% flatten()
 #' }
 #'
 #' @export

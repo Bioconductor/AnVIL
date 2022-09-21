@@ -9,11 +9,52 @@ NEW FEATURES
   other developers flexibility in unboxing values passed to REST
   APIs.
 
+- (v 1.9.7) add developer facilities for tracking API changes in
+  Rawls, Terra, and Leonardo services
+
 USER VISIBLE CHANGES
 
 - (v 1.9.2) Deprecate AnVIL::install() & friends in favor of
   BiocManager::install(), which now knows about container binary
   repositories.
+
+- (v 1.9.8) Update Rawls, Terra, and Leonardo services. Changed
+  endpoints include:
+
+    ```
+    ## Rawls
+    $removed
+    [1] admin_delete_refresh_token admin_statistics_get
+    [3] refreshToken               refreshTokenDate
+
+    $updated
+    [1] listUserBillingAccounts createWorkspace         getTags
+    [4] clone                   entity_type_metadata    get_entity
+    [7] entityQuery             createSubmission        validateSubmission
+
+    ## Terra
+    $removed
+    [1] userTrial         listImportPFBJobs importPFBStatus
+
+    $updated
+     [1] deleteBillingProject       billingAccounts
+     [3] createWorkspace            cloneWorkspace
+     [5] entityQuery                flexibleImportEntities
+     [7] importEntities             createSubmission
+     [9] validateSubmission         browserDownloadEntitiesTSV
+    [11] setProfile
+
+    ## Leonardo
+    $removed
+    [1] batchNodepoolCreate
+
+    $updated
+     [1] listApp                listAppByProject       deleteApp
+     [4] createApp              listDisks              listDisksByProject
+     [7] createDisk             updateRuntime          createRuntime
+    [10] setCookie              proxyClusterJupyter    proxyClusterJupyterLab
+    [13] proxyClusterRStudio
+    ```
 
 BUG FIXES
 

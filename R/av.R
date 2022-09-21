@@ -168,12 +168,12 @@ avtable <-
     function(
         namespace, name, table,
         page, pageSize, sortField, sortDirection,
-        filterTerms)
+        filterTerms, filterOperator)
 {
     response <- Terra()$entityQuery(
         namespace, name, table,
         page, pageSize, sortField, sortDirection,
-        filterTerms)
+        filterTerms, filterOperator)
     .avstop_for_status(response, "avtable_paged")
 
     lst <-
@@ -212,6 +212,9 @@ avtable <-
 #' @param filterTerms character(1) string literal to select rows with
 #'     an exact (substring) matches in column.
 #'
+#' @param filterOperator character(1) operator to use when multiple
+#'     terms in `filterTerms=`, either `"and"` (default) or `"or"`.
+#'
 #' @return `avtable_paged()`: a tibble of data corresponding to the
 #'     AnVIL table `table` in the specified workspace.
 #'
@@ -221,6 +224,7 @@ avtable_paged <-
         n = Inf, page = 1L, pageSize = 1000L,
         sortField = "name", sortDirection = c("asc", "desc"),
         filterTerms = character(),
+        filterOperator = c("and", "or"),
         namespace = avworkspace_namespace(),
         name = avworkspace_name())
 {
@@ -240,13 +244,14 @@ avtable_paged <-
         ##     .is_avtable(table, namespace, name)
     )
     sortDirection <- match.arg(sortDirection)
+    filterOperator <- match.arg(filterOperator)
     name <- URLencode(name)
 
     tbl <- .avtable_pages(
         .avtable_paged1,
         namespace = namespace, name = name, table = table,
         sortField = sortField, sortDirection = sortDirection,
-        filterTerms = filterTerms,
+        filterTerms = filterTerms, filterOperator = filterOperator,
         n = n, page = page, pageSize = pageSize
     )
     names(tbl) <- sub("^name$", paste0(table, "_id"), names(tbl))
@@ -279,6 +284,9 @@ avtable_paged <-
 #'
 #' @param .data A tibble or data.frame for import as an AnVIL table.
 #'
+#' @param delete_empty_values logical(1) when `TRUE`, remove entities
+#'     not include in `.data` from the DATA table. Default: `FALSE`.
+#'
 #' @param entity `character(1)` column name of `.data` to be used as
 #'     imported table name. When the table comes from R, this is
 #'     usually a column name such as `sample`. The data will be
@@ -299,13 +307,15 @@ avtable_paged <-
 #' @export
 avtable_import <-
     function(.data, entity = names(.data)[[1]],
-        namespace = avworkspace_namespace(), name = avworkspace_name())
+        namespace = avworkspace_namespace(), name = avworkspace_name(),
+        delete_empty_values = FALSE)
 {
     stopifnot(
         is.data.frame(.data),
         .is_scalar_character(entity),
         .is_scalar_character(namespace),
-        .is_scalar_character(name)
+        .is_scalar_character(name),
+        .is_scalar_logical(delete_empty_values)
     )
 
     name <- URLencode(name)
@@ -315,7 +325,12 @@ avtable_import <-
     write.table(.data, destination, quote = FALSE, sep="\t", row.names=FALSE)
 
     entities <- httr::upload_file(destination)
-    response <- Terra()$flexibleImportEntities(namespace, name, entities)
+    response <- Terra()$flexibleImportEntities(
+        namespace, name,
+        async = FALSE,
+        deleteEmptyValues = delete_empty_values,
+        entities = entities
+    )
     .avstop_for_status(response, "avtable_import")
 
     httr::content(response, type="text", encoding = "UTF-8")
@@ -363,7 +378,8 @@ avtable_import <-
 avtable_import_set <-
     function(
         .data, origin, set = names(.data)[[1]], member = names(.data)[[2]],
-        namespace = avworkspace_namespace(), name = avworkspace_name())
+        namespace = avworkspace_namespace(), name = avworkspace_name(),
+        delete_empty_values = FALSE)
 {
     stopifnot(
         is.data.frame(.data),
@@ -373,7 +389,8 @@ avtable_import_set <-
         .is_scalar_character(member),
         !identical(set, member), member %in% names(.data),
         .is_scalar_character(namespace),
-        .is_scalar_character(name)
+        .is_scalar_character(name),
+        .is_scalar_logical(delete_empty_values)
     )
 
     origin <- URLencode(origin)
@@ -388,7 +405,12 @@ avtable_import_set <-
     write.table(tbl, destination, quote = FALSE, sep="\t", row.names=FALSE)
 
     entities <- httr::upload_file(destination)
-    response <- Terra()$flexibleImportEntities(namespace, name, entities)
+    response <- Terra()$flexibleImportEntities(
+        namespace, name, 
+        async = FALSE,
+        deleteEmptyValues = delete_empty_values,
+        entities = entities
+    )
     .avstop_for_status(response, "avtable_import_sample_set")
 
     httr::content(response, type="text", encoding = "UTF-8")

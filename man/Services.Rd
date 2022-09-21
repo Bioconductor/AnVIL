@@ -80,7 +80,7 @@ scalers.}
 \item{.tags}{optional character() of tags to use to filter operations.}
 
 \item{name}{A symbol representing a defined operation, e.g.,
-\code{leonardo$listClusters()}.}
+\code{leonardo$listRuntimes()}.}
 }
 \value{
 \code{empty_object} returns a representation to be used as
@@ -130,23 +130,20 @@ empty_object
 
 if (gcloud_exists()) {
     ## Arguments to be used as the 'body' (`.__body__=`) of a REST query
-    terra <- Terra()
-    terra$createBillingProjectFull       # 6 arguments...
-    args(terra$createBillingProjectFull) # ... passed as `.__body__ = list(...)`
+    Terra()$createBillingProjectFull       # 6 arguments...
+    args(Terra()$createBillingProjectFull) # ... passed as `.__body__ = list(...)`
 }
 if (gcloud_exists())
     Leonardo()
 
 if (gcloud_exists()) {
-    terra <- Terra()
-    tags(terra)
-    tags(terra, "Billing")
+    tags(Terra())
+    tags(Terra(), "Billing")
 }
 
 if (gcloud_exists()) {
-    rawls <- Rawls()
-    tags(rawls)
-    tags(rawls, "billing")
+    tags(Rawls())
+    tags(Rawls(), "billing")
 }
 
 Dockstore()

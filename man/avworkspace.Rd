@@ -20,7 +20,8 @@ avworkspace_clone(
   namespace = avworkspace_namespace(),
   name = avworkspace_name(),
   to_namespace = namespace,
-  to_name
+  to_name,
+  bucket_location = "US"
 )
 }
 \arguments{
@@ -38,6 +39,10 @@ concatenated namespace and name, e.g.,
 which to make the clone.}
 
 \item{to_name}{character(1) name of the cloned workspace.}
+
+\item{bucket_location}{character(1) region (NO multi-region, except
+the default) in which bucket attached to the workspace should
+be created.}
 }
 \value{
 \code{avworkspaces()} returns a tibble with columns including

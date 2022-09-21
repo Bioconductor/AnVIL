@@ -29,6 +29,7 @@ avworkflow_run(
   entityType = config$rootEntityType,
   deleteIntermediateOutputFiles = FALSE,
   useCallCache = TRUE,
+  useReferenceDisks = FALSE,
   namespace = avworkspace_namespace(),
   name = avworkspace_name(),
   dry = TRUE
@@ -83,6 +84,9 @@ intermediate output files when the workflow completes.}
 
 \item{useCallCache}{logical(1) whether or not to read from cache for this
 submission.}
+
+\item{useReferenceDisks}{logical(1) whether or not to use pre-built
+disks for common genome references. Default: \code{FALSE}.}
 }
 \value{
 \code{avworkflows()} returns a tibble. Each workflow is in a

@@ -32,6 +32,7 @@ avtable_paged(
   sortField = "name",
   sortDirection = c("asc", "desc"),
   filterTerms = character(),
+  filterOperator = c("and", "or"),
   namespace = avworkspace_namespace(),
   name = avworkspace_name()
 )
@@ -40,7 +41,8 @@ avtable_import(
   .data,
   entity = names(.data)[[1]],
   namespace = avworkspace_namespace(),
-  name = avworkspace_name()
+  name = avworkspace_name(),
+  delete_empty_values = FALSE
 )
 
 avtable_import_set(
@@ -49,7 +51,8 @@ avtable_import_set(
   set = names(.data)[[1]],
   member = names(.data)[[2]],
   namespace = avworkspace_namespace(),
-  name = avworkspace_name()
+  name = avworkspace_name(),
+  delete_empty_values = FALSE
 )
 
 avtable_delete_values(
@@ -138,6 +141,9 @@ determining page order. Default is the entity field.}
 \item{filterTerms}{character(1) string literal to select rows with
 an exact (substring) matches in column.}
 
+\item{filterOperator}{character(1) operator to use when multiple
+terms in \verb{filterTerms=}, either \code{"and"} (default) or \code{"or"}.}
+
 \item{.data}{A tibble or data.frame for import as an AnVIL table.}
 
 \item{entity}{\code{character(1)} column name of \code{.data} to be used as
@@ -150,6 +156,9 @@ in \code{.data} with suffix \verb{_id} can also be used, e.g., \code{entity = "s
 a column in \code{.data}, e.g., \code{entity = "unknown"}, will cause a
 new table with name \code{entity} and entity values
 \code{seq_len(nrow(.data))}.}
+
+\item{delete_empty_values}{logical(1) when \code{TRUE}, remove entities
+not include in \code{.data} from the DATA table. Default: \code{FALSE}.}
 
 \item{origin}{character(1) name of the entity (table) used to
 create the set e.g "sample", "participant",

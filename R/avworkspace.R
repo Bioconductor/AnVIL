@@ -164,6 +164,10 @@ avworkspace <-
 #'
 #' @param to_name character(1) name of the cloned workspace.
 #'
+#' @param bucket_location character(1) region (NO multi-region, except
+#'     the default) in which bucket attached to the workspace should
+#'     be created.
+#'
 #' @return `avworkspace_clone()` returns the namespace and name, in
 #'     the format `namespace/name`, of the cloned workspace.
 #'
@@ -173,13 +177,15 @@ avworkspace_clone <-
              namespace = avworkspace_namespace(),
              name = avworkspace_name(),
              to_namespace = namespace,
-             to_name)
+             to_name,
+             bucket_location = "US")
 {
     stopifnot(
         .is_scalar_character(namespace),
         .is_scalar_character(name),
         .is_scalar_character(to_namespace),
         .is_scalar_character(to_name),
+        .is_scalar_character(bucket_location),
         `source and destination 'namespace/name' must be different` =
             !identical(namespace, to_namespace) || !identical(name, to_name)
     )
@@ -189,6 +195,7 @@ avworkspace_clone <-
         workspaceName = name,
         .__body__ = list(
             attributes = setNames(list(), character()),  # json '{}'
+            bucketLocation = bucket_location,
             copyFilesWithPrefix = "notebooks/",
             namespace = to_namespace,
             name = to_name

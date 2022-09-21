@@ -8,519 +8,9 @@
     },
     "termsOfService": "https://github.com/broadinstitute/leonardo",
     "title": "Leonardo",
-    "version": "0.1.0"
+    "version": "1.3.5"
   },
   "paths": {
-    "/api/cluster/v2/{googleProject}/{clusterName}": {
-      "put": {
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "parameters": [
-          {
-            "description": "googleProject",
-            "in": "path",
-            "name": "googleProject",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "description": "clusterName. only lowercase alphanumeric characters, numbers and dashes are allowed in cluster name",
-            "in": "path",
-            "name": "clusterName",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "description": "Request for new cluster",
-            "in": "body",
-            "name": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/ClusterRequest"
-            }
-          }
-        ],
-        "responses": {
-          "202": {
-            "description": "Cluster creation request accepted",
-            "schema": {
-              "$ref": "#/definitions/Cluster"
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "schema": {
-              "$ref": "#/definitions/ErrorReport"
-            }
-          },
-          "409": {
-            "description": "Conflict",
-            "schema": {
-              "$ref": "#/definitions/ErrorReport"
-            }
-          },
-          "500": {
-            "description": "Internal Error",
-            "schema": {
-              "$ref": "#/definitions/ErrorReport"
-            }
-          }
-        },
-        "security": [
-          {
-            "googleoauth": [
-              "openid",
-              "email",
-              "profile"
-            ]
-          }
-        ],
-        "tags": [
-          "cluster"
-        ],
-        "deprecated": true,
-        "description": "* The request is completed without waiting for the initiation of the cluster's creation on the Google side.\n  This reduces the response time compared with the other version.\n* Default labels clusterName, googleProject, serviceAccount, and notebookExtension cannot be overridden.\n",
-        "operationId": "createClusterV2",
-        "summary": "Creates a new Dataproc cluster in the given project with the given name."
-      }
-    },
-    "/api/cluster/{googleProject}/{clusterName}": {
-      "delete": {
-        "produces": [
-          "application/json"
-        ],
-        "parameters": [
-          {
-            "description": "googleProject",
-            "in": "path",
-            "name": "googleProject",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "description": "clusterName",
-            "in": "path",
-            "name": "clusterName",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "202": {
-            "description": "Cluster deletion request accepted"
-          },
-          "403": {
-            "description": "User does not have permission to perform action on cluster"
-          },
-          "404": {
-            "description": "Cluster not found",
-            "schema": {
-              "$ref": "#/definitions/ErrorReport"
-            }
-          },
-          "500": {
-            "description": "Internal Error",
-            "schema": {
-              "$ref": "#/definitions/ErrorReport"
-            }
-          }
-        },
-        "tags": [
-          "cluster"
-        ],
-        "deprecated": true,
-        "description": "deletes a Dataproc cluster",
-        "operationId": "deleteCluster",
-        "summary": "Deletes an existing Dataproc cluster in the given project"
-      },
-      "get": {
-        "produces": [
-          "application/json"
-        ],
-        "parameters": [
-          {
-            "description": "googleProject",
-            "in": "path",
-            "name": "googleProject",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "description": "clusterName",
-            "in": "path",
-            "name": "clusterName",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Cluster found, here are the details",
-            "schema": {
-              "$ref": "#/definitions/Cluster"
-            }
-          },
-          "403": {
-            "description": "User does not have permission to perform action on cluster"
-          },
-          "404": {
-            "description": "Cluster not found",
-            "schema": {
-              "$ref": "#/definitions/ErrorReport"
-            }
-          },
-          "500": {
-            "description": "Internal Error",
-            "schema": {
-              "$ref": "#/definitions/ErrorReport"
-            }
-          }
-        },
-        "security": [
-          {
-            "googleoauth": [
-              "openid",
-              "email",
-              "profile"
-            ]
-          }
-        ],
-        "tags": [
-          "cluster"
-        ],
-        "deprecated": true,
-        "description": "Returns information about an existing Dataproc cluster managed by Leo. Poll this to find out when your cluster has finished starting up.",
-        "operationId": "getCluster",
-        "summary": "Get details of a Dataproc cluster"
-      },
-      "put": {
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "parameters": [
-          {
-            "description": "googleProject",
-            "in": "path",
-            "name": "googleProject",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "description": "clusterName",
-            "in": "path",
-            "name": "clusterName",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "description": "Request for new cluster",
-            "in": "body",
-            "name": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/ClusterRequest"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Cluster creation successful",
-            "schema": {
-              "$ref": "#/definitions/Cluster"
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "schema": {
-              "$ref": "#/definitions/ErrorReport"
-            }
-          },
-          "403": {
-            "description": "User does not have permission to perform action on cluster"
-          },
-          "409": {
-            "description": "Conflict",
-            "schema": {
-              "$ref": "#/definitions/ErrorReport"
-            }
-          },
-          "500": {
-            "description": "Internal Error",
-            "schema": {
-              "$ref": "#/definitions/ErrorReport"
-            }
-          }
-        },
-        "security": [
-          {
-            "googleoauth": [
-              "openid",
-              "email",
-              "profile"
-            ]
-          }
-        ],
-        "tags": [
-          "cluster"
-        ],
-        "deprecated": true,
-        "description": "Default labels clusterName, googleProject, serviceAccount, and notebookExtension cannot be overridden.",
-        "operationId": "createCluster",
-        "summary": "Creates a new Dataproc cluster in the given project with the given name"
-      }
-    },
-    "/api/cluster/{googleProject}/{clusterName}/start": {
-      "post": {
-        "produces": [
-          "application/json"
-        ],
-        "parameters": [
-          {
-            "description": "googleProject",
-            "in": "path",
-            "name": "googleProject",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "description": "clusterName",
-            "in": "path",
-            "name": "clusterName",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "202": {
-            "description": "Cluster start request accepted"
-          },
-          "403": {
-            "description": "User does not have permission to perform action on cluster"
-          },
-          "404": {
-            "description": "Cluster not found",
-            "schema": {
-              "$ref": "#/definitions/ErrorReport"
-            }
-          },
-          "409": {
-            "description": "Cluster cannot be started",
-            "schema": {
-              "$ref": "#/definitions/ErrorReport"
-            }
-          },
-          "500": {
-            "description": "Internal Error",
-            "schema": {
-              "$ref": "#/definitions/ErrorReport"
-            }
-          }
-        },
-        "tags": [
-          "cluster"
-        ],
-        "deprecated": true,
-        "description": "Starts the instances of a stopped Dataproc cluster.\n",
-        "operationId": "startCluster",
-        "summary": "Starts a Dataproc cluster"
-      }
-    },
-    "/api/cluster/{googleProject}/{clusterName}/stop": {
-      "post": {
-        "produces": [
-          "application/json"
-        ],
-        "parameters": [
-          {
-            "description": "googleProject",
-            "in": "path",
-            "name": "googleProject",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "description": "clusterName",
-            "in": "path",
-            "name": "clusterName",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "202": {
-            "description": "Cluster stop request accepted"
-          },
-          "403": {
-            "description": "User does not have permission to perform action on cluster"
-          },
-          "404": {
-            "description": "Cluster not found",
-            "schema": {
-              "$ref": "#/definitions/ErrorReport"
-            }
-          },
-          "409": {
-            "description": "Cluster cannot be stopped",
-            "schema": {
-              "$ref": "#/definitions/ErrorReport"
-            }
-          },
-          "500": {
-            "description": "Internal Error",
-            "schema": {
-              "$ref": "#/definitions/ErrorReport"
-            }
-          }
-        },
-        "tags": [
-          "cluster"
-        ],
-        "deprecated": true,
-        "description": "Stops the instances of a Dataproc cluster, but retains any data persisted on disk. The\ncluster may be restarted with the /start endpoint.\n",
-        "operationId": "stopCluster",
-        "summary": "Stops a Dataproc cluster"
-      }
-    },
-    "/api/clusters": {
-      "get": {
-        "produces": [
-          "application/json"
-        ],
-        "parameters": [
-          {
-            "description": "Optional label key-value pairs to filter results by. Example: Querying by key1=val1,key2=val2\nreturns all clusters that contain the key1/val1 and key2/val2 labels (possibly among other labels).\nNote: this string format is a workaround because Swagger doesn't support free-form\nquery string parameters. The recommended way to use this endpoint is to specify the\nlabels as top-level query string parameters. For instance: GET /api/clusters?key1=val1&key2=val2.\n",
-            "in": "query",
-            "name": "_labels",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "default": false,
-            "description": "Optional filter that includes any clusters with a Deleted status.",
-            "in": "query",
-            "name": "includeDeleted",
-            "required": false,
-            "type": "boolean"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "List of clusters",
-            "schema": {
-              "items": {
-                "$ref": "#/definitions/ListClusterResponse"
-              },
-              "type": "array"
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "schema": {
-              "$ref": "#/definitions/ErrorReport"
-            }
-          },
-          "500": {
-            "description": "Internal Error",
-            "schema": {
-              "$ref": "#/definitions/ErrorReport"
-            }
-          }
-        },
-        "security": [
-          {
-            "googleoauth": [
-              "openid",
-              "email",
-              "profile"
-            ]
-          }
-        ],
-        "tags": [
-          "cluster"
-        ],
-        "deprecated": true,
-        "description": "List all active clusters, optionally filtering on a set of labels",
-        "operationId": "listClusters",
-        "summary": "List all active clusters"
-      }
-    },
-    "/api/clusters/{googleProject}": {
-      "get": {
-        "produces": [
-          "application/json"
-        ],
-        "parameters": [
-          {
-            "description": "googleProject",
-            "in": "path",
-            "name": "googleProject",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "description": "Optional label key-value pairs to filter results by. Example: Querying by key1=val1,key2=val2\nreturns all clusters that contain the key1/val1 and key2/val2 labels (possibly among other labels).\nNote: this string format is a workaround because Swagger doesn't support free-form\nquery string parameters. The recommended way to use this endpoint is to specify the\nlabels as top-level query string parameters. For instance: GET /api/clusters?key1=val1&key2=val2.\n",
-            "in": "query",
-            "name": "_labels",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "default": false,
-            "description": "Optional filter that includes any clusters with a Deleted status.",
-            "in": "query",
-            "name": "includeDeleted",
-            "required": false,
-            "type": "boolean"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "List of clusters",
-            "schema": {
-              "items": {
-                "$ref": "#/definitions/ListClusterResponse"
-              },
-              "type": "array"
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "schema": {
-              "$ref": "#/definitions/ErrorReport"
-            }
-          },
-          "500": {
-            "description": "Internal Error",
-            "schema": {
-              "$ref": "#/definitions/ErrorReport"
-            }
-          }
-        },
-        "security": [
-          {
-            "googleoauth": [
-              "openid",
-              "email",
-              "profile"
-            ]
-          }
-        ],
-        "tags": [
-          "cluster"
-        ],
-        "deprecated": true,
-        "description": "List all active clusters within the given Google project, optionally filtering on a set of labels",
-        "operationId": "listClustersByProject",
-        "summary": "List all active clusters within the given Google project"
-      }
-    },
     "/api/google/v1/apps": {
       "get": {
         "produces": [
@@ -541,6 +31,13 @@
             "name": "includeDeleted",
             "required": false,
             "type": "boolean"
+          },
+          {
+            "description": "Optional label keys of the labels returned in response. Example: Querying by key1,key2,key3 returns all labels key1/val1 key2/val2 and key3 and val3 for each app in response\n",
+            "in": "query",
+            "name": "includeLabels",
+            "required": false,
+            "type": "string"
           }
         ],
         "responses": {
@@ -610,6 +107,13 @@
             "name": "includeDeleted",
             "required": false,
             "type": "boolean"
+          },
+          {
+            "description": "Optional label keys of the labels returned in response. Example: Querying by key1,key2,key3 returns all labels key1/val1 key2/val2 and key3 and val3 for each app in response\n",
+            "in": "query",
+            "name": "includeLabels",
+            "required": false,
+            "type": "string"
           }
         ],
         "responses": {
@@ -652,64 +156,6 @@
         "summary": "List apps within a project"
       }
     },
-    "/api/google/v1/apps/{googleProject}/batchNodepoolCreate": {
-      "post": {
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "parameters": [
-          {
-            "description": "googleProject",
-            "in": "path",
-            "name": "googleProject",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "in": "body",
-            "name": "body",
-            "schema": {
-              "$ref": "#/definitions/BatchNodepoolCreateRequest"
-            }
-          }
-        ],
-        "responses": {
-          "202": {
-            "description": "Batch nodepool creation request successful"
-          },
-          "400": {
-            "description": "Bad Request",
-            "schema": {
-              "$ref": "#/definitions/ErrorReport"
-            }
-          },
-          "403": {
-            "description": "User does not have permission to perform action"
-          },
-          "409": {
-            "description": "Conflict",
-            "schema": {
-              "$ref": "#/definitions/ErrorReport"
-            }
-          },
-          "500": {
-            "description": "Internal Error",
-            "schema": {
-              "$ref": "#/definitions/ErrorReport"
-            }
-          }
-        },
-        "tags": [
-          "apps"
-        ],
-        "description": "This will fail if a cluster already exists in the project",
-        "operationId": "batchNodepoolCreate",
-        "summary": "Creates a cluster with pool of unclaimed nodepools, such that nodepools already exist at app creation time"
-      }
-    },
     "/api/google/v1/apps/{googleProject}/{appName}": {
       "delete": {
         "produces": [
@@ -729,6 +175,14 @@
             "name": "appName",
             "required": true,
             "type": "string"
+          },
+          {
+            "default": false,
+            "description": "Whether or not the disk associated with the app should be deleted. Default to false if not specified.",
+            "in": "query",
+            "name": "deleteDisk",
+            "required": false,
+            "type": "boolean"
           }
         ],
         "responses": {
@@ -849,7 +303,7 @@
         ],
         "responses": {
           "202": {
-            "description": "App creation successful"
+            "description": "App creation request has been received"
           },
           "400": {
             "description": "Bad Request",
@@ -885,9 +339,119 @@
         "tags": [
           "apps"
         ],
-        "description": "Default labels appName, googleProject, serviceAccount, and creator cannot be overridden.",
+        "description": "The specified appName is suffixed and the resulting string must adhere to Google's name validation regex ?:[a-z](?:[-a-z0-9]{0,38}[a-z0-9])?. Default labels appName, googleProject, serviceAccount, and creator cannot be overridden.\n",
         "operationId": "createApp",
-        "summary": "Creates a new app in the given project with the given name"
+        "summary": "Creates a new app in the given project with the given appName"
+      }
+    },
+    "/api/google/v1/apps/{googleProject}/{appName}/start": {
+      "post": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "googleProject",
+            "in": "path",
+            "name": "googleProject",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "appName",
+            "in": "path",
+            "name": "appName",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "App start request accepted"
+          },
+          "403": {
+            "description": "User does not have permission to perform action on app"
+          },
+          "404": {
+            "description": "App not found",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          },
+          "409": {
+            "description": "App cannot be started",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          },
+          "500": {
+            "description": "Internal Error",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          }
+        },
+        "tags": [
+          "apps"
+        ],
+        "description": "Starts the stopped app",
+        "operationId": "startApp",
+        "summary": "Starts an app with the given project and name"
+      }
+    },
+    "/api/google/v1/apps/{googleProject}/{appName}/stop": {
+      "post": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "googleProject",
+            "in": "path",
+            "name": "googleProject",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "appName",
+            "in": "path",
+            "name": "appName",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "App stop request accepted"
+          },
+          "403": {
+            "description": "User does not have permission to perform action on app"
+          },
+          "404": {
+            "description": "App not found",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          },
+          "409": {
+            "description": "App cannot be stopped",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          },
+          "500": {
+            "description": "Internal Error",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          }
+        },
+        "tags": [
+          "apps"
+        ],
+        "description": "Stops the running compute, but retains any data persisted on disk. The app may be restarted with the /start endpoint.\n",
+        "operationId": "stopApp",
+        "summary": "Stops an app with the given project and name"
       }
     },
     "/api/google/v1/disks": {
@@ -910,6 +474,13 @@
             "name": "includeDeleted",
             "required": false,
             "type": "boolean"
+          },
+          {
+            "description": "Optional label keys of the labels returned in response. Example: Querying by key1,key2,key3 returns all labels key1/val1 key2/val2 and key3 and val3 for each persistent disk in response\n",
+            "in": "query",
+            "name": "includeLabels",
+            "required": false,
+            "type": "string"
           }
         ],
         "responses": {
@@ -970,6 +541,13 @@
             "name": "includeDeleted",
             "required": false,
             "type": "boolean"
+          },
+          {
+            "description": "Optional label keys of the labels returned in response. Example: Querying by key1,key2,key3 returns all labels key1/val1 key2/val2 and key3 and val3 for each persistent disk in response\n",
+            "in": "query",
+            "name": "includeLabels",
+            "required": false,
+            "type": "string"
           }
         ],
         "responses": {
@@ -1249,7 +827,7 @@
             "description": "List of runtimes",
             "schema": {
               "items": {
-                "$ref": "#/definitions/ListClusterResponse"
+                "$ref": "#/definitions/ListRuntimeResponse"
               },
               "type": "array"
             }
@@ -1369,7 +947,7 @@
             "description": "Runtime deletion request accepted"
           },
           "403": {
-            "description": "User does not have permission to perform action on cluster"
+            "description": "User does not have permission to perform action on runtime"
           },
           "404": {
             "description": "Runtime not found",
@@ -1533,7 +1111,10 @@
         ],
         "responses": {
           "202": {
-            "description": "Runtime creation request accepted"
+            "description": "Runtime creation request accepted",
+            "schema": {
+              "$ref": "#/definitions/CreateRuntimeResponse"
+            }
           },
           "400": {
             "description": "Bad Request",
@@ -1672,6 +1253,472 @@
         "summary": "Stops a Dataproc cluster or Google Compute Engine instance"
       }
     },
+    "/api/v2/runtimes": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "Optional label key-value pairs to filter results by. Example: Querying by key1=val1,key2=val2 returns all azure runtimes that contain the key1/val1 and key2/val2 labels (possibly among other labels). Note: this string format is a workaround because Swagger doesn't support free-form query string parameters. The recommended way to use this endpoint is to specify the labels as top-level query string parameters. For instance: GET /api/v2/runtimes?key1=val1&key2=val2.\n",
+            "in": "query",
+            "name": "_labels",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "default": false,
+            "description": "Optional filter that includes any runtimes with a Deleted status.",
+            "in": "query",
+            "name": "includeDeleted",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "description": "Optional label keys of the labels returned in response. Example: Querying by key1,key2,key3 returns all labels key1/val1 key2/val2 and key3 and val3 for each runtime response\n",
+            "in": "query",
+            "name": "includeLabels",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of runtimes",
+            "schema": {
+              "items": {
+                "$ref": "#/definitions/ListRuntimeResponse"
+              },
+              "type": "array"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          },
+          "500": {
+            "description": "Internal Error",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          }
+        },
+        "tags": [
+          "runtimes"
+        ],
+        "description": "List all runtimes, optionally filtering on a set of labels",
+        "operationId": "listRuntimesV2",
+        "summary": "List all runtimes that the caller has access to"
+      }
+    },
+    "/api/v2/runtimes/{workspaceId}": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "workspaceId",
+            "in": "path",
+            "name": "workspaceId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Optional label key-value pairs to filter results by. Example: Querying by key1=val1,key2=val2 returns all azure runtimes that contain the key1/val1 and key2/val2 labels (possibly among other labels). Note: this string format is a workaround because Swagger doesn't support free-form query string parameters. The recommended way to use this endpoint is to specify the labels as top-level query string parameters. For instance: GET /api/v2/runtimes/{workspaceId}?key1=val1&key2=val2.\n",
+            "in": "query",
+            "name": "_labels",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "default": false,
+            "description": "Optional filter that includes any runtimes with a Deleted status.",
+            "in": "query",
+            "name": "includeDeleted",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "description": "Optional label keys of the labels returned in response. Example: Querying by key1,key2,key3 returns all labels key1/val1 key2/val2 and key3 and val3 for each runtime response\n",
+            "in": "query",
+            "name": "includeLabels",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of runtimes",
+            "schema": {
+              "items": {
+                "$ref": "#/definitions/ListRuntimeResponse"
+              },
+              "type": "array"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          },
+          "500": {
+            "description": "Internal Error",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          }
+        },
+        "tags": [
+          "runtimes"
+        ],
+        "description": "List all runtimes within the given workspace, optionally filtering on a set of labels",
+        "operationId": "listRuntimesByWorkspaceV2",
+        "summary": "List all runtimes within the given workspace that the caller has access to"
+      }
+    },
+    "/api/v2/runtimes/{workspaceId}/azure": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "workspaceId",
+            "in": "path",
+            "name": "workspaceId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Optional label key-value pairs to filter results by. Example: Querying by key1=val1,key2=val2 returns all azure runtimes that contain the key1/val1 and key2/val2 labels (possibly among other labels). Note: this string format is a workaround because Swagger doesn't support free-form query string parameters. The recommended way to use this endpoint is to specify the labels as top-level query string parameters. For instance: GET /api/v2/runtimes/{workspaceId}/azure?key1=val1&key2=val2.\n",
+            "in": "query",
+            "name": "_labels",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "default": false,
+            "description": "Optional filter that includes any runtimes with a Deleted status.",
+            "in": "query",
+            "name": "includeDeleted",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "description": "Optional label keys of the labels returned in response. Example: Querying by key1,key2,key3 returns all labels key1/val1 key2/val2 and key3 and val3 for each runtime response\n",
+            "in": "query",
+            "name": "includeLabels",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of runtimes",
+            "schema": {
+              "items": {
+                "$ref": "#/definitions/ListRuntimeResponse"
+              },
+              "type": "array"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          },
+          "500": {
+            "description": "Internal Error",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          }
+        },
+        "tags": [
+          "runtimes"
+        ],
+        "description": "List all azure runtimes within the given workspace, optionally filtering on a set of labels",
+        "operationId": "listAzureRuntimesV2",
+        "summary": "List all azure runtimes within the given workspace that the caller has access to"
+      }
+    },
+    "/api/v2/runtimes/{workspaceId}/azure/{name}": {
+      "delete": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "workspaceId",
+            "in": "path",
+            "name": "workspaceId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "runtimeName",
+            "in": "path",
+            "name": "name",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Runtime deletion request accepted"
+          },
+          "403": {
+            "description": "User does not have permission to perform action on runtime"
+          },
+          "404": {
+            "description": "Runtime not found",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          },
+          "500": {
+            "description": "Internal Error",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          }
+        },
+        "tags": [
+          "runtimes"
+        ],
+        "description": "deletes a runtime",
+        "operationId": "deleteAzureRuntime",
+        "summary": "Deletes an Azure runtime instance in the given workspce"
+      },
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "workspaceId",
+            "in": "path",
+            "name": "workspaceId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "runtimeName",
+            "in": "path",
+            "name": "name",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Runtime found, here are the details",
+            "schema": {
+              "$ref": "#/definitions/GetRuntimeResponse"
+            }
+          },
+          "403": {
+            "description": "User does not have permission to perform action on runtime"
+          },
+          "404": {
+            "description": "Runtime not found",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          },
+          "500": {
+            "description": "Internal Error",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          }
+        },
+        "tags": [
+          "runtimes"
+        ],
+        "description": "Returns information about an existing azure runtime managed by Leo. Poll this to find out when your runtime has finished starting up.\n",
+        "operationId": "getAzureRuntime",
+        "summary": "Get details of an azure runtime"
+      },
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "workspaceId",
+            "in": "path",
+            "name": "workspaceId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "runtimeName. only lowercase alphanumeric characters, numbers and dashes are allowed",
+            "in": "path",
+            "name": "name",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "schema": {
+              "$ref": "#/definitions/CreateAzureRuntimeRequest"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Runtime creation request accepted",
+            "schema": {
+              "$ref": "#/definitions/CreateRuntimeResponse"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          },
+          "500": {
+            "description": "Internal Error",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          }
+        },
+        "tags": [
+          "runtimes"
+        ],
+        "description": "The request is completed without waiting for the runtime to be created in Azure. The runtime status can be polled using the getRuntime API.\n",
+        "operationId": "createAzureRuntime",
+        "summary": "Creates a Azure runtime instance in the given workspace with the given name."
+      }
+    },
+    "/api/v2/runtimes/{workspaceId}/{name}/start": {
+      "post": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "workspaceId",
+            "in": "path",
+            "name": "workspaceId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "runtimeName",
+            "in": "path",
+            "name": "name",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Runtime start request accepted"
+          },
+          "403": {
+            "description": "User does not have permission to perform action on runtime"
+          },
+          "404": {
+            "description": "Runtime not found",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          },
+          "500": {
+            "description": "Internal Error",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          }
+        },
+        "tags": [
+          "runtimes"
+        ],
+        "description": "Start an existing Leonardo managed runtime\n",
+        "operationId": "startRuntimeV2",
+        "summary": "Start runtime (WIP)."
+      }
+    },
+    "/api/v2/runtimes/{workspaceId}/{name}/stop": {
+      "post": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "workspaceId",
+            "in": "path",
+            "name": "workspaceId",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "runtimeName",
+            "in": "path",
+            "name": "name",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Runtime stop request accepted"
+          },
+          "403": {
+            "description": "User does not have permission to perform action on runtime"
+          },
+          "404": {
+            "description": "Runtime not found",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          },
+          "500": {
+            "description": "Internal Error",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          }
+        },
+        "tags": [
+          "runtimes"
+        ],
+        "description": "Stop an existing Leonardo managed runtime\n",
+        "operationId": "stopRuntimeV2",
+        "summary": "Stop runtime (WIP)."
+      }
+    },
+    "/liveness": {
+      "get": {
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "System is up, other routes may not be ready yet. See status api for readiness"
+          }
+        },
+        "operationId": "getLiveness",
+        "summary": "Gets system liveness"
+      }
+    },
     "/notebooks/invalidateToken": {
       "get": {
         "produces": [
@@ -1679,7 +1726,7 @@
         ],
         "parameters": [],
         "responses": {
-          "200": {
+          "204": {
             "description": "Successfully invalidated a token"
           },
           "500": {
@@ -1693,7 +1740,7 @@
           "notebooks"
         ],
         "deprecated": true,
-        "description": "If using Google token-based auth, call this endpoint when a user's Google token is invalidated\n(e.g. when logging out of the application). This ensures that the token is also invalidated in Leo\nand that the user's proxied notebook connections stop working.\n",
+        "description": "If using Google token-based auth, clients can call this endpoint when a user's Google token should be invalidated (e.g. when logging out of the application).\nThis endpoint will unset the Leo token cookie and invalidate caches to ensure the user's proxied notebook connections stop working.\n",
         "operationId": "invalidateTokenApi",
         "summary": "(Deprecated) Invalidates a token"
       }
@@ -1905,7 +1952,7 @@
           "notebooks"
         ],
         "deprecated": true,
-        "description": "If using Google token-based authorization to a Jupyter notebook, the Leo proxy accepts a\nGoogle token passed as a cookie value. This endpoint facilitates setting that cookie.\nIt accepts a bearer token in an Authorization header and responds with a Set-Cookie header.\n",
+        "description": "If using Google token-based authorization to a Jupyter notebook, the Leo proxy accepts a Google token passed as a cookie value. This endpoint facilitates setting that cookie.\nIt accepts a bearer token in an Authorization header and responds with a Set-Cookie header.\nIf no bearer token is present, it unsets the cookie by returning a Set-Cookie header with a null value and expiration date in the past.\n",
         "operationId": "setCookieApi",
         "summary": "(Deprecated) Sets a browser cookie needed to authorize connections to a Jupyter notebook"
       }
@@ -1954,14 +2001,14 @@
               "$ref": "#/definitions/ErrorReport"
             }
           },
-          "420": {
-            "description": "App not ready",
+          "422": {
+            "description": "App is stopped",
             "schema": {
               "$ref": "#/definitions/ErrorReport"
             }
           },
-          "422": {
-            "description": "App is stopped",
+          "423": {
+            "description": "App not ready",
             "schema": {
               "$ref": "#/definitions/ErrorReport"
             }
@@ -1988,7 +2035,7 @@
         ],
         "parameters": [],
         "responses": {
-          "200": {
+          "204": {
             "description": "Successfully invalidated a token"
           },
           "500": {
@@ -2001,12 +2048,43 @@
         "tags": [
           "proxy"
         ],
-        "description": "If using Google token-based auth, call this endpoint when a user's Google token is invalidated\n(e.g. when logging out of the application). This ensures that the token is also invalidated in Leo\nand that the user's proxied connections stop working.\n",
+        "description": "If using Google token-based auth, clients can call this endpoint when a user's Google token should be invalidated (e.g. when logging out of the application).\nThis endpoint will unset the Leo token cookie and invalidate caches to ensure the user's proxied connections stop working.\n",
         "operationId": "invalidateToken",
         "summary": "Invalidates a token"
       }
     },
-    "/proxy/{googleProject}/{clusterName}/jupyter": {
+    "/proxy/setCookie": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [],
+        "responses": {
+          "204": {
+            "description": "Successfully set a cookie"
+          },
+          "401": {
+            "description": "Proxy connection unauthorized",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          },
+          "500": {
+            "description": "Internal Error",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          }
+        },
+        "tags": [
+          "proxy"
+        ],
+        "description": "If using Google token-based authorization to a runtime, the Leo proxy accepts a Google token passed as a cookie value. This endpoint facilitates setting that cookie.\nIt accepts a bearer token in an Authorization header and responds with a Set-Cookie header.\nIf no bearer token is present, it unsets the cookie by returning a Set-Cookie header with a null value and expiration date in the past.\n",
+        "operationId": "setCookie",
+        "summary": "Sets a browser cookie needed to authorize connections to a Leonardo runtime"
+      }
+    },
+    "/proxy/{googleProject}/{runtimeName}/apphistory": {
       "get": {
         "produces": [
           "application/json"
@@ -2020,9 +2098,9 @@
             "type": "string"
           },
           {
-            "description": "clusterName",
+            "description": "runtimeName",
             "in": "path",
-            "name": "clusterName",
+            "name": "runtimeName",
             "required": true,
             "type": "string"
           }
@@ -2038,19 +2116,19 @@
             }
           },
           "404": {
-            "description": "Cluster not found",
-            "schema": {
-              "$ref": "#/definitions/ErrorReport"
-            }
-          },
-          "420": {
-            "description": "Cluster not ready",
+            "description": "Runtime not found",
             "schema": {
               "$ref": "#/definitions/ErrorReport"
             }
           },
           "422": {
-            "description": "Cluster is stopped",
+            "description": "Runtime is stopped",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          },
+          "423": {
+            "description": "Runtime not ready",
             "schema": {
               "$ref": "#/definitions/ErrorReport"
             }
@@ -2065,12 +2143,204 @@
         "tags": [
           "proxy"
         ],
-        "description": "This URI supports all HTTP methods, not just GET as implied by this Swagger.\nProxies all requests through to the tool server running on the given cluster.\n",
+        "description": "Only available for Dataproc runtimes with Component Gateway enabled. See https://cloud.google.com/dataproc/docs/concepts/accessing/dataproc-gateways\n",
+        "operationId": "apphistory",
+        "summary": "YARN Application Timeline"
+      }
+    },
+    "/proxy/{googleProject}/{runtimeName}/hdfs": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "googleProject",
+            "in": "path",
+            "name": "googleProject",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "runtimeName",
+            "in": "path",
+            "name": "runtimeName",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Proxy connection successful"
+          },
+          "403": {
+            "description": "Proxy connection unauthorized",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          },
+          "404": {
+            "description": "Runtime not found",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          },
+          "422": {
+            "description": "Runtime is stopped",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          },
+          "423": {
+            "description": "Runtime not ready",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          },
+          "500": {
+            "description": "Internal Error",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          }
+        },
+        "tags": [
+          "proxy"
+        ],
+        "description": "Only available for Dataproc runtimes with Component Gateway enabled. See https://cloud.google.com/dataproc/docs/concepts/accessing/dataproc-gateways\n",
+        "operationId": "hdfs",
+        "summary": "HDFS NameNode"
+      }
+    },
+    "/proxy/{googleProject}/{runtimeName}/jobhistory": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "googleProject",
+            "in": "path",
+            "name": "googleProject",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "runtimeName",
+            "in": "path",
+            "name": "runtimeName",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Proxy connection successful"
+          },
+          "403": {
+            "description": "Proxy connection unauthorized",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          },
+          "404": {
+            "description": "Runtime not found",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          },
+          "422": {
+            "description": "Runtime is stopped",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          },
+          "423": {
+            "description": "Runtime not ready",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          },
+          "500": {
+            "description": "Internal Error",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          }
+        },
+        "tags": [
+          "proxy"
+        ],
+        "description": "Only available for Dataproc runtimes with Component Gateway enabled. See https://cloud.google.com/dataproc/docs/concepts/accessing/dataproc-gateways\n",
+        "operationId": "jobhistory",
+        "summary": "MapReduce Job History"
+      }
+    },
+    "/proxy/{googleProject}/{runtimeName}/jupyter": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "googleProject",
+            "in": "path",
+            "name": "googleProject",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "runtimeName",
+            "in": "path",
+            "name": "runtimeName",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Proxy connection successful"
+          },
+          "403": {
+            "description": "Proxy connection unauthorized",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          },
+          "404": {
+            "description": "Runtime not found",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          },
+          "422": {
+            "description": "Runtime is stopped",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          },
+          "423": {
+            "description": "Runtime not ready",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          },
+          "500": {
+            "description": "Internal Error",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          }
+        },
+        "tags": [
+          "proxy"
+        ],
+        "description": "This URI supports all HTTP methods, not just GET as implied by this Swagger.\nProxies all requests through to the tool server running on the given runtime.\n",
         "operationId": "proxyClusterJupyter",
-        "summary": "Access Jupyter (if installed) on a Dataproc cluster"
+        "summary": "Access Jupyter (if installed) on a Leonardo runtime"
       }
     },
-    "/proxy/{googleProject}/{clusterName}/jupyter/lab": {
+    "/proxy/{googleProject}/{runtimeName}/jupyter/lab": {
       "get": {
         "produces": [
           "application/json"
@@ -2084,9 +2354,9 @@
             "type": "string"
           },
           {
-            "description": "clusterName",
+            "description": "runtimeName",
             "in": "path",
-            "name": "clusterName",
+            "name": "runtimeName",
             "required": true,
             "type": "string"
           }
@@ -2102,19 +2372,19 @@
             }
           },
           "404": {
-            "description": "Cluster not found",
-            "schema": {
-              "$ref": "#/definitions/ErrorReport"
-            }
-          },
-          "420": {
-            "description": "Cluster not ready",
+            "description": "Runtime not found",
             "schema": {
               "$ref": "#/definitions/ErrorReport"
             }
           },
           "422": {
-            "description": "Cluster is stopped",
+            "description": "Runtime is stopped",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          },
+          "423": {
+            "description": "Runtime not ready",
             "schema": {
               "$ref": "#/definitions/ErrorReport"
             }
@@ -2129,12 +2399,12 @@
         "tags": [
           "proxy"
         ],
-        "description": "This URI supports all HTTP methods, not just GET as implied by this Swagger.\nProxies all requests through to the tool server running on the given cluster.\n",
+        "description": "This URI supports all HTTP methods, not just GET as implied by this Swagger.\nProxies all requests through to the tool server running on the given runtime.\n",
         "operationId": "proxyClusterJupyterLab",
-        "summary": "Access Jupyter Lab (if installed) on a Dataproc cluster"
+        "summary": "Access Jupyter Lab (if installed) on a Leonardo runtime"
       }
     },
-    "/proxy/{googleProject}/{clusterName}/rstudio": {
+    "/proxy/{googleProject}/{runtimeName}/rstudio": {
       "get": {
         "produces": [
           "application/json"
@@ -2148,9 +2418,9 @@
             "type": "string"
           },
           {
-            "description": "clusterName",
+            "description": "runtimeName",
             "in": "path",
-            "name": "clusterName",
+            "name": "runtimeName",
             "required": true,
             "type": "string"
           }
@@ -2166,19 +2436,19 @@
             }
           },
           "404": {
-            "description": "Cluster not found",
-            "schema": {
-              "$ref": "#/definitions/ErrorReport"
-            }
-          },
-          "420": {
-            "description": "Cluster not ready",
+            "description": "Runtime not found",
             "schema": {
               "$ref": "#/definitions/ErrorReport"
             }
           },
           "422": {
-            "description": "Cluster is stopped",
+            "description": "Runtime is stopped",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          },
+          "423": {
+            "description": "Runtime not ready",
             "schema": {
               "$ref": "#/definitions/ErrorReport"
             }
@@ -2193,12 +2463,12 @@
         "tags": [
           "proxy"
         ],
-        "description": "This URI supports all HTTP methods, not just GET as implied by this Swagger.\nProxies all requests through to the tool server running on the given cluster.\n",
+        "description": "This URI supports all HTTP methods, not just GET as implied by this Swagger.\nProxies all requests through to the tool server running on the given runtime.\n",
         "operationId": "proxyClusterRStudio",
-        "summary": "Access RStudio (if installed) on a Dataproc cluster"
+        "summary": "Access RStudio (if installed) on a Leonardo runtime"
       }
     },
-    "/proxy/{googleProject}/{clusterName}/setCookie": {
+    "/proxy/{googleProject}/{runtimeName}/setCookie": {
       "get": {
         "produces": [
           "application/json"
@@ -2211,9 +2481,9 @@
             "type": "string"
           },
           {
-            "description": "clusterName",
+            "description": "runtimeName",
             "in": "path",
-            "name": "clusterName",
+            "name": "runtimeName",
             "required": true,
             "type": "string"
           }
@@ -2229,7 +2499,7 @@
             }
           },
           "404": {
-            "description": "Cluster not found",
+            "description": "Runtime not found",
             "schema": {
               "$ref": "#/definitions/ErrorReport"
             }
@@ -2244,9 +2514,138 @@
         "tags": [
           "proxy"
         ],
-        "description": "If using Google token-based authorization to a cluster, the Leo proxy accepts a\nGoogle token passed as a cookie value. This endpoint facilitates setting that cookie.\nIt accepts a bearer token in an Authorization header and responds with a Set-Cookie header.\n",
-        "operationId": "setCookie",
-        "summary": "Sets a browser cookie needed to authorize connections to a Dataproc cluster"
+        "deprecated": true,
+        "description": "If using Google token-based authorization to a runtime, the Leo proxy accepts a Google token passed as a cookie value. This endpoint facilitates setting that cookie.\nIt accepts a bearer token in an Authorization header and responds with a Set-Cookie header.\nIf no bearer token is present, it unsets the cookie by returning a Set-Cookie header with a null value and expiration date in the past.\n",
+        "operationId": "setCookieDeprecated",
+        "summary": "(Deprecated) Sets a browser cookie needed to authorize connections to a Leonardo runtime"
+      }
+    },
+    "/proxy/{googleProject}/{runtimeName}/sparkhistory": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "googleProject",
+            "in": "path",
+            "name": "googleProject",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "runtimeName",
+            "in": "path",
+            "name": "runtimeName",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Proxy connection successful"
+          },
+          "403": {
+            "description": "Proxy connection unauthorized",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          },
+          "404": {
+            "description": "Runtime not found",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          },
+          "422": {
+            "description": "Runtime is stopped",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          },
+          "423": {
+            "description": "Runtime not ready",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          },
+          "500": {
+            "description": "Internal Error",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          }
+        },
+        "tags": [
+          "proxy"
+        ],
+        "description": "Only available for Dataproc runtimes with Component Gateway enabled. See https://cloud.google.com/dataproc/docs/concepts/accessing/dataproc-gateways\n",
+        "operationId": "sparkhistory",
+        "summary": "Spark History Server"
+      }
+    },
+    "/proxy/{googleProject}/{runtimeName}/yarn": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "googleProject",
+            "in": "path",
+            "name": "googleProject",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "runtimeName",
+            "in": "path",
+            "name": "runtimeName",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Proxy connection successful"
+          },
+          "403": {
+            "description": "Proxy connection unauthorized",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          },
+          "404": {
+            "description": "Runtime not found",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          },
+          "422": {
+            "description": "Runtime is stopped",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          },
+          "423": {
+            "description": "Runtime not ready",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          },
+          "500": {
+            "description": "Internal Error",
+            "schema": {
+              "$ref": "#/definitions/ErrorReport"
+            }
+          }
+        },
+        "tags": [
+          "proxy"
+        ],
+        "description": "Only available for Dataproc runtimes with Component Gateway enabled. See https://cloud.google.com/dataproc/docs/concepts/accessing/dataproc-gateways\n",
+        "operationId": "yarn",
+        "summary": "YARN Resource Manager"
       }
     },
     "/status": {
@@ -2274,7 +2673,7 @@
           "service_info"
         ],
         "operationId": "getSystemStatus",
-        "summary": "Gets system status"
+        "summary": "Gets system readiness"
       }
     },
     "/version": {
@@ -2309,6 +2708,14 @@
         "DELETING",
         "DELETED",
         "PROVISIONING"
+      ],
+      "type": "string"
+    },
+    "AppType": {
+      "enum": [
+        "CROMWELL",
+        "CUSTOM",
+        "GALAXY"
       ],
       "type": "string"
     },
@@ -2357,10 +2764,6 @@
         "destroyedDate": {
           "description": "timestamp for the date this runtime was deleted in ISO 8601 format. This is null if it has not been deleted yet.",
           "type": "string"
-        },
-        "kernelFoundBusyDate": {
-          "description": "timestamp for the date the kernel for the tool (i.e. Jupyter) in this runtime was last found busy, aka in use, in ISO 8601 format.",
-          "type": "string"
         }
       },
       "required": [
@@ -2370,127 +2773,30 @@
       ],
       "type": "object"
     },
-    "BatchNodepoolCreateRequest": {
-      "description": "The configuration for a pool of nodepools, used to create a cluster with pre-created nodepools",
+    "AzureDiskConfig": {
+      "description": "The config for creating an azure disk",
       "properties": {
-        "kubernetesRuntimeConfig": {
-          "$ref": "#/definitions/KubernetesRuntimeConfig"
-        },
-        "numNodepools": {
-          "description": "number of nodepools to pre-create in the cluster. We enforce a max of 200. There will be an additional default nodepool created as well.",
-          "type": "integer"
-        }
-      },
-      "required": [
-        "numNodepools"
-      ],
-      "type": "object"
-    },
-    "Cluster": {
-      "description": "",
-      "properties": {
-        "autopauseThreshold": {
-          "description": "The number of minutes of idle time to elapse before the cluster is autopaused. A value of 0 is equivalent to autopause being turned off.",
-          "type": "integer"
-        },
-        "clusterName": {
-          "description": "The user-supplied name for the cluster",
-          "type": "string"
-        },
-        "createdDate": {
-          "description": "The date and time the cluster was created, in ISO-8601 format",
-          "type": "string"
-        },
-        "customClusterEnvironmentVariables": {
-          "description": "Optional environment variables to be set on the cluster.",
-          "type": "object"
-        },
-        "dateAccessed": {
-          "description": "The date and time the cluster was last accessed, in ISO-8601 format.\nDate accessed is defined as the last time the cluster was created, modified, or accessed via the proxy.\n",
-          "type": "string"
-        },
-        "defaultClientId": {
-          "description": "The default Google Client ID.",
-          "type": "string"
-        },
-        "destroyedDate": {
-          "description": "The date and time the cluster was destroyed, in ISO-8601 format",
-          "type": "string"
-        },
-        "errors": {
-          "description": "The list of errors that were encountered on cluster create. Each error consists of the error message, code and timestamp",
-          "items": {
-            "$ref": "#/definitions/ClusterError"
-          },
-          "type": "array"
-        },
-        "googleId": {
-          "description": "Google's UUID for the cluster",
-          "type": "string"
-        },
-        "googleProject": {
-          "description": "The Google Project used to create the cluster",
-          "type": "string"
-        },
-        "googleServiceAccount": {
-          "description": "The Google Service Account used to create the cluster",
-          "type": "string"
-        },
-        "hostIp": {
-          "description": "The IP address of the cluster master node",
-          "type": "string"
-        },
-        "id": {
-          "description": "The internally-referenced ID of the cluster",
-          "type": "string"
-        },
-        "instances": {
-          "description": "Array of instances belonging to this cluster",
-          "items": {
-            "$ref": "#/definitions/Instance"
-          },
-          "type": "array"
-        },
-        "internalId": {
-          "description": "Internal resource ID of the cluster",
+        "diskType": {
+          "description": "Not currently supported, but included for future expansion. One of [Standard, SSD].",
           "type": "string"
         },
         "labels": {
-          "description": "The labels to be placed on the cluster. Of type Map[String,String]",
+          "description": "The labels to be placed on the runtime. Of type Map[String,String]",
           "type": "object"
         },
-        "machineConfig": {
-          "$ref": "#/definitions/MachineConfig"
-        },
-        "operationName": {
-          "description": "Google's operation ID for the cluster",
+        "name": {
+          "description": "The name of the disk in azure",
           "type": "string"
         },
-        "scopes": {
-          "description": "The scopes for the cluster.",
-          "items": {
-            "type": "string"
-          },
-          "type": "array"
-        },
-        "status": {
-          "$ref": "#/definitions/ClusterStatus"
+        "size": {
+          "description": "the size of the disk in GB",
+          "type": "integer"
         }
       },
       "required": [
-        "id",
-        "clusterName",
-        "googleProject",
-        "googleServiceAccount",
-        "machineConfig",
-        "status",
-        "createdDate",
-        "labels",
-        "dateAccessed",
-        "autopauseThreshold",
-        "defaultClientId",
-        "scopes"
-      ]
+        "name"
+      ],
+      "type": "object"
     },
     "ClusterError": {
       "description": "Errors encountered on cluster create",
@@ -2505,97 +2811,6 @@
         },
         "timestamp": {
           "description": "timestamp for error in ISO 8601 format",
-          "type": "string"
-        }
-      }
-    },
-    "ClusterRequest": {
-      "description": "",
-      "properties": {
-        "allowStop": {
-          "default": false,
-          "description": "If true, leo will allow updates that require a stop for this cluster. This flag should not be used at the time of cluster creation, but should be specified in the payload for the patch endpoint.",
-          "type": "boolean"
-        },
-        "autopause": {
-          "description": "Whether autopause feature is enabled for this specific cluster. If unset, autopause will be enabled and a system default threshold will be used.",
-          "type": "boolean"
-        },
-        "autopauseThreshold": {
-          "description": "The number of minutes of idle time to elapse before the cluster is autopaused. If autopause is set to false, this value is disregarded. A value of 0 is equivalent to autopause being turned off. If autopause is enabled and this is unset, a system default threshold will be used.",
-          "type": "integer"
-        },
-        "customClusterEnvironmentVariables": {
-          "description": "Optional environment variables to be set on the cluster.",
-          "type": "object"
-        },
-        "defaultClientId": {
-          "description": "The default Google Client ID.",
-          "type": "string"
-        },
-        "enableWelder": {
-          "default": true,
-          "description": "If set to true, sets up welder on the cluster. If unset, welder will not be put on the cluster.",
-          "type": "boolean"
-        },
-        "jupyterDockerImage": {
-          "description": "Deprecated. Please use toolDockerImage.",
-          "type": "string"
-        },
-        "jupyterExtensionUri": {
-          "description": "Deprecated. Please use userJupyterExtensionConfig.",
-          "type": "string"
-        },
-        "jupyterStartUserScriptUri": {
-          "description": "Optional GCS object URI to a bash script the user wishes to run on cluster start inside\nthe jupyter docker. In contrast to jupyterUserScriptUri, this always runs before starting\nJupyter, both on initial cluster creation and on cluster resume (jupyterUserScriptUri runs\nonce on cluster creation). This script may be used to launch background processes which\nwould not otherwise survive a cluster stop/start.\nThe script is pulled once at cluster creation time; subsequent client changes to the user\nscript at this URI do not affect the cluster. Timestamped logs for this script can be\nfound in the Leo staging bucket for the cluster. Script is run as root and docker --privileged.\n",
-          "type": "string"
-        },
-        "jupyterUserScriptUri": {
-          "description": "Optional GCS object URI to a bash script the user wishes to run inside their jupyter\ndocker. This script runs exactly once when the cluster is first initialized. Logs from\nthis script can be found in the Leo staging bucket for the cluster. Script is run as root\nand docker --privileged.\n",
-          "type": "string"
-        },
-        "labels": {
-          "description": "The labels to be placed on the cluster. Of type Map[String,String]",
-          "type": "object"
-        },
-        "machineConfig": {
-          "$ref": "#/definitions/MachineConfig"
-        },
-        "scopes": {
-          "default": [
-            "https://www.googleapis.com/auth/userinfo.email",
-            "https://www.googleapis.com/auth/userinfo.profile",
-            "https://www.googleapis.com/auth/bigquery",
-            "https://www.googleapis.com/auth/source.read_only"
-          ],
-          "description": "The scopes for the cluster. Defaults (userinfo.email, userinfo.profile, bigquery, source.read_only) will be used if left blank. Important: If you choose to specify custom scopes, the defaults will be overwritten. Thus, if you need the defaults, you will need to include the default scopes in your custom list of scopes.\n",
-          "items": {
-            "type": "string"
-          },
-          "type": "array"
-        },
-        "stopAfterCreation": {
-          "default": false,
-          "description": "If true, Leo will immediately stop the cluster once it's created, with the end result being a\na cluster in Stopped state. Otherwise, the end result will be a cluster in Running state.\nDefaults to false.\n",
-          "type": "boolean"
-        },
-        "toolDockerImage": {
-          "description": "The tool docker image to install. May be Dockerhub or GCR. If not set, a default Jupyter image will be installed.",
-          "type": "string"
-        },
-        "userJupyterExtensionConfig": {
-          "$ref": "#/definitions/UserJupyterExtensionConfig"
-        },
-        "welderDockerImage": {
-          "description": "The Welder docker image to install. Only takes effect if the tool being installed supports welder.\nMay be Dockerhub or GCR. If not set, then a default Welder image will be installed.\n",
-          "type": "string"
-        },
-        "welderRegistry": {
-          "description": "The container registry from which to pull the latest version of welder.",
-          "enum": [
-            "GCR",
-            "DockerHub"
-          ],
           "type": "string"
         }
       }
@@ -2619,11 +2834,25 @@
       "description": "the configuration of an app, used to create an app",
       "properties": {
         "appType": {
-          "description": "currently only \"GALAXY\" is supported",
+          "$ref": "#/definitions/AppType"
+        },
+        "customEnvironmentVariables": {
+          "description": "Optional environment variables to be set on the app",
+          "type": "object"
+        },
+        "descriptorPath": {
+          "description": "URL path to an app descriptor file. Only used if appType is CUSTOM.",
           "type": "string"
         },
         "diskConfig": {
           "$ref": "#/definitions/PersistentDiskRequest"
+        },
+        "extraArgs": {
+          "description": "Extra arguments to pass to the application. Only used if appType is CUSTOM.",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
         },
         "kubernetesRuntimeConfig": {
           "$ref": "#/definitions/KubernetesRuntimeConfig"
@@ -2635,6 +2864,40 @@
       },
       "type": "object"
     },
+    "CreateAzureRuntimeRequest": {
+      "description": "Creates a new runtime",
+      "properties": {
+        "customEnvironmentVariabales": {
+          "description": "an optional set of key value pairs for environment variables to be injected into the VM",
+          "type": "object"
+        },
+        "disk": {
+          "$ref": "#/definitions/AzureDiskConfig"
+        },
+        "imageUri": {
+          "description": "The azure identifier for the vm image uri. Optional, there is an intelligent default. Note this must be in the same region specified in the request Ex, /subscriptions/3efc5bdf-be0e-44e7-b1d7-c08931e3c16c/resourceGroups/mrg-qi-1-preview-20210517084351/providers/Microsoft.Compute/galleries/msdsvm/images/customized_ms_dsvm/versions/0.1.0",
+          "type": "string"
+        },
+        "labels": {
+          "description": "The labels to be placed on the runtime. Of type Map[String,String]",
+          "type": "object"
+        },
+        "machineSize": {
+          "description": "The azure-specific machine size identifier string. See https://docs.microsoft.com/en-us/azure/virtual-machines/sizes-general",
+          "type": "string"
+        },
+        "region": {
+          "description": "An azure region, see this for strings https://github.com/Azure/azure-libraries-for-java/blob/master/azure-mgmt-resources/src/main/java/com/microsoft/azure/management/resources/fluentcore/arm/Region.java",
+          "type": "string"
+        }
+      },
+      "required": [
+        "region",
+        "machineSize",
+        "disk"
+      ],
+      "type": "object"
+    },
     "CreateDiskRequest": {
       "description": "Creates a new persistent disk",
       "properties": {
@@ -2643,14 +2906,7 @@
           "type": "integer"
         },
         "diskType": {
-          "allOf": [
-            {
-              "$ref": "#/definitions/DiskType"
-            },
-            {
-              "description": "The type of the persistent disk to be created. Can be \"Standard\" or \"SSD\"."
-            }
-          ]
+          "$ref": "#/definitions/DiskType"
         },
         "labels": {
           "description": "The labels to be placed on the persistent disk. Of type Map[String,String]",
@@ -2659,6 +2915,9 @@
         "size": {
           "description": "The size of the persistent disk to be created in GB.",
           "type": "integer"
+        },
+        "sourceDisk": {
+          "$ref": "#/definitions/SourceDisk"
         }
       },
       "type": "object"
@@ -2667,7 +2926,7 @@
       "description": "Creates a new runtime",
       "properties": {
         "autopause": {
-          "description": "Whether autopause feature is enabled for this specific cluster. If unset, autopause will be enabled and a system default threshold will be used.",
+          "description": "Whether autopause feature is enabled for this specific cluster. If unset, autopause will be enabled and the threshold value will be set to either the autopauseThreshold value or the system default if autopauseThreshold is also unset.",
           "type": "boolean"
         },
         "autopauseThreshold": {
@@ -2683,18 +2942,22 @@
           "type": "string"
         },
         "jupyterStartUserScriptUri": {
-          "description": "Optional GCS object URI to a bash script the user wishes to run on cluster start inside the jupyter docker. In contrast to jupyterUserScriptUri, this always runs before starting Jupyter, both on initial cluster creation and on cluster resume (jupyterUserScriptUri runs once on cluster creation). This script may be used to launch background processes which would not otherwise survive a cluster stop/start. The script is pulled once at cluster creation time; subsequent client changes to the user script at this URI do not affect the cluster. Timestamped logs for this script can be found in the Leo staging bucket for the cluster. Script is run as root and docker --privileged.\n",
-          "type": "string"
+          "description": "DEPRECATED on 05/2021. Please use startUserScriptUri instead. This field may be removed after 6 months of deprecation.",
+          "type": "string",
+          "x-deprecated": true
         },
         "jupyterUserScriptUri": {
-          "description": "Optional GCS object URI to a bash script the user wishes to run inside their jupyter docker. This script runs exactly once when the cluster is first initialized. Logs from this script can be found in the Leo staging bucket for the cluster. Script is run as root and docker --privileged.\n",
-          "type": "string"
+          "description": "DEPRECATED on 05/2021. Please use userScriptUri instead. This field may be removed after 6 months of deprecation.",
+          "type": "string",
+          "x-deprecated": true
         },
         "labels": {
           "description": "The labels to be placed on the runtime. Of type Map[String,String]",
           "type": "object"
         },
-        "runtimeConfig": {},
+        "runtimeConfig": {
+          "$ref": "#/definitions/OneOfRuntimeConfig"
+        },
         "scopes": {
           "default": [
             "https://www.googleapis.com/auth/userinfo.email",
@@ -2708,12 +2971,20 @@
           },
           "type": "array"
         },
+        "startUserScriptUri": {
+          "description": "Optional GCS or HTTP URI to a bash script the user wishes to run on runtime start inside the Docker container. In contrast to userScriptUri, this always runs before starting the Docker container, both on initial runtime creation and on runtime resume (sserScriptUri runs once on runtime creation). This script may be used to launch background processes which would not otherwise survive a runtime stop/start.\nThe script is pulled once at runtime creation time; subsequent client changes to the user script at this URI do not affect the runtime. Timestamped logs for this script can be found in the Leo staging bucket for the cluster. The script is run as root and docker --privileged.\n",
+          "type": "string"
+        },
         "toolDockerImage": {
-          "description": "The tool docker image to install. May be Dockerhub or GCR. If not set, a default Jupyter image will be installed.",
+          "description": "The tool docker image to install. May be Google Container Repository (GCR), GitHub Container Repository (GHCR), or Dockerhub. If not set, a default Jupyter image will be installed.",
           "type": "string"
         },
         "userJupyterExtensionConfig": {
           "$ref": "#/definitions/UserJupyterExtensionConfig"
+        },
+        "userScriptUri": {
+          "description": "Optional GCS or HTTP URI to a bash script the user wishes to run inside their Docker container. This script runs exactly once when the runtime is first initialized. Logs from this script can be found in the Leo staging bucket for the runtime. The script is run as root and docker --privileged.\n",
+          "type": "string"
         },
         "welderDockerImage": {
           "description": "The Welder docker image to install. Only takes effect if the tool being installed supports welder.\nMay be Dockerhub or GCR. If not set, then a default Welder image will be installed.\n",
@@ -2729,6 +3000,79 @@
         }
       },
       "type": "object"
+    },
+    "CreateRuntimeResponse": {
+      "description": "response for create runtime APIs",
+      "properties": {
+        "traceId": {
+          "description": "traceId that's useful for debugging.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "traceId"
+      ],
+      "type": "object"
+    },
+    "DataprocConfig": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/RuntimeConfig"
+        },
+        {
+          "properties": {
+            "componentGatewayEnabled": {
+              "description": "Optional, specifies whether to enable Dataproc Component Gateway on the cluster. This can be used for accessing Spark web UIs. See https://cloud.google.com/dataproc/docs/concepts/accessing/dataproc-gateways for more details. Defaults to false.\n",
+              "type": "boolean"
+            },
+            "masterDiskSize": {
+              "description": "Optional, the size in gigabytes of the disk on the master node. Minimum size is 50GB. If unspecified, default size is 100GB.\n",
+              "type": "integer"
+            },
+            "masterMachineType": {
+              "description": "Optional, the machine type determines the number of CPUs and memory for the master node. For example \"n1-standard-16\"\nor \"n1-highmem-64\". If unspecified, defaults to creating a \"n1-standard-4\" machine. To decide which is right for you,\nsee https://cloud.google.com/compute/docs/machine-types\n",
+              "type": "string"
+            },
+            "numberOfPreemptibleWorkers": {
+              "description": "Optional, the number of preemptible workers. If unspecified, the default number is 0. Ignored if numberOfWorkers is 0.\nFor more information, see https://cloud.google.com/compute/docs/instances/preemptible\n",
+              "type": "integer"
+            },
+            "numberOfWorkerLocalSSDs": {
+              "description": "Optional, the number of local solid state disks for workers. If unspecified, the default number is 0.\nIgnored if numberOfWorkers is 0.\n",
+              "type": "integer"
+            },
+            "numberOfWorkers": {
+              "description": "Optional, number of workers in the cluster. Can be 0 (default), 2 or more. Google Dataproc does not allow 1 worker.\n",
+              "type": "integer"
+            },
+            "properties": {
+              "additionalProperties": {
+                "type": "string"
+              },
+              "description": "Example {\"spark:spark.executor.memory\": \"10g\"}. See https://cloud.google.com/dataproc/docs/concepts/configuring-clusters/cluster-properties for allowed property settings\n",
+              "type": "object"
+            },
+            "region": {
+              "description": "Optional, the deployment region of the cluster. For example, us-east1 or europe-west2. Defaults to us-central1.\n",
+              "type": "string"
+            },
+            "workerDiskSize": {
+              "description": "Optional, the size in gigabytes of the disk on the worker nodes. Minimum size is 10GB. If unspecified, default size is 100GB.\nIgnored if numberOfWorkers is 0.\n",
+              "type": "integer"
+            },
+            "workerMachineType": {
+              "description": "Optional, the machine type determines the number of CPUs and memory for the worker nodes. For example \"n1-standard-16\"\nor \"n1-highmem-64\". If unspecified, defaults to creating a \"n1-standard-4\" machine. To decide which is right for you,\nsee https://cloud.google.com/compute/docs/machine-types. Ignored if numberOfWorkers is 0.\n",
+              "type": "string"
+            },
+            "workerPrivateAccess": {
+              "description": "Optional, specifies whether to prevent public Internet access from the Dataproc worker nodes, if any. Does not affect the master node. Defaults to false.\n",
+              "type": "boolean"
+            }
+          },
+          "type": "object"
+        }
+      ],
+      "description": "Configuration for a single Dataproc cluster."
     },
     "DiskConfig": {
       "description": "The configuration of a persistent disk, returned in runtime responses",
@@ -2771,7 +3115,8 @@
     "DiskType": {
       "enum": [
         "pd-standard",
-        "pd-ssd"
+        "pd-ssd",
+        "pd-balanced"
       ],
       "type": "string"
     },
@@ -2831,8 +3176,15 @@
               "description": "Optional, the size in gigabytes of the disk on the GCE VM. Minimum size is 50GB. If unspecified, default size is 100GB.\n",
               "type": "integer"
             },
+            "gpuConfig": {
+              "$ref": "#/definitions/GpuConfig"
+            },
             "machineType": {
               "description": "Optional, the machine type determines the number of CPUs and memory for the master node. For example \"n1-standard-16\"\nor \"n1-highmem-64\". If unspecified, defaults to creating a \"n1-standard-4\" machine. To decide which is right for you,\nsee https://cloud.google.com/compute/docs/machine-types\n",
+              "type": "string"
+            },
+            "zone": {
+              "description": "Optional, the deployment area of the GCE VM. For example, us-east1-a or europe-west2-c. Defaults to us-central1-a.\n",
               "type": "string"
             }
           },
@@ -2852,12 +3204,19 @@
               "description": "size for boot disk",
               "type": "integer"
             },
+            "gpuConfig": {
+              "$ref": "#/definitions/GpuConfig"
+            },
             "machineType": {
               "description": "Optional, the machine type determines the number of CPUs and memory for the master node. For example \"n1-standard-16\"\nor \"n1-highmem-64\". If unspecified, defaults to creating a \"n1-standard-4\" machine. To decide which is right for you,\nsee https://cloud.google.com/compute/docs/machine-types\n",
               "type": "string"
             },
             "persistentDisk": {
               "$ref": "#/definitions/PersistentDiskRequest"
+            },
+            "zone": {
+              "description": "Optional, the deployment area of the GCE VM. For example, us-east1-a or europe-west2-c. Defaults to us-central1-a.\n",
+              "type": "string"
             }
           },
           "type": "object"
@@ -2868,6 +3227,16 @@
     "GetAppResponse": {
       "description": "the configuration of an app",
       "properties": {
+        "appType": {
+          "$ref": "#/definitions/AppType"
+        },
+        "auditInfo": {
+          "$ref": "#/definitions/AuditInfo"
+        },
+        "customEnvironmentVariables": {
+          "description": "Optional environment variables to be set on the app",
+          "type": "object"
+        },
         "diskName": {
           "description": "the name of the disk associated with this app",
           "type": "string"
@@ -2890,6 +3259,11 @@
           "$ref": "#/definitions/AppStatus"
         }
       },
+      "required": [
+        "kubernetesRuntimeConfig",
+        "status",
+        "auditInfo"
+      ],
       "type": "object"
     },
     "GetPersistentDiskResponse": {
@@ -2904,6 +3278,16 @@
         },
         "diskType": {
           "$ref": "#/definitions/DiskType"
+        },
+        "formattedBy": {
+          "description": "App that formatted disk, missing if unformatted",
+          "enum": [
+            "GALAXY",
+            "GCE",
+            "CROMWELL",
+            "CUSTOM"
+          ],
+          "type": "string"
         },
         "googleId": {
           "description": "Google's UUID for the persistent disk",
@@ -2969,6 +3353,10 @@
           "description": "The number of minutes of idle time to elapse before the runtime is autopaused. A value of 0 is equivalent to autopause being turned off.",
           "type": "integer"
         },
+        "cloudContext": {
+          "description": "Google project this app is associated with if the app is created in GCP; Azure's tenantId/subscriptionId/managedResourceGroupId if the app is created in Azure",
+          "type": "string"
+        },
         "customEnvironmentVariables": {
           "description": "Optional environment variables to be set on the runtime.",
           "type": "object"
@@ -2988,7 +3376,7 @@
           "type": "array"
         },
         "googleProject": {
-          "description": "The Google Project used to create the runtime",
+          "description": "Deprecated. The Google Project used to create the runtime",
           "type": "string"
         },
         "id": {
@@ -2996,23 +3384,29 @@
           "type": "integer"
         },
         "jupyterStartUserScriptUri": {
-          "description": "Optional GCS object URI to a bash script the user wishes to run on cluster start inside\nthe jupyter docker. In contrast to jupyterUserScriptUri, this always runs before starting\nJupyter, both on initial cluster creation and on cluster resume (jupyterUserScriptUri runs\nonce on cluster creation). This script may be used to launch background processes which\nwould not otherwise survive a cluster stop/start.\nThe script is pulled once at cluster creation time; subsequent client changes to the user\nscript at this URI do not affect the cluster. Timestamped logs for this script can be\nfound in the Leo staging bucket for the cluster. Script is run as root and docker --privileged.\n",
+          "deprecated": true,
+          "description": "DEPRECATED on 05/2021. Please use startUserScriptUri instead. This field may be removed after 6 months of deprecation.",
           "type": "string"
         },
         "jupyterUserScriptUri": {
-          "description": "Optional GCS object URI to a bash script the user wishes to run inside their jupyter\ndocker. This script runs exactly once when the cluster is first initialized. Logs from\nthis script can be found in the Leo staging bucket for the cluster. Script is run as root\nand docker --privileged.\n",
+          "deprecated": true,
+          "description": "DEPRECATED on 05/2021. Please use userScriptUri instead. This field may be removed after 6 months of deprecation.",
           "type": "string"
         },
         "labels": {
           "description": "The labels to be placed on the runtime. Of type Map[String,String]",
           "type": "object"
         },
+        "patchInProgress": {
+          "description": "Whether there is a patch in progress on the runtime. Is used to indicate updates that require status transitions.",
+          "type": "boolean"
+        },
         "proxyUrl": {
           "description": "The URL to access a tool on the runtime",
           "type": "string"
         },
         "runtimeConfig": {
-          "$ref": "#/definitions/MachineConfig"
+          "$ref": "#/definitions/OneOfRuntimeConfig"
         },
         "runtimeImages": {
           "description": "The docker images on the runtime",
@@ -3036,11 +3430,19 @@
           "description": "The Google Service Account used to create the runtime",
           "type": "string"
         },
+        "startUserScriptUri": {
+          "description": "Optional GCS or HTTP URI to a bash script the user wishes to run on runtime start inside the Docker container. In contrast to userScriptUri, this always runs before starting the Docker container, both on initial runtime creation and on runtime resume (sserScriptUri runs once on runtime creation). This script may be used to launch background processes which would not otherwise survive a runtime stop/start.\nThe script is pulled once at runtime creation time; subsequent client changes to the user script at this URI do not affect the runtime. Timestamped logs for this script can be found in the Leo staging bucket for the cluster. The script is run as root and docker --privileged.\n",
+          "type": "string"
+        },
         "status": {
           "$ref": "#/definitions/ClusterStatus"
         },
         "userJupyterExtensionConfig": {
           "$ref": "#/definitions/UserJupyterExtensionConfig"
+        },
+        "userScriptUri": {
+          "description": "Optional GCS or HTTP URI to a bash script the user wishes to run inside their Docker container. This script runs exactly once when the runtime is first initialized. Logs from this script can be found in the Leo staging bucket for the runtime. The script is run as root and docker --privileged.\n",
+          "type": "string"
         }
       },
       "required": [
@@ -3056,6 +3458,24 @@
         "defaultClientId",
         "scopes"
       ]
+    },
+    "GpuConfig": {
+      "description": "A config that describes the gpus associated with a runtime",
+      "properties": {
+        "gpuType": {
+          "description": "The google identifier for the gpu specs associated with this runtime, ex `nvidia-tesla-t4`. See https://cloud.google.com/compute/docs/gpus",
+          "type": "string"
+        },
+        "numOfGpus": {
+          "description": "The number of gpus associated with this runtime",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "gpuType",
+        "numOfGpus"
+      ],
+      "type": "object"
     },
     "Instance": {
       "description": "",
@@ -3189,6 +3609,16 @@
           "description": "the name of the app",
           "type": "string"
         },
+        "appType": {
+          "$ref": "#/definitions/AppType"
+        },
+        "auditInfo": {
+          "$ref": "#/definitions/AuditInfo"
+        },
+        "cloudContext": {
+          "description": "Google project this app is associated with if the app is created in GCP; Azure's tenantId/subscriptionId/managedResourceGroupId if the app is created in Azure",
+          "type": "string"
+        },
         "diskName": {
           "description": "the name of the disk associated with this app",
           "type": "string"
@@ -3201,11 +3631,15 @@
           "type": "array"
         },
         "googleProject": {
-          "description": "the project this app is associated with",
+          "description": "Deprecated. The project this app is associated with",
           "type": "string"
         },
         "kubernetesRuntimeConfig": {
           "$ref": "#/definitions/KubernetesRuntimeConfig"
+        },
+        "labels": {
+          "description": "The labels of each app in the response whose key is in includeLabels in the request. Of type Map[String,String]",
+          "type": "object"
         },
         "proxyUrls": {
           "description": "map of service name to proxyUrl",
@@ -3215,92 +3649,12 @@
           "$ref": "#/definitions/AppStatus"
         }
       },
-      "type": "object"
-    },
-    "ListClusterResponse": {
-      "description": "",
-      "properties": {
-        "autopauseThreshold": {
-          "description": "The number of minutes of idle time to elapse before the cluster is autopaused. A value of 0 is equivalent to autopause being turned off.",
-          "type": "integer"
-        },
-        "clusterName": {
-          "description": "The user-supplied name for the cluster",
-          "type": "string"
-        },
-        "createdDate": {
-          "description": "The date and time the cluster was created, in ISO-8601 format",
-          "type": "string"
-        },
-        "dateAccessed": {
-          "description": "The date and time the cluster was last accessed, in ISO-8601 format.\nDate accessed is defined as the last time the cluster was created, modified, or accessed via the proxy.\n",
-          "type": "string"
-        },
-        "defaultClientId": {
-          "description": "The default Google Client ID.",
-          "type": "string"
-        },
-        "destroyedDate": {
-          "description": "The date and time the cluster was destroyed, in ISO-8601 format",
-          "type": "string"
-        },
-        "googleId": {
-          "description": "Google's UUID for the cluster",
-          "type": "string"
-        },
-        "googleProject": {
-          "description": "The Google Project used to create the cluster",
-          "type": "string"
-        },
-        "googleServiceAccount": {
-          "description": "The Google Service Account used to create the cluster",
-          "type": "string"
-        },
-        "hostIp": {
-          "description": "The IP address of the cluster master node",
-          "type": "string"
-        },
-        "instances": {
-          "description": "Array of instances belonging to this cluster",
-          "items": {
-            "$ref": "#/definitions/Instance"
-          },
-          "type": "array"
-        },
-        "internalId": {
-          "description": "Internal resource ID of the cluster",
-          "type": "string"
-        },
-        "jupyterUserScriptUri": {
-          "type": "string"
-        },
-        "labels": {
-          "description": "The labels to be placed on the cluster. Of type Map[String,String]",
-          "type": "object"
-        },
-        "machineConfig": {
-          "$ref": "#/definitions/MachineConfig"
-        },
-        "operationName": {
-          "description": "Google's operation ID for the cluster",
-          "type": "string"
-        },
-        "status": {
-          "$ref": "#/definitions/ClusterStatus"
-        }
-      },
       "required": [
-        "clusterName",
-        "googleProject",
-        "googleServiceAccount",
-        "machineConfig",
+        "kubernetesRuntimeConfig",
         "status",
-        "createdDate",
-        "labels",
-        "dateAccessed",
-        "autopauseThreshold",
-        "defaultClientId"
-      ]
+        "auditInfo"
+      ],
+      "type": "object"
     },
     "ListPersistentDiskResponse": {
       "description": "",
@@ -3322,6 +3676,10 @@
         "id": {
           "description": "Internal Leonardo ID of the persistent disk",
           "type": "integer"
+        },
+        "labels": {
+          "description": "The labels of each persistent disk in the response whose key is in includeLabels in the request. Of type Map[String,String]",
+          "type": "object"
         },
         "name": {
           "description": "The user-supplied name of the persistent disk",
@@ -3348,17 +3706,23 @@
         "auditInfo",
         "size",
         "diskType",
-        "blockSize"
+        "blockSize",
+        "labels"
       ]
     },
     "ListRuntimeResponse": {
       "description": "",
       "properties": {
-        "diskConfig": {
-          "$ref": "#/definitions/DiskConfig"
+        "auditInfo": {
+          "$ref": "#/definitions/AuditInfo",
+          "type": "object"
+        },
+        "cloudContext": {
+          "description": "Google project this app is associated with if the app is created in GCP; Azure's tenantId/subscriptionId/managedResourceGroupId if the app is created in Azure",
+          "type": "string"
         },
         "googleProject": {
-          "description": "The Google Project used to create the runtime",
+          "description": "Deprecated. The Google Project used to create the runtime",
           "type": "string"
         },
         "id": {
@@ -3378,7 +3742,7 @@
           "type": "string"
         },
         "runtimeConfig": {
-          "$ref": "#/definitions/MachineConfig"
+          "$ref": "#/definitions/OneOfRuntimeConfig"
         },
         "runtimeName": {
           "description": "The user-supplied name for the runtime",
@@ -3386,6 +3750,10 @@
         },
         "status": {
           "$ref": "#/definitions/ClusterStatus"
+        },
+        "workspaceId": {
+          "description": "Id of the workspace associated with this runtime",
+          "type": "string"
         }
       },
       "required": [
@@ -3398,54 +3766,7 @@
         "labels"
       ]
     },
-    "MachineConfig": {
-      "allOf": [
-        {
-          "$ref": "#/definitions/RuntimeConfig"
-        },
-        {
-          "properties": {
-            "masterDiskSize": {
-              "description": "Optional, the size in gigabytes of the disk on the master node. Minimum size is 50GB. If unspecified, default size is 100GB.\n",
-              "type": "integer"
-            },
-            "masterMachineType": {
-              "description": "Optional, the machine type determines the number of CPUs and memory for the master node. For example \"n1-standard-16\"\nor \"n1-highmem-64\". If unspecified, defaults to creating a \"n1-standard-4\" machine. To decide which is right for you,\nsee https://cloud.google.com/compute/docs/machine-types\n",
-              "type": "string"
-            },
-            "numberOfPreemptibleWorkers": {
-              "description": "Optional, the number of preemptible workers. If unspecified, the default number is 0. Ignored if numberOfWorkers is 0.\nFor more information, see https://cloud.google.com/compute/docs/instances/preemptible\n",
-              "type": "integer"
-            },
-            "numberOfWorkerLocalSSDs": {
-              "description": "Optional, the number of local solid state disks for workers. If unspecified, the default number is 0.\nIgnored if numberOfWorkers is 0.\n",
-              "type": "integer"
-            },
-            "numberOfWorkers": {
-              "description": "Optional, number of workers in the cluster. Can be 0 (default), 2 or more. Google Dataproc does not allow 1 worker.\n",
-              "type": "integer"
-            },
-            "properties": {
-              "additionalProperties": {
-                "type": "string"
-              },
-              "description": "Example {\"spark:spark.executor.memory\": \"10g\"}. See https://cloud.google.com/dataproc/docs/concepts/configuring-clusters/cluster-properties for allowed property settings\n",
-              "type": "object"
-            },
-            "workerDiskSize": {
-              "description": "Optional, the size in gigabytes of the disk on the master node. Minimum size is 10GB. If unspecified, default size is 100GB.\nIgnored if numberOfWorkers is 0.\n",
-              "type": "integer"
-            },
-            "workerMachineType": {
-              "description": "Optional, the machine type determines the number of CPUs and memory for the worker nodes. For example \"n1-standard-16\"\nor \"n1-highmem-64\". If unspecified, defaults to creating a \"n1-standard-4\" machine. To decide which is right for you,\nsee https://cloud.google.com/compute/docs/machine-types. Ignored if numberOfWorkers is 0.\n",
-              "type": "string"
-            }
-          },
-          "type": "object"
-        }
-      ],
-      "description": "Configuration for a single Dataproc cluster."
-    },
+    "OneOfRuntimeConfig": {},
     "PersistentDiskRequest": {
       "description": "configuration to create a disk",
       "properties": {
@@ -3497,6 +3818,20 @@
         },
         "timestamp": {
           "description": "timestamp for image addition to the runtime in ISO 8601 format",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "SourceDisk": {
+      "description": "opitonal location of a disk to clone",
+      "properties": {
+        "googleProject": {
+          "description": "google project containing the source disk to be cloned",
+          "type": "string"
+        },
+        "name": {
+          "description": "name of the source disk to be cloned",
           "type": "string"
         }
       },
@@ -3642,12 +3977,23 @@
           "type": "boolean"
         },
         "autopause": {
-          "description": "Whether autopause feature is enabled for this specific cluster.",
+          "description": "Whether autopause feature is enabled for this specific runtime.",
           "type": "boolean"
         },
         "autopauseThreshold": {
-          "description": "The number of minutes of idle time to elapse before the cluster is autopaused. If autopause is set to false, this value is disregarded. A value of 0 is equivalent to autopause being turned off.",
+          "description": "The number of minutes of idle time to elapse before the runtime is autopaused. If autopause is set to false, this value is disregarded. A value of 0 is equivalent to autopause being turned off.",
           "type": "integer"
+        },
+        "labelsToDelete": {
+          "description": "A set of label keys to remove from the runtime labels. Of type Set[String]. You cannot delete a default label.",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "labelsToUpsert": {
+          "description": "Labels to update or add on the runtime. Of type Map[String, String]. You cannot alter default labels or add a label with a null value.",
+          "type": "object"
         },
         "runtimeConfig": {}
       },
@@ -3685,11 +4031,29 @@
         "profile": "profile authorization"
       },
       "type": "oauth2"
+    },
+    "oidc": {
+      "authorizationUrl": "/oauth2/authorize",
+      "flow": "accessCode",
+      "scopes": {
+        "email": "email authorization",
+        "openid": "open id authorization",
+        "profile": "profile authorization"
+      },
+      "tokenUrl": "/oauth2/token",
+      "type": "oauth2"
     }
   },
   "security": [
     {
       "googleoauth": [
+        "openid",
+        "email",
+        "profile"
+      ]
+    },
+    {
+      "oidc": [
         "openid",
         "email",
         "profile"
@@ -3710,10 +4074,6 @@
       "name": "apps"
     },
     {
-      "description": "Legacy Clusters API. Supports Google Dataproc only.",
-      "name": "cluster"
-    },
-    {
       "description": "Proxy API",
       "name": "proxy"
     },
@@ -3728,39 +4088,38 @@
   ],
   "x-components": {
     "requestBodies": {
-      "BatchNodepoolCreateRequest": {
-        "content": {
-          "application/json": {
-            "example": {
-              "numNodepools": 10
-            },
-            "schema": {
-              "$ref": "#/definitions/BatchNodepoolCreateRequest"
-            }
-          }
-        }
-      },
-      "ClusterRequest": {
-        "content": {
-          "application/json": {
-            "schema": {
-              "$ref": "#/definitions/ClusterRequest"
-            }
-          }
-        },
-        "description": "Request for new cluster",
-        "required": true
-      },
       "CreateAppRequest": {
         "content": {
           "application/json": {
             "example": {
+              "appType": "GALAXY",
               "diskConfig": {
                 "name": "disk1"
               }
             },
             "schema": {
               "$ref": "#/definitions/CreateAppRequest"
+            }
+          }
+        }
+      },
+      "CreateAzureRuntimeRequest": {
+        "content": {
+          "application/json": {
+            "example": {
+              "disk": {
+                "labels": {},
+                "name": "disk1",
+                "size": 50
+              },
+              "labels": {
+                "saturnRuntimeName": "saturn-ab9134"
+              },
+              "machineSize": "Standard_DS1_v2",
+              "region": "eastus"
+            },
+            "schema": {
+              "$ref": "#/definitions/CreateAzureRuntimeRequest"
             }
           }
         }
@@ -3812,6 +4171,13 @@
           "application/json": {
             "example": {
               "allowStop": true,
+              "labelsToDelete": [
+                "existing_label"
+              ],
+              "labelsToUpsert": {
+                "new_label": "value",
+                "old_label": "new_value"
+              },
               "runtimeConfig": {
                 "cloudService": "gce",
                 "diskSize": 500,

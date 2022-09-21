@@ -376,6 +376,9 @@ avworkflow_localize <-
 #' @param useCallCache logical(1) whether or not to read from cache for this
 #'     submission.
 #'
+#' @param useReferenceDisks logical(1) whether or not to use pre-built
+#'     disks for common genome references. Default: `FALSE`.
+#'
 #' @return `avworkflow_run()` returns `config`, invisibly.
 #'
 #' @examples
@@ -392,6 +395,7 @@ avworkflow_run <-
         entityName,
         entityType = config$rootEntityType,
         deleteIntermediateOutputFiles = FALSE, useCallCache = TRUE,
+        useReferenceDisks = FALSE,
         namespace = avworkspace_namespace(), name = avworkspace_name(),
         dry = TRUE)
 {
@@ -401,6 +405,7 @@ avworkflow_run <-
         .is_scalar_character(entityType),
         .is_scalar_logical(deleteIntermediateOutputFiles),
         .is_scalar_logical(useCallCache),
+        .is_scalar_logical(useReferenceDisks),
         .is_scalar_character(namespace),
         .is_scalar_character(name),
         .is_scalar_logical(dry)
@@ -414,18 +419,19 @@ avworkflow_run <-
         return(invisible(config))
     }
 
-    rawls <- Rawls()
-
-    run_workflow <- rawls$createSubmission(
+    run_workflow <- Rawls()$createSubmission(
         workspaceNamespace = namespace,
         workspaceName = name,
         deleteIntermediateOutputFiles = deleteIntermediateOutputFiles,
         entityName = entityName,
         entityType = entityType,
-        #expression = "this",
+        ## expression = "this"
+        ## memoryRetryMultiplie
         methodConfigurationName = config$name,
         methodConfigurationNamespace = config$namespace,
         useCallCache = useCallCache,
+        useReferenceDisks = useReferenceDisks,
+        ## userComment                  : NULL
         workflowFailureMode = "NoNewCalls")
 
     .avstop_for_status(run_workflow, "avworkflow_run")
@@ -474,8 +480,7 @@ avworkflow_stop <-
         return(invisible(NULL))
     }
 
-    rawls <- Rawls()
-    abort_workflow <- rawls$abortSubmission(
+    abort_workflow <- Rawls()$abortSubmission(
         workspaceNamespace = namespace,
         workspaceName = name,
         submissionId = submissionId)

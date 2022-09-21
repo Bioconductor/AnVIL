@@ -40,7 +40,7 @@ Process service responses to tibble and other data structures.
 \examples{
 if (gcloud_exists()) {
     leonardo <- Leonardo()
-    leonardo$listClusters() \%>\% flatten()
+    leonardo$listRuntimes() \%>\% flatten()
 }
 
 if (gcloud_exists())

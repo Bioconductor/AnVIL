@@ -18,9 +18,8 @@
 #'
 #' @examples
 #' if (gcloud_exists()) {
-#'     rawls <- Rawls()
-#'     tags(rawls)
-#'     tags(rawls, "billing")
+#'     tags(Rawls())
+#'     tags(Rawls(), "billing")
 #' }
 #'
 #' @export
