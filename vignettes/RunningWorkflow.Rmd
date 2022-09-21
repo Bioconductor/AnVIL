@@ -73,7 +73,7 @@ name of the workflow of interest using `avworkflow()`.
 avworkflow("bioconductor-rpci-anvil/AnVILBulkRNASeq")
 ```
 
-## Retriving the configuration
+## Retrieving the configuration
 
 Each workflow defines inputs, outputs and certain code
 execution. These workflow 'configurations' that can be retrieved with
@@ -177,8 +177,8 @@ avworkflow_jobs()
 ## Setting a workflow configuration for reuse in AnVIL
 
 The steps we have taken so far allow us to run an existing workflow,
-but with updated paramaters. Use `avworkflow_configuration_set()` to
-permanently update the workflow to new paramters values.
+but with updated parameters. Use `avworkflow_configuration_set()` to
+permanently update the workflow to new parameter values.
 
 
 ```{r set_config}

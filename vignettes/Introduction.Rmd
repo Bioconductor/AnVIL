@@ -515,7 +515,7 @@ Information about the URIs can be discovered with `drs_stat()`
 ```{r, eval = FALSE}
 tbl <- drs_stat(uri)
 ## # A tibble: 2 × 9
-##   drs      fileName   size gsUri accessUrl timeUpdated hashes       bucket name 
+##   drs      fileName   size gsUri accessUrl timeUpdated hashes       bucket name
 ##   <chr>    <chr>     <dbl> <chr> <chr>     <chr>       <list>       <chr>  <chr>
 ## 1 drs://d… NA21144… 7.06e9 gs:/… NA        2020-07-08… <named list> fc-56… CCDG…
 ## 2 drs://d… NA21144… 4.08e6 gs:/… NA        2020-07-08… <named list> fc-56… CCDG…
@@ -536,7 +536,7 @@ drs_cp(uri, avbucket()) # workspace bucket
 
 `drs_access_url()` translates the DRS URI to a standard HTTPS URI, but
 with additional authentication information embedded. These HTTPS URIs
-are usually time-limited. They can be used like regular HTTPS URIs, e.g, 
+are usually time-limited. They can be used like regular HTTPS URIs, e.g,
 
 ```{r, eval = FALSE}
 suppressPackageStartupMessages({
@@ -545,7 +545,7 @@ suppressPackageStartupMessages({
 https <- drs_access_url(uri)
 vcffile <- VcfFile(https[["vcf"]], https[["tbi"]])
 scanVcfHeader(vcffile)
-## class: VCFHeader 
+## class: VCFHeader
 ## samples(1): NA21144
 ## meta(3): fileformat reference contig
 ## fixed(2): FILTER ALT
