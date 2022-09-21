@@ -11,7 +11,7 @@ test_that("positional matching works for body arguments", {
         expect_true(fun("A", "B", entities = "C")),
         ## positional
         expect_true(fun("A", "B", .__body__ = list("C"))),
-        expect_true(fun("A", "B", "C"))
+        expect_true(fun("A", "B", , , "C"))
     )
 
 })
