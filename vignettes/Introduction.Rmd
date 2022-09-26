@@ -126,6 +126,15 @@ cloud. For local use, one must
     gcloud_exists()
     ```
 
+## Graphical interfaces
+
+Several commonly used functions have an additional 'gadget' interface,
+allowing selection of workspaces (`avworkspace_gadget()`, DATA tables
+(`avtable_gadget()`) and workflows `avworkflow_gadget()` using a
+simple tabular graphical user interface. The `browse_workspace()`
+function allows selection of a workspace to be opened as a browser
+tab.
+
 # For end users
 
 ## Fast binary package installation

@@ -56,6 +56,11 @@ USER VISIBLE CHANGES
     [13] proxyClusterRStudio
     ```
 
+- (v 1.9.9) add 'gadgets' (simple graphical interfaces) to key
+  functions, `avworkspace_gadget()`, `avtable_gadget()`,
+  `avworkflow_gadget()`. Also `browse_workspace()` for opening a terra
+  workspace in the browser.
+
 BUG FIXES
 
 - (v 1.9.3 / 1.8.2) `avworkflow_localize()` looks for `submissionId`
