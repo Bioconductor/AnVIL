@@ -14,8 +14,13 @@
     )
 }
 
+#' @importFrom htmltools p strong
+#'
 #' @importFrom miniUI miniPage gadgetTitleBar miniContentPanel
+#'
 #' @importFrom DT DTOutput renderDT
+#'
+#' @importFrom shiny textOutput
 .gadget_ui <-
     function(title)
 {
@@ -34,7 +39,7 @@
     }
 }
 
-#' @importFrom shiny observeEvent stopApp
+#' @importFrom shiny observeEvent stopApp renderText
 .gadget_server <-
     function(tibble, DONE_FUN)
 {
@@ -140,11 +145,11 @@
 #' workspace()
 #' browse_workspace(use_avworkspace = FALSE)
 #' tbl <- table()
-#' wkflw <- workflow()
+#' wkflw <- avworkflow_gadget()
 #' }
 #'
 #' @export
-workspace <-
+avworkspace_gadget <-
     function()
 {
     .workspace_impl()
@@ -168,7 +173,7 @@ workspace <-
 
     workspace <- .gadget_run("AnVIL Workspaces", .workspaces(), DONE_FUN)
 
-    if (length(workflow)) {
+    if (length(workspace)) {
         avworkspace(workspace) # set workflow to selected value
         message("workspace set to '", avworkspace(), "'")
     }
@@ -204,6 +209,8 @@ workspace <-
 #' @return `browse_workspace()` returns the status of a `system()`
 #'     call to launch the browser, invisibly.
 #'
+#' @importFrom utils browseURL
+#'
 #' @export
 browse_workspace <-
     function(use_avworkspace = TRUE)
@@ -227,7 +234,7 @@ browse_workspace <-
 #'     AnVIL table.
 #'
 #' @export
-table <-
+avtable_gadget <-
     function()
 {
     DONE_FUN <- function(tibble, row_selected)
@@ -257,7 +264,7 @@ table <-
 #'     "Running an AnVIL workflow within R" vigenette.
 #'
 #' @export
-workflow <-
+avworkflow_gadget <-
     function()
 {
     DONE_FUN <- function(tibble, row_selected)

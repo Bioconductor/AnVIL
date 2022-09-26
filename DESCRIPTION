@@ -35,7 +35,7 @@ Imports:
     jsonlite, httr,
     rapiclient (>= 0.1.3),
     tibble, tidyselect, tidyr, rlang,
-    shiny, DT, miniUI,
+    shiny, DT, miniUI, htmltools,
     BiocManager
 Suggests: parallel, knitr, rmarkdown, testthat, withr, readr, BiocStyle,
     devtools
