@@ -10,9 +10,9 @@
 \usage{
 avworkspaces()
 
-avworkspace_namespace(namespace = NULL)
+avworkspace_namespace(namespace = NULL, warn = TRUE)
 
-avworkspace_name(name = NULL)
+avworkspace_name(name = NULL, warn = TRUE)
 
 avworkspace(workspace = NULL)
 
@@ -27,6 +27,9 @@ avworkspace_clone(
 \arguments{
 \item{namespace}{character(1) AnVIL workspace namespace as returned
 by, e.g., \code{avworkspace_namespace()}}
+
+\item{warn}{logical(1) when \code{TRUE} (default), generate a warning
+when the workspace namespace or name cannot be determined.}
 
 \item{name}{character(1) AnVIL workspace name as returned by, eg.,
 \code{avworkspace_name()}.}

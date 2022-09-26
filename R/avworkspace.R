@@ -11,13 +11,13 @@ NULL
 
 .avworkspace <- local({
     hash <- new.env(parent = emptyenv())
-    function(fun, key, value) {
+    function(fun, key, value, warn = TRUE) {
         sysvar <- toupper(paste0("WORKSPACE_", key))
         if (is.null(value)) {
             if (is.null(hash[[key]])) {
                 ## initialize
                 hash[[key]] <- Sys.getenv(sysvar)
-                if (!nzchar(hash[[key]]) && interactive())
+                if (!nzchar(hash[[key]]) && warn && interactive())
                     warning("'", sysvar, "' undefined; use `", fun, "()` to set")
             }
         } else {
@@ -89,6 +89,9 @@ avworkspaces <-
 #' @param name character(1) AnVIL workspace name as returned by, eg.,
 #'     `avworkspace_name()`.
 #'
+#' @param warn logical(1) when `TRUE` (default), generate a warning
+#'     when the workspace namespace or name cannot be determined.
+#'
 #' @param workspace when present, a `character(1)` providing the
 #'     concatenated namespace and name, e.g.,
 #'     `"bioconductor-rpci-anvil/Bioconductor-Package-AnVIL"`
@@ -105,17 +108,21 @@ avworkspaces <-
 #' avworkspace()
 #'
 #' @export
-avworkspace_namespace <- function(namespace = NULL) {
-    suppressWarnings({
-        namespace <- .avworkspace("avworkspace_namespace", "NAMESPACE", namespace)
-    })
+avworkspace_namespace <-
+    function(namespace = NULL, warn = TRUE)
+{
+    namespace <- .avworkspace(
+        "avworkspace_namespace", "NAMESPACE", namespace, warn = FALSE
+    )
     if (!nzchar(namespace)) {
         namespace <- tryCatch({
             gcloud_project()
         }, error = function(e) {
             NULL
         })
-        namespace <- .avworkspace("avworkspace_namespace", "NAMESPACE", namespace)
+        namespace <- .avworkspace(
+            "avworkspace_namespace", "NAMESPACE", namespace, warn = warn
+        )
     }
     namespace
 }
@@ -126,9 +133,9 @@ avworkspace_namespace <- function(namespace = NULL) {
 #'
 #' @export
 avworkspace_name <-
-    function(name = NULL)
+    function(name = NULL, warn = TRUE)
 {
-    value <- .avworkspace("avworkspace_name", "NAME", name)
+    value <- .avworkspace("avworkspace_name", "NAME", name, warn = warn)
     URLencode(value)
 }
 
@@ -139,15 +146,11 @@ avworkspace <-
     function(workspace = NULL)
 {
     stopifnot(
-        is.null(workspace) || .is_scalar_character(workspace)
+        `'workspace' must be NULL or of the form 'namespace/name'` =
+            is.null(workspace) || .is_workspace(workspace)
     )
     if (!is.null(workspace)) {
         wkspc <- strsplit(workspace, "/")[[1]]
-        if (length(wkspc) != 2L)
-            stop(
-                "'workspace' must be of the form 'namespace/name', ",
-                "with a single '/'"
-            )
         avworkspace_namespace(wkspc[[1]])
         avworkspace_name(wkspc[[2]])
     }

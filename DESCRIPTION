@@ -1,6 +1,6 @@
 Package: AnVIL
 Title: Bioconductor on the AnVIL compute environment
-Version: 1.9.8
+Version: 1.9.9
 Authors@R: 
     c(person(
         "Martin", "Morgan", role = c("aut", "cre"),
@@ -35,6 +35,7 @@ Imports:
     jsonlite, httr,
     rapiclient (>= 0.1.3),
     tibble, tidyselect, tidyr, rlang,
+    shiny, DT, miniUI, htmltools,
     BiocManager
 Suggests: parallel, knitr, rmarkdown, testthat, withr, readr, BiocStyle,
     devtools
@@ -44,7 +45,7 @@ Collate:
     Response.R
     gcloud_sdk.R gcloud.R gsutil.R localize.R drs.R
     av.R avworkspace.R avworkflow.R avworkflow_configuration.R avnotebooks.R
-    zzz.R
+    gadgets.R zzz.R
 VignetteBuilder: knitr
 biocViews: Infrastructure
 RoxygenNote: 7.2.1

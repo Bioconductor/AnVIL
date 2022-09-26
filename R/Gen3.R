@@ -28,7 +28,7 @@ Gen3Indexd <-
     function()
 {
     Service(
-        "gen3/indexd", "FIXME:service_path",
+        "gen3/indexd", "gen3.theanvil.io",
         api_url = "https://raw.githubusercontent.com/uc-cdis/indexd/master/openapis/swagger.yaml"
     )
 }
