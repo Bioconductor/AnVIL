@@ -74,6 +74,10 @@ BUG FIXES
   creating directories in unexpected locations when provided with
   paths containing `~`, `.` or `..`.
 
+- (v 19.10 / v 1.8.6) `gcloud_account("<new account>")` did not
+  invalidate cached access tokens.
+  https://github.com/Bioconductor/AnVIL/issues/66
+
 # AnVIL 1.8.0
 
 NEW FEATURES
