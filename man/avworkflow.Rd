@@ -74,10 +74,12 @@ consequences but do not perform the action requested. When
 \item{config}{a \code{avworkflow_configuration} object of the workflow that will
 be run.}
 
-\item{entityName}{character(1) name of the set of samples to be used when
-running the workflow.}
+\item{entityName}{character(1) or NULL name of the set of samples
+to be used when running the workflow. NULL indicates that no
+sample set will be used.}
 
-\item{entityType}{character(1) type of root entity used for the workflow.}
+\item{entityType}{character(1) or NULL type of root entity used for
+the workflow. NULL means that no root entity will be used.}
 
 \item{deleteIntermediateOutputFiles}{logical(1) whether or not to delete
 intermediate output files when the workflow completes.}
