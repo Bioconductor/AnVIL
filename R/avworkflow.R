@@ -444,7 +444,9 @@ avworkflow_run <-
 #' @description `avworkflow_stop()` stops the most recently submitted workflow
 #'     jub from running.
 #'
-#' @return `avworkflow_stop()` returns NULL, invisibly.
+#' @return `avworkflow_stop()` returns (invisibly) `TRUE` on
+#'     successfully requesting that the workflow stop, `FALSE` if the
+#'     workflow is already aborting, aborted, or done.
 #'
 #' @examples
 #' \dontrun{
@@ -473,19 +475,61 @@ avworkflow_stop <-
 
     if (dry) {
         message(
-            "'avworkflow_stop()' arguments validated, use 'dry = FALSE' ",
-            "to stop ", paste0(namespace, "/", name), " ",
-            "submissionId = ", submissionId
+            .pretty_text(
+                "'avworkflow_stop()' arguments validated, use 'dry = FALSE'",
+                "to stop the submission"
+            ), "\n",
+            "  namespace: ", namespace, "\n",
+            "  name: ", name, "\n",
+            "  submissionId: ", submissionId, "\n"
         )
-        return(invisible(NULL))
+        return(invisible(FALSE))
     }
 
-    abort_workflow <- Rawls()$abortSubmission(
+    terra <- Terra()
+
+    ## only change status of submitted / running workflows. In
+    ## particular do not change the status of 'Done' workflows to
+    ## 'Aborted'. https://github.com/Bioconductor/AnVIL/issues/64
+    response <- terra$monitorSubmission(
         workspaceNamespace = namespace,
         workspaceName = name,
         submissionId = submissionId)
+    .avstop_for_status(response, "avworkflow_stop (current status)")
+    current_status <- content(response, encoding = "UTF-8")$status
+    WORKFLOW_STATUS_ENUM <- c("Aborting", "Aborted", "Done")
+    if (current_status %in% WORKFLOW_STATUS_ENUM) {
+        message(
+            .pretty_text(
+                "'avworkflow_stop()' will not change the status of workflows",
+                "that are already aborting, aborted, or done"
+            ), "\n",
+            "  namespace: ", namespace, "\n",
+            "  name: ", name, "\n",
+            "  submissionId: ", submissionId, "\n",
+            "  current status: ", current_status
+        )
+        return(invisible(FALSE))
+    }
 
-    .avstop_for_status(abort_workflow, "avworkflow_stop")
+    if (dry) {
+        message(
+            .pretty_text(
+                "'avworkflow_stop()' arguments validated, use 'dry = FALSE'",
+                "to stop the submission"
+            ), "\n",
+            "  namespace: ", namespace, "\n",
+            "  name: ", name, "\n",
+            "  submissionId: ", submissionId, "\n"
+        )
+        return(invisible(FALSE))
+    }
 
-    invisible(NULL)
+    abort_workflow <- terra$abortSubmission(
+        workspaceNamespace = namespace,
+        workspaceName = name,
+        submissionId = submissionId)
+    .avstop_for_status(abort_workflow, "avworkflow_stop (abort workflow)")
+
+    invisible(TRUE)
 }

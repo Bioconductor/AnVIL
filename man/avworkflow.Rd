@@ -135,7 +135,9 @@ name and bucket path of files to be synchronized.
 
 \code{avworkflow_run()} returns \code{config}, invisibly.
 
-\code{avworkflow_stop()} returns NULL, invisibly.
+\code{avworkflow_stop()} returns (invisibly) \code{TRUE} on
+successfully requesting that the workflow stop, \code{FALSE} if the
+workflow is already aborting, aborted, or done.
 }
 \description{
 \code{avworkflows()} returns a tibble summarizing available

@@ -68,3 +68,8 @@
             paste0(pad, "# ... with ", len, " more elements")
     ), collapse = "\n")
 }
+
+.pretty_text <- function(..., indent = 0L, exdent = 0L) {
+    text <- paste(..., collapse = " ")
+    paste(strwrap(text, indent = indent, exdent = exdent), collapse = "\n")
+}
