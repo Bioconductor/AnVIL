@@ -365,10 +365,12 @@ avworkflow_localize <-
 #' @param config a `avworkflow_configuration` object of the workflow that will
 #'     be run.
 #'
-#' @param entityName character(1) name of the set of samples to be used when
-#'     running the workflow.
+#' @param entityName character(1) or NULL name of the set of samples
+#'     to be used when running the workflow. NULL indicates that no
+#'     sample set will be used.
 #'
-#' @param entityType character(1) type of root entity used for the workflow.
+#' @param entityType character(1) or NULL type of root entity used for
+#'     the workflow. NULL means that no root entity will be used.
 #'
 #' @param deleteIntermediateOutputFiles logical(1) whether or not to delete
 #'     intermediate output files when the workflow completes.
@@ -401,8 +403,8 @@ avworkflow_run <-
 {
     stopifnot(
         inherits(config, "avworkflow_configuration"),
-        .is_scalar_character(entityName),
-        .is_scalar_character(entityType),
+        .is_scalar_character_or_NULL(entityName),
+        .is_scalar_character_or_NULL(entityType),
         .is_scalar_logical(deleteIntermediateOutputFiles),
         .is_scalar_logical(useCallCache),
         .is_scalar_logical(useReferenceDisks),
