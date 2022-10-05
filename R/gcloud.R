@@ -37,7 +37,7 @@
             if (identical(Sys.getenv("USER"), "jupyter-user"))
                 "application-default"
 
-        key <- paste0(service, ":", app_default)
+        key <- paste0(service, ":", app_default, ":", gcloud_account())
         now <- Sys.time()
         if (is.null(tokens[[key]])) {
             tokens[[key]] <- .gcloud_access_token_new(app_default, now)
