@@ -9,6 +9,9 @@
 .is_scalar_character <- function(x, na.ok = FALSE, zchar = FALSE)
     length(x) == 1L && .is_character(x, na.ok, zchar)
 
+.is_scalar_character_or_NULL <- function(x, na.ok = FALSE, zchar = FALSE)
+    .is_scalar_character(x, na.ok, zchar) || is.null(x)
+
 .is_character_0_or_1 <-
     function(x, na.ok = FALSE, zchar = FALSE)
 {
