@@ -47,7 +47,13 @@ BUG FIXES
 
 - (v 1.8.6) `gcloud_account("<new account>")` did not invalidate
   cached access tokens.
-  https://github.com/Bioconductor/AnVIL/issues/66
+  <https://github.com/Bioconductor/AnVIL/issues/66>
+
+- (v 1.8.7) avoid changing status of 'Done' workflows to 'Aborted'
+  <https://github.com/Bioconductor/AnVIL/issues/64>
+
+- (v 1.8.7) allow 'NULL' for entity arguments of avworkflow_run()
+  <https://github.com/Bioconductor/AnVIL/issues/65>
 
 # AnVIL 1.6.7 / 1.7.13
 
