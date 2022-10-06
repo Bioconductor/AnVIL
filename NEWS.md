@@ -78,6 +78,12 @@ BUG FIXES
   invalidate cached access tokens.
   https://github.com/Bioconductor/AnVIL/issues/66
 
+- (v 1.9.11 / v 1.8.7) avoid changing status of 'Done' workflows to
+  'Aborted' <https://github.com/Bioconductor/AnVIL/issues/64>
+
+- (v 1.9.11 / v 1.8.7) allow 'NULL' for entity arguments of
+  avworkflow_run() <https://github.com/Bioconductor/AnVIL/issues/65>
+
 # AnVIL 1.8.0
 
 NEW FEATURES
