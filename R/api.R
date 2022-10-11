@@ -81,7 +81,7 @@
 .api_get_content_type <-
     function(op_def)
 {
-    type <- ifelse(is.null(op_def$consumes), "application/json", op_def$consumes)
+    type <- ifelse(is.null(op_def$consumes), "*/*", op_def$consumes)
     content_type(type)
 }
 
@@ -89,7 +89,11 @@
 .api_get_accept <-
     function(op_def)
 {
-    type <- ifelse(is.null(op_def$produces), "*/*", op_def$produces)
+    ## claim that we will accept anything. OAS3.0 allows responses to
+    ## support different content; our 2.x converter assumes the most
+    ## specific (e.g., application/json), but then some responses
+    ## (e.g., text/plain) generate errors.
+    type <- "*/*"
     accept(type)
 }
 
