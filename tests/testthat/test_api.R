@@ -20,7 +20,7 @@ test_that("'accept' defaults to */*", {
     op_def <- list(produces = NULL)
     expect_identical(.api_get_accept(op_def), httr::accept("*/*"))
 
-    produces <- "application/json"
+    produces <- "*/*"
     op_def <- list(produces = produces)
     expect_identical(.api_get_accept(op_def), httr::accept(produces))
 })
