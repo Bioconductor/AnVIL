@@ -195,13 +195,13 @@ avworkspace_clone <-
 
     response <- Terra()$cloneWorkspace(
         workspaceNamespace = namespace,
-        workspaceName = name,
+        workspaceName = URLencode(name),
         .__body__ = list(
             attributes = setNames(list(), character()),  # json '{}'
             bucketLocation = bucket_location,
             copyFilesWithPrefix = "notebooks/",
             namespace = to_namespace,
-            name = to_name
+            name = URLencode(to_name)
         )
         )
     .avstop_for_status(response, "avworkspace_clone")

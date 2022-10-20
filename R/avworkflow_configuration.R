@@ -150,7 +150,7 @@ avworkflow_configuration_get <-
     )
 
     config <- Rawls()$get_method_configuration(
-        namespace, name,
+        namespace, URLencode(name),
         workflow_namespace, workflow_name
     )
     .avstop_for_status(config, "avworkflow_methods")
@@ -394,7 +394,7 @@ avworkflow_configuration_set <-
     }
 
     response <- rawls$update_method_configuration(
-        namespace, name, config$namespace, config$name,
+        namespace, URLencode(name), config$namespace, config$name,
         .__body__ = config
     )
     .avstop_for_status(response, "avworkflow_configuration_set")
