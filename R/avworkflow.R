@@ -35,7 +35,13 @@ NULL
 avworkflows <-
     function(namespace = avworkspace_namespace(), name = avworkspace_name())
 {
-    workflows <- Rawls()$list_method_configurations(namespace, name, TRUE)
+    stopifnot(
+        .is_scalar_character(namespace),
+        .is_scalar_character(name)
+    )
+    workflows <- Rawls()$list_method_configurations(
+        namespace, URLencode(name), TRUE
+    )
     .avstop_for_status(workflows, "avworkflows")
     workflows %>% flatten()
 }
@@ -91,8 +97,8 @@ avworkflow_jobs <-
         .is_scalar_character(namespace),
         .is_scalar_character(name)
     )
-    terra <- Terra()
-    response <- terra$listSubmissions(namespace, name)
+
+    response <- Terra()$listSubmissions(namespace, URLencode(name))
     .avstop_for_status(response, "avworkflow_jobs")
 
     submissions <- content(response, encoding = "UTF-8")
@@ -423,7 +429,7 @@ avworkflow_run <-
 
     run_workflow <- Rawls()$createSubmission(
         workspaceNamespace = namespace,
-        workspaceName = name,
+        workspaceName = URLencode(name),
         deleteIntermediateOutputFiles = deleteIntermediateOutputFiles,
         entityName = entityName,
         entityType = entityType,
@@ -463,9 +469,9 @@ avworkflow_stop <-
         dry = TRUE)
 {
     if (is.null(submissionId)) {
-    submissionId <- avworkflow_jobs() |>
-        pull(submissionId) |>
-        head(1)
+        submissionId <- avworkflow_jobs() |>
+            pull(submissionId) |>
+            head(1)
     }
 
     stopifnot(
@@ -495,7 +501,7 @@ avworkflow_stop <-
     ## 'Aborted'. https://github.com/Bioconductor/AnVIL/issues/64
     response <- terra$monitorSubmission(
         workspaceNamespace = namespace,
-        workspaceName = name,
+        workspaceName = URLencode(name),
         submissionId = submissionId)
     .avstop_for_status(response, "avworkflow_stop (current status)")
     current_status <- content(response, encoding = "UTF-8")$status
@@ -529,7 +535,7 @@ avworkflow_stop <-
 
     abort_workflow <- terra$abortSubmission(
         workspaceNamespace = namespace,
-        workspaceName = name,
+        workspaceName = URLencode(name),
         submissionId = submissionId)
     .avstop_for_status(abort_workflow, "avworkflow_stop (abort workflow)")
 
