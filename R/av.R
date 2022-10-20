@@ -72,8 +72,8 @@ avtables <-
         .is_scalar_character(namespace),
         .is_scalar_character(name)
     )
-    name <- URLencode(name)
-    types <- Terra()$getEntityTypes(namespace, name)
+
+    types <- Terra()$getEntityTypes(namespace, URLencode(name))
     .avstop_for_status(types, "avtables")
     lst <- content(types)
     table <- names(lst)
@@ -115,8 +115,7 @@ avtable <-
        ##      .is_avtable(table, namespace, name)
     )
 
-    name <- URLencode(name)
-    entities <- Terra()$getEntities(namespace, name, table)
+    entities <- Terra()$getEntities(namespace, URLencode(name), table)
     .avstop_for_status(entities, "avtable")
     tbl <-
         entities %>%
@@ -171,7 +170,7 @@ avtable <-
         filterTerms, filterOperator)
 {
     response <- Terra()$entityQuery(
-        namespace, name, table,
+        namespace, URLencode(name), table,
         page, pageSize, sortField, sortDirection,
         filterTerms, filterOperator)
     .avstop_for_status(response, "avtable_paged")
@@ -318,15 +317,13 @@ avtable_import <-
         .is_scalar_logical(delete_empty_values)
     )
 
-    name <- URLencode(name)
-
     .data <- .avtable_import_set_entity(.data, entity)
     destination <- tempfile()
     write.table(.data, destination, quote = FALSE, sep="\t", row.names=FALSE)
 
     entities <- httr::upload_file(destination)
     response <- Terra()$flexibleImportEntities(
-        namespace, name,
+        namespace, URLencode(name),
         async = FALSE,
         deleteEmptyValues = delete_empty_values,
         entities = entities
@@ -406,7 +403,7 @@ avtable_import_set <-
 
     entities <- httr::upload_file(destination)
     response <- Terra()$flexibleImportEntities(
-        namespace, name, 
+        namespace, URLencode(name),
         async = FALSE,
         deleteEmptyValues = delete_empty_values,
         entities = entities
@@ -443,7 +440,7 @@ avtable_delete_values <-
     name <- URLencode(name)
     body <- tibble(entityType = table, entityName = as.character(values))
 
-    response <- Terra()$deleteEntities(namespace, name, body)
+    response <- Terra()$deleteEntities(namespace, URLencode(name), body)
     if (status_code(response) == 409L) {
         tbl <-
             response %>%
@@ -495,7 +492,9 @@ avdata <-
     )
 
     name <- URLencode(name)
-    response <- Terra()$getWorkspace(namespace, name, "workspace.attributes")
+    response <- Terra()$getWorkspace(
+        namespace, URLencode(name), "workspace.attributes"
+    )
     .avstop_for_status(response, "avworkspace_data")
 
     content <- content(response)[[1]][["attributes"]]
@@ -597,7 +596,9 @@ avdata_import <-
 
     ## upload the table to AnVIL
     entities <- httr::upload_file(destination)
-    response <- Terra()$importAttributesTSV(namespace, name, entities)
+    response <- Terra()$importAttributesTSV(
+        namespace, URLencode(name), entities
+    )
     .avstop_for_status(response, "avdata_import")
 
     invisible(.data)
@@ -661,8 +662,9 @@ avbucket <-
     if (.avbucket_cache$exists(namespace, name)) {
         bucket <- .avbucket_cache$get(namespace, name)
     } else {
-        name <- URLencode(name)
-        response <- Terra()$getWorkspace(namespace, name, "workspace.bucketName")
+        response <- Terra()$getWorkspace(
+            namespace, URLencode(name), "workspace.bucketName"
+        )
         .avstop_for_status(response, "avbucket")
         bucket <- as.list(response)$workspace$bucketName
         .avbucket_cache$set(namespace, name, bucket)
