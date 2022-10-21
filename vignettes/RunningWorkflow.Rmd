@@ -214,7 +214,8 @@ files produced by a submission; the default behavior lists files
 produced by the most recent job.
 
 ```{r files}
-avworkflow_files()
+submissionId <- "fb8e35b7-df5d-49e6-affa-9893aaeebf37"
+avworkflow_files(submissionId)
 ```
 
 Workflow files are stored in the workspace bucket. The files can be
@@ -224,7 +225,11 @@ the most recently submitted job; use `type=` to influence which files
 ('control' e.g., log files, 'output', or 'all') are localized.
 
 ```{r localize}
-avworkflow_localize(type = "output") # dry = FALSE to localize
+avworkflow_localize(
+    submissionId,
+    type = "output"
+    ## dry = FALSE to localize
+)
 ```
 
 # Session information
