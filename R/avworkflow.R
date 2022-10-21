@@ -62,7 +62,8 @@ avworkflows <-
       submissionDate = x[["submissionDate"]],
       status = x[["status"]],
       succeeded = succeeded,
-      failed = failed
+      failed = failed,
+      submissionRoot = x[["submissionRoot"]]
     )
 }
 
@@ -111,7 +112,8 @@ avworkflow_jobs <-
             submissionDate = character(),
             status = character(),
             succeeded = integer(),
-            failed = integer()
+            failed = integer(),
+            submissionRoot = character()
         )
     }
     bind_rows(submissions) %>%
@@ -197,10 +199,15 @@ avworkflow_jobs <-
 avworkflow_files <-
     function(submissionId = NULL, bucket = avbucket())
 {
+    ## FIXME: `bucket` no longer used
     stopifnot(
-        .is_scalar_character(bucket),
-        is.null(submissionId) || .is_character(submissionId) ||
-        (is_tibble(submissionId) && "submissionId" %in% names(submissionId))
+        is.null(submissionId) || .is_scalar_character(submissionId) ||
+        (
+            is_tibble(submissionId) &&
+            NROW(submissionId) == 1L &&
+            "submissionId" %in% names(submissionId) &&
+            "submissionRoot" %in% names(submissionId)
+        )
     )
 
     if (is.null(submissionId))
@@ -209,39 +216,55 @@ avworkflow_files <-
             avworkflow_jobs() %>%
             head(1)
 
-    if (is_tibble(submissionId))
-        submissionId <- submissionId$submissionId
-
-    if (length(submissionId)) {
-        bucket_content <- gsutil_ls(bucket)
-        objects <- sub(paste0(bucket, "/([^/]+).*"), "\\1", bucket_content)
-        idx <- submissionId %in% objects
-        path0 <- paste0(bucket, "/", submissionId[idx])
-        if (any(idx)) {
-            path <- gsutil_ls(path0, recursive = TRUE)
-        } else {
-            path <- character()
+    if (.is_character(submissionId)) {
+        submissionId0 <- submissionId
+        submissionId <-
+            avworkflow_jobs() |>
+            filter(.data$submissionId == submissionId0)
+        if (!NROW(submissionId)) {
+            stop(
+                "'avworkflow_files()' submissionId returned no results\n",
+                "    submissionId: '", submissionId0, "'"
+            )
         }
-    } else {
-        path <- character()
     }
 
-    part <- strsplit(path, "/")
-    workflow <- vapply(part, `[[`, character(1), 5)
-    task <- rep(NA_character_, length(workflow))
+    ## submissionId is now a one-row tibble
+    submission_root <- pull(submissionId, "submissionRoot")
+    submission_id <- pull(submissionId, "submissionId")
+    submission_exists <- gsutil_exists(submission_root)
+    if (!submission_exists) {
+        stop(
+            "'avworkflow_files()' submissionId produced no objects\n",
+            "    submissionId: '", submission_id, "'"
+        )
+    }
+    path <- gsutil_ls(submission_root, recursive = TRUE)
+
+    ## submissionRoot/submissionId/workflow/workflowId/task/...
+    submission_objects <- substr(path, nchar(submission_root) + 2L, nchar(path))
+    submission_parts <- strsplit(submission_objects, "/")
+    workflow <- vapply(submission_parts, `[[`, character(1), 1L)
+    workflow_id <- task <- rep(NA_character_, length(workflow))
     idx <- workflow != .WORKFLOW_LOGS
-    task[idx] <- vapply(part[idx], `[[`, character(1), 7)
+    workflow_id <- vapply(submission_parts, `[[`, character(1), 2L)
+    workflow_id[!idx] <- sub(".*\\.(.+)\\..*", "\\1", workflow_id[!idx])
+    task[idx] <- vapply(submission_parts[idx], `[[`, character(1), 3L)
+
     tbl <-  tibble(
         file = basename(path),
         workflow = workflow,
         task = task,
         type = .avworkflow_file_type(file, workflow),
-        path = path
+        path = path,
+        submissionRoot = submission_root,
+        submissionId = submission_id,
+        workflowId = workflow_id
     )
-    tbl %>%
+    tbl |>
         arrange(
             match(.data$type, c("output", "control")), # output first
-            task, file, path
+            .data$workflowId, .data$task, .data$file, .data$path
         )
 }
 
@@ -320,17 +343,9 @@ avworkflow_localize <-
         dir.create(destination)
     }
 
-    fls <- avworkflow_files(submissionId, bucket)
-    objects <- sub(paste0(bucket, "/([^/]+).*"), "\\1", fls$path)
-    if (!submissionId %in% objects) {
-        message(
-            "'avworkflow_localize()' found no objects for submissionId ",
-            submissionId
-        )
-        return(invisible(tibble(file = character(), path = character())))
-    }
+    fls <- avworkflow_files(submissionId)
 
-    source <- paste(bucket, submissionId, sep = "/")
+    source <- pull(fls, "submissionRoot") |> unique()
     exclude <- NULL
     exclude0 <- unique(fls$file[!fls$type %in% type])
     exclude1 <- gsub(".", "\\.", paste0(exclude0, collapse = "|"), fixed = TRUE)
@@ -346,8 +361,7 @@ avworkflow_localize <-
         result <- sub("Would copy (.*) to .*", "\\1", result[idx])
         n_files <- length(result)
         message(
-            "use 'dry = FALSE' to localize ", n_files, " workflow files",
-            call. = FALSE
+            "use 'dry = FALSE' to localize ", n_files, " workflow files"
         )
     } else {
         idx <- startsWith(result, "Copying ")
