@@ -116,13 +116,15 @@ avworkflow_jobs <-
             submissionRoot = character()
         )
     }
-    bind_rows(submissions) %>%
+
+    bind_rows(submissions) |>
         mutate(
-            submissionDate =
-                .POSIXct(as.numeric(
-                    as.POSIXct(.data$submissionDate, "%FT%T", tz="UTC")
-                ))
-        ) %>%
+            submissionDate = .POSIXct(as.numeric(
+                as.POSIXct(.data$submissionDate, "%FT%T", tz="UTC")
+            )),
+            namespace = namespace,
+            name = name
+        ) |>
         arrange(desc(.data$submissionDate))
 }
 
@@ -152,6 +154,161 @@ avworkflow_jobs <-
     type
 }
 
+.avworkflow_files_from_api <-
+    function(response, submissionId, namespace, name)
+{
+    ## find id's of each workflow
+    workflowIds <- unlist(lapply(response$workflows, function(workflow) {
+        ## may be 'NULL' if submission aborted before workflow starts
+        workflow$workflowId
+    }))
+
+    if (is.null(workflowIds)) {
+        stop(
+            "no workflows available\n",
+            "  submissionId: '", submissionId, "'"
+        )
+    }
+
+    tbl <- tibble(
+        file = character(), workflow = character(), task = character(),
+        type = character(), path = character(),
+        submissionId = character(), workflowId = character()
+    )
+    for (workflowId in workflowIds) {
+        ## query for outputs
+        outputs <- Terra()$workflowOutputsInSubmission(
+            namespace, URLencode(name), submissionId, workflowId
+        )
+        if (identical(status_code(outputs), 404L)) {
+            ## no submissionId / workflowId association
+            return(NULL)
+        }
+        .avstop_for_status(
+            outputs, "avworkflow_files() 'workflowOutputsInSubmission'"
+        )
+        response <- content(outputs)
+
+        tasks <- names(response$tasks)
+        ## output files
+        outputs <- lapply(response$tasks, `[[`, "outputs")
+        outputs_per_task <- unlist(lapply(outputs, function(output) {
+            length(unlist(output, use.names = FALSE))
+        }), use.names = FALSE)
+        outputs <- unlist(outputs, use.names = FALSE)
+        ## log files
+        logs <- lapply(response$tasks, `[[`, "logs")
+        logs_per_task <- unlist(lapply(logs, function(log) {
+            length(unlist(log, use.names = FALSE))
+        }), use.names = FALSE)
+        logs <- unlist(logs, use.names = FALSE)
+
+        ## prepare return tibble
+        path <- c(outputs, logs)
+        workflow <- unique(sub("\\..*", "", tasks))
+        tasks <- sub("[^\\.]*\\.?(.*)", "\\1", tasks)
+        tasks[!nzchar(tasks)] <- NA_character_
+        task <- c(
+            rep(tasks, outputs_per_task),
+            rep(tasks, logs_per_task)
+        )
+        if (length(workflow) != 1L) {
+            workflow <- workflow[[1L]]
+            warning(
+                "cannot guess workflow name; using '", workflow, "'\n",
+                "  submissionId: ", submissionId
+            )
+        }
+        type <- rep(c("output", "control"), c(length(outputs), length(logs)))
+        tbl0 <- tibble(
+            file = basename(path),
+            workflow = workflow,
+            task = task,
+            type = type,
+            path = path,
+            submissionId = submissionId,
+            workflowId = workflowId
+        )
+        tbl <- bind_rows(tbl, tbl0)
+    }
+    tbl
+}
+
+.avworkflow_files_from_submissionRoot <-
+    function(submissionId, submissionRoot)
+{
+    ## scrape bucket submissionRoot objects for output files
+    if (!gsutil_exists(submissionRoot)) {
+        stop(
+            "'avworkflow_files()' submissionId produced no objects\n",
+            "    submissionId: '", submissionId, "'"
+        )
+    }
+    path <- gsutil_ls(submissionRoot, recursive = TRUE)
+
+    ## submissionRoot/submissionId/workflow/workflowId/task/...
+    objects <- substr(path, nchar(submissionRoot) + 2L, nchar(path))
+    parts <- strsplit(objects, "/")
+    workflow <- vapply(parts, `[[`, character(1), 1L)
+    workflow_id <- task <- rep(NA_character_, length(workflow))
+    idx <- workflow != .WORKFLOW_LOGS
+    workflow_id <- vapply(parts, `[[`, character(1), 2L)
+    workflow_id[!idx] <- sub(".*\\.(.+)\\..*", "\\1", workflow_id[!idx])
+    task[idx] <- vapply(parts[idx], `[[`, character(1), 3L)
+
+    ## tbl of available files
+    tibble(
+        file = basename(path),
+        workflow = workflow,
+        task = task,
+        type = .avworkflow_file_type(file, workflow),
+        path = path,
+        submissionId = submissionId,
+        workflowId = workflow_id
+    )
+}
+
+.avworkflow_files_from_submissionId <-
+    function(submissionId, namespace, name)
+{
+    stopifnot(
+        .is_scalar_character(submissionId),
+        .is_scalar_character(namespace),
+        .is_scalar_character(name)
+    )
+
+    ## find the submission
+    monitor <- Terra()$monitorSubmission(
+        namespace, URLencode(name), submissionId
+    )
+    .avstop_for_status(monitor, "avworkflow_files() 'monitorSubmission'")
+    response <- content(monitor)
+
+    ## FIXME -- how to know if information on outputs from workflow?
+    ## 'submission' in submissionRoot?
+    submissionRoot <- response$submissionRoot
+    has_workflow_outputs <- grepl("/submissions/", submissionRoot)
+
+    if (has_workflow_outputs) {
+        ## query API for output file information
+        tbl <- .avworkflow_files_from_api(
+            response, submissionId, namespace, name
+        )
+    } else {
+        ## scrape submissionRoot objects for output file information
+        tbl <- .avworkflow_files_from_submissionRoot(
+            submissionId, submissionRoot
+        )
+    }
+
+    bind_cols(
+        tbl,
+        submissionRoot = submissionRoot,
+        namespace = namespace,
+        name = name
+    )
+}
+
 #' @rdname avworkflow
 #'
 #' @description `avworkflow_files()` returns a tibble containing
@@ -166,13 +323,14 @@ avworkflow_jobs <-
 #'     bucket of the active workspace, returned by `avbucket()`.
 #'
 #' @details For `avworkflow_files()`, the `submissionId` is the
-#'     identifier associated with the workflow job, and is present in
-#'     the return value of `avworkflow_jobs()`; the example
-#'     illustrates how the first row of `avworkflow_jobs()` (i.e., the
-#'     most recenltly completed workflow) can be used as input to
-#'     `avworkflow_files()`. When `submissionId` is not provided, the
-#'     return value is for the most recently submitted workflow of the
-#'     namespace and name of `avworkspace()`.
+#'     identifier associated with the submission of one (or more)
+#'     workflows, and is present in the return value of
+#'     `avworkflow_jobs()`; the example illustrates how the first row
+#'     of `avworkflow_jobs()` (i.e., the most recently completed
+#'     workflow) can be used as input to `avworkflow_files()`. When
+#'     `submissionId` is not provided, the return value is for the
+#'     most recently submitted workflow of the namespace and name of
+#'     `avworkspace()`.
 #'
 #' @return `avworkflow_files()` returns a tibble with columns
 #'
@@ -182,85 +340,74 @@ avworkflow_jobs <-
 #' - task: character() name of the task in the workflow that generated
 #'   the file.
 #' - path: charcter() full path to the file in the google bucket.
+#' - submissionId: character() internal identifier associated with the
+#'   submission the files belong to.
+#' - workflowId: character() internal identifer associated with each
+#'   workflow (e.g., row of an avtable() used as input) in the
+#'   submission.
+#' - submissionRoot: character() path in the workspace bucket to the root
+#'   of files created by this submission.
+#' - namespace: character() AnVIL workspace namespace (billing account)
+#'   associated with the submissionId.
+#' - name: character(1) AnVIL workspace name associated with the
+#'   submissionId.
 #'
 #' @importFrom tibble is_tibble
 #'
 #' @examples
 #' if (gcloud_exists() && nzchar(avworkspace_name())) {
 #'     ## e.g., from within AnVIL
-#'     avworkflow_jobs() %>%
+#'     avworkflow_jobs() |>
 #'     ## select most recent workflow
-#'     head(1) %>%
+#'     head(1) |>
 #'     ## find paths to output and log files on the bucket
 #'     avworkflow_files()
 #' }
 #'
 #' @export
 avworkflow_files <-
-    function(submissionId = NULL, bucket = avbucket())
+    function(submissionId = NULL, bucket = avbucket(),
+             namespace = avworkspace_namespace(),
+             name = avworkspace_name())
 {
-    ## FIXME: `bucket` no longer used
+    if (!missing(bucket)) {
+        warning(.pretty_text(
+            "'bucket' is deprecated; it is ignored in the current ",
+            "implementation and will be removed in a subsequent release"
+        ), call. = FALSE)
+    }
     stopifnot(
-        is.null(submissionId) || .is_scalar_character(submissionId) ||
-        (
-            is_tibble(submissionId) &&
-            NROW(submissionId) == 1L &&
-            "submissionId" %in% names(submissionId) &&
-            "submissionRoot" %in% names(submissionId)
-        )
+        .is_scalar_character(namespace),
+        .is_scalar_character(name)
     )
 
-    if (is.null(submissionId))
-        ## default: most recent workflow job
+    if (is_tibble(submissionId)) {
+        stopifnot()
+    } else if (.is_character(submissionId)) {
+        submissionId <- tibble(
+            submissionId = submissionId,
+            namespace = namespace,
+            name = name
+        )
+    } else if (is.null(submissionId)) {
         submissionId <-
-            avworkflow_jobs() %>%
+            avworkflow_jobs(namespace = namespace, name = name) |>
+            ## default: most recent workflow job
             head(1)
-
-    if (.is_character(submissionId)) {
-        submissionId0 <- submissionId
-        submissionId <-
-            avworkflow_jobs() |>
-            filter(.data$submissionId == submissionId0)
-        if (!NROW(submissionId)) {
-            stop(
-                "'avworkflow_files()' submissionId returned no results\n",
-                "    submissionId: '", submissionId0, "'"
-            )
-        }
+    } else {
+        stop(.pretty_text(
+            "'submissionId' must be NULL, character(1), or a tibble ",
+            " with a single row and columns 'submissionId', 'namespace', ",
+            "and 'name'"
+        ))
     }
 
-    ## submissionId is now a one-row tibble
-    submission_root <- pull(submissionId, "submissionRoot")
-    submission_id <- pull(submissionId, "submissionId")
-    submission_exists <- gsutil_exists(submission_root)
-    if (!submission_exists) {
-        stop(
-            "'avworkflow_files()' submissionId produced no objects\n",
-            "    submissionId: '", submission_id, "'"
-        )
-    }
-    path <- gsutil_ls(submission_root, recursive = TRUE)
-
-    ## submissionRoot/submissionId/workflow/workflowId/task/...
-    submission_objects <- substr(path, nchar(submission_root) + 2L, nchar(path))
-    submission_parts <- strsplit(submission_objects, "/")
-    workflow <- vapply(submission_parts, `[[`, character(1), 1L)
-    workflow_id <- task <- rep(NA_character_, length(workflow))
-    idx <- workflow != .WORKFLOW_LOGS
-    workflow_id <- vapply(submission_parts, `[[`, character(1), 2L)
-    workflow_id[!idx] <- sub(".*\\.(.+)\\..*", "\\1", workflow_id[!idx])
-    task[idx] <- vapply(submission_parts[idx], `[[`, character(1), 3L)
-
-    tbl <-  tibble(
-        file = basename(path),
-        workflow = workflow,
-        task = task,
-        type = .avworkflow_file_type(file, workflow),
-        path = path,
-        submissionRoot = submission_root,
-        submissionId = submission_id,
-        workflowId = workflow_id
+    tbl <- .avworkflow_files_from_submissionId(
+        submissionId$submissionId,
+        submissionId$namespace,
+        submissionId$name
     )
+
     tbl |>
         arrange(
             match(.data$type, c("output", "control")), # output first
