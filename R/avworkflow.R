@@ -318,9 +318,10 @@ avworkflow_jobs <-
 #'     tibble with column `submissionId`, or NULL / missing. See
 #'     'Details'.
 #'
-#' @param bucket character(1) name of the google bucket in which the
-#'     workflow products are available, as `gs://...`. Usually the
-#'     bucket of the active workspace, returned by `avbucket()`.
+#' @param bucket character(1) DEPRECATED (ignored in the current
+#'     release) name of the google bucket in which the workflow
+#'     products are available, as `gs://...`. Usually the bucket of
+#'     the active workspace, returned by `avbucket()`.
 #'
 #' @details For `avworkflow_files()`, the `submissionId` is the
 #'     identifier associated with the submission of one (or more)
@@ -372,8 +373,10 @@ avworkflow_files <-
 {
     if (!missing(bucket)) {
         warning(.pretty_text(
-            "'bucket' is deprecated; it is ignored in the current ",
-            "implementation and will be removed in a subsequent release"
+            "'bucket=' is deprecated; it is ignored in the current ",
+            "implementation and will be removed in a subsequent release; ",
+            "provide workspace 'namespace=' and 'name=' arguments to ",
+            "'avworkflow_files()' directly"
         ), call. = FALSE)
     }
     stopifnot(

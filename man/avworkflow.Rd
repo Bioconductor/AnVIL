@@ -60,9 +60,10 @@ by, e.g., \code{avworkspace_namespace()}}
 tibble with column \code{submissionId}, or NULL / missing. See
 'Details'.}
 
-\item{bucket}{character(1) name of the google bucket in which the
-workflow products are available, as \verb{gs://...}. Usually the
-bucket of the active workspace, returned by \code{avbucket()}.}
+\item{bucket}{character(1) DEPRECATED (ignored in the current
+release) name of the google bucket in which the workflow
+products are available, as \verb{gs://...}. Usually the bucket of
+the active workspace, returned by \code{avbucket()}.}
 
 \item{destination}{character(1) file path to the location where
 files will be synchronized. For directories in the current
