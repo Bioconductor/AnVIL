@@ -1,5 +1,10 @@
 # AnVIL 1.12.0
 
+USER VISIBLE CHANGES
+
+- (v 1.11.2) update workflow file discovery to use API, rather than 'scraping'
+  google bucket. https://github.com/Bioconductor/AnVIL/issues/69
+
 BUG FIXES
 
 - (v 1.11.1) consistently URLencode workspace and workflow `name`, to allow
