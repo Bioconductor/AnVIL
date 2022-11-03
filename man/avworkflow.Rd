@@ -13,14 +13,21 @@ avworkflows(namespace = avworkspace_namespace(), name = avworkspace_name())
 
 avworkflow_jobs(namespace = avworkspace_namespace(), name = avworkspace_name())
 
-avworkflow_files(submissionId = NULL, bucket = avbucket())
+avworkflow_files(
+  submissionId = NULL,
+  bucket = avbucket(),
+  namespace = avworkspace_namespace(),
+  name = avworkspace_name()
+)
 
 avworkflow_localize(
   submissionId = NULL,
   destination = NULL,
   type = c("control", "output", "all"),
   bucket = avbucket(),
-  dry = TRUE
+  dry = TRUE,
+  namespace = avworkspace_namespace(),
+  name = avworkspace_name()
 )
 
 avworkflow_run(
@@ -53,9 +60,10 @@ by, e.g., \code{avworkspace_namespace()}}
 tibble with column \code{submissionId}, or NULL / missing. See
 'Details'.}
 
-\item{bucket}{character(1) name of the google bucket in which the
-workflow products are available, as \verb{gs://...}. Usually the
-bucket of the active workspace, returned by \code{avbucket()}.}
+\item{bucket}{character(1) DEPRECATED (ignored in the current
+release) name of the google bucket in which the workflow
+products are available, as \verb{gs://...}. Usually the bucket of
+the active workspace, returned by \code{avbucket()}.}
 
 \item{destination}{character(1) file path to the location where
 files will be synchronized. For directories in the current
@@ -126,6 +134,17 @@ with.
 \item task: character() name of the task in the workflow that generated
 the file.
 \item path: charcter() full path to the file in the google bucket.
+\item submissionId: character() internal identifier associated with the
+submission the files belong to.
+\item workflowId: character() internal identifer associated with each
+workflow (e.g., row of an avtable() used as input) in the
+submission.
+\item submissionRoot: character() path in the workspace bucket to the root
+of files created by this submission.
+\item namespace: character() AnVIL workspace namespace (billing account)
+associated with the submissionId.
+\item name: character(1) AnVIL workspace name associated with the
+submissionId.
 }
 
 \code{avworkflow_localize()} prints a message indicating the
@@ -162,13 +181,14 @@ jub from running.
 }
 \details{
 For \code{avworkflow_files()}, the \code{submissionId} is the
-identifier associated with the workflow job, and is present in
-the return value of \code{avworkflow_jobs()}; the example
-illustrates how the first row of \code{avworkflow_jobs()} (i.e., the
-most recenltly completed workflow) can be used as input to
-\code{avworkflow_files()}. When \code{submissionId} is not provided, the
-return value is for the most recently submitted workflow of the
-namespace and name of \code{avworkspace()}.
+identifier associated with the submission of one (or more)
+workflows, and is present in the return value of
+\code{avworkflow_jobs()}; the example illustrates how the first row
+of \code{avworkflow_jobs()} (i.e., the most recently completed
+workflow) can be used as input to \code{avworkflow_files()}. When
+\code{submissionId} is not provided, the return value is for the
+most recently submitted workflow of the namespace and name of
+\code{avworkspace()}.
 
 \code{avworkflow_localize()}. \code{type = "control"} files
 summarize workflow progress; they can be numerous but are
@@ -193,9 +213,9 @@ if (gcloud_exists() && nzchar(avworkspace_name()))
 
 if (gcloud_exists() && nzchar(avworkspace_name())) {
     ## e.g., from within AnVIL
-    avworkflow_jobs() \%>\%
+    avworkflow_jobs() |>
     ## select most recent workflow
-    head(1) \%>\%
+    head(1) |>
     ## find paths to output and log files on the bucket
     avworkflow_files()
 }
