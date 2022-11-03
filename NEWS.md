@@ -1,3 +1,10 @@
+# AnVIL 1.12.0
+
+BUG FIXES
+
+- (v 1.11.1) consistently URLencode workspace and workflow `name`, to allow
+  for spaces. https://github.com/Bioconductor/AnVIL/issues/67
+
 # AnVIL 1.10.0
 
 NEW FEATURES
