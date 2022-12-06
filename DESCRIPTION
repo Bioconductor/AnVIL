@@ -23,7 +23,7 @@ Description: The AnVIL is a cloud computing resource developed in part
     working with Terra / AnVIL table and data resources, and
     convenient functions for file movement to and from Google cloud
     storage. For developers, AnVIL provides programatic access to the
-    Terra, Leonardo, Rawls, Dockstore, and Gen3 RESTful programming
+    Terra, Leonardo, Rawls, and Dockstore RESTful programming
     interface, including helper functions to transform JSON responses
     to formats more amenable to manipulation in R.
 License: Artistic-2.0

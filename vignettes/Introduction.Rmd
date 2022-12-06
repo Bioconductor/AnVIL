@@ -20,7 +20,7 @@ abstract: |
   with Terra / AnVIL table and data resources, and convenient
   functions for file movement to and from Google cloud storage. For
   developers, AnVIL provides programmatic access to the Terra,
-  Leonardo, Rawls, Dockstore, and Gen3 RESTful programming interface,
+  Leonardo, Rawls, and Dockstore RESTful programming interface,
   including helper functions to transform JSON responses to more
   formats more amenable to manipulation in _R_.
 vignette: |
@@ -776,11 +776,6 @@ testing. _Dockstore_ is used to run CWL- or WDL-based work flows,
 including workflows using _R_ / _Bioconductor_. See the separate
 vignette 'Dockstore and _Bioconductor_ for AnVIL' for initial
 documentation.
-
-_Gen3_ services (https://raw.githubusercontent.com/uc-cdis) can be
-created, but functionality is untested. The services are `Gen3Fence()`
-(authentication), `Gen3Indexd()` (indexing service), `Gen3Peregrine()`
-(graphQL queries), and `Gen3Sheepdog()` (submission services).
 
 ## Extending the `Service` class to implement your own RESTful interface
 
