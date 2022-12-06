@@ -11,6 +11,7 @@
 Gen3Fence <-
     function()
 {
+    .Deprecated(msg = "'Gen3Fence()' is deprecated, and will be removed")
     Service(
         "gen3/fence", "FIXME:service_path",
         api_url = "https://raw.githubusercontent.com/uc-cdis/fence/master/openapis/swagger.yaml"
@@ -27,6 +28,7 @@ Gen3Fence <-
 Gen3Indexd <-
     function()
 {
+    .Deprecated(msg = "'Gen3Index()' is deprecated, and will be removed")
     Service(
         "gen3/indexd", "gen3.theanvil.io",
         api_url = "https://raw.githubusercontent.com/uc-cdis/indexd/master/openapis/swagger.yaml"
@@ -44,6 +46,7 @@ Gen3Indexd <-
 Gen3Sheepdog <-
     function()
 {
+    .Deprecated(msg = "'Gen3Sheepdog()' is deprecated, and will be removed")
     Service(
         "gen3/sheepdog", "FIXME:service_path",
         api_url = "https://raw.githubusercontent.com/uc-cdis/sheepdog/master/openapi/swagger.yml"
@@ -61,6 +64,7 @@ Gen3Sheepdog <-
 Gen3Peregrine <-
     function()
 {
+    .Deprecated(msg = "'Gen3Peregrine()' is deprecated, and will be removed")
     Service(
         "gen3/peregrine", "FIXME:service_path",
         api_url = "https://raw.githubusercontent.com/uc-cdis/peregrine/master/openapis/swagger.yaml"
