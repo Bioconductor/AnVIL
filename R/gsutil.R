@@ -215,7 +215,7 @@ gsutil_stat <-
     ## reshape to one row per bucket
     tbl %>%
         pivot_wider(
-            .data$path, names_from = "key", values_from = "value"
+            id_cols = .data$path, names_from = "key", values_from = "value"
         ) %>%
         mutate(
             `Creation time` =
