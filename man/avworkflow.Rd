@@ -25,9 +25,7 @@ avworkflow_localize(
   destination = NULL,
   type = c("control", "output", "all"),
   bucket = avbucket(),
-  dry = TRUE,
-  namespace = avworkspace_namespace(),
-  name = avworkspace_name()
+  dry = TRUE
 )
 
 avworkflow_run(
