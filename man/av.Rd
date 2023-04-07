@@ -22,7 +22,12 @@
 \usage{
 avtables(namespace = avworkspace_namespace(), name = avworkspace_name())
 
-avtable(table, namespace = avworkspace_namespace(), name = avworkspace_name())
+avtable(
+  table,
+  namespace = avworkspace_namespace(),
+  name = avworkspace_name(),
+  na = c("", "NA")
+)
 
 avtable_paged(
   table,
@@ -34,7 +39,8 @@ avtable_paged(
   filterTerms = character(),
   filterOperator = c("and", "or"),
   namespace = avworkspace_namespace(),
-  name = avworkspace_name()
+  name = avworkspace_name(),
+  na = c("", "NA")
 )
 
 avtable_import(
@@ -42,7 +48,8 @@ avtable_import(
   entity = names(.data)[[1]],
   namespace = avworkspace_namespace(),
   name = avworkspace_name(),
-  delete_empty_values = FALSE
+  delete_empty_values = FALSE,
+  na = "NA"
 )
 
 avtable_import_set(
@@ -124,6 +131,11 @@ by, e.g., \code{avworkspace_namespace()}}
 \code{avworkspace_name()}.}
 
 \item{table}{character(1) table name as returned by, e.g., \code{avtables()}.}
+
+\item{na}{in \code{avtable()} and \code{avtable_paged()}, character() of
+strings to be interpretted as missing values. In
+\code{avtable_import()} character(1) value to use for representing
+\code{NA_character_}. See Details.}
 
 \item{n}{numeric(1) maximum number of rows to return}
 
@@ -328,6 +340,28 @@ and it is the runtime active in AnVIL.
 about persistent disks associatd with the current user.
 }
 \details{
+Treatment of missing values in \code{avtable()},
+\code{avtable_paged()} and \code{avtable_import()} are handled by the
+\code{na} parameter.
+
+For \code{avtable()} and \code{avtable_paged()}, the default \code{na = c("", "NA")} treats empty cells or cells containing "NA" in a Terra
+data table as \code{NA_character_} in R. Use \code{na = character()} to
+indicate no missing values, \code{na = "NA"} to retain the
+distinction between \code{""} and \code{NA_character_}.
+
+For \code{avtable_import()}, the default \code{na = "NA"} records
+\code{NA_character_} in R as the character string \code{"NA"} in an AnVIL
+data table.
+
+The default setting (\code{na = "NA"} in \code{avtable_import()},
+\verb{na = c("",  NA_character_")} in \code{avtable()}, is appropriate to
+'round-trip' data from R to AnVIL and back when character vectors
+contain only \code{NA_character_}. Use \code{na = "NA"} in both functions to
+round-trip data containing both \code{NA_character_} and "NA". Use
+a distinct string, e.g., \code{na = "__MISSING_VALUE__"}, for both
+arguments if the data contains a string \code{"NA"} as well as
+\code{NA_character_}.
+
 \code{avtable_import_set()} creates new rows in a table
 \verb{<origin>_set}. One row will be created for each distinct value
 in the column identified by \code{set}. Each row entry has a

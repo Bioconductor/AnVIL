@@ -92,19 +92,63 @@ avtables <-
     table %in% tbls$table
 }
 
+## helpers for avtable(), avtable_paged() avtable_import() handling
+## treatment NA_character_
+.avtable_na <-
+    function(na)
+{
+    stopifnot(.is_character(na, zchar = TRUE))
+    function(x) {
+        ## flatten() has changed "" (no attribute in the entity set)to
+        ## NA_character_; change to ""
+        x[is.na(x)] <- ""
+        ## follow the rules of `na` re-assign NA_character_
+        x[x %in% na] <- NA_character_
+        x
+    }
+}
+
 #' @rdname av
 #'
 #' @param table character(1) table name as returned by, e.g., `avtables()`.
 #'
+#' @param na in `avtable()` and `avtable_paged()`, character() of
+#'     strings to be interpretted as missing values. In
+#'     `avtable_import()` character(1) value to use for representing
+#'     `NA_character_`. See Details.
+#'
+#' @details Treatment of missing values in `avtable()`,
+#'     `avtable_paged()` and `avtable_import()` are handled by the
+#'     `na` parameter.
+#'
+#' @details For `avtable()` and `avtable_paged()`, the default `na = c("",
+#'     "NA")` treats empty cells or cells containing "NA" in a Terra
+#'     data table as `NA_character_` in R. Use `na = character()` to
+#'     indicate no missing values, `na = "NA"` to retain the
+#'     distinction between `""` and `NA_character_`.
+#'
+#' @details For `avtable_import()`, the default `na = "NA"` records
+#'     `NA_character_` in R as the character string `"NA"` in an AnVIL
+#'     data table.
+#'
+#' @details The default setting (`na = "NA"` in `avtable_import()`,
+#'     `na = c("",  NA_character_")` in `avtable()`, is appropriate to
+#'     'round-trip' data from R to AnVIL and back when character vectors
+#'     contain only `NA_character_`. Use `na = "NA"` in both functions to
+#'     round-trip data containing both `NA_character_` and "NA". Use
+#'     a distinct string, e.g., `na = "__MISSING_VALUE__"`, for both
+#'     arguments if the data contains a string `"NA"` as well as
+#'     `NA_character_`.
+#'
 #' @return `avtable()`: a tibble of data corresponding to the AnVIL
 #'     table `table` in the specified workspace.
 #'
-#' @importFrom dplyr "%>%" select starts_with ends_with
+#' @importFrom dplyr "%>%" select starts_with ends_with across where
 #'
 #' @export
 avtable <-
     function(table, namespace = avworkspace_namespace(),
-        name = avworkspace_name())
+        name = avworkspace_name(), na = c("", "NA"))
 {
     stopifnot(
         .is_scalar_character(table),
@@ -114,6 +158,7 @@ avtable <-
        ##  `unknown table; use 'avtables()' for valid names` =
        ##      .is_avtable(table, namespace, name)
     )
+    na_fun <- .avtable_na(na)
 
     entities <- Terra()$getEntities(namespace, URLencode(name), table)
     .avstop_for_status(entities, "avtable")
@@ -129,7 +174,8 @@ avtable <-
     }
     tbl <-
         tbl %>%
-        select("name", starts_with("attributes"), -ends_with("entityType"))
+        select("name", starts_with("attributes"), -ends_with("entityType")) %>%
+        mutate(across(where(is.character), na_fun))
     names(tbl) <- sub("^attributes.", "", names(tbl))
     names(tbl) <- sub(".entityName$", "", names(tbl))
     names(tbl) <- sub("^name$", paste0(table, "_id"), names(tbl))
@@ -225,7 +271,7 @@ avtable_paged <-
         filterTerms = character(),
         filterOperator = c("and", "or"),
         namespace = avworkspace_namespace(),
-        name = avworkspace_name())
+        name = avworkspace_name(), na = c("", "NA"))
 {
     page <- as.integer(page)
     pageSize <- as.integer(pageSize)
@@ -237,7 +283,7 @@ avtable_paged <-
         .is_scalar_character(sortField),
         length(filterTerms) == 0L || .is_scalar_character(filterTerms),
         .is_scalar_character(namespace),
-        .is_scalar_character(name)
+        .is_scalar_character(name),
         ## ,
         ## `unknown table; use 'avtables()' for valid names` =
         ##     .is_avtable(table, namespace, name)
@@ -245,6 +291,7 @@ avtable_paged <-
     sortDirection <- match.arg(sortDirection)
     filterOperator <- match.arg(filterOperator)
     name <- URLencode(name)
+    na_fun <- .avtable_na(na)
 
     tbl <- .avtable_pages(
         .avtable_paged1,
@@ -254,7 +301,8 @@ avtable_paged <-
         n = n, page = page, pageSize = pageSize
     )
     names(tbl) <- sub("^name$", paste0(table, "_id"), names(tbl))
-    tbl
+    tbl %>%
+        mutate(across(where(is.character), na_fun))
 }
 
 .avtable_import_set_entity <-
@@ -307,19 +355,23 @@ avtable_paged <-
 avtable_import <-
     function(.data, entity = names(.data)[[1]],
         namespace = avworkspace_namespace(), name = avworkspace_name(),
-        delete_empty_values = FALSE)
+        delete_empty_values = FALSE, na = "NA")
 {
     stopifnot(
         is.data.frame(.data),
         .is_scalar_character(entity),
         .is_scalar_character(namespace),
         .is_scalar_character(name),
-        .is_scalar_logical(delete_empty_values)
+        .is_scalar_logical(delete_empty_values),
+        .is_scalar_character(na, zchar = TRUE)
     )
 
     .data <- .avtable_import_set_entity(.data, entity)
     destination <- tempfile()
-    write.table(.data, destination, quote = FALSE, sep="\t", row.names=FALSE)
+    write.table(
+        .data, destination,
+        quote = FALSE, sep="\t", row.names=FALSE, na = na
+    )
 
     entities <- httr::upload_file(destination)
     response <- Terra()$flexibleImportEntities(
