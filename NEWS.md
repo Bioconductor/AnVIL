@@ -7,6 +7,10 @@ USER VISIBLE CHANGES
 
 - (v 1.11.3) Gen3 services deprecated
 
+- (v 1.11.5) Add `na =` to handle NA encoding in `avtable()` /
+  `avtable_import()`. Changes default behavior.
+  <https://github.com/Bioconductor/AnVIL/issues/75>
+
 BUG FIXES
 
 - (v 1.11.1) consistently URLencode workspace and workflow `name`, to allow
