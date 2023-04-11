@@ -327,6 +327,18 @@ avtable_paged <-
     .data[c(entity, setdiff(names(.data), entity))]
 }
 
+.avtable_import_write_dataset <-
+    function(.data, na)
+{
+    destination <- tempfile()
+    write.table(
+        .data, destination,
+        quote = FALSE, sep = "\t", row.names=FALSE, na = na
+    )
+
+    destination
+}
+
 #' @rdname av
 #'
 #' @param .data A tibble or data.frame for import as an AnVIL table.
@@ -367,11 +379,7 @@ avtable_import <-
     )
 
     .data <- .avtable_import_set_entity(.data, entity)
-    destination <- tempfile()
-    write.table(
-        .data, destination,
-        quote = FALSE, sep="\t", row.names=FALSE, na = na
-    )
+    destination <- .avtable_import_write_dataset(.data, na)
 
     entities <- httr::upload_file(destination)
     response <- Terra()$flexibleImportEntities(
