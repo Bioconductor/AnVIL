@@ -283,7 +283,7 @@ avtable_paged <-
         .is_scalar_character(sortField),
         length(filterTerms) == 0L || .is_scalar_character(filterTerms),
         .is_scalar_character(namespace),
-        .is_scalar_character(name),
+        .is_scalar_character(name)
         ## ,
         ## `unknown table; use 'avtables()' for valid names` =
         ##     .is_avtable(table, namespace, name)
