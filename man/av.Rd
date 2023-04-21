@@ -6,6 +6,7 @@
 \alias{avtable}
 \alias{avtable_paged}
 \alias{avtable_import}
+\alias{avtable_import_status}
 \alias{avtable_import_set}
 \alias{avtable_delete_values}
 \alias{avdata}
@@ -49,7 +50,14 @@ avtable_import(
   namespace = avworkspace_namespace(),
   name = avworkspace_name(),
   delete_empty_values = FALSE,
-  na = "NA"
+  na = "NA",
+  asynchronous = .avtable_import_mode(.data)
+)
+
+avtable_import_status(
+  job_id,
+  namespace = avworkspace_namespace(),
+  name = avworkspace_name()
 )
 
 avtable_import_set(

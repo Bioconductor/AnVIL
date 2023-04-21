@@ -367,7 +367,8 @@ avtable_paged <-
 avtable_import <-
     function(.data, entity = names(.data)[[1]],
         namespace = avworkspace_namespace(), name = avworkspace_name(),
-        delete_empty_values = FALSE, na = "NA")
+        delete_empty_values = FALSE, na = "NA",
+        asynchronous = .avtable_import_mode(.data))
 {
     stopifnot(
         is.data.frame(.data),
@@ -375,13 +376,48 @@ avtable_import <-
         .is_scalar_character(namespace),
         .is_scalar_character(name),
         .is_scalar_logical(delete_empty_values),
-        .is_scalar_character(na, zchar = TRUE)
+        .is_scalar_character(na, zchar = TRUE),
+        .is_scalar_logical(asynchronous)
     )
 
     .data <- .avtable_import_set_entity(.data, entity)
+    asynchronous && { message("writing asynchronous data to disk"); TRUE }
     destination <- .avtable_import_write_dataset(.data, na)
+    asynchronous && { message("  ", destination); TRUE }
 
     entities <- httr::upload_file(destination)
+    import_fun <- ifelse (
+        asynchronous, .avtable_import_asynchronous, .avtable_import_synchronous
+    )
+    response <- import_fun(entities, namespace, name, delete_empty_values)
+}
+
+.avtable_import_mode <-
+    function(.data)
+{
+    ## arbitrary; use asynchronous when data is 'large' to avoid
+    ## server timeout https://github.com/Bioconductor/AnVIL/issues/76
+    prod(dim(.data)) > 5000000
+}
+
+.avtable_import_asynchronous <-
+    function(entities, namespace, name, delete_empty_values)
+{
+    message("uploading asynchronous data for processing")
+    response <- Terra()$flexibleImportEntities(
+        namespace, URLencode(name),
+        async = TRUE,
+        deleteEmptyValues = delete_empty_values,
+        entities = entities
+    )
+    .avstop_for_status(response, "avtable_import (asynchronous)")
+
+    content(response)$jobId
+}
+
+.avtable_import_synchronous <-
+    function(entities, namespace, name, delete_empty_values)
+{
     response <- Terra()$flexibleImportEntities(
         namespace, URLencode(name),
         async = FALSE,
@@ -391,6 +427,32 @@ avtable_import <-
     .avstop_for_status(response, "avtable_import")
 
     httr::content(response, type="text", encoding = "UTF-8")
+}
+
+#' @rdname av
+#'
+#' @description `avtable_import_status()` queries for the status of an
+#'     'asynchronous' table import.
+#'
+#' @param job_id character(1) job identifier, returned by
+#'     `avtable_import()` and `avtable_import_set()` when
+#'     `asynchronous = TRUE`.
+#'
+#' @export
+avtable_import_status <-
+    function(job_id,
+        namespace = avworkspace_namespace(), name = avworkspace_name())
+{
+    stopifnot(
+        .is_scalar_character(job_id),
+        .is_scalar_character(namespace),
+        .is_scalar_character(name)
+    )
+
+    response <- Terra()$importJobStatus(namespace, name, job_id)
+    .avstop_for_status(response, "avtable_import_status")
+
+    httr::content(response, type = "text", encoding = "UTF-8")
 }
 
 #' @rdname av
