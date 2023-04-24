@@ -51,7 +51,9 @@ avtable_import(
   name = avworkspace_name(),
   delete_empty_values = FALSE,
   na = "NA",
-  asynchronous = .avtable_import_mode(.data)
+  n = Inf,
+  page = 1L,
+  pageSize = NULL
 )
 
 avtable_import_status(
@@ -179,6 +181,10 @@ new table with name \code{entity} and entity values
 
 \item{delete_empty_values}{logical(1) when \code{TRUE}, remove entities
 not include in \code{.data} from the DATA table. Default: \code{FALSE}.}
+
+\item{job_id}{character(1) job identifier, returned by
+\code{avtable_import()} and \code{avtable_import_set()} when
+\code{asynchronous = TRUE}.}
 
 \item{origin}{character(1) name of the entity (table) used to
 create the set e.g "sample", "participant",
@@ -318,6 +324,9 @@ imports set membership (i.e., a subset of an existing table)
 information to an AnVIL table.  \code{avtable_delete_values()}
 removes rows from an AnVIL table.
 
+\code{avtable_import_status()} queries for the status of an
+'asynchronous' table import.
+
 \code{avdata()} returns key-value tables representing the
 information visualized under the DATA tab, 'REFERENCE DATA' and
 'OTHER DATA' items.  \code{avdata_import()} updates (modifies or
@@ -369,6 +378,20 @@ round-trip data containing both \code{NA_character_} and "NA". Use
 a distinct string, e.g., \code{na = "__MISSING_VALUE__"}, for both
 arguments if the data contains a string \code{"NA"} as well as
 \code{NA_character_}.
+
+\code{avtable_import()} tries to work around limitations in
+\code{.data} size in the AnVIL platform, using \code{pageSize} (number of
+rows) to import so that approximately 200000 elements (rows x
+columns) are uploaded per chunk. For large \code{.data}, a progress
+bar summarizes progress on the import. Individual chunks may
+nonetheless fail to upload, with common reasons being an
+internal server error (HTTP error code 500) or transient
+authorization failure (HTTP 401). In these and other cases
+\code{avtable_import()} reports the failed page(s) as warnings. The
+user can attempt to import these individually using the \code{page}
+argument. If many pages fail to import, a strategy migth be to
+provide an explicit \code{pageSize} less than the automatically
+determined size.
 
 \code{avtable_import_set()} creates new rows in a table
 \verb{<origin>_set}. One row will be created for each distinct value

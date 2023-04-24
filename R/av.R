@@ -343,9 +343,6 @@ avtable_paged <-
 #'
 #' @param .data A tibble or data.frame for import as an AnVIL table.
 #'
-#' @param delete_empty_values logical(1) when `TRUE`, remove entities
-#'     not include in `.data` from the DATA table. Default: `FALSE`.
-#'
 #' @param entity `character(1)` column name of `.data` to be used as
 #'     imported table name. When the table comes from R, this is
 #'     usually a column name such as `sample`. The data will be
@@ -358,6 +355,23 @@ avtable_paged <-
 #'     new table with name `entity` and entity values
 #'     `seq_len(nrow(.data))`.
 #'
+#' @param delete_empty_values logical(1) when `TRUE`, remove entities
+#'     not include in `.data` from the DATA table. Default: `FALSE`.
+#'
+#' @details `avtable_import()` tries to work around limitations in
+#'     `.data` size in the AnVIL platform, using `pageSize` (number of
+#'     rows) to import so that approximately 200000 elements (rows x
+#'     columns) are uploaded per chunk. For large `.data`, a progress
+#'     bar summarizes progress on the import. Individual chunks may
+#'     nonetheless fail to upload, with common reasons being an
+#'     internal server error (HTTP error code 500) or transient
+#'     authorization failure (HTTP 401). In these and other cases
+#'     `avtable_import()` reports the failed page(s) as warnings. The
+#'     user can attempt to import these individually using the `page`
+#'     argument. If many pages fail to import, a strategy migth be to
+#'     provide an explicit `pageSize` less than the automatically
+#'     determined size.
+#'
 #' @return `avtable_import()` returns a `character(1)` name of the
 #'     imported AnVIL tibble.
 #'
@@ -368,7 +382,7 @@ avtable_import <-
     function(.data, entity = names(.data)[[1]],
         namespace = avworkspace_namespace(), name = avworkspace_name(),
         delete_empty_values = FALSE, na = "NA",
-        asynchronous = .avtable_import_mode(.data))
+        n = Inf, page = 1L, pageSize = NULL)
 {
     stopifnot(
         is.data.frame(.data),
@@ -377,47 +391,81 @@ avtable_import <-
         .is_scalar_character(name),
         .is_scalar_logical(delete_empty_values),
         .is_scalar_character(na, zchar = TRUE),
-        .is_scalar_logical(asynchronous)
+        .is_scalar_numeric(n, infinite.ok = TRUE),
+        .is_scalar_integer(as.integer(page)),
+        is.null(pageSize) || .is_scalar_integer(as.integer(pageSize))
     )
 
+    ## identify the 'entitiy' column
     .data <- .avtable_import_set_entity(.data, entity)
-    asynchronous && { message("writing asynchronous data to disk"); TRUE }
+    ## divide large tables into chunks, if necessary
+    chunks <- .avtable_import_page_chunks(.data, n, page, pageSize)
+
+    ## progress bar
+    n_uploaded <- 0L
+    progress_bar <- NULL
+    if (length(chunks) > 1L) {
+        progress_bar <- txtProgressBar(max = sum(lengths(chunks)), style = 3L)
+        on.exit(close(progress_bar))
+    }
+
+    ## iterate through chunks
+    for (chunk_index in seq_along(chunks)) {
+        chunk_idx <- chunks[[chunk_index]]
+        chunk_name <- names(chunks)[[chunk_index]]
+        chunk <- .data[chunk_idx, , drop = FALSE]
+        tryCatch({
+            .avtable_import(chunk, namespace, name, delete_empty_values, na)
+        }, error = function(err) {
+            msg <- paste(strwrap(paste0(
+                "failed to import page ", chunk_name,
+                "; continuing to next page"
+            )), collapse = "\n")
+            warning(msg, "\n", conditionMessage(err), immediate. = TRUE)
+        })
+        n_uploaded <- n_uploaded + length(chunk_idx)
+        if (!is.null(progress_bar))
+            setTxtProgressBar(progress_bar, n_uploaded)
+    }
+}
+
+.avtable_import_page_chunks <-
+    function(.data, n, page, pageSize)
+{
+    ## import table in chunks to avoid server timeout;
+    ## https://github.com/Bioconductor/AnVIL/issues/76
+
+    ## arbitrary: use page size so that each 'chunk' is about 1M elements
+    if (is.null(pageSize)) {
+        N_ELEMENTS <- 200000
+        pageSize <- ifelse(
+            prod(dim(.data)) > N_ELEMENTS,
+            as.integer(floor(N_ELEMENTS / NCOL(.data))),
+            NROW(.data)
+        )
+    }
+
+    row_index <- seq_len(NROW(.data))
+    ## assign all rows a page
+    page_id <- (row_index - 1L) %/% pageSize + 1L
+    ## exclude rows before `page`
+    page_id[page_id < page] <- 0L
+    ## return a maximum of `n` elements after the first non-zero element
+    if (is.finite(n))
+        page_id[row_index > sum(page_id == 0) + n] <- 0L
+
+    pages <- split(row_index, page_id)
+    pages <- pages[names(pages) != "0"]
+    message("pageSize = ", pageSize, " rows (", length(pages), " pages)")
+    pages
+}
+
+.avtable_import <-
+    function(.data, namespace, name, delete_empty_values, na)
+{
     destination <- .avtable_import_write_dataset(.data, na)
-    asynchronous && { message("  ", destination); TRUE }
-
     entities <- httr::upload_file(destination)
-    import_fun <- ifelse (
-        asynchronous, .avtable_import_asynchronous, .avtable_import_synchronous
-    )
-    response <- import_fun(entities, namespace, name, delete_empty_values)
-}
 
-.avtable_import_mode <-
-    function(.data)
-{
-    ## arbitrary; use asynchronous when data is 'large' to avoid
-    ## server timeout https://github.com/Bioconductor/AnVIL/issues/76
-    prod(dim(.data)) > 5000000
-}
-
-.avtable_import_asynchronous <-
-    function(entities, namespace, name, delete_empty_values)
-{
-    message("uploading asynchronous data for processing")
-    response <- Terra()$flexibleImportEntities(
-        namespace, URLencode(name),
-        async = TRUE,
-        deleteEmptyValues = delete_empty_values,
-        entities = entities
-    )
-    .avstop_for_status(response, "avtable_import (asynchronous)")
-
-    content(response)$jobId
-}
-
-.avtable_import_synchronous <-
-    function(entities, namespace, name, delete_empty_values)
-{
     response <- Terra()$flexibleImportEntities(
         namespace, URLencode(name),
         async = FALSE,
@@ -426,7 +474,7 @@ avtable_import <-
     )
     .avstop_for_status(response, "avtable_import")
 
-    httr::content(response, type="text", encoding = "UTF-8")
+    content(response, type="text", encoding = "UTF-8")
 }
 
 #' @rdname av
