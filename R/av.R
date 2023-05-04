@@ -368,7 +368,7 @@ avtable_paged <-
 #'     authorization failure (HTTP 401). In these and other cases
 #'     `avtable_import()` reports the failed page(s) as warnings. The
 #'     user can attempt to import these individually using the `page`
-#'     argument. If many pages fail to import, a strategy migth be to
+#'     argument. If many pages fail to import, a strategy might be to
 #'     provide an explicit `pageSize` less than the automatically
 #'     determined size.
 #'
@@ -396,7 +396,7 @@ avtable_import <-
         is.null(pageSize) || .is_scalar_integer(as.integer(pageSize))
     )
 
-    ## identify the 'entitiy' column
+    ## identify the 'entity' column
     .data <- .avtable_import_set_entity(.data, entity)
     ## divide large tables into chunks, if necessary
     chunks <- .avtable_import_page_chunks(.data, n, page, pageSize)
@@ -409,12 +409,14 @@ avtable_import <-
         on.exit(close(progress_bar))
     }
 
+    status <- rep("Failed", length(chunks))
+    job_id <- rep(NA_character_, length(chunks))
     ## iterate through chunks
     for (chunk_index in seq_along(chunks)) {
         chunk_idx <- chunks[[chunk_index]]
         chunk_name <- names(chunks)[[chunk_index]]
         chunk <- .data[chunk_idx, , drop = FALSE]
-        tryCatch({
+        job_id[[chunk_index]] <- tryCatch({
             .avtable_import(chunk, namespace, name, delete_empty_values, na)
         }, error = function(err) {
             msg <- paste(strwrap(paste0(
@@ -422,11 +424,18 @@ avtable_import <-
                 "; continuing to next page"
             )), collapse = "\n")
             warning(msg, "\n", conditionMessage(err), immediate. = TRUE)
+            NA_character_
         })
         n_uploaded <- n_uploaded + length(chunk_idx)
         if (!is.null(progress_bar))
             setTxtProgressBar(progress_bar, n_uploaded)
     }
+    status[!is.na(job_id)] <- "Uploaded"
+    tibble(
+        page = seq_along(chunks),
+        job_id = job_id,
+        status = status
+    )
 }
 
 .avtable_import_page_chunks <-
@@ -437,7 +446,7 @@ avtable_import <-
 
     ## arbitrary: use page size so that each 'chunk' is about 1M elements
     if (is.null(pageSize)) {
-        N_ELEMENTS <- 200000
+        N_ELEMENTS <- 1500000
         pageSize <- ifelse(
             prod(dim(.data)) > N_ELEMENTS,
             as.integer(floor(N_ELEMENTS / NCOL(.data))),
@@ -468,13 +477,12 @@ avtable_import <-
 
     response <- Terra()$flexibleImportEntities(
         namespace, URLencode(name),
-        async = FALSE,
+        async = TRUE,
         deleteEmptyValues = delete_empty_values,
         entities = entities
     )
     .avstop_for_status(response, "avtable_import")
-
-    content(response, type="text", encoding = "UTF-8")
+    content(response)$jobId
 }
 
 #' @rdname av
@@ -488,19 +496,50 @@ avtable_import <-
 #'
 #' @export
 avtable_import_status <-
-    function(job_id,
+    function(job_status,
         namespace = avworkspace_namespace(), name = avworkspace_name())
 {
     stopifnot(
-        .is_scalar_character(job_id),
+        is.data.frame(job_status),
+        c("job_id", "status") %in% colnames(job_status),
+        .is_character(job_status$job_id, na.ok = TRUE),
+        .is_character(job_status$status),
         .is_scalar_character(namespace),
         .is_scalar_character(name)
     )
 
-    response <- Terra()$importJobStatus(namespace, name, job_id)
-    .avstop_for_status(response, "avtable_import_status")
+    todo <- !job_status$status %in% c("Done", "Failed")
+    job_ids <- job_status$job_id[todo]
+    n_jobs <- length(job_ids)
+    updated_status <- rep(NA_character_, n_jobs)
+    names(updated_status) <- job_ids
 
-    httr::content(response, type = "text", encoding = "UTF-8")
+    progress_bar <- NULL
+    message("checking status of ", n_jobs, " avtable import jobs")
+    if (n_jobs > 1L) {
+        progress_bar <- txtProgressBar(max = n_jobs, style = 3L)
+        on.exit(close(progress_bar))
+    }
+
+    for (job_index in seq_len(n_jobs)) {
+        job_id <- job_ids[[job_index]]
+        tryCatch({
+            response <- Terra()$importJobStatus(namespace, name, job_id)
+            .avstop_for_status(response, "avtable_import_status")
+            updated_status[[job_index]] <- httr::content(response)$status
+        }, error = function(err) {
+            msg <- paste(strwrap(paste0(
+                "failed to get status of job_id '", job_id, "'; ",
+                "continuing to next job"
+            )), collapse = "\n")
+            warning(msg, "\n", conditionMessage(err), immediate. = TRUE)
+        })
+        if (!is.null(progress_bar))
+            setTxtProgressBar(progress_bar, job_index)
+    }
+
+    job_status$status[todo] <- updated_status
+    job_status
 }
 
 #' @rdname av
