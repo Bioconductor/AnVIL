@@ -399,46 +399,13 @@ avtable_import <-
     ## identify the 'entity' column
     .data <- .avtable_import_set_entity(.data, entity)
     ## divide large tables into chunks, if necessary
-    chunks <- .avtable_import_page_chunks(.data, n, page, pageSize)
-
-    ## progress bar
-    n_uploaded <- 0L
-    progress_bar <- NULL
-    if (length(chunks) > 1L) {
-        progress_bar <- txtProgressBar(max = sum(lengths(chunks)), style = 3L)
-        on.exit(close(progress_bar))
-    }
-
-    status <- rep("Failed", length(chunks))
-    job_id <- rep(NA_character_, length(chunks))
-    ## iterate through chunks
-    for (chunk_index in seq_along(chunks)) {
-        chunk_idx <- chunks[[chunk_index]]
-        chunk_name <- names(chunks)[[chunk_index]]
-        chunk <- .data[chunk_idx, , drop = FALSE]
-        job_id[[chunk_index]] <- tryCatch({
-            .avtable_import(chunk, namespace, name, delete_empty_values, na)
-        }, error = function(err) {
-            msg <- paste(strwrap(paste0(
-                "failed to import page ", chunk_name,
-                "; continuing to next page"
-            )), collapse = "\n")
-            warning(msg, "\n", conditionMessage(err), immediate. = TRUE)
-            NA_character_
-        })
-        n_uploaded <- n_uploaded + length(chunk_idx)
-        if (!is.null(progress_bar))
-            setTxtProgressBar(progress_bar, n_uploaded)
-    }
-    status[!is.na(job_id)] <- "Uploaded"
-    tibble(
-        page = seq_along(chunks),
-        job_id = job_id,
-        status = status
+    .avtable_import_chunks(
+        .data, namespace, name, delete_empty_values, na,
+        n, page, pageSize
     )
 }
 
-.avtable_import_page_chunks <-
+.avtable_import_pages_index <-
     function(.data, n, page, pageSize)
 {
     ## import table in chunks to avoid server timeout;
@@ -467,6 +434,54 @@ avtable_import <-
     pages <- pages[names(pages) != "0"]
     message("pageSize = ", pageSize, " rows (", length(pages), " pages)")
     pages
+}
+
+.avtable_import_chunks <-
+    function(
+        .data, namespace, name, delete_empty_values, na,
+        n, page, pageSize
+    )
+{
+    ## divide large tables into chunks, if necessary
+    pages <- .avtable_import_pages_index(.data, n, page, pageSize)
+
+    ## progress bar
+    n_uploaded <- 0L
+    progress_bar <- NULL
+    if (length(pages) > 1L) {
+        progress_bar <- txtProgressBar(max = sum(lengths(pages)), style = 3L)
+        on.exit(close(progress_bar))
+    }
+
+    status <- rep("Failed", length(pages))
+    job_id <- rep(NA_character_, length(pages))
+    ## iterate through pages
+    for (chunk_index in seq_along(pages)) {
+        chunk_idx <- pages[[chunk_index]]
+        chunk_name <- names(pages)[[chunk_index]]
+        chunk <- .data[chunk_idx, , drop = FALSE]
+        job_id[[chunk_index]] <- tryCatch({
+            .avtable_import(chunk, namespace, name, delete_empty_values, na)
+        }, error = function(err) {
+            msg <- paste(strwrap(paste0(
+                "failed to import page ", chunk_name,
+                "; continuing to next page"
+            )), collapse = "\n")
+            warning(msg, "\n", conditionMessage(err), immediate. = TRUE)
+            NA_character_
+        })
+        n_uploaded <- n_uploaded + length(chunk_idx)
+        if (!is.null(progress_bar))
+            setTxtProgressBar(progress_bar, n_uploaded)
+    }
+    status[!is.na(job_id)] <- "Uploaded"
+    tibble(
+        page = seq_along(pages),
+        from_row = vapply(pages, min, integer(1)),
+        to_row = vapply(pages, max, integer(1)),
+        job_id = job_id,
+        status = status
+    )
 }
 
 .avtable_import <-
@@ -585,7 +600,8 @@ avtable_import_set <-
     function(
         .data, origin, set = names(.data)[[1]], member = names(.data)[[2]],
         namespace = avworkspace_namespace(), name = avworkspace_name(),
-        delete_empty_values = FALSE)
+        delete_empty_values = FALSE, na = "NA",
+        n = Inf, page = 1L, pageSize = NULL)
 {
     stopifnot(
         is.data.frame(.data),
@@ -596,30 +612,24 @@ avtable_import_set <-
         !identical(set, member), member %in% names(.data),
         .is_scalar_character(namespace),
         .is_scalar_character(name),
-        .is_scalar_logical(delete_empty_values)
+        .is_scalar_logical(delete_empty_values),
+        .is_scalar_character(na, zchar = TRUE),
+        .is_scalar_numeric(n, infinite.ok = TRUE),
+        .is_scalar_integer(as.integer(page)),
+        is.null(pageSize) || .is_scalar_integer(as.integer(pageSize))
     )
-
     origin <- URLencode(origin)
 
-    tbl <-
-        .data %>%
+    .data <-
+        .data |>
         select(set, member)
-    names(tbl)[[1]] <- paste0("membership:", origin, "_set_id")
-    names(tbl)[[2]] <- origin
+    names(.data)[[1]] <- paste0("membership:", origin, "_set_id")
+    names(.data)[[2]] <- origin
 
-    destination <- tempfile()
-    write.table(tbl, destination, quote = FALSE, sep="\t", row.names=FALSE)
-
-    entities <- httr::upload_file(destination)
-    response <- Terra()$flexibleImportEntities(
-        namespace, URLencode(name),
-        async = FALSE,
-        deleteEmptyValues = delete_empty_values,
-        entities = entities
+    .avtable_import_chunks(
+        .data, namespace, name, delete_empty_values, na,
+        n, page, pageSize
     )
-    .avstop_for_status(response, "avtable_import_sample_set")
-
-    httr::content(response, type="text", encoding = "UTF-8")
 }
 
 #' @rdname av
