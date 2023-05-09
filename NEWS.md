@@ -11,6 +11,9 @@ USER VISIBLE CHANGES
   `avtable_import()`. Changes default behavior.
   <https://github.com/Bioconductor/AnVIL/issues/75>
 
+- (v 1.12.1) Add paged support for large tables in `avtable_import()`
+  and `avtable_import_set()`.
+
 BUG FIXES
 
 - (v 1.11.1) consistently URLencode workspace and workflow `name`, to allow
