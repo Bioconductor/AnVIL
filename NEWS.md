@@ -1,3 +1,8 @@
+# AnVIL 1.14.0
+
+- (v 1.13.1) Add paged support for large tables in `avtable_import()`
+  and `avtable_import_set()`.
+
 # AnVIL 1.12.0
 
 USER VISIBLE CHANGES
