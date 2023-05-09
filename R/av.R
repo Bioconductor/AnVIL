@@ -360,7 +360,7 @@ avtable_paged <-
 #'
 #' @details `avtable_import()` tries to work around limitations in
 #'     `.data` size in the AnVIL platform, using `pageSize` (number of
-#'     rows) to import so that approximately 200000 elements (rows x
+#'     rows) to import so that approximately 1500000 elements (rows x
 #'     columns) are uploaded per chunk. For large `.data`, a progress
 #'     bar summarizes progress on the import. Individual chunks may
 #'     nonetheless fail to upload, with common reasons being an
@@ -372,8 +372,10 @@ avtable_paged <-
 #'     provide an explicit `pageSize` less than the automatically
 #'     determined size.
 #'
-#' @return `avtable_import()` returns a `character(1)` name of the
-#'     imported AnVIL tibble.
+#' @return `avtable_import()` returns a `tibble()` containing the page
+#'     number, 'from' and 'to' rows included in the page, job
+#'     identifier, and initial status of the uploaded 'chunks'. Use
+#'     `avtable_import_status()` to query current status.
 #'
 #' @importFrom utils write.table
 #'
@@ -502,63 +504,6 @@ avtable_import <-
 
 #' @rdname av
 #'
-#' @description `avtable_import_status()` queries for the status of an
-#'     'asynchronous' table import.
-#'
-#' @param job_id character(1) job identifier, returned by
-#'     `avtable_import()` and `avtable_import_set()` when
-#'     `asynchronous = TRUE`.
-#'
-#' @export
-avtable_import_status <-
-    function(job_status,
-        namespace = avworkspace_namespace(), name = avworkspace_name())
-{
-    stopifnot(
-        is.data.frame(job_status),
-        c("job_id", "status") %in% colnames(job_status),
-        .is_character(job_status$job_id, na.ok = TRUE),
-        .is_character(job_status$status),
-        .is_scalar_character(namespace),
-        .is_scalar_character(name)
-    )
-
-    todo <- !job_status$status %in% c("Done", "Failed")
-    job_ids <- job_status$job_id[todo]
-    n_jobs <- length(job_ids)
-    updated_status <- rep(NA_character_, n_jobs)
-    names(updated_status) <- job_ids
-
-    progress_bar <- NULL
-    message("checking status of ", n_jobs, " avtable import jobs")
-    if (n_jobs > 1L) {
-        progress_bar <- txtProgressBar(max = n_jobs, style = 3L)
-        on.exit(close(progress_bar))
-    }
-
-    for (job_index in seq_len(n_jobs)) {
-        job_id <- job_ids[[job_index]]
-        tryCatch({
-            response <- Terra()$importJobStatus(namespace, name, job_id)
-            .avstop_for_status(response, "avtable_import_status")
-            updated_status[[job_index]] <- httr::content(response)$status
-        }, error = function(err) {
-            msg <- paste(strwrap(paste0(
-                "failed to get status of job_id '", job_id, "'; ",
-                "continuing to next job"
-            )), collapse = "\n")
-            warning(msg, "\n", conditionMessage(err), immediate. = TRUE)
-        })
-        if (!is.null(progress_bar))
-            setTxtProgressBar(progress_bar, job_index)
-    }
-
-    job_status$status[todo] <- updated_status
-    job_status
-}
-
-#' @rdname av
-#'
 #' @param origin character(1) name of the entity (table) used to
 #'     create the set e.g "sample", "participant",
 #'     etc.
@@ -630,6 +575,62 @@ avtable_import_set <-
         .data, namespace, name, delete_empty_values, na,
         n, page, pageSize
     )
+}
+
+#' @rdname av
+#'
+#' @description `avtable_import_status()` queries for the status of an
+#'     'asynchronous' table import.
+#'
+#' @param job_status tibble() of job identifiers, returned by
+#'     `avtable_import()` and `avtable_import_set()`.
+#'
+#' @export
+avtable_import_status <-
+    function(job_status,
+        namespace = avworkspace_namespace(), name = avworkspace_name())
+{
+    stopifnot(
+        is.data.frame(job_status),
+        c("job_id", "status") %in% colnames(job_status),
+        .is_character(job_status$job_id, na.ok = TRUE),
+        .is_character(job_status$status),
+        .is_scalar_character(namespace),
+        .is_scalar_character(name)
+    )
+
+    todo <- !job_status$status %in% c("Done", "Failed")
+    job_ids <- job_status$job_id[todo]
+    n_jobs <- length(job_ids)
+    updated_status <- rep(NA_character_, n_jobs)
+    names(updated_status) <- job_ids
+
+    progress_bar <- NULL
+    message("checking status of ", n_jobs, " avtable import jobs")
+    if (n_jobs > 1L) {
+        progress_bar <- txtProgressBar(max = n_jobs, style = 3L)
+        on.exit(close(progress_bar))
+    }
+
+    for (job_index in seq_len(n_jobs)) {
+        job_id <- job_ids[[job_index]]
+        tryCatch({
+            response <- Terra()$importJobStatus(namespace, name, job_id)
+            .avstop_for_status(response, "avtable_import_status")
+            updated_status[[job_index]] <- httr::content(response)$status
+        }, error = function(err) {
+            msg <- paste(strwrap(paste0(
+                "failed to get status of job_id '", job_id, "'; ",
+                "continuing to next job"
+            )), collapse = "\n")
+            warning(msg, "\n", conditionMessage(err), immediate. = TRUE)
+        })
+        if (!is.null(progress_bar))
+            setTxtProgressBar(progress_bar, job_index)
+    }
+
+    job_status$status[todo] <- updated_status
+    job_status
 }
 
 #' @rdname av

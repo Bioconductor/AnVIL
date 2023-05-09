@@ -6,8 +6,8 @@
 \alias{avtable}
 \alias{avtable_paged}
 \alias{avtable_import}
-\alias{avtable_import_status}
 \alias{avtable_import_set}
+\alias{avtable_import_status}
 \alias{avtable_delete_values}
 \alias{avdata}
 \alias{avdata_import}
@@ -56,12 +56,6 @@ avtable_import(
   pageSize = NULL
 )
 
-avtable_import_status(
-  job_id,
-  namespace = avworkspace_namespace(),
-  name = avworkspace_name()
-)
-
 avtable_import_set(
   .data,
   origin,
@@ -69,7 +63,17 @@ avtable_import_set(
   member = names(.data)[[2]],
   namespace = avworkspace_namespace(),
   name = avworkspace_name(),
-  delete_empty_values = FALSE
+  delete_empty_values = FALSE,
+  na = "NA",
+  n = Inf,
+  page = 1L,
+  pageSize = NULL
+)
+
+avtable_import_status(
+  job_status,
+  namespace = avworkspace_namespace(),
+  name = avworkspace_name()
 )
 
 avtable_delete_values(
@@ -182,10 +186,6 @@ new table with name \code{entity} and entity values
 \item{delete_empty_values}{logical(1) when \code{TRUE}, remove entities
 not include in \code{.data} from the DATA table. Default: \code{FALSE}.}
 
-\item{job_id}{character(1) job identifier, returned by
-\code{avtable_import()} and \code{avtable_import_set()} when
-\code{asynchronous = TRUE}.}
-
 \item{origin}{character(1) name of the entity (table) used to
 create the set e.g "sample", "participant",
 etc.}
@@ -196,6 +196,9 @@ set(s) to be created.}
 \item{member}{\code{character()} vector of entity from the avtable
 identified by \code{origin}. The values may repeat if an ID is in
 more than one set}
+
+\item{job_status}{tibble() of job identifiers, returned by
+\code{avtable_import()} and \code{avtable_import_set()}.}
 
 \item{values}{vector of values in the entity (key) column of
 \code{table} to be deleted. A table \code{sample} has an associated
@@ -241,8 +244,10 @@ table \code{table} in the specified workspace.
 \code{avtable_paged()}: a tibble of data corresponding to the
 AnVIL table \code{table} in the specified workspace.
 
-\code{avtable_import()} returns a \code{character(1)} name of the
-imported AnVIL tibble.
+\code{avtable_import()} returns a \code{tibble()} containing the page
+number, 'from' and 'to' rows included in the page, job
+identifier, and initial status of the uploaded 'chunks'. Use
+\code{avtable_import_status()} to query current status.
 
 \code{avtable_import_set()} returns a \code{character(1)} name of the
 imported AnVIL tibble.
@@ -381,7 +386,7 @@ arguments if the data contains a string \code{"NA"} as well as
 
 \code{avtable_import()} tries to work around limitations in
 \code{.data} size in the AnVIL platform, using \code{pageSize} (number of
-rows) to import so that approximately 200000 elements (rows x
+rows) to import so that approximately 1500000 elements (rows x
 columns) are uploaded per chunk. For large \code{.data}, a progress
 bar summarizes progress on the import. Individual chunks may
 nonetheless fail to upload, with common reasons being an
@@ -389,7 +394,7 @@ internal server error (HTTP error code 500) or transient
 authorization failure (HTTP 401). In these and other cases
 \code{avtable_import()} reports the failed page(s) as warnings. The
 user can attempt to import these individually using the \code{page}
-argument. If many pages fail to import, a strategy migth be to
+argument. If many pages fail to import, a strategy might be to
 provide an explicit \code{pageSize} less than the automatically
 determined size.
 

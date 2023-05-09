@@ -5,3 +5,5 @@
 vignettes/.*R$
 vignettes/.*html
 vignettes/.*_cache
+^doc$
+^Meta$
