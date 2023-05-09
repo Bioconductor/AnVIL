@@ -356,9 +356,56 @@ Users can easily add tables to their own workspace using
 `avtable_import()`, perhaps as the final stage of a pipe
 
 ```{r, eval = FALSE}
-mtcars %>%
-    mutate(cyl = factor(cyl)) %>%
-    avtable_import()
+my_cars <-
+    mtcars |>
+    as_tibble(rownames = "model") |>
+    mutate(model = gsub(" ", "_", model))
+job_status <- avtable_import(my_cars)
+```
+
+Tables are imported 'asynchronously', and large tables (more than 1.5
+million elements; see the `pageSize` argument) are uploaded in
+pages. The `job status` is a tibble summarizing each page; the status
+of the upload can be checked with
+
+```{r, eval = FALSE}
+avtable_import_status(job_status)
+```
+
+The transcript of a session where page size is set intentionally small
+for illustration is
+
+```{r, eval = FALSE}
+(job_status <- avtable_import(my_cars, pageSize = 10))
+## pageSize = 10 rows (4 pages)
+##   |======================================================================| 100%
+## # A tibble: 4 × 5
+##    page from_row to_row job_id                               status
+##   <int>    <int>  <int> <chr>                                <chr>
+## 1     1        1     10 a32e9706-f63c-49ed-9620-b214746b9392 Uploaded
+## 2     2       11     20 f2910ac2-0954-4fb9-b36c-970845a266b7 Uploaded
+## 3     3       21     30 e18adc5b-d26f-4a8a-a0d7-a232e17ac8d2 Uploaded
+## 4     4       31     32 d14efb89-e2dd-4937-b80a-169520b5f563 Uploaded
+(job_status <- avtable_import_status(job_status))
+## checking status of 4 avtable import jobs
+##   |======================================================================| 100%
+## # A tibble: 4 × 5
+##    page from_row to_row job_id                               status
+##   <int>    <int>  <int> <chr>                                <chr>
+## 1     1        1     10 a32e9706-f63c-49ed-9620-b214746b9392 Done
+## 2     2       11     20 f2910ac2-0954-4fb9-b36c-970845a266b7 Done
+## 3     3       21     30 e18adc5b-d26f-4a8a-a0d7-a232e17ac8d2 ReadyForUpsert
+## 4     4       31     32 d14efb89-e2dd-4937-b80a-169520b5f563 ReadyForUpsert
+(job_status <- avtable_import_status(job_status))
+## checking status of 4 avtable import jobs
+##   |======================================================================| 100%
+## # A tibble: 4 × 5
+##    page from_row to_row job_id                               status
+##   <int>    <int>  <int> <chr>                                <chr>
+## 1     1        1     10 a32e9706-f63c-49ed-9620-b214746b9392 Done
+## 2     2       11     20 f2910ac2-0954-4fb9-b36c-970845a266b7 Done
+## 3     3       21     30 e18adc5b-d26f-4a8a-a0d7-a232e17ac8d2 Done
+## 4     4       31     32 d14efb89-e2dd-4937-b80a-169520b5f563 Done
 ```
 
 The Terra data model allows for tables that represent samples of other
