@@ -450,7 +450,7 @@ avtable_import <-
     ## progress bar
     n_uploaded <- 0L
     progress_bar <- NULL
-    if (length(pages) > 1L) {
+    if (length(pages) > 1L && interactive()) {
         progress_bar <- txtProgressBar(max = sum(lengths(pages)), style = 3L)
         on.exit(close(progress_bar))
     }
@@ -607,7 +607,7 @@ avtable_import_status <-
 
     progress_bar <- NULL
     message("checking status of ", n_jobs, " avtable import jobs")
-    if (n_jobs > 1L) {
+    if (n_jobs > 1L && interactive()) {
         progress_bar <- txtProgressBar(max = n_jobs, style = 3L)
         on.exit(close(progress_bar))
     }
