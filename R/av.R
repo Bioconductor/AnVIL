@@ -121,6 +121,12 @@ avtables <-
 #'     `avtable_paged()` and `avtable_import()` are handled by the
 #'     `na` parameter.
 #'
+#' @details `avtable()` may sometimes result in a curl error 'Error in
+#'     curl::curl_fetch_memory' or a 'Internal Server Error (HTTP
+#'     500)' This may be due to a server time-out when trying to read
+#'     a large (more than 50,000 rows?) table; using `avtable_paged()`
+#'     may address this problem.
+#'
 #' @details For `avtable()` and `avtable_paged()`, the default `na = c("",
 #'     "NA")` treats empty cells or cells containing "NA" in a Terra
 #'     data table as `NA_character_` in R. Use `na = character()` to
@@ -160,7 +166,15 @@ avtable <-
     )
     na_fun <- .avtable_na(na)
 
-    entities <- Terra()$getEntities(namespace, URLencode(name), table)
+    tryCatch({
+        entities <- Terra()$getEntities(namespace, URLencode(name), table)
+    }, error = function(err) {
+        msg <- paste0(
+            "'avtable()' failed, see 'Details' of `?avtable` for help\n",
+            "  ", conditionMessage(err)
+        )
+        stop(msg, call. = FALSE)
+    })
     .avstop_for_status(entities, "avtable")
     tbl <-
         entities %>%

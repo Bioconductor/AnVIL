@@ -366,6 +366,12 @@ Treatment of missing values in \code{avtable()},
 \code{avtable_paged()} and \code{avtable_import()} are handled by the
 \code{na} parameter.
 
+\code{avtable()} may sometimes result in a curl error 'Error in
+curl::curl_fetch_memory' or a 'Internal Server Error (HTTP
+500)' This may be due to a server time-out when trying to read
+a large (more than 50,000 rows?) table; using \code{avtable_paged()}
+may address this problem.
+
 For \code{avtable()} and \code{avtable_paged()}, the default \code{na = c("", "NA")} treats empty cells or cells containing "NA" in a Terra
 data table as \code{NA_character_} in R. Use \code{na = character()} to
 indicate no missing values, \code{na = "NA"} to retain the
