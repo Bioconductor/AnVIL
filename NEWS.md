@@ -14,6 +14,9 @@ USER VISIBLE CHANGES
 - (v 1.12.1) Add paged support for large tables in `avtable_import()`
   and `avtable_import_set()`.
 
+- (v 1.12.2) Only show `avtable_paged()` and `avtable_import*()`
+  progress bar in interactive() sessions
+
 BUG FIXES
 
 - (v 1.11.1) consistently URLencode workspace and workflow `name`, to allow
