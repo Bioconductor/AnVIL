@@ -1,10 +1,15 @@
 # AnVIL 1.14.0
 
+NEW FEATURES
+
 - (v 1.13.1) Add paged support for large tables in `avtable_import()`
   and `avtable_import_set()`.
 
 - (v 1.13.2) Only show `avtable_paged()` and `avtable_import*()`
   progress bar in interactive() sessions
+
+- (v 1.13.4) Report messages when `avtable_import_status()`
+  contains one. <https://github.com/Bioconductor/AnVIL/issues/79>
 
 # AnVIL 1.12.0
 

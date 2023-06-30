@@ -388,7 +388,8 @@ avtable_paged <-
 #'
 #' @return `avtable_import()` returns a `tibble()` containing the page
 #'     number, 'from' and 'to' rows included in the page, job
-#'     identifier, and initial status of the uploaded 'chunks'. Use
+#'     identifier, initial status of the uploaded 'chunks', and any
+#'     (error) messages generated during status check. Use
 #'     `avtable_import_status()` to query current status.
 #'
 #' @importFrom utils write.table
@@ -496,7 +497,8 @@ avtable_import <-
         from_row = vapply(pages, min, integer(1)),
         to_row = vapply(pages, max, integer(1)),
         job_id = job_id,
-        status = status
+        status = status,
+        message = rep(NA_character_, length(status))
     )
 }
 
@@ -617,7 +619,8 @@ avtable_import_status <-
     job_ids <- job_status$job_id[todo]
     n_jobs <- length(job_ids)
     updated_status <- rep(NA_character_, n_jobs)
-    names(updated_status) <- job_ids
+    updated_message <- job_status$message
+    names(updated_status) <- names(updated_message) <- job_ids
 
     progress_bar <- NULL
     message("checking status of ", n_jobs, " avtable import jobs")
@@ -631,7 +634,15 @@ avtable_import_status <-
         tryCatch({
             response <- Terra()$importJobStatus(namespace, name, job_id)
             .avstop_for_status(response, "avtable_import_status")
-            updated_status[[job_index]] <- httr::content(response)$status
+            content <- httr::content(response)
+            updated_status[[job_index]] <- content$status
+            if ("message" %in% names(content)) {
+                updated_message[[job_index]] <- gsub(
+                    "[[:space:]]+", " ", content$message
+                )
+            } else {
+                updated_message[[job_index]] <- NA_character_
+            }
         }, error = function(err) {
             msg <- paste(strwrap(paste0(
                 "failed to get status of job_id '", job_id, "'; ",
@@ -644,6 +655,7 @@ avtable_import_status <-
     }
 
     job_status$status[todo] <- updated_status
+    job_status$message[todo] <- updated_message
     job_status
 }
 

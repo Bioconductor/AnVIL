@@ -246,7 +246,8 @@ AnVIL table \code{table} in the specified workspace.
 
 \code{avtable_import()} returns a \code{tibble()} containing the page
 number, 'from' and 'to' rows included in the page, job
-identifier, and initial status of the uploaded 'chunks'. Use
+identifier, initial status of the uploaded 'chunks', and any
+(error) messages generated during status check. Use
 \code{avtable_import_status()} to query current status.
 
 \code{avtable_import_set()} returns a \code{character(1)} name of the
