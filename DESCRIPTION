@@ -1,21 +1,23 @@
 Package: AnVIL
 Title: Bioconductor on the AnVIL compute environment
-Version: 1.13.4
-Authors@R: 
-    c(person(
-        "Martin", "Morgan", role = c("aut", "cre"),
-        email = "mtmorgan.bioc@gmail.com",
-        comment = c(ORCID = "0000-0002-5874-8148")
-     ),
-     person("Kayla", "Interdonato", role = "aut"),
-     person("Nitesh", "Turaga", role = "aut"),
-     person("BJ", "Stubbs", role =  "ctb"),
-     person("Vincent", "Carey", role = "ctb"),
-     person("Marcel", "Ramos", role = "ctb"),
-     person("Sehyun", "Oh", role = "ctb"),
-     person("Sweta", "Gopaulakrishnan", role = "ctb"),
-     person("Valerie", "Obenchain", role = "ctb")
-    )
+Version: 1.13.5
+Authors@R: c(
+    person(
+        "Marcel", "Ramos", role = c("aut", "cre"),
+        email = "marcel.ramos@roswellpark.org",
+        comment = c(ORCID = "0000-0002-3242-0582")
+    ),
+    person(
+       "Martin", "Morgan", role = c("aut"),
+       comment = c(ORCID = "0000-0002-5874-8148")
+    ),
+    person("Kayla", "Interdonato", role = "aut"),
+    person("Nitesh", "Turaga", role = "aut"),
+    person("BJ", "Stubbs", role =  "ctb"),
+    person("Vincent", "Carey", role = "ctb"),
+    person("Sehyun", "Oh", role = "ctb"),
+    person("Sweta", "Gopaulakrishnan", role = "ctb"),
+    person("Valerie", "Obenchain", role = "ctb"))
 Description: The AnVIL is a cloud computing resource developed in part
     by the National Human Genome Research Institute. The AnVIL package
     provides end-user and developer functionality. For the end-user,
