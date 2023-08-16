@@ -103,7 +103,7 @@ avworkflow <-
         config$methodRepoMethod$methodVersion,
         config$methodRepoMethod$sourceRepo
     )
-    .avstop_for_status(response)
+    .avstop_for_status(response, "avworkflow_response")
 }
 
 #' @importFrom dplyr left_join

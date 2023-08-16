@@ -11,6 +11,9 @@ NEW FEATURES
 - (v 1.13.4) Report messages when `avtable_import_status()`
   contains one. <https://github.com/Bioconductor/AnVIL/issues/79>
 
+- (v 1.13.3) Use 'op' when .avworkflow_response() calls avstop_for_status().
+  <https://github.com/Bioconductor/AnVIL/issues/80>
+
 # AnVIL 1.12.0
 
 USER VISIBLE CHANGES
