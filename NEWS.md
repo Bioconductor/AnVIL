@@ -22,6 +22,9 @@ BUG FIXES
 - (v 1.11.1) consistently URLencode workspace and workflow `name`, to allow
   for spaces. https://github.com/Bioconductor/AnVIL/issues/67
 
+- (v 1.12.3) Use 'op' when .avworkflow_response() calls avstop_for_status().
+  <https://github.com/Bioconductor/AnVIL/issues/80>
+
 # AnVIL 1.10.0
 
 NEW FEATURES
