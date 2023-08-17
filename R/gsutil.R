@@ -69,17 +69,27 @@ gsutil_requesterpays <-
     stopifnot(all(.gsutil_is_uri(source)))
     project <- gcloud_project()
     buckets <- regmatches(source, regexpr("^gs://[^/]+", source))
-    args <- c("-u", project, "requesterpays", "get", buckets)
-    result <- .gsutil_do(args)
-    setNames(endsWith(result, "Enabled"), source)
+    vapply(
+        setNames(nm = buckets),
+        function(bucket) {
+            args <- c("-u", project, "requesterpays", "get", bucket)
+            result <- .gsutil_do(args)
+            endsWith(result, "Enabled")
+        },
+        logical(1L)
+    )
 }
 
 .gsutil_requesterpays_flag <-
-    function(source)
+    function(source, destination = "")
 {
-    source <- source[.gsutil_is_uri(source)]
+    locations <- c(source, destination)
+    is_uris <- vapply(
+        locations, .gsutil_is_uri, logical(1L)
+    )
+    location <- locations[is_uris]
     tryCatch({
-        if (length(source) && any(gsutil_requesterpays(source))) {
+        if (length(location) && any(gsutil_requesterpays(location))) {
             c("-u", gcloud_project())
         } else NULL
     }, error = function(e) {
@@ -261,7 +271,7 @@ gsutil_cp <-
     )
 
     args <- c(
-        if (any(source_is_uri)) .gsutil_requesterpays_flag(source),
+        if (any(source_is_uri)) .gsutil_requesterpays_flag(source, destination),
         if (parallel) "-m", ## Makes the operations faster
         "cp", ## cp command
         if (recursive) "-r",
