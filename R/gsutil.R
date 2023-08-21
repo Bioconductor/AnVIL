@@ -81,13 +81,10 @@ gsutil_requesterpays <-
 }
 
 .gsutil_requesterpays_flag <-
-    function(source, destination = "")
+    function(source)
 {
-    locations <- c(source, destination)
-    is_uris <- vapply(
-        locations, .gsutil_is_uri, logical(1L)
-    )
-    location <- locations[is_uris]
+    is_uris <- .gsutil_is_uri(source)
+    location <- source[is_uris]
     tryCatch({
         if (length(location) && any(gsutil_requesterpays(location))) {
             c("-u", gcloud_project())
@@ -263,7 +260,8 @@ gsutil_stat <-
 gsutil_cp <-
     function(source, destination, ..., recursive = FALSE, parallel = TRUE)
 {
-    source_is_uri <- .gsutil_is_uri(source)
+    location <- c(source, destination)
+    location_is_uri <- .gsutil_is_uri(location)
     stopifnot(
         .is_character(source), .is_scalar_character(destination),
         all(source_is_uri) || .gsutil_is_uri(destination),
@@ -271,7 +269,7 @@ gsutil_cp <-
     )
 
     args <- c(
-        if (any(source_is_uri)) .gsutil_requesterpays_flag(source, destination),
+        if (any(location_is_uri)) .gsutil_requesterpays_flag(location),
         if (parallel) "-m", ## Makes the operations faster
         "cp", ## cp command
         if (recursive) "-r",
