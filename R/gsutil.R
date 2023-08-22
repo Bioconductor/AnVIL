@@ -69,9 +69,15 @@ gsutil_requesterpays <-
     stopifnot(all(.gsutil_is_uri(source)))
     project <- gcloud_project()
     buckets <- regmatches(source, regexpr("^gs://[^/]+", source))
-    args <- c("-u", project, "requesterpays", "get", buckets)
-    result <- .gsutil_do(args)
-    setNames(endsWith(result, "Enabled"), source)
+    is_enabled <- FALSE
+    for (bucket in buckets) {
+        args <- c("-u", project, "requesterpays", "get", bucket)
+        result <- .gsutil_do(args)
+        is_enabled <- endsWith(result, "Enabled")
+        if (is_enabled)
+            break
+    }
+    is_enabled
 }
 
 .gsutil_requesterpays_flag <-
@@ -79,7 +85,7 @@ gsutil_requesterpays <-
 {
     source <- source[.gsutil_is_uri(source)]
     tryCatch({
-        if (length(source) && any(gsutil_requesterpays(source))) {
+        if (length(source) && gsutil_requesterpays(source)) {
             c("-u", gcloud_project())
         } else NULL
     }, error = function(e) {
@@ -253,7 +259,8 @@ gsutil_stat <-
 gsutil_cp <-
     function(source, destination, ..., recursive = FALSE, parallel = TRUE)
 {
-    source_is_uri <- .gsutil_is_uri(source)
+    location <- c(source, destination)
+    location_is_uri <- .gsutil_is_uri(location)
     stopifnot(
         .is_character(source), .is_scalar_character(destination),
         all(source_is_uri) || .gsutil_is_uri(destination),
@@ -261,7 +268,7 @@ gsutil_cp <-
     )
 
     args <- c(
-        if (any(source_is_uri)) .gsutil_requesterpays_flag(source),
+        if (any(location_is_uri)) .gsutil_requesterpays_flag(location),
         if (parallel) "-m", ## Makes the operations faster
         "cp", ## cp command
         if (recursive) "-r",
