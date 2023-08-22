@@ -13,6 +13,9 @@ NEW FEATURES
 
 - (v 1.13.3) Use 'op' when .avworkflow_response() calls avstop_for_status().
   <https://github.com/Bioconductor/AnVIL/issues/80>
+  
+- (v 1.13.7) Check `requester pays` for destination URIs when using
+  `gsutil_cp` (@smgogarten, #82)
 
 # AnVIL 1.12.0
 
