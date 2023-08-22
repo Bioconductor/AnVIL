@@ -69,15 +69,15 @@ gsutil_requesterpays <-
     stopifnot(all(.gsutil_is_uri(source)))
     project <- gcloud_project()
     buckets <- regmatches(source, regexpr("^gs://[^/]+", source))
-    vapply(
-        setNames(nm = buckets),
-        function(bucket) {
-            args <- c("-u", project, "requesterpays", "get", bucket)
-            result <- .gsutil_do(args)
-            endsWith(result, "Enabled")
-        },
-        logical(1L)
-    )
+    is_enabled <- FALSE
+    for (bucket in buckets) {
+        args <- c("-u", project, "requesterpays", "get", bucket)
+        result <- .gsutil_do(args)
+        is_enabled <- endsWith(result, "Enabled")
+        if (is_enabled)
+            break
+    }
+    is_enabled
 }
 
 .gsutil_requesterpays_flag <-
@@ -85,7 +85,7 @@ gsutil_requesterpays <-
 {
     source <- source[.gsutil_is_uri(source)]
     tryCatch({
-        if (length(source) && any(gsutil_requesterpays(source))) {
+        if (length(source) && gsutil_requesterpays(source)) {
             c("-u", gcloud_project())
         } else NULL
     }, error = function(e) {
