@@ -107,15 +107,22 @@ following columns:
 \item attribute
 }
 
-The only column of interest to the user is the attribute column,
-this is the column that should be changed for customization.
+The only column of interest to the user is the \code{attribute}
+column, this is the column that should be changed for
+customization.
 
 \code{avworkflow_configuration_outputs()} returns a data.frame
 providing a template for the configuration outputs, with the
-following columns: - name - outputType - attribute
+following columns:
+\itemize{
+\item name
+\item outputType
+\item attribute
+}
 
-The only column of interest to the user is the attribute column,
-this is the column that should be changed for customization.
+The only column of interest to the user is the \code{attribute}
+column, this is the column that should be changed for
+customization.
 
 \code{avworkflow_configuration_update()} returns a list structure
 describing the updated configuration.
@@ -157,7 +164,7 @@ type \code{integer}, but the documentation indicates either
 }
 \description{
 Funtions on this help page facilitate getting,
-updating, and settting workflow configuration parameters. See
+updating, and setting workflow configuration parameters. See
 \code{?avworkflow} for additional relevant functionality.
 
 \code{avworkflow_namespace()} and \code{avworkflow_name()} are
@@ -183,8 +190,9 @@ outputs for a configuration.
 \code{avworkflow_configuration_update()} returns a list structure
 describing a workflow configuration with updated inputs and / or outputs.
 
-\code{avworkflow_configuration_set()} updates an
-existing configuration, e.g., changing inputs to the workflow.
+\code{avworkflow_configuration_set()} updates an existing
+configuration in Terra / AnVIL, e.g., changing inputs to the
+workflow.
 
 \code{avworkflow_configuration_template()} returns a
 template for defining workflow configurations. This template

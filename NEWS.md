@@ -16,6 +16,9 @@ NEW FEATURES
   
 - (v 1.13.7) Check `requester pays` for destination URIs when using
   `gsutil_cp` (@smgogarten, #82)
+  
+- (v 1.13.8) Update documentation on updating workflow configurations.
+  (@amstilp, #84)
 
 # AnVIL 1.12.0
 

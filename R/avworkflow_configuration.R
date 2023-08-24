@@ -7,7 +7,7 @@
 #' @inheritParams avworkspace
 #'
 #' @description Funtions on this help page facilitate getting,
-#'     updating, and settting workflow configuration parameters. See
+#'     updating, and setting workflow configuration parameters. See
 #'     `?avworkflow` for additional relevant functionality.
 #'
 #' @seealso The help page `?avworkflow` for discovering, running,
@@ -175,8 +175,9 @@ avworkflow_configuration_get <-
 #' - optional
 #' - attribute
 #'
-#' @return The only column of interest to the user is the attribute column,
-#'     this is the column that should be changed for customization.
+#' @return The only column of interest to the user is the `attribute`
+#'     column, this is the column that should be changed for
+#'     customization.
 #'
 #' @export
 avworkflow_configuration_inputs <-
@@ -198,10 +199,14 @@ avworkflow_configuration_inputs <-
 #'
 #' @return `avworkflow_configuration_outputs()` returns a data.frame
 #'     providing a template for the configuration outputs, with the
-#'     following columns: - name - outputType - attribute
+#'     following columns:
+#' - name
+#' - outputType
+#' - attribute
 #'
-#' @return The only column of interest to the user is the attribute column,
-#'     this is the column that should be changed for customization.
+#' @return The only column of interest to the user is the `attribute`
+#'     column, this is the column that should be changed for
+#'     customization.
 #'
 #' @export
 avworkflow_configuration_outputs <-
@@ -300,8 +305,9 @@ avworkflow_configuration_update <-
 
 #' @rdname avworkflow_configuration
 #'
-#' @description `avworkflow_configuration_set()` updates an
-#'     existing configuration, e.g., changing inputs to the workflow.
+#' @description `avworkflow_configuration_set()` updates an existing
+#'     configuration in Terra / AnVIL, e.g., changing inputs to the
+#'     workflow.
 #'
 #' @param config a named list describing the full configuration, e.g.,
 #'     created from editing the return value of

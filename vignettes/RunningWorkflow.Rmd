@@ -130,7 +130,7 @@ inputs <-
 inputs
 ```
 
-## Update configuration
+## Update configuration locally
 
 Since the inputs have been modified we need to put this information into
 the configuration of the workflow. We can do this with
@@ -143,13 +143,30 @@ new_config <- avworkflow_configuration_update(config, inputs)
 new_config
 ```
 
+## Set a workflow configuration for reuse in AnVIL
+
+Use `avworkflow_configuration_set()` to permanently update the
+workflow to new parameter values.
+
+```{r set_config}
+avworkflow_configuration_set(new_config)
+```
+
+Actually, the previous command validates `new_config` only; to update
+the configuration in AnVIL (i.e., replacing the values in the
+workspace workflow graphical user interface), add the argument `dry = FALSE`.
+
+```{r set_config_not_dry}
+## avworkflow_configuration_set(new_config, dry = FALSE)
+```
+
 # Running and stopping workflows
 
 ## Running a workflow
 
 To finally run the new workflow we need to know the name of the data set to be
 used in the workflow. This can be discovered by looking at the table of
-interest and grabbing the name of the data set.
+interest and using the name of the data set.
 
 ```{r entityName}
 entityName <- avtable("participant_set") |>
@@ -165,6 +182,13 @@ Again, actually running the new configuration requires the argument
 ## avworkflow_run(new_config, entityName, dry = FALSE)
 ```
 
+`config` is used to set the `rootEntityType` and workflow method name
+and namespace; other components of `config` are ignored (the other
+components will be read by Terra / AnVIL from values updated with
+`avworkflow_configuration_set()`).
+
+## Monitoring workflows
+
 We can see that the workflow is running by using the `avworkflow_jobs`
 function. The elements of the table are ordered chronologically, with
 the most recent submission (most likely the job we just started!)
@@ -172,25 +196,6 @@ listed first.
 
 ```{r checking_workflow}
 avworkflow_jobs()
-```
-
-## Setting a workflow configuration for reuse in AnVIL
-
-The steps we have taken so far allow us to run an existing workflow,
-but with updated parameters. Use `avworkflow_configuration_set()` to
-permanently update the workflow to new parameter values.
-
-
-```{r set_config}
-avworkflow_configuration_set(new_config)
-```
-
-Actually, the previous command validates `new_config` only; to update
-the configuration in AnVIL (i.e., replacing the values in the
-workspace workflow graphical user interface), add the argument `dry = FALSE`.
-
-```{r set_config_not_dry}
-## avworkflow_configuration_set(new_config, dry = FALSE)
 ```
 
 ## Stopping workflows
