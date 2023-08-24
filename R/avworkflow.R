@@ -532,8 +532,11 @@ avworkflow_localize <-
 #'
 #' @description `avworkflow_run()` runs the workflow of the configuration.
 #'
-#' @param config a `avworkflow_configuration` object of the workflow that will
-#'     be run.
+#' @param config a `avworkflow_configuration` object of the workflow
+#'     that will be run. Only `entityType` and method configuration
+#'     name and namespace are used from `config`; other configuration
+#'     values must be communicated to AnVIL using
+#'     `avworkflow_configuration_set()`.
 #'
 #' @param entityName character(1) or NULL name of the set of samples
 #'     to be used when running the workflow. NULL indicates that no

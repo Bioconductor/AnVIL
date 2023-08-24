@@ -77,8 +77,11 @@ are synchronized from the workspace to a second bucket.}
 consequences but do not perform the action requested. When
 \code{FALSE}, perform the action.}
 
-\item{config}{a \code{avworkflow_configuration} object of the workflow that will
-be run.}
+\item{config}{a \code{avworkflow_configuration} object of the workflow
+that will be run. Only \code{entityType} and method configuration
+name and namespace are used from \code{config}; other configuration
+values must be communicated to AnVIL using
+\code{avworkflow_configuration_set()}.}
 
 \item{entityName}{character(1) or NULL name of the set of samples
 to be used when running the workflow. NULL indicates that no
