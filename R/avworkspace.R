@@ -53,7 +53,7 @@ avworkspaces <-
             accessLevel = .data$accessLevel
         ) %>%
         mutate(
-            name = trimws(.data$name),
+            name = .data$name,
             lastModified = as.Date(.data$lastModified)
         ) %>%
         arrange(
