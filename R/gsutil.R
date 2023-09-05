@@ -263,12 +263,12 @@ gsutil_cp <-
     location_is_uri <- .gsutil_is_uri(location)
     stopifnot(
         .is_character(source), .is_scalar_character(destination),
-        all(source_is_uri) || .gsutil_is_uri(destination),
+        any(location_is_uri),
         .is_scalar_logical(recursive), .is_scalar_logical(parallel)
     )
 
     args <- c(
-        if (any(location_is_uri)) .gsutil_requesterpays_flag(location),
+        .gsutil_requesterpays_flag(location),
         if (parallel) "-m", ## Makes the operations faster
         "cp", ## cp command
         if (recursive) "-r",
