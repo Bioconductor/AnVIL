@@ -27,6 +27,24 @@ NULL
     }
 })
 
+.avworkspaces_clean <- function(.data) {
+    .data |>
+        select(
+            name = .data$workspace.name,
+            lastModified = .data$workspace.lastModified,
+            createdBy = .data$workspace.createdBy,
+            namespace = .data$workspace.namespace,
+            accessLevel = .data$accessLevel
+        ) |>
+        mutate(
+            lastModified = as.Date(.data$lastModified)
+        ) |>
+        arrange(
+            .data$name,
+            desc(.data$lastModified)
+        )
+}
+
 #' @rdname avworkspace
 #'
 #' @description `avworkspaces()` returns a tibble with available
@@ -45,21 +63,7 @@ avworkspaces <-
     .avstop_for_status(response, "avworkspaces")
 
     flatten(response) %>%
-        select(
-            name = .data$workspace.name,
-            lastModified = .data$workspace.lastModified,
-            createdBy = .data$workspace.createdBy,
-            namespace = .data$workspace.namespace,
-            accessLevel = .data$accessLevel
-        ) %>%
-        mutate(
-            name = trimws(.data$name),
-            lastModified = as.Date(.data$lastModified)
-        ) %>%
-        arrange(
-            .data$name,
-            desc(.data$lastModified)
-        )
+        .avworkspaces_clean()
 }
 
 #' @rdname avworkspace
