@@ -423,12 +423,12 @@ avworkflow_files <-
             "provided submissionId"
         ))
     }
-    
+
     if (!is.null(workflowId) && workflowId %in% pull(tbl, "workflowId"))
         tbl <- 
             tbl |>
             filter(.data$workflowId == .env$workflowId)
-    
+
     tbl |>
         arrange(
             match(.data$type, c("output", "control")), # output first
@@ -514,14 +514,14 @@ avworkflow_localize <-
     }
 
     fls <- avworkflow_files(submissionId)
-    
+
     if (!is.null(workflowId) && !(workflowId %in% pull(fls, "workflowId"))) {
         stop(.pretty_text(
             "'workflowId' must be NULL, or character(1) associated with the ",
             "provided submissionId"
         ))
     }
-    
+
     if (!is.null(workflowId) && workflowId %in% pull(fls, "workflowId"))
         fls <- avworkflow_files(submissionId, workflowId)
 
@@ -531,7 +531,7 @@ avworkflow_localize <-
             paste0(pull(fls, "submissionRoot") |> unique(), "/", 
                    pull(fls, "workflow") |> unique(), "/", 
                    workflowId)
-    
+
     exclude <- NULL
     exclude0 <- unique(fls$file[!fls$type %in% type])
     exclude1 <- gsub(".", "\\.", paste0(exclude0, collapse = "|"), fixed = TRUE)
@@ -743,4 +743,76 @@ avworkflow_stop <-
     .avstop_for_status(abort_workflow, "avworkflow_stop (abort workflow)")
 
     invisible(TRUE)
+}
+
+#' @rdname avworkflow
+#'
+#' @description `avworkflow_info()` returns a tibble containing workflow
+#'     information, including workflowName, status, start and end time,
+#'     inputs and outputs.
+#'
+#' @return `avworkflow_info()` returns a tibble with columns: submissionId, 
+#'     workflowId, workflowName, status, start, end, inputs and outputs. 
+#'
+#' @examples
+#' if (gcloud_exists() && nzchar(avworkspace_name())) {
+#'     avworkflow_info()
+#' }
+#'
+#' @export
+avworkflow_info <-
+    function (
+        submissionId = NULL,
+        namespace = avworkspace_namespace(), 
+        name = avworkspace_name())
+{
+    stopifnot(
+        .is_scalar_character(namespace),
+        .is_scalar_character(name)
+    )
+    
+   if (is.null(submissionId)) {
+        submissionId <-
+            as.character((avworkflow_jobs(namespace = namespace, name = name) |>
+                        ## default: most recent workflow job
+                        head(1))[1])
+    } else {
+      stopifnot(
+        .is_scalar_character(submissionId)
+      )
+    }
+    
+    ## workflows and files associated with the submissionId
+    workflow_files <-
+        avworkflow_files(submissionId) |>
+        select(submissionId, workflowId, file)
+    
+    workflowIds <-
+        workflow_files |>
+        distinct(workflowId) |>
+        pull(workflowId)
+    
+    ## inputs used for each workflow
+    workflow_info <-
+        lapply(workflowIds, function(workflowId) {
+            response <- Terra()$workflowMetadata(
+                avworkspace_namespace(), avworkspace_name(),
+                submissionId, workflowId
+                )
+            httr::stop_for_status(response)
+            res <- content(response)
+            tibble(
+                submissionId = submissionId,
+                workflowId = workflowId,
+                workflowName = res$workflowName,
+                status = res$status,
+                start = res$start,
+                end = res$end,
+                inputs = list(res$inputs),
+                outputs = list(res$outputs)
+            )
+        }) |>
+        bind_rows()
+    
+    workflow_info
 }
