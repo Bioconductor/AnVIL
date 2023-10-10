@@ -318,7 +318,7 @@ avworkflow_jobs <-
 #'     tibble with column `submissionId`, or NULL / missing. See
 #'     'Details'.
 #'
-#' @param workflowId a character() of internal identifier associated with one
+#' @param workflowId a character(1) of internal identifier associated with one
 #'     workflow in the submission, or NULL / missing.
 #'     
 #' @param bucket character(1) DEPRECATED (ignored in the current
@@ -422,12 +422,12 @@ avworkflow_files <-
             "'workflowId' must be NULL, or character(1) associated with the ",
             "provided submissionId"
         ))
-    }
-
-    if (!is.null(workflowId) && workflowId %in% pull(tbl, "workflowId"))
+    } else if (!is.null(workflowId)) {
         tbl <- 
             tbl |>
             filter(.data$workflowId == .env$workflowId)
+    }
+        
 
     tbl |>
         arrange(
@@ -514,23 +514,20 @@ avworkflow_localize <-
     }
 
     fls <- avworkflow_files(submissionId)
+    source <- pull(fls, "submissionRoot") |> unique()
 
     if (!is.null(workflowId) && !(workflowId %in% pull(fls, "workflowId"))) {
         stop(.pretty_text(
             "'workflowId' must be NULL, or character(1) associated with the ",
             "provided submissionId"
         ))
-    }
-
-    if (!is.null(workflowId) && workflowId %in% pull(fls, "workflowId"))
+    } else if (!is.null(workflowId)) {
         fls <- avworkflow_files(submissionId, workflowId)
-
-    source <- pull(fls, "submissionRoot") |> unique()
-    if (!is.null(workflowId) && workflowId %in% pull(fls, "workflowId"))
         source <- 
-            paste0(pull(fls, "submissionRoot") |> unique(), "/", 
+            paste0(source, "/", 
                    pull(fls, "workflow") |> unique(), "/", 
                    workflowId)
+    }
 
     exclude <- NULL
     exclude0 <- unique(fls$file[!fls$type %in% type])
@@ -776,10 +773,6 @@ avworkflow_info <-
             as.character((avworkflow_jobs(namespace = namespace, name = name) |>
                         ## default: most recent workflow job
                         head(1))[1])
-    } else {
-      stopifnot(
-        .is_scalar_character(submissionId)
-      )
     }
     
     ## workflows and files associated with the submissionId
