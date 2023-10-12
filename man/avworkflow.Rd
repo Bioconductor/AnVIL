@@ -60,7 +60,7 @@ by, e.g., \code{avworkspace_namespace()}}
 tibble with column \code{submissionId}, or NULL / missing. See
 'Details'.}
 
-\item{workflowId}{a character() of internal identifier associated with one
+\item{workflowId}{a character(1) of internal identifier associated with one
 workflow in the submission, or NULL / missing.}
 
 \item{bucket}{character(1) DEPRECATED (ignored in the current

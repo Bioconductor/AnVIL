@@ -318,7 +318,7 @@ avworkflow_jobs <-
 #'     tibble with column `submissionId`, or NULL / missing. See
 #'     'Details'.
 #'
-#' @param workflowId a character() of internal identifier associated with one
+#' @param workflowId a character(1) of internal identifier associated with one
 #'     workflow in the submission, or NULL / missing.
 #'     
 #' @param bucket character(1) DEPRECATED (ignored in the current
@@ -422,13 +422,12 @@ avworkflow_files <-
             "'workflowId' must be NULL, or character(1) associated with the ",
             "provided submissionId"
         ))
+    } else if (!is.null(workflowId)) {
+      tbl <- 
+        tbl |>
+        filter(.data$workflowId == .env$workflowId)
     }
-    
-    if (!is.null(workflowId) && workflowId %in% pull(tbl, "workflowId"))
-        tbl <- 
-            tbl |>
-            filter(.data$workflowId == .env$workflowId)
-    
+
     tbl |>
         arrange(
             match(.data$type, c("output", "control")), # output first
@@ -514,24 +513,21 @@ avworkflow_localize <-
     }
 
     fls <- avworkflow_files(submissionId)
-    
+    source <- pull(fls, "submissionRoot") |> unique()
+
     if (!is.null(workflowId) && !(workflowId %in% pull(fls, "workflowId"))) {
         stop(.pretty_text(
             "'workflowId' must be NULL, or character(1) associated with the ",
             "provided submissionId"
         ))
+    } else if (!is.null(workflowId)) {
+      fls <- avworkflow_files(submissionId, workflowId)
+      source <- 
+        paste0(source, "/", 
+               pull(fls, "workflow") |> unique(), "/", 
+               workflowId)
     }
-    
-    if (!is.null(workflowId) && workflowId %in% pull(fls, "workflowId"))
-        fls <- avworkflow_files(submissionId, workflowId)
 
-    source <- pull(fls, "submissionRoot") |> unique()
-    if (!is.null(workflowId) && workflowId %in% pull(fls, "workflowId"))
-        source <- 
-            paste0(pull(fls, "submissionRoot") |> unique(), "/", 
-                   pull(fls, "workflow") |> unique(), "/", 
-                   workflowId)
-    
     exclude <- NULL
     exclude0 <- unique(fls$file[!fls$type %in% type])
     exclude1 <- gsub(".", "\\.", paste0(exclude0, collapse = "|"), fixed = TRUE)
