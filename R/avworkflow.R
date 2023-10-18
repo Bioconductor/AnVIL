@@ -427,7 +427,6 @@ avworkflow_files <-
             tbl |>
             filter(.data$workflowId == .env$workflowId)
     }
-        
 
     tbl |>
         arrange(
@@ -767,24 +766,24 @@ avworkflow_info <-
         .is_scalar_character(namespace),
         .is_scalar_character(name)
     )
-    
+
    if (is.null(submissionId)) {
         submissionId <-
             as.character((avworkflow_jobs(namespace = namespace, name = name) |>
                         ## default: most recent workflow job
                         head(1))[1])
     }
-    
+
     ## workflows and files associated with the submissionId
     workflow_files <-
         avworkflow_files(submissionId) |>
         select(submissionId, workflowId, file)
-    
+
     workflowIds <-
         workflow_files |>
         distinct(workflowId) |>
         pull(workflowId)
-    
+
     ## inputs used for each workflow
     workflow_info <-
         lapply(workflowIds, function(workflowId) {
@@ -794,18 +793,27 @@ avworkflow_info <-
                 )
             httr::stop_for_status(response)
             res <- content(response)
-            tibble(
-                submissionId = submissionId,
-                workflowId = workflowId,
-                workflowName = res$workflowName,
-                status = res$status,
-                start = res$start,
-                end = res$end,
-                inputs = list(res$inputs),
-                outputs = list(res$outputs)
-            )
+            
+            if (!is.null(res$submission)) {
+                tibble(
+                    submissionId = submissionId,
+                    workflowId = workflowId,
+                    workflowName = res$workflowName,
+                    status = res$status,
+                    start = res$start,
+                    end = res$end,
+                    inputs = list(res$inputs),
+                    outputs = list(res$outputs)
+                )
+            } else if (res$metadataArchiveStatus == "ArchivedAndDeleted") {
+                message(.pretty_text(
+                    paste0("Workflow information not available. ", 
+                           res$message)
+                ))
+            }
+            
         }) |>
         bind_rows()
-    
+
     workflow_info
 }
