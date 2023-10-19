@@ -318,6 +318,9 @@ avworkflow_jobs <-
 #'     tibble with column `submissionId`, or NULL / missing. See
 #'     'Details'.
 #'
+#' @param workflowId a character(1) of internal identifier associated with one
+#'     workflow in the submission, or NULL / missing.
+#'     
 #' @param bucket character(1) DEPRECATED (ignored in the current
 #'     release) name of the google bucket in which the workflow
 #'     products are available, as `gs://...`. Usually the bucket of
@@ -367,7 +370,9 @@ avworkflow_jobs <-
 #'
 #' @export
 avworkflow_files <-
-    function(submissionId = NULL, bucket = avbucket(),
+    function(submissionId = NULL, 
+             workflowId = NULL,
+             bucket = avbucket(),
              namespace = avworkspace_namespace(),
              name = avworkspace_name())
 {
@@ -381,7 +386,8 @@ avworkflow_files <-
     }
     stopifnot(
         .is_scalar_character(namespace),
-        .is_scalar_character(name)
+        .is_scalar_character(name),
+        is.null(workflowId) || .is_scalar_character(workflowId)
     )
 
     if (is_tibble(submissionId)) {
@@ -410,6 +416,17 @@ avworkflow_files <-
         submissionId$namespace,
         submissionId$name
     )
+
+    if (!is.null(workflowId) && !(workflowId %in% pull(tbl, "workflowId"))) {
+        stop(.pretty_text(
+            "'workflowId' must be NULL, or character(1) associated with the ",
+            "provided submissionId"
+        ))
+    } else if (!is.null(workflowId)) {
+      tbl <- 
+        tbl |>
+        filter(.data$workflowId == .env$workflowId)
+    }
 
     tbl |>
         arrange(
@@ -466,6 +483,7 @@ avworkflow_files <-
 avworkflow_localize <-
     function(
          submissionId = NULL,
+         workflowId = NULL,
          destination = NULL,
          type = c("control", "output", "all"),
          bucket = avbucket(),
@@ -481,6 +499,7 @@ avworkflow_localize <-
 
     stopifnot(
         .is_scalar_logical(dry),
+        is.null(workflowId) || .is_scalar_character(workflowId),
         is.null(destination) || .is_scalar_character(destination),
         .is_scalar_character(submissionId)
     )
@@ -494,8 +513,21 @@ avworkflow_localize <-
     }
 
     fls <- avworkflow_files(submissionId)
-
     source <- pull(fls, "submissionRoot") |> unique()
+
+    if (!is.null(workflowId) && !(workflowId %in% pull(fls, "workflowId"))) {
+        stop(.pretty_text(
+            "'workflowId' must be NULL, or character(1) associated with the ",
+            "provided submissionId"
+        ))
+    } else if (!is.null(workflowId)) {
+      fls <- avworkflow_files(submissionId, workflowId)
+      source <- 
+        paste0(source, "/", 
+               pull(fls, "workflow") |> unique(), "/", 
+               workflowId)
+    }
+
     exclude <- NULL
     exclude0 <- unique(fls$file[!fls$type %in% type])
     exclude1 <- gsub(".", "\\.", paste0(exclude0, collapse = "|"), fixed = TRUE)

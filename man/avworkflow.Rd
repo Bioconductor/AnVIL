@@ -15,6 +15,7 @@ avworkflow_jobs(namespace = avworkspace_namespace(), name = avworkspace_name())
 
 avworkflow_files(
   submissionId = NULL,
+  workflowId = NULL,
   bucket = avbucket(),
   namespace = avworkspace_namespace(),
   name = avworkspace_name()
@@ -22,6 +23,7 @@ avworkflow_files(
 
 avworkflow_localize(
   submissionId = NULL,
+  workflowId = NULL,
   destination = NULL,
   type = c("control", "output", "all"),
   bucket = avbucket(),
@@ -57,6 +59,9 @@ by, e.g., \code{avworkspace_namespace()}}
 \item{submissionId}{a character() of workflow submission ids, or a
 tibble with column \code{submissionId}, or NULL / missing. See
 'Details'.}
+
+\item{workflowId}{a character(1) of internal identifier associated with one
+workflow in the submission, or NULL / missing.}
 
 \item{bucket}{character(1) DEPRECATED (ignored in the current
 release) name of the google bucket in which the workflow
