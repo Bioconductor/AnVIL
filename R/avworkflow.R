@@ -320,7 +320,7 @@ avworkflow_jobs <-
 #'
 #' @param workflowId a character(1) of internal identifier associated with one
 #'     workflow in the submission, or NULL / missing.
-#'     
+#'
 #' @param bucket character(1) DEPRECATED (ignored in the current
 #'     release) name of the google bucket in which the workflow
 #'     products are available, as `gs://...`. Usually the bucket of
@@ -370,7 +370,7 @@ avworkflow_jobs <-
 #'
 #' @export
 avworkflow_files <-
-    function(submissionId = NULL, 
+    function(submissionId = NULL,
              workflowId = NULL,
              bucket = avbucket(),
              namespace = avworkspace_namespace(),
@@ -423,7 +423,7 @@ avworkflow_files <-
             "provided submissionId"
         ))
     } else if (!is.null(workflowId)) {
-        tbl <- 
+        tbl <-
             tbl |>
             filter(.data$workflowId == .env$workflowId)
     }
@@ -522,10 +522,10 @@ avworkflow_localize <-
         ))
     } else if (!is.null(workflowId)) {
         fls <- avworkflow_files(submissionId, workflowId)
-        source <- 
-            paste0(source, "/", 
-                   pull(fls, "workflow") |> unique(), "/", 
-                   workflowId)
+        source <- paste(
+            source, pull(fls, "workflow") |> unique(), workflowId,
+            sep = "/"
+        )
     }
 
     exclude <- NULL
@@ -747,8 +747,9 @@ avworkflow_stop <-
 #'     information, including workflowName, status, start and end time,
 #'     inputs and outputs.
 #'
-#' @return `avworkflow_info()` returns a tibble with columns: submissionId, 
-#'     workflowId, workflowName, status, start, end, inputs and outputs. 
+#' @return `avworkflow_info()` returns a tibble with columns:
+#'     submissionId, workflowId, workflowName,status, start, end,
+#'     inputs and outputs.
 #'
 #' @examples
 #' if (gcloud_exists() && nzchar(avworkspace_name())) {
@@ -759,7 +760,7 @@ avworkflow_stop <-
 avworkflow_info <-
     function (
         submissionId = NULL,
-        namespace = avworkspace_namespace(), 
+        namespace = avworkspace_namespace(),
         name = avworkspace_name())
 {
     stopifnot(
@@ -779,9 +780,7 @@ avworkflow_info <-
         avworkflow_files(submissionId) |>
         select(submissionId, workflowId, file)
 
-    workflowIds <-
-        workflow_files |>
-        distinct(workflowId) |>
+    workflowIds <- workflow_files |> distinct(workflowId) |>
         pull(workflowId)
 
     ## inputs used for each workflow
@@ -793,7 +792,7 @@ avworkflow_info <-
                 )
             httr::stop_for_status(response)
             res <- content(response)
-            
+
             if (!is.null(res$submission)) {
                 tibble(
                     submissionId = submissionId,
@@ -807,11 +806,10 @@ avworkflow_info <-
                 )
             } else if (res$metadataArchiveStatus == "ArchivedAndDeleted") {
                 message(.pretty_text(
-                    paste0("Workflow information not available. ", 
-                           res$message)
+                    "Workflow information not available. ",
+                    res$message
                 ))
             }
-            
         }) |>
         bind_rows()
 
