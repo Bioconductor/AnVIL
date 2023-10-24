@@ -3,6 +3,8 @@ title: "Running an AnVIL workflow within R"
 author:
 - name: Kayla Interdonato
   affiliation: Roswell Park Comprehensive Cancer Center
+- name: Yubo Cheng
+  affiliation: Roswell Park Comprehensive Cancer Center
 - name: Martin Morgan
   affiliation: Roswell Park Comprehensive Cancer Center
   email: Martin.Morgan@RoswellPark.org

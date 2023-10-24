@@ -12,6 +12,7 @@ Authors@R: c(
        comment = c(ORCID = "0000-0002-5874-8148")
     ),
     person("Kayla", "Interdonato", role = "aut"),
+    person("Yubo", "Cheng", role = "aut"),
     person("Nitesh", "Turaga", role = "aut"),
     person("BJ", "Stubbs", role =  "ctb"),
     person("Vincent", "Carey", role = "ctb"),
