@@ -423,9 +423,9 @@ avworkflow_files <-
             "provided submissionId"
         ))
     } else if (!is.null(workflowId)) {
-        tbl <- 
-            tbl |>
-            filter(.data$workflowId == .env$workflowId)
+      tbl <- 
+        tbl |>
+        filter(.data$workflowId == .env$workflowId)
     }
 
     tbl |>
@@ -521,11 +521,11 @@ avworkflow_localize <-
             "provided submissionId"
         ))
     } else if (!is.null(workflowId)) {
-        fls <- avworkflow_files(submissionId, workflowId)
-        source <- 
-            paste0(source, "/", 
-                   pull(fls, "workflow") |> unique(), "/", 
-                   workflowId)
+      fls <- avworkflow_files(submissionId, workflowId)
+      source <- 
+        paste0(source, "/", 
+               pull(fls, "workflow") |> unique(), "/", 
+               workflowId)
     }
 
     exclude <- NULL
