@@ -173,8 +173,9 @@ name and bucket path of files to be synchronized.
 successfully requesting that the workflow stop, \code{FALSE} if the
 workflow is already aborting, aborted, or done.
 
-\code{avworkflow_info()} returns a tibble with columns: submissionId,
-workflowId, workflowName, status, start, end, inputs and outputs.
+\code{avworkflow_info()} returns a tibble with columns:
+submissionId, workflowId, workflowName,status, start, end,
+inputs and outputs.
 }
 \description{
 \code{avworkflows()} returns a tibble summarizing available
