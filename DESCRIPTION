@@ -41,7 +41,7 @@ Imports:
     shiny, DT, miniUI, htmltools,
     BiocManager
 Suggests: parallel, knitr, rmarkdown, testthat, withr, readr, BiocStyle,
-    devtools
+    devtools, AnVILGCP, AnVILAz
 Collate:
     utilities.R install.R authenticate.R api.R
     Service.R Services.R Leonardo.R Terra.R Rawls.R Dockstore.R Gen3.R

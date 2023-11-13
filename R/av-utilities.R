@@ -43,32 +43,36 @@ avcopy <- function(source, destination, ...) {
         isScalarCharacter(source),
         isScalarCharacter(destination)
     )
-    if (gcloud_exists())
+    if (.check_pkg_avail("AnVILGCP") && gcloud_exists())
         AnVILGCP::gsutil_cp(source, destination, ...)
-    else if (az_exists())
+    else if (.check_pkg_avail("AnVILAz") && az_exists())
         AnVILAz::az_copy(source, destination, ...)
     else
-        stop("No supported cloud SDK found.")
+        stop("Install either 'AnVILGCP' or 'AnVILAz' for your workspace.")
+}
+
+.check_pkg_avail <- function(package) {
+    nzchar(system.file(package = package))
 }
 
 #' @rdname av-utilities
 #' @export
 avlist <- function() {
-    if (gcloud_exists())
+    if (.check_pkg_avail("AnVILGCP") && gcloud_exists())
         AnVILGCP::gsutil_ls()
-    else if (az_exists())
+    else if (.check_pkg_avail("AnVILAz") && az_exists())
         AnVILAz::az_copy_list()
     else
-        stop("No supported cloud SDK found.")
+        stop("Install either 'AnVILGCP' or 'AnVILAz' for your workspace.")
 }
 
 #' @rdname av-utilities
 #' @export
 avremove <- function(file, ...) {
-    if (gcloud_exists())
+    if (.check_pkg_avail("AnVILGCP") && gcloud_exists())
         AnVILGCP::gsutil_rm(source = file, ...)
-    else if (az_exists())
+    else if (.check_pkg_avail("AnVILAz") && az_exists())
         AnVILAz::az_copy_rm(blob_file = file)
     else
-        stop("No supported cloud SDK found.")
+        stop("Install either 'AnVILGCP' or 'AnVILAz' for your workspace.")
 }
