@@ -43,9 +43,9 @@ avcopy <- function(source, destination, ...) {
         isScalarCharacter(source),
         isScalarCharacter(destination)
     )
-    if (.check_pkg_avail("AnVILGCP") && gcloud_exists())
+    if (.check_pkg_avail("AnVILGCP") && AnVILGCP::gcloud_exists())
         AnVILGCP::gsutil_cp(source, destination, ...)
-    else if (.check_pkg_avail("AnVILAz") && az_exists())
+    else if (.check_pkg_avail("AnVILAz") && AnVILAz::az_exists())
         AnVILAz::az_copy(source, destination, ...)
     else
         stop("Install either 'AnVILGCP' or 'AnVILAz' for your workspace.")
@@ -58,9 +58,9 @@ avcopy <- function(source, destination, ...) {
 #' @rdname av-utilities
 #' @export
 avlist <- function() {
-    if (.check_pkg_avail("AnVILGCP") && gcloud_exists())
+    if (.check_pkg_avail("AnVILGCP") && AnVILGCP::gcloud_exists())
         AnVILGCP::gsutil_ls()
-    else if (.check_pkg_avail("AnVILAz") && az_exists())
+    else if (.check_pkg_avail("AnVILAz") && AnVILAz::az_exists())
         AnVILAz::az_copy_list()
     else
         stop("Install either 'AnVILGCP' or 'AnVILAz' for your workspace.")
@@ -69,9 +69,9 @@ avlist <- function() {
 #' @rdname av-utilities
 #' @export
 avremove <- function(file, ...) {
-    if (.check_pkg_avail("AnVILGCP") && gcloud_exists())
+    if (.check_pkg_avail("AnVILGCP") && AnVILGCP::gcloud_exists())
         AnVILGCP::gsutil_rm(source = file, ...)
-    else if (.check_pkg_avail("AnVILAz") && az_exists())
+    else if (.check_pkg_avail("AnVILAz") && AnVILAz::az_exists())
         AnVILAz::az_copy_rm(blob_file = file)
     else
         stop("Install either 'AnVILGCP' or 'AnVILAz' for your workspace.")
