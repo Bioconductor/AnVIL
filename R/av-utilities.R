@@ -1,3 +1,31 @@
+.get_platform <- function(default = "") {
+    ## TODO: verify unique envvar in Azure workspaces
+    opt <- .get_env_opt("WORKSPACE_ID", "AnVILAz.workspace_id", default)
+    if (!nzchar(opt))
+        return("AnVILAz")
+
+    opt <- .get_env_opt("GOOGLE_PROJECT", "GCLOUD_SDK_PATH", default)
+    if (!nzchar(opt))
+        return("AnVILGCP")
+
+    return(default)
+}
+
+.get_env_opt <-
+    function(envvar, option, default)
+{
+    value <- Sys.getenv(envvar, unset = default)
+    if (nzchar(value))
+        return(value)
+
+    value <- getOption(option, default = default)
+    if (nzchar(value))
+        return(value)
+
+    return(default)
+}
+
+
 #' @name av-utilities
 #'
 #' @aliases avcopy avlist avremove
@@ -43,9 +71,13 @@ avcopy <- function(source, destination, ...) {
         isScalarCharacter(source),
         isScalarCharacter(destination)
     )
-    if (.check_pkg_avail("AnVILGCP") && AnVILGCP::gcloud_exists())
+    platform <- .get_platform()
+    if (!nzchar(platform))
+        stop("The runtime environment must be within an AnVIL workspace.")
+
+    if (identical(platform, "AnVILGCP") && .check_pkg_avail("AnVILGCP"))
         AnVILGCP::gsutil_cp(source, destination, ...)
-    else if (.check_pkg_avail("AnVILAz") && AnVILAz::az_exists())
+    else if (identical(platform, "AnVILAz") && .check_pkg_avail("AnVILAz"))
         AnVILAz::az_copy(source, destination, ...)
     else
         stop("Install either 'AnVILGCP' or 'AnVILAz' for your workspace.")
@@ -58,9 +90,13 @@ avcopy <- function(source, destination, ...) {
 #' @rdname av-utilities
 #' @export
 avlist <- function() {
-    if (.check_pkg_avail("AnVILGCP") && AnVILGCP::gcloud_exists())
+    platform <- .get_platform()
+    if (!nzchar(platform))
+        stop("The runtime environment must be within an AnVIL workspace.")
+
+    if (identical(platform, "AnVILGCP") && .check_pkg_avail("AnVILGCP"))
         AnVILGCP::gsutil_ls()
-    else if (.check_pkg_avail("AnVILAz") && AnVILAz::az_exists())
+    else if (identical(platform, "AnVILAz") && .check_pkg_avail("AnVILAz"))
         AnVILAz::az_copy_list()
     else
         stop("Install either 'AnVILGCP' or 'AnVILAz' for your workspace.")
@@ -69,9 +105,13 @@ avlist <- function() {
 #' @rdname av-utilities
 #' @export
 avremove <- function(file, ...) {
-    if (.check_pkg_avail("AnVILGCP") && AnVILGCP::gcloud_exists())
+    platform <- .get_platform()
+    if (!nzchar(platform))
+        stop("The runtime environment must be within an AnVIL workspace.")
+
+    if (identical(platform, "AnVILGCP") && .check_pkg_avail("AnVILGCP"))
         AnVILGCP::gsutil_rm(source = file, ...)
-    else if (.check_pkg_avail("AnVILAz") && AnVILAz::az_exists())
+    else if (identical(platform, "AnVILAz") && .check_pkg_avail("AnVILAz"))
         AnVILAz::az_copy_rm(blob_file = file)
     else
         stop("Install either 'AnVILGCP' or 'AnVILAz' for your workspace.")
