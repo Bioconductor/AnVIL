@@ -25,6 +25,9 @@
     return(default)
 }
 
+.check_pkg_avail <- function(package) {
+    nzchar(system.file(package = package))
+}
 
 #' @name av-utilities
 #'
@@ -81,10 +84,6 @@ avcopy <- function(source, destination, ...) {
         AnVILAz::az_copy(source, destination, ...)
     else
         stop("Install either 'AnVILGCP' or 'AnVILAz' for your workspace.")
-}
-
-.check_pkg_avail <- function(package) {
-    nzchar(system.file(package = package))
 }
 
 #' @rdname av-utilities
