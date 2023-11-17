@@ -115,3 +115,47 @@ avremove <- function(file, ...) {
     else
         stop("Install either 'AnVILGCP' or 'AnVILAz' for your workspace.")
 }
+
+#' @export
+avbackup <- function(
+        source,
+        destination = "",
+        ...
+) {
+    platform <- .get_platform()
+    if (!nzchar(platform))
+        stop("The runtime environment must be within an AnVIL workspace.")
+
+    if (identical(platform, "AnVILGCP") && .check_pkg_avail("AnVILGCP"))
+        AnVILGCP::avfiles_backup(
+            source = source, destination = destination, ...
+        )
+    else if (identical(platform, "AnVILAz") && .check_pkg_avail("AnVILAz"))
+        AnVILAz::az_copy_backup(
+            from_dir = source, to_dir = destination, ...
+        )
+    else
+        stop("Install either 'AnVILGCP' or 'AnVILAz' for your workspace.")
+}
+
+#' @export
+avrestore <- function(
+        source,
+        destination = ".",
+        ...
+) {
+    platform <- .get_platform()
+    if (!nzchar(platform))
+        stop("The runtime environment must be within an AnVIL workspace.")
+
+    if (identical(platform, "AnVILGCP") && .check_pkg_avail("AnVILGCP"))
+        AnVILGCP::avfiles_restore(
+            source = source, destination = destination, ...
+        )
+    else if (identical(platform, "AnVILAz") && .check_pkg_avail("AnVILAz"))
+        AnVILAz::az_copy_backup(
+            from_dir = source, to_dir = destination, ...
+        )
+    else
+        stop("Install either 'AnVILGCP' or 'AnVILAz' for your workspace.")
+}

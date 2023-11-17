@@ -1020,6 +1020,14 @@ avfiles_backup <-
         .is_scalar_character(name)
     )
 
+    .Deprecated(
+        msg = c(
+            "'avfiles_backup' is deprecated.\n",
+            "Use the 'avbackup' instead.\n",
+            "See help(\"AnVIL-deprecated\")"
+        )
+    )
+
     bucket <- avbucket(namespace, name)
     destination <- .avbucket_path(bucket, destination)
     gsutil_cp(source, destination, recursive = recursive, parallel = parallel)
@@ -1052,6 +1060,14 @@ avfiles_restore <-
         .is_scalar_character(name)
     )
 
+    .Deprecated(
+        msg = c(
+            "'avfiles_restore' is deprecated.\n",
+            "Use the 'avrestore' instead.\n",
+            "See help(\"AnVIL-deprecated\")"
+        )
+    )
+
     bucket <- avbucket(namespace, name)
     source <- .avbucket_path(bucket, source)
     gsutil_cp(source, destination, recursive = recursive, parallel = parallel)
@@ -1078,6 +1094,14 @@ avfiles_rm <-
         .is_scalar_logical(parallel),
         .is_scalar_character(namespace),
         .is_scalar_character(name)
+    )
+
+    .Deprecated(
+        msg = c(
+            "'avfiles_rm' is deprecated.\n",
+            "Use the 'avremove' instead.\n",
+            "See help(\"AnVIL-deprecated\")"
+        )
     )
 
     bucket <- avbucket(namespace, name)
