@@ -1,28 +1,21 @@
 .get_platform <- function(default = "") {
     ## TODO: verify unique envvar in Azure workspaces
     opt <- .get_env_opt("WORKSPACE_ID", "AnVILAz.workspace_id", default)
-    if (!nzchar(opt))
+    if (nzchar(opt))
         return("AnVILAz")
 
     opt <- .get_env_opt("GOOGLE_PROJECT", "GCLOUD_SDK_PATH", default)
-    if (!nzchar(opt))
+    if (nzchar(opt))
         return("AnVILGCP")
 
-    return(default)
+    stop("The runtime environment must be within an AnVIL workspace.")
 }
 
 .get_env_opt <-
     function(envvar, option, default)
 {
-    value <- Sys.getenv(envvar, unset = default)
-    if (nzchar(value))
-        return(value)
-
-    value <- getOption(option, default = default)
-    if (nzchar(value))
-        return(value)
-
-    return(default)
+    opt <- Sys.getenv(envvar, unset = default)
+    getOption(option, opt)
 }
 
 .check_pkg_avail <- function(package) {
@@ -75,8 +68,6 @@ avcopy <- function(source, destination, ...) {
         isScalarCharacter(destination)
     )
     platform <- .get_platform()
-    if (!nzchar(platform))
-        stop("The runtime environment must be within an AnVIL workspace.")
 
     if (identical(platform, "AnVILGCP") && .check_pkg_avail("AnVILGCP"))
         AnVILGCP::gsutil_cp(source, destination, ...)
@@ -90,8 +81,6 @@ avcopy <- function(source, destination, ...) {
 #' @export
 avlist <- function() {
     platform <- .get_platform()
-    if (!nzchar(platform))
-        stop("The runtime environment must be within an AnVIL workspace.")
 
     if (identical(platform, "AnVILGCP") && .check_pkg_avail("AnVILGCP"))
         AnVILGCP::gsutil_ls()
@@ -105,8 +94,6 @@ avlist <- function() {
 #' @export
 avremove <- function(file, ...) {
     platform <- .get_platform()
-    if (!nzchar(platform))
-        stop("The runtime environment must be within an AnVIL workspace.")
 
     if (identical(platform, "AnVILGCP") && .check_pkg_avail("AnVILGCP"))
         AnVILGCP::gsutil_rm(source = file, ...)
@@ -118,13 +105,11 @@ avremove <- function(file, ...) {
 
 #' @export
 avbackup <- function(
-        source,
-        destination = "",
-        ...
+    source,
+    destination = "",
+    ...
 ) {
     platform <- .get_platform()
-    if (!nzchar(platform))
-        stop("The runtime environment must be within an AnVIL workspace.")
 
     if (identical(platform, "AnVILGCP") && .check_pkg_avail("AnVILGCP"))
         AnVILGCP::avfiles_backup(
@@ -140,13 +125,11 @@ avbackup <- function(
 
 #' @export
 avrestore <- function(
-        source,
-        destination = ".",
-        ...
+    source,
+    destination = ".",
+    ...
 ) {
     platform <- .get_platform()
-    if (!nzchar(platform))
-        stop("The runtime environment must be within an AnVIL workspace.")
 
     if (identical(platform, "AnVILGCP") && .check_pkg_avail("AnVILGCP"))
         AnVILGCP::avfiles_restore(
