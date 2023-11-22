@@ -1,16 +1,3 @@
-.get_platform <- function(default = "") {
-    ## TODO: verify unique envvar in Azure workspaces
-    opt <- .get_env_opt("WORKSPACE_ID", "AnVILAz.workspace_id", default)
-    if (nzchar(opt))
-        return("AnVILAz")
-
-    opt <- .get_env_opt("GOOGLE_PROJECT", "GCLOUD_SDK_PATH", default)
-    if (nzchar(opt))
-        return("AnVILGCP")
-
-    stop("The runtime environment must be within an AnVIL workspace.")
-}
-
 .get_env_opt <-
     function(envvar, option, default)
 {
@@ -18,8 +5,24 @@
     getOption(option, opt)
 }
 
-.check_pkg_avail <- function(package) {
-    nzchar(system.file(package = package))
+.get_platform <- function(default = "") {
+    opt <- .get_env_opt("GOOGLE_PROJECT", "GCLOUD_SDK_PATH", default)
+    if (nzchar(opt))
+        return("AnVILGCP")
+
+    ## TODO: verify unique envvar in Azure workspaces
+    opt <- .get_env_opt("WORKSPACE_ID", "AnVILAz.workspace_id", default)
+    if (nzchar(opt))
+        return("AnVILAz")
+
+    stop("The runtime environment must be within an AnVIL workspace.")
+}
+
+.platform_available <- function(platform) {
+    if (identical(.get_platform(), platform))
+        nzchar(system.file(package = platform))
+    else
+        FALSE
 }
 
 #' @name av-utilities
@@ -139,6 +142,16 @@ avrestore <- function(
         AnVILAz::az_copy_backup(
             from_dir = source, to_dir = destination, ...
         )
+    else
+        stop("Install either 'AnVILGCP' or 'AnVILAz' for your workspace.")
+}
+
+#' @export
+avstorage <- function() {
+    if (.platform_available("AnVILGCP"))
+        AnVIL::avbucket()
+    else if (.platform_available("AnVILAz"))
+        AnVILAz::workspace_storage_cont_url()
     else
         stop("Install either 'AnVILGCP' or 'AnVILAz' for your workspace.")
 }
