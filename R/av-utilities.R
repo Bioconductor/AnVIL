@@ -70,11 +70,9 @@ avcopy <- function(source, destination, ...) {
         isScalarCharacter(source),
         isScalarCharacter(destination)
     )
-    platform <- .get_platform()
-
-    if (identical(platform, "AnVILGCP") && .check_pkg_avail("AnVILGCP"))
+    if (.platform_available("AnVILGCP"))
         AnVILGCP::gsutil_cp(source, destination, ...)
-    else if (identical(platform, "AnVILAz") && .check_pkg_avail("AnVILAz"))
+    else if (.platform_available("AnVILAz"))
         AnVILAz::az_copy(source, destination, ...)
     else
         stop("Install either 'AnVILGCP' or 'AnVILAz' for your workspace.")
@@ -83,11 +81,9 @@ avcopy <- function(source, destination, ...) {
 #' @rdname av-utilities
 #' @export
 avlist <- function() {
-    platform <- .get_platform()
-
-    if (identical(platform, "AnVILGCP") && .check_pkg_avail("AnVILGCP"))
+    if (.platform_available("AnVILGCP"))
         AnVILGCP::gsutil_ls()
-    else if (identical(platform, "AnVILAz") && .check_pkg_avail("AnVILAz"))
+    else if (.platform_available("AnVILAz"))
         AnVILAz::az_copy_list()
     else
         stop("Install either 'AnVILGCP' or 'AnVILAz' for your workspace.")
@@ -96,11 +92,9 @@ avlist <- function() {
 #' @rdname av-utilities
 #' @export
 avremove <- function(file, ...) {
-    platform <- .get_platform()
-
-    if (identical(platform, "AnVILGCP") && .check_pkg_avail("AnVILGCP"))
+    if (.platform_available("AnVILGCP"))
         AnVILGCP::gsutil_rm(source = file, ...)
-    else if (identical(platform, "AnVILAz") && .check_pkg_avail("AnVILAz"))
+    else if (.platform_available("AnVILAz"))
         AnVILAz::az_copy_rm(blob_file = file)
     else
         stop("Install either 'AnVILGCP' or 'AnVILAz' for your workspace.")
@@ -112,13 +106,11 @@ avbackup <- function(
     destination = "",
     ...
 ) {
-    platform <- .get_platform()
-
-    if (identical(platform, "AnVILGCP") && .check_pkg_avail("AnVILGCP"))
+    if (.platform_available("AnVILGCP"))
         AnVILGCP::avfiles_backup(
             source = source, destination = destination, ...
         )
-    else if (identical(platform, "AnVILAz") && .check_pkg_avail("AnVILAz"))
+    else if (.platform_available("AnVILAz"))
         AnVILAz::az_copy_backup(
             from_dir = source, to_dir = destination, ...
         )
@@ -132,13 +124,11 @@ avrestore <- function(
     destination = ".",
     ...
 ) {
-    platform <- .get_platform()
-
-    if (identical(platform, "AnVILGCP") && .check_pkg_avail("AnVILGCP"))
+    if (.platform_available("AnVILGCP"))
         AnVILGCP::avfiles_restore(
             source = source, destination = destination, ...
         )
-    else if (identical(platform, "AnVILAz") && .check_pkg_avail("AnVILAz"))
+    else if (.platform_available("AnVILAz"))
         AnVILAz::az_copy_backup(
             from_dir = source, to_dir = destination, ...
         )
