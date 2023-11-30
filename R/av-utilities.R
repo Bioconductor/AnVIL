@@ -45,6 +45,9 @@
 #' @param destination `character(1)`, Either a Google Cloud Storage bucket,
 #'   Azure Blob Storage container, or a local file system destination path.
 #'
+#' @param recursive `logical(1)` Whether to remove files or directories
+#'   recursively.
+#'
 #' @param \ldots additional arguments passed to `gsutil_cp()` or
 #'   `az_copy_to_storage()` / `az_copy_from_storage()`
 #'
@@ -91,11 +94,11 @@ avlist <- function() {
 
 #' @rdname av-utilities
 #' @export
-avremove <- function(file, ...) {
+avremove <- function(file, recursive, ...) {
     if (.platform_available("AnVILGCP"))
-        AnVILGCP::gsutil_rm(source = file, ...)
+        AnVILGCP::gsutil_rm(source = file, ..., recursive = recursive)
     else if (.platform_available("AnVILAz"))
-        AnVILAz::az_copy_rm(blob_file = file)
+        AnVILAz::az_copy_rm(blob_file = file, recursive = recursive)
     else
         stop("Install either 'AnVILGCP' or 'AnVILAz' for your workspace.")
 }

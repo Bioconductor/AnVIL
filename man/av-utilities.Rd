@@ -12,7 +12,7 @@ avcopy(source, destination, ...)
 
 avlist()
 
-avremove(file, ...)
+avremove(file, recursive, ...)
 }
 \arguments{
 \item{source}{\code{character(1)} a path to a Google Cloud Storage bucket or Azure
@@ -21,6 +21,9 @@ matching.}
 
 \item{destination}{\code{character(1)}, Either a Google Cloud Storage bucket,
 Azure Blob Storage container, or a local file system destination path.}
+
+\item{recursive}{\code{logical(1)} Whether to remove files or directories
+recursively.}
 
 \item{\ldots}{additional arguments passed to \code{gsutil_cp()} or
 \code{az_copy_to_storage()} / \code{az_copy_from_storage()}}
