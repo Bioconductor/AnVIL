@@ -11,11 +11,6 @@
 \alias{avtable_delete_values}
 \alias{avdata}
 \alias{avdata_import}
-\alias{avbucket}
-\alias{avfiles_ls}
-\alias{avfiles_backup}
-\alias{avfiles_restore}
-\alias{avfiles_rm}
 \alias{avruntimes}
 \alias{avruntime}
 \alias{avdisks}
@@ -87,46 +82,6 @@ avdata(namespace = avworkspace_namespace(), name = avworkspace_name())
 
 avdata_import(
   .data,
-  namespace = avworkspace_namespace(),
-  name = avworkspace_name()
-)
-
-avbucket(
-  namespace = avworkspace_namespace(),
-  name = avworkspace_name(),
-  as_path = TRUE
-)
-
-avfiles_ls(
-  path = "",
-  full_names = FALSE,
-  recursive = FALSE,
-  namespace = avworkspace_namespace(),
-  name = avworkspace_name()
-)
-
-avfiles_backup(
-  source,
-  destination = "",
-  recursive = FALSE,
-  parallel = TRUE,
-  namespace = avworkspace_namespace(),
-  name = avworkspace_name()
-)
-
-avfiles_restore(
-  source,
-  destination = ".",
-  recursive = FALSE,
-  parallel = TRUE,
-  namespace = avworkspace_namespace(),
-  name = avworkspace_name()
-)
-
-avfiles_rm(
-  source,
-  recursive = FALSE,
-  parallel = TRUE,
   namespace = avworkspace_namespace(),
   name = avworkspace_name()
 )
@@ -205,27 +160,6 @@ more than one set}
 entity column with suffix \verb{_id}, e.g., \code{sample_id}. Rows with
 entity column entries matching \code{values} are deleted.}
 
-\item{as_path}{logical(1) when TRUE (default) return bucket with
-prefix \verb{gs://} (for \code{avbucket()}) or \verb{gs://<bucket-id>} (for
-\code{avfiles_ls()}).}
-
-\item{path}{For \verb{avfiles_ls(), the character(1) file or directory path to list. For }avfiles_rm()\verb{, the character() (perhaps with length greater than 1) of files or directory paths to be removed. The elements of }path\verb{can contain glob-style patterns, e.g.,}vign*`.}
-
-\item{full_names}{logical(1) return names relative to \code{path}
-(\code{FALSE}, default) or root of the workspace bucket?}
-
-\item{recursive}{logical(1) list files recursively?}
-
-\item{source}{character() file paths. for \code{avfiles_backup()},
-\code{source} can include directory names when \code{recursive = TRUE}.}
-
-\item{destination}{character(1) a google bucket
-(\verb{gs://<bucket-id>/...}) to write files. The default is the
-workspace bucket.}
-
-\item{parallel}{logical(1) backup files using parallel transfer?
-See \code{?gsutil_cp()}.}
-
 \item{project}{\code{character(1)} project (billing account) name, as
 returned by, e.g., \code{gcloud_project()} or
 \code{avworkspace_namespace()}.}
@@ -266,18 +200,6 @@ bucket) of the element.
 
 \code{avdata_import()} returns, invisibly, the subset of the
 input table used to update the AnVIL tables.
-
-\code{avbucket()} returns a \code{character(1)} bucket identifier,
-prefixed with \verb{gs://} if \code{as_path = TRUE}.
-
-\code{avfiles_ls()} returns a character vector of files in the
-workspace bucket.
-
-\code{avfiles_backup()} returns, invisibly, the status code of the
-\code{gsutil_cp()} command used to back up the files.
-
-\code{avfiles_rm()} on success, returns a list of the return
-codes of \code{gsutil_rm()}, invisibly.
 
 \code{avruntimes()} returns a tibble with columns
 \itemize{
@@ -338,17 +260,6 @@ information visualized under the DATA tab, 'REFERENCE DATA' and
 'OTHER DATA' items.  \code{avdata_import()} updates (modifies or
 creates new, but does not delete) rows in 'REFERENCE DATA' or
 'OTHER DATA' tables.
-
-\code{avbucket()} returns the workspace bucket, i.e., the
-google bucket associated with a workspace. Bucket content can
-be visualized under the 'DATA' tab, 'Files' item.
-
-\code{avfiles_ls()} returns the paths of files in the
-workspace bucket.  \code{avfiles_backup()} copies files from the
-compute node file system to the workspace bucket.
-\code{avfiles_restore()} copies files from the workspace bucket to
-the compute node file system.  \code{avfiles_rm()} removes files or
-directories from the workspace bucket.
 
 \code{avruntimes()} returns a tibble containing information
 about runtimes (notebooks or RStudio instances, for example)
@@ -411,16 +322,6 @@ in the column identified by \code{set}. Each row entry has a
 corresponding column \verb{<origin>} linking to one or more rows in
 the \verb{<origin>} table, as given in the \code{member} column. The
 operation is somewhat like \code{split(member, set)}.
-
-\code{avfiles_backup()} can be used to back-up individual files
-or entire directories, recursively.  When \code{recursive = FALSE},
-files are backed up to the bucket with names approximately
-\code{paste0(destination, "/", basename(source))}.  When \code{recursive = TRUE} and source is a directory \verb{path/to/foo/', files are backed up to bucket names that include the directory name, approximately }paste0(destination, "/", dir(basename(source),
-full.names = TRUE))\verb{.  Naming conventions are described in detail in }gsutil_help("cp")`.
-
-\code{avfiles_restore()} behaves in a manner analogous to
-\code{avfiles_backup()}, copying files from the workspace bucket to
-the compute node file system.
 }
 \examples{
 \dontrun{
@@ -443,29 +344,6 @@ if (gcloud_exists() && nzchar(avworkspace_name())) {
 
 \dontrun{
 avdata_import(data)
-}
-
-if (gcloud_exists() && nzchar(avworkspace_name()))
-    ## From within AnVIL...
-    bucket <- avbucket()                        # discover bucket
-
-\dontrun{
-path <- file.path(bucket, "mtcars.tab")
-gsutil_ls(dirname(path))                    # no 'mtcars.tab'...
-write.table(mtcars, gsutil_pipe(path, "w")) # write to bucket
-gsutil_stat(path)                           # yep, there!
-read.table(gsutil_pipe(path, "r"))          # read from bucket
-}
-if (gcloud_exists() && nzchar(avworkspace_name()))
-    avfiles_ls()
-
-\dontrun{
-## backup all files in the current directory
-## default buckets are gs://<bucket-id>/<file-names>
-avfiles_backup(dir())
-## backup working directory, recursively
-## default buckets are gs://<bucket-id>/<basename(getwd())>/...
-avfiles_backup(getwd(), recursive = TRUE)
 }
 
 if (gcloud_exists())

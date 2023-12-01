@@ -1,4 +1,4 @@
-#' @rdname avworkspace
+#' @rdname avworkspace-deprecated
 #'
 #' @name avworkspace
 #'
@@ -45,7 +45,7 @@ NULL
         )
 }
 
-#' @rdname avworkspace
+#' @rdname avworkspace-deprecated
 #'
 #' @description `avworkspaces()` returns a tibble with available
 #'     workspaces.
@@ -66,7 +66,7 @@ avworkspaces <-
         .avworkspaces_clean()
 }
 
-#' @rdname avworkspace
+#' @rdname avworkspace-deprecated
 #'
 #' @description `avworkspace_namespace()` and `avworkspace_name()` are
 #'     utiliity functions to retrieve workspace namespace and name
@@ -131,7 +131,7 @@ avworkspace_namespace <-
     namespace
 }
 
-#' @rdname avworkspace
+#' @rdname avworkspace-deprecated
 #'
 #' @importFrom utils URLencode
 #'
@@ -143,7 +143,7 @@ avworkspace_name <-
     URLencode(value)
 }
 
-#' @rdname avworkspace
+#' @rdname avworkspace-deprecated
 #'
 #' @export
 avworkspace <-
@@ -161,7 +161,7 @@ avworkspace <-
     paste0(avworkspace_namespace(), "/", avworkspace_name())
 }
 
-#' @rdname avworkspace
+#' @rdname avworkspace-deprecated
 #'
 #' @description `avworkspace_clone()` clones (copies) an existing
 #'     workspace, possibly into a new namespace (billing account).

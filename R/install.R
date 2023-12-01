@@ -204,6 +204,7 @@ repositories <-
 #' }
 #'
 #' @importFrom utils available.packages
+#' @importFrom httr HEAD headers
 #'
 #' @examples
 #' stats <- repository_stats() # obtain statistics

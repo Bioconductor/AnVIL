@@ -7,6 +7,22 @@
 \alias{avfiles_backup}
 \alias{avfiles_restore}
 \alias{avfiles_rm}
+\alias{avnotebooks}
+\alias{avnotebooks_localize}
+\alias{avnotebooks_delocalize}
+\alias{avworkflow_configurations}
+\alias{avworkflow_namespace}
+\alias{avworkflow_name}
+\alias{avworkflow}
+\alias{avworkflow_configuration_get}
+\alias{avworkflow_configuration_inputs}
+\alias{avworkflow_configuration_outputs}
+\alias{avworkflow_configuration_update}
+\alias{avworkflow_configuration_set}
+\alias{avworkflow_configuration_template}
+\alias{print.avworkflow_configuration}
+\alias{avworkflow_configuration}
+\alias{avworkflow_import_configuration}
 \title{Deprecated higher level functions that use \code{gsutil}}
 \usage{
 avbucket(
@@ -48,8 +64,79 @@ avfiles_rm(
   namespace = avworkspace_namespace(),
   name = avworkspace_name()
 )
+
+avnotebooks(
+  local = FALSE,
+  namespace = avworkspace_namespace(),
+  name = avworkspace_name()
+)
+
+avnotebooks_localize(
+  destination,
+  namespace = avworkspace_namespace(),
+  name = avworkspace_name(),
+  dry = TRUE
+)
+
+avnotebooks_delocalize(
+  source,
+  namespace = avworkspace_namespace(),
+  name = avworkspace_name(),
+  dry = TRUE
+)
+
+avworkflow_namespace(workflow_namespace = NULL)
+
+avworkflow_name(workflow_name = NULL)
+
+avworkflow(workflow = NULL)
+
+avworkflow_configuration_get(
+  workflow_namespace = avworkflow_namespace(),
+  workflow_name = avworkflow_name(),
+  namespace = avworkspace_namespace(),
+  name = avworkspace_name()
+)
+
+avworkflow_configuration_inputs(config)
+
+avworkflow_configuration_outputs(config)
+
+avworkflow_configuration_update(
+  config,
+  inputs = avworkflow_configuration_inputs(config),
+  outputs = avworkflow_configuration_outputs(config)
+)
+
+avworkflow_configuration_set(
+  config,
+  namespace = avworkspace_namespace(),
+  name = avworkspace_name(),
+  dry = TRUE
+)
+
+avworkflow_configuration_template()
+
+\method{print}{avworkflow_configuration}(x, ...)
+
+avworkflow_configuration(
+  configuration_namespace,
+  configuration_name,
+  namespace = avworkspace_namespace(),
+  name = avworkspace_name()
+)
+
+avworkflow_import_configuration(
+  config,
+  namespace = avworkspace_namespace(),
+  name = avworkspace_name()
+)
 }
 \arguments{
+\item{namespace}{character(1).}
+
+\item{name}{character(1).}
+
 \item{as_path}{logical(1) when TRUE (default) return bucket with
 prefix \verb{gs://} (for \code{avbucket()}) or \verb{gs://<bucket-id>} (for
 \code{avfiles_ls()}).}
@@ -61,15 +148,53 @@ prefix \verb{gs://} (for \code{avbucket()}) or \verb{gs://<bucket-id>} (for
 
 \item{recursive}{logical(1) list files recursively?}
 
-\item{source}{character() file paths. for \code{avfiles_backup()},
-\code{source} can include directory names when \code{recursive = TRUE}.}
+\item{source}{missing or character(1) file path to the local file
+system directory for synchronization. The default location is
+\verb{~/<avworkspace_name>/notebooks}. Out-of-date local files are
+replaced with the workspace version.}
 
-\item{destination}{character(1) a google bucket
-(\verb{gs://<bucket-id>/...}) to write files. The default is the
-workspace bucket.}
+\item{destination}{missing or character(1) file path to the local
+file system directory for synchronization. The default location
+is \verb{~/<avworkspace_name>/notebooks}. Out-of-date local files
+are replaced with the workspace version.}
 
 \item{parallel}{logical(1) backup files using parallel transfer?
 See \code{?gsutil_cp()}.}
+
+\item{local}{= \code{logical(1)} notebooks located on the workspace
+(\code{local = FALSE}, default) or runtime / local instance (\code{local = TRUE}). When \code{local = TRUE}, the notebook path is
+\verb{<avworkspace_name>/notebooks}.}
+
+\item{dry}{logical(1) when \code{TRUE} (default), report the
+consequences but do not perform the action requested. When
+\code{FALSE}, perform the action.}
+
+\item{workflow_namespace}{character(1) AnVIL workflow namespace, as
+returned by, e.g., the \code{namespace} column of \code{avworkflows()}.}
+
+\item{workflow_name}{character(1) AnVIL workflow name, as returned
+by, e.g., the \code{name} column of \code{avworkflows()}.}
+
+\item{workflow}{character(1) representing the combined workflow
+namespace and name, as \code{namespace/name}.}
+
+\item{config}{\code{avworkflow_configuration} object.}
+
+\item{inputs}{the new inputs to be updated in the workflow configuration. If
+none are specified, the inputs from the original configuration will be
+used and no changes will be made.}
+
+\item{outputs}{the new outputs to be updated in the workflow configuration.
+If none are specified, the outputs from the original configuration will
+be used and no changes will be made.}
+
+\item{x}{Object of class \code{avworkflow_configuration}.}
+
+\item{...}{additional arguments to \code{print()}; unused.}
+
+\item{configuration_namespace}{character(1).}
+
+\item{configuration_name}{character(1).}
 }
 \value{
 \code{avbucket()} returns a \code{character(1)} bucket identifier,
@@ -83,6 +208,92 @@ workspace bucket.
 
 \code{avfiles_rm()} on success, returns a list of the return
 codes of \code{gsutil_rm()}, invisibly.
+
+\code{avnotebooks()} returns a character vector of buckets /
+files located in the workspace 'Files/notebooks' bucket path,
+or on the local file system.
+
+\code{avnotebooks_localize()} returns the exit status of
+\code{gsutil_rsync()}.
+
+\code{avnotebooks_delocalize()} returns the exit status of
+\code{gsutil_rsync()}.
+
+\code{avworkflow_namespace()}, and \code{avworkflow_name()} return
+\code{character(1)} identifiers. \code{avworkflow()} returns the
+character(1) concatenated namespace and name. The value
+returned by \code{avworkflow_name()} will be percent-encoded (e.g.,
+spaces \code{" "} replaced by \code{"\%20"}).
+
+\code{avworkflow_configuration_get()} returns a list structure
+describing the configuration. See
+\code{avworkflow_configuration_template()} for the structure of a
+typical workflow.
+
+\code{avworkflow_configuration_inputs()} returns a data.frame
+providing a template for the configuration inputs, with the
+following columns:
+\itemize{
+\item inputType
+\item name
+\item optional
+\item attribute
+}
+
+The only column of interest to the user is the \code{attribute}
+column, this is the column that should be changed for
+customization.
+
+\code{avworkflow_configuration_outputs()} returns a data.frame
+providing a template for the configuration outputs, with the
+following columns:
+\itemize{
+\item name
+\item outputType
+\item attribute
+}
+
+The only column of interest to the user is the \code{attribute}
+column, this is the column that should be changed for
+customization.
+
+\code{avworkflow_configuration_update()} returns a list structure
+describing the updated configuration.
+
+\code{avworkflow_configuration_set()} returns an object
+describing the updated configuration. The return value includes
+invalid or unused elements of the \code{config} input. Invalid or
+unused elements of \code{config} are also reported as a warning.
+
+\code{avworkflow_configuration_template()} returns a list
+providing a template for configuration lists, with the
+following structure:
+\itemize{
+\item namespace character(1) configuration namespace.
+\item name character(1) configuration name.
+\item rootEntityType character(1) or missing. the name of the table
+(from \code{avtables()}) containing the entitites referenced in
+inputs, etc., by the keyword 'this.'
+\item prerequisites named list (possibly empty) of prerequisites.
+\item inputs named list (possibly empty) of inputs. Form of input
+depends on method, and might include, e.g., a reference to a
+field in a table referenced by \code{avtables()} or a character string
+defining an input constant.
+\item outputs named list (possibly empty) of outputs.
+\item methodConfigVersion integer(1) identifier for the method
+configuration.
+\item methodRepoMethod named list describing the method, with
+character(1) elements described in the return value for \code{avworkflows()}.
+\itemize{
+\item methodUri
+\item sourceRepo
+\item methodPath
+\item methodVersion. The REST specification indicates that this has
+type \code{integer}, but the documentation indicates either
+\code{integer} or \code{string}.
+}
+\item deleted logical(1) of uncertain purpose.
+}
 }
 \description{
 \code{avbucket()} returns the workspace bucket, i.e., the
@@ -95,6 +306,56 @@ compute node file system to the workspace bucket.
 \code{avfiles_restore()} copies files from the workspace bucket to
 the compute node file system.  \code{avfiles_rm()} removes files or
 directories from the workspace bucket.
+
+\code{avnotebooks()} returns the names of the notebooks
+associated with the current workspace.
+
+\code{avnotebooks_localize()} synchronizes the content of
+the workspace bucket to the local file system.
+
+\code{avnotebooks_delocalize()} synchronizes the content of
+the notebook location of the local file system to the workspace
+bucket.
+
+Funtions on this help page facilitate getting,
+updating, and setting workflow configuration parameters. See
+\code{?avworkflow} for additional relevant functionality.
+
+\code{avworkflow_namespace()} and \code{avworkflow_name()} are
+utility functions to record the workflow namespace and name
+required when working with workflow
+configurations. \code{avworkflow()} provides a convenient way to
+provide workflow namespace and name in a single command,
+\code{namespace/name}.
+
+\code{avworkflow_configuration_get()} returns a list structure
+describing an existing workflow configuration.
+
+\code{avworkflow_configuration_inputs()} returns a
+data.frame template for the inputs defined in a workflow
+configuration.  This template can be used to provide custom
+inputs for a configuration.
+
+\code{avworkflow_configuration_outputs()} returns a
+data.frame template for the outputs defined in a workflow
+configuration.  This template can be used to provide custom
+outputs for a configuration.
+
+\code{avworkflow_configuration_update()} returns a list structure
+describing a workflow configuration with updated inputs and / or outputs.
+
+\code{avworkflow_configuration_set()} updates an existing
+configuration in Terra / AnVIL, e.g., changing inputs to the
+workflow.
+
+\code{avworkflow_configuration_template()} returns a
+template for defining workflow configurations. This template
+can be used as a starting point for providing a custom
+configuration.
+
+These functions are provided for compatibility with
+older versions of \sQuote{AnVIL} only, and will be defunct at
+the next release.
 }
 \details{
 \code{avfiles_backup()} can be used to back-up individual files
@@ -106,6 +367,26 @@ full.names = TRUE))\verb{.  Naming conventions are described in detail in }gsuti
 \code{avfiles_restore()} behaves in a manner analogous to
 \code{avfiles_backup()}, copying files from the workspace bucket to
 the compute node file system.
+
+The exact format of the configuration is important.
+
+One common problem is that a scalar character vector \code{"bar"} is
+interpretted as a json 'array' \verb{["bar"]} rather than a json string
+\code{"bar"}. Enclose the string with \code{jsonlite::unbox("bar")} in the
+configuration list if the length 1 character vector in R is to be
+interpretted as a json string.
+
+A second problem is that an unquoted unboxed character string
+\code{unbox("foo")} is required by AnVIL to be quoted. This is reported
+as a warning() about invalid inputs or outputs, and the solution is
+to provide a quoted string \code{unbox('"foo"')}.
+
+The following functions are deprecated and will be made
+defunct; use the replacement indicated below:
+\itemize{
+\item \code{avworkflow_configuration()}: \code{\link{avworkflow_configuration_get}}
+\item \code{avworkflow_import_configuration()}: \code{\link{avworkflow_configuration_set}}
+}
 }
 \examples{
 if (gcloud_exists() && nzchar(avworkspace_name()))
@@ -131,4 +412,65 @@ avfiles_backup(dir())
 avfiles_backup(getwd(), recursive = TRUE)
 }
 
+if (gcloud_exists() && nzchar(avworkspace_name()))
+    avnotebooks()
+
+if (gcloud_exists() && nzchar(avworkspace_name()))
+    avnotebooks_localize()  # dry run
+
+if (gcloud_exists() && nzchar(avworkspace_name()))
+    try(avnotebooks_delocalize())  # dry run, fails if no local resource
+
+## set the namespace and name as appropriate
+avworkspace("bioconductor-rpci-anvil/Bioconductor-Workflow-DESeq2")
+
+## discover available workflows in the workspace
+if (gcloud_exists())
+    avworkflows()
+
+## record the workflow of interest
+avworkflow("bioconductor-rpci-anvil/AnVILBulkRNASeq")
+
+## what workflows are available?
+if (gcloud_exists()) {
+    available_workflows <- avworkflows()
+
+    ## retrieve the current configuration
+    config <- avworkflow_configuration_get()
+    config
+
+    ## what are the inputs and outputs?
+    inputs <- avworkflow_configuration_inputs(config)
+    inputs
+
+    outputs <- avworkflow_configuration_outputs(config)
+    outputs
+
+    ## update inputs or outputs, e.g., this input can be anything...
+    inputs <-
+        inputs |>
+        mutate(attribute = ifelse(
+            name == "salmon.transcriptome_index_name",
+            '"new_index_name"',
+            attribute
+        ))
+    new_config <- avworkflow_configuration_update(config, inputs)
+    new_config
+
+    ## set the new configuration in AnVIL; use dry = FALSE to actually
+    ## update the configuration
+    avworkflow_configuration_set(config)
+}
+
+## avworkflow_configuration_template() is a utility function that may
+## help understanding what the inputs and outputs should be
+avworkflow_configuration_template() |>
+    str()
+
+avworkflow_configuration_template()
+
+}
+\seealso{
+The help page \code{?avworkflow} for discovering, running,
+stopping, and retrieving outputs from workflows.
 }

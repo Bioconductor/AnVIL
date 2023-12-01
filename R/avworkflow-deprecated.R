@@ -1,4 +1,4 @@
-#' @rdname avworkflow
+#' @rdname avworkflow-deprecated
 #'
 #' @name avworkflows
 #'
@@ -7,7 +7,7 @@
 #' @inheritParams avworkspace
 NULL
 
-#' @rdname avworkflow
+#' @rdname avworkflow-deprecated
 #'
 #' @description `avworkflows()` returns a tibble summarizing available
 #'     workflows.
@@ -67,7 +67,7 @@ avworkflows <-
     )
 }
 
-#' @rdname avworkflow
+#' @rdname avworkflow-deprecated
 #'
 #' @description `avworkflow_jobs()` returns a tibble summarizing
 #'     submitted workflow jobs for a namespace and name.
@@ -309,7 +309,7 @@ avworkflow_jobs <-
     )
 }
 
-#' @rdname avworkflow
+#' @rdname avworkflow-deprecated
 #'
 #' @description `avworkflow_files()` returns a tibble containing
 #'     information and file paths to workflow outputs.
@@ -424,7 +424,7 @@ avworkflow_files <-
             "provided submissionId"
         ))
     } else if (!is.null(workflowId)) {
-      tbl <- 
+      tbl <-
         tbl |>
         filter(.data$workflowId == .env$workflowId)
     }
@@ -436,7 +436,7 @@ avworkflow_files <-
         )
 }
 
-#' @rdname avworkflow
+#' @rdname avworkflow-deprecated
 #'
 #' @description `avworkflow_localize()` creates or synchronizes a
 #'     local copy of files with files stored in the workspace bucket
@@ -561,7 +561,7 @@ avworkflow_localize <-
     invisible(tbl)
 }
 
-#' @rdname avworkflow
+#' @rdname avworkflow-deprecated
 #'
 #' @description `avworkflow_run()` runs the workflow of the configuration.
 #'
@@ -647,7 +647,7 @@ avworkflow_run <-
     invisible(config)
 }
 
-#' @rdname avworkflow
+#' @rdname avworkflow-deprecated
 #'
 #' @description `avworkflow_stop()` stops the most recently submitted workflow
 #'     jub from running.

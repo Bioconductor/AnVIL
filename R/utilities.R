@@ -84,29 +84,76 @@
 #' @importFrom httr status_code http_condition headers
 .avstop_for_status <-
     function(response, op)
-{
-    status <- status_code(response)
-    if (status < 400L)
-        return(invisible(response))
+    {
+        status <- status_code(response)
+        if (status < 400L)
+            return(invisible(response))
 
-    cond <- http_condition(status, "error")
-    type <- headers(response)[["content-type"]]
-    msg <- NULL
-    if (nzchar(type) && grepl("application/json", type)) {
-        content <- as.list(response)
-        msg <- content[["message"]]
-        if (is.null(msg))
-            ## e.g., from bond DRS server
-            msg <- content$response$text
-    } else if (nzchar(type) && grepl("text/html", type)) {
-        ## these pages can be too long for a standard 'stop()' message
-        cat(as.character(response), file = stderr())
+        cond <- http_condition(status, "error")
+        type <- headers(response)[["content-type"]]
+        msg <- NULL
+        if (nzchar(type) && grepl("application/json", type)) {
+            content <- as.list(response)
+            msg <- content[["message"]]
+            if (is.null(msg))
+                ## e.g., from bond DRS server
+                msg <- content$response$text
+        } else if (nzchar(type) && grepl("text/html", type)) {
+            ## these pages can be too long for a standard 'stop()' message
+            cat(as.character(response), file = stderr())
+        }
+
+        message <- paste0(
+            "'", op, "' failed:\n  ",
+            conditionMessage(cond),
+            if (!is.null(msg)) "\n  ", msg
+        )
+        stop(message, call.=FALSE)
     }
 
-    message <- paste0(
-        "'", op, "' failed:\n  ",
-        conditionMessage(cond),
-        if (!is.null(msg)) "\n  ", msg
+#' @title Internal helpers
+#'
+#' @description These functions are not intended to be called directly by users.
+#'   They are used internally by the package.
+#'
+#' @param newfun The name of the function to use instead. It can be a specific
+#'   function within another package (e.g., `AnVIL::avstorage`) or a function in
+#'   the current package (e.g., `avstorage`).
+#'
+#' @param newpackage If a function is moved to a new package, the name of the
+#'   new package can be specified here. This is equivalent to specifying
+#'   `newfun = paste0(newpackage, "::", oldfun)`.
+#'
+#' @param package The name of the package where the deprecated function resides.
+#'
+#' @param cycle The life cycle stage of the function. This can be either
+#'   `"deprecated"` or `"defunct"`.
+#'
+#' @param title The Rd name prefix of the documentation page where the
+#'   deprecation is documented (e.g., "av" for "av-deprecated").
+#'
+#' @keywords internal
+.life_cycle <- function(
+    newfun, newpackage, package = "AnVIL",
+    cycle = c("deprecated", "defunct"), title
+) {
+    if (missing(newfun) && missing(newpackage))
+        stop("'newfun' or 'newpackage' must be specified")
+
+    cycle <- match.arg(cycle)
+    oldfun <- as.character(sys.call(sys.parent())[1L])
+
+    if (!missing(newpackage))
+        newfun <- paste0(newpackage, "::", oldfun)
+
+    if (missing(title))
+        title <- package
+    msg <- c(
+        gettextf("'%s' is %s.\n", oldfun, cycle),
+        gettextf("Use '%s' instead.\n", newfun),
+        gettextf("See help('%s').",  paste0(title, "-", cycle))
     )
-    stop(message, call.=FALSE)
+    cycle_fun <- switch(cycle, deprecated = .Deprecated, defunct = .Defunct)
+    arglist <- list(new = newfun, msg = msg, package = package)
+    do.call(cycle_fun, arglist)
 }
