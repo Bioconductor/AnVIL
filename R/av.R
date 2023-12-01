@@ -5,12 +5,32 @@
 #' @title TABLE, DATA, files, bucket, runtime, and disk elements
 NULL
 
-##
-## internal
-##
-
+#' @rdname av-utilities
+#'
+#' @aliases avstop_for_status
+#'
+#' @title Check HTTP code before continuing
+#'
+#' @description `avstop_for_status()` checks the HTTP status code of a
+#'    response object and stops with an informative message if the
+#'    status code is not 2xx. This utility function is mainly called by other
+#'    functions that make API requests.
+#'
+#' @details `avstop_for_status()` uses `httr`'s `http_condition()` and
+#'   `status_code` to obtain the condition message and identify the condition,
+#'   respectively.
+#'
+#' @param response A `response` object returned by the API service request.
+#'
+#' @param op character(1) A description of the operation that failed.
+#'
+#' @return called for the side effect of `stop()`-ping with an informative
+#'   message if the HTTP status code is not 2xx.
+#'
 #' @importFrom httr status_code http_condition headers
-.avstop_for_status <-
+#'
+#' @export
+avstop_for_status <-
     function(response, op)
 {
     status <- status_code(response)
