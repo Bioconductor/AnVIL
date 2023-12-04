@@ -59,7 +59,7 @@ avworkspaces <-
     function()
 {
     .life_cycle(
-        newpackage = "AnVILCGP",
+        newpackage = "AnVILGCP",
         cycle = "deprecated",
         title = "avworkspace"
     )
@@ -120,7 +120,7 @@ avworkspace_namespace <-
     function(namespace = NULL, warn = TRUE)
 {
     .life_cycle(
-        newpackage = "AnVILCGP",
+        newpackage = "AnVILGCP",
         cycle = "deprecated",
         title = "avworkspace"
     )
@@ -149,7 +149,7 @@ avworkspace_name <-
     function(name = NULL, warn = TRUE)
 {
     .life_cycle(
-        newpackage = "AnVILCGP",
+        newpackage = "AnVILGCP",
         cycle = "deprecated",
         title = "avworkspace"
     )
@@ -168,7 +168,7 @@ avworkspace <-
             is.null(workspace) || .is_workspace(workspace)
     )
     .life_cycle(
-        newpackage = "AnVILCGP",
+        newpackage = "AnVILGCP",
         cycle = "deprecated",
         title = "avworkspace"
     )
@@ -216,7 +216,7 @@ avworkspace_clone <-
             !identical(namespace, to_namespace) || !identical(name, to_name)
     )
     .life_cycle(
-        newpackage = "AnVILCGP",
+        newpackage = "AnVILGCP",
         cycle = "deprecated",
         title = "avworkspace"
     )
