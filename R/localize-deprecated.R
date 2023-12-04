@@ -1,4 +1,6 @@
-#' @rdname localize
+#' @rdname localize-deprecated
+#'
+#' @aliases localize delocalize
 #'
 #' @title Copy packages, folders, or files to or from google buckets.
 #'
@@ -32,13 +34,16 @@ localize <-
     if (dry)
         warning("use 'dry = FALSE' to localize source / destination")
 
+    .life_cycle(
+        newpackage = "AnVILGCP", cycle = "deprecated", title = "localize"
+    )
     ## FIXME: return destination paths of copied files
     gsutil_rsync(
         source, destination, delete = FALSE, recursive = TRUE, dry = dry
     )
 }
 
-#' @rdname localize
+#' @rdname localize-deprecated
 #'
 #' @description `delocalize()`: synchronize files from a local file
 #'     system (`source`) to a Google storage bucket
@@ -64,6 +69,9 @@ delocalize <-
     if (dry)
         warning("use 'dry = FALSE' to delocalize source / destination")
 
+    .life_cycle(
+        newpackage = "AnVILGCP", cycle = "deprecated", title = "localize"
+    )
     ## sync and optionally remove source
     result <- gsutil_rsync(
         source, destination, delete = FALSE, recursive = TRUE, dry = dry

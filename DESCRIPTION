@@ -48,7 +48,7 @@ Collate:
     Response.R
     AnVIL-deprecated.R av-deprecated.R
     avworkflow-deprecated.R avworkspace-deprecated.R
-    av-utilities.R localize.R drs.R av.R
+    av-utilities.R localize-deprecated.R drs.R av.R
     gadgets.R zzz.R
 VignetteBuilder: knitr
 biocViews: Infrastructure
