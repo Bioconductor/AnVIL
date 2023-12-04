@@ -142,7 +142,7 @@ avrestore <- function(
 #' @export
 avstorage <- function() {
     if (.platform_available("AnVILGCP"))
-        AnVIL::avbucket()
+        AnVILCGP::avbucket()
     else if (.platform_available("AnVILAz"))
         AnVILAz::workspace_storage_cont_url()
     else
