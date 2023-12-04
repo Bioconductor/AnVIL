@@ -1,8 +1,8 @@
 #' @rdname avworkspace-deprecated
 #'
-#' @name avworkspace
+#' @name avworkspace-deprecated
 #'
-#' @title Workspace management
+#' @title Workspace management (DEPRECATED)
 NULL
 
 ##
@@ -58,7 +58,11 @@ NULL
 avworkspaces <-
     function()
 {
-
+    .life_cycle(
+        newpackage = "AnVILCGP",
+        cycle = "deprecated",
+        title = "avworkspace"
+    )
     response <- Terra()$listWorkspaces()
     .avstop_for_status(response, "avworkspaces")
 
@@ -115,6 +119,11 @@ avworkspaces <-
 avworkspace_namespace <-
     function(namespace = NULL, warn = TRUE)
 {
+    .life_cycle(
+        newpackage = "AnVILCGP",
+        cycle = "deprecated",
+        title = "avworkspace"
+    )
     namespace <- .avworkspace(
         "avworkspace_namespace", "NAMESPACE", namespace, warn = FALSE
     )
@@ -139,6 +148,11 @@ avworkspace_namespace <-
 avworkspace_name <-
     function(name = NULL, warn = TRUE)
 {
+    .life_cycle(
+        newpackage = "AnVILCGP",
+        cycle = "deprecated",
+        title = "avworkspace"
+    )
     value <- .avworkspace("avworkspace_name", "NAME", name, warn = warn)
     URLencode(value)
 }
@@ -152,6 +166,11 @@ avworkspace <-
     stopifnot(
         `'workspace' must be NULL or of the form 'namespace/name'` =
             is.null(workspace) || .is_workspace(workspace)
+    )
+    .life_cycle(
+        newpackage = "AnVILCGP",
+        cycle = "deprecated",
+        title = "avworkspace"
     )
     if (!is.null(workspace)) {
         wkspc <- strsplit(workspace, "/")[[1]]
@@ -196,7 +215,11 @@ avworkspace_clone <-
         `source and destination 'namespace/name' must be different` =
             !identical(namespace, to_namespace) || !identical(name, to_name)
     )
-
+    .life_cycle(
+        newpackage = "AnVILCGP",
+        cycle = "deprecated",
+        title = "avworkspace"
+    )
     response <- Terra()$cloneWorkspace(
         workspaceNamespace = namespace,
         workspaceName = URLencode(name),

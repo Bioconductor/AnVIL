@@ -1,8 +1,9 @@
 #' @rdname localize-deprecated
-#'
+#' @name localize-deprecated
 #' @aliases localize delocalize
 #'
-#' @title Copy packages, folders, or files to or from google buckets.
+#' @title Copy packages, folders, or files to or from Google buckets
+#'   (DEPRECATED).
 #'
 #' @description `localize()`: recursively synchronizes files from a
 #'     Google storage bucket (`source`) to the local file system

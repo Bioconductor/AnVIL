@@ -1,3 +1,880 @@
+#' @rdname av-deprecated
+#' @name av-deprecated
+#'
+#' @title TABLE, DATA, files, bucket, runtime, and disk elements (DEPRECATED)
+NULL
+
+##
+## tables
+##
+
+#' @rdname av-deprecated
+#'
+#' @description `avtables()` describes tables available in a
+#'     workspace. Tables can be visualized under the DATA tab, TABLES
+#'     item.  `avtable()` returns an AnVIL table.  `avtable_paged()`
+#'     retrieves an AnVIL table by requesting the table in 'chunks',
+#'     and may be appropriate for large tables. `avtable_import()`
+#'     imports a data.frame to an AnVIL table.  `avtable_import_set()`
+#'     imports set membership (i.e., a subset of an existing table)
+#'     information to an AnVIL table.  `avtable_delete_values()`
+#'     removes rows from an AnVIL table.
+#'
+#' @param namespace character(1) AnVIL workspace namespace as returned
+#'     by, e.g., `avworkspace_namespace()`
+#'
+#' @param name character(1) AnVIL workspace name as returned by, eg.,
+#'     `avworkspace_name()`.
+#'
+#' @return `avtables()`: A tibble with columns identifying the table,
+#'     the number of records, and the column names.
+#'
+#' @export
+avtables <-
+    function(namespace = avworkspace_namespace(), name = avworkspace_name())
+{
+    stopifnot(
+        .is_scalar_character(namespace),
+        .is_scalar_character(name)
+    )
+    .life_cycle(
+        newpackage = "AnVILGCP",
+        cycle = "deprecated",
+        title = "av"
+    )
+    types <- Terra()$getEntityTypes(namespace, URLencode(name))
+    .avstop_for_status(types, "avtables")
+    lst <- content(types)
+    table <- names(lst)
+    count <- vapply(lst, `[[`, integer(1), "count")
+    colnames <- vapply(lst, function(elt) {
+        value <- unlist(elt[c("idName", "attributeNames")], use.names=FALSE)
+        paste(value, collapse=", ")
+    }, character(1))
+    tibble(table, count, colnames)
+}
+
+.is_avtable <-
+    function(table, namespace, name)
+{
+    tbls <- avtables(namespace, name)
+    table %in% tbls$table
+}
+
+## helpers for avtable(), avtable_paged() avtable_import() handling
+## treatment NA_character_
+.avtable_na <-
+    function(na)
+{
+    stopifnot(.is_character(na, zchar = TRUE))
+    function(x) {
+        ## flatten() has changed "" (no attribute in the entity set)to
+        ## NA_character_; change to ""
+        x[is.na(x)] <- ""
+        ## follow the rules of `na` re-assign NA_character_
+        x[x %in% na] <- NA_character_
+        x
+    }
+}
+
+#' @rdname av-deprecated
+#'
+#' @param table character(1) table name as returned by, e.g., `avtables()`.
+#'
+#' @param na in `avtable()` and `avtable_paged()`, character() of
+#'     strings to be interpretted as missing values. In
+#'     `avtable_import()` character(1) value to use for representing
+#'     `NA_character_`. See Details.
+#'
+#' @details Treatment of missing values in `avtable()`,
+#'     `avtable_paged()` and `avtable_import()` are handled by the
+#'     `na` parameter.
+#'
+#' @details `avtable()` may sometimes result in a curl error 'Error in
+#'     curl::curl_fetch_memory' or a 'Internal Server Error (HTTP
+#'     500)' This may be due to a server time-out when trying to read
+#'     a large (more than 50,000 rows?) table; using `avtable_paged()`
+#'     may address this problem.
+#'
+#' @details For `avtable()` and `avtable_paged()`, the default `na = c("",
+#'     "NA")` treats empty cells or cells containing "NA" in a Terra
+#'     data table as `NA_character_` in R. Use `na = character()` to
+#'     indicate no missing values, `na = "NA"` to retain the
+#'     distinction between `""` and `NA_character_`.
+#'
+#' @details For `avtable_import()`, the default `na = "NA"` records
+#'     `NA_character_` in R as the character string `"NA"` in an AnVIL
+#'     data table.
+#'
+#' @details The default setting (`na = "NA"` in `avtable_import()`,
+#'     `na = c("",  NA_character_")` in `avtable()`, is appropriate to
+#'     'round-trip' data from R to AnVIL and back when character vectors
+#'     contain only `NA_character_`. Use `na = "NA"` in both functions to
+#'     round-trip data containing both `NA_character_` and "NA". Use
+#'     a distinct string, e.g., `na = "__MISSING_VALUE__"`, for both
+#'     arguments if the data contains a string `"NA"` as well as
+#'     `NA_character_`.
+#'
+#' @return `avtable()`: a tibble of data corresponding to the AnVIL
+#'     table `table` in the specified workspace.
+#'
+#' @importFrom dplyr "%>%" select starts_with ends_with across where
+#'
+#' @export
+avtable <-
+    function(table, namespace = avworkspace_namespace(),
+        name = avworkspace_name(), na = c("", "NA"))
+{
+    stopifnot(
+        .is_scalar_character(table),
+        .is_scalar_character(namespace),
+        .is_scalar_character(name)
+       ## ,
+       ##  `unknown table; use 'avtables()' for valid names` =
+       ##      .is_avtable(table, namespace, name)
+    )
+    .life_cycle(
+        newpackage = "AnVILGCP",
+        cycle = "deprecated",
+        title = "av"
+    )
+    na_fun <- .avtable_na(na)
+
+    tryCatch({
+        entities <- Terra()$getEntities(namespace, URLencode(name), table)
+    }, error = function(err) {
+        msg <- paste0(
+            "'avtable()' failed, see 'Details' of `?avtable` for help\n",
+            "  ", conditionMessage(err)
+        )
+        stop(msg, call. = FALSE)
+    })
+    .avstop_for_status(entities, "avtable")
+    tbl <-
+        entities %>%
+        flatten()
+    if (!"name" %in% names(tbl)) {
+        stop(
+            "table '", table, "' does not exist; see 'avtables()'\n",
+            "    namespace: ", namespace, "\n",
+            "    name: ", name, "\n"
+        )
+    }
+    tbl <-
+        tbl %>%
+        select("name", starts_with("attributes"), -ends_with("entityType")) %>%
+        mutate(across(where(is.character), na_fun))
+    names(tbl) <- sub("^attributes.", "", names(tbl))
+    names(tbl) <- sub(".entityName$", "", names(tbl))
+    names(tbl) <- sub("^name$", paste0(table, "_id"), names(tbl))
+    tbl
+}
+
+#' @importFrom utils txtProgressBar setTxtProgressBar
+.avtable_pages <-
+    function(FUN, ..., n, page, pageSize)
+{
+    result <- NULL
+    bar <- NULL
+    repeat {
+        response <- FUN(..., page = page, pageSize = pageSize)
+        result <- bind_rows(result, response$results)
+        if (is.null(bar)) {
+            max <- max(min(n, response$resultMetadata$filteredCount), 1L)
+            bar <- txtProgressBar(max = max, style = 3L)
+            on.exit(close(bar))
+        }
+        setTxtProgressBar(bar, min(NROW(result), n))
+        page <- response$parameters$page + 1L
+        test <-
+            (page > response$resultMetadata$filteredPageCount) ||
+            (NROW(result) >= n)
+        if (test)
+            break
+    }
+
+    head(result, n)
+}
+
+#' @importFrom dplyr bind_cols
+.avtable_paged1 <-
+    function(
+        namespace, name, table,
+        page, pageSize, sortField, sortDirection,
+        filterTerms, filterOperator)
+{
+    response <- Terra()$entityQuery(
+        namespace, URLencode(name), table,
+        page, pageSize, sortField, sortDirection,
+        filterTerms, filterOperator)
+    .avstop_for_status(response, "avtable_paged")
+
+    lst <-
+        response %>%
+        as.list()
+    if (length(lst$results)) {
+        results <- bind_cols(
+            tibble(name = lst$results$name),
+            as_tibble(lst$results$attributes)
+        )
+    } else {
+        results <- tibble()
+    }
+    list(
+        parameters = lst$parameters,
+        resultMetadata = lst$resultMetadata,
+        results = results
+    )
+}
+
+#' @rdname av-deprecated
+#'
+#' @param n numeric(1) maximum number of rows to return
+#'
+#' @param page integer(1) first page of iteration
+#'
+#' @param pageSize integer(1) number of records per page. Generally,
+#'     larger page sizes are more efficient.
+#'
+#' @param sortField character(1) field used to sort records when
+#'     determining page order. Default is the entity field.
+#'
+#' @param sortDirection character(1) direction to sort entities
+#'     (`"asc"`ending or `"desc"`ending) when paging.
+#'
+#' @param filterTerms character(1) string literal to select rows with
+#'     an exact (substring) matches in column.
+#'
+#' @param filterOperator character(1) operator to use when multiple
+#'     terms in `filterTerms=`, either `"and"` (default) or `"or"`.
+#'
+#' @return `avtable_paged()`: a tibble of data corresponding to the
+#'     AnVIL table `table` in the specified workspace.
+#'
+#' @export
+avtable_paged <-
+    function(table,
+        n = Inf, page = 1L, pageSize = 1000L,
+        sortField = "name", sortDirection = c("asc", "desc"),
+        filterTerms = character(),
+        filterOperator = c("and", "or"),
+        namespace = avworkspace_namespace(),
+        name = avworkspace_name(), na = c("", "NA"))
+{
+    page <- as.integer(page)
+    pageSize <- as.integer(pageSize)
+    stopifnot(
+        .is_scalar_character(table),
+        .is_scalar_numeric(n, infinite.ok = TRUE),
+        .is_scalar_integer(page),
+        .is_scalar_integer(pageSize),
+        .is_scalar_character(sortField),
+        length(filterTerms) == 0L || .is_scalar_character(filterTerms),
+        .is_scalar_character(namespace),
+        .is_scalar_character(name)
+        ## ,
+        ## `unknown table; use 'avtables()' for valid names` =
+        ##     .is_avtable(table, namespace, name)
+    )
+    .life_cycle(
+        newpackage = "AnVILGCP",
+        cycle = "deprecated",
+        title = "av"
+    )
+    sortDirection <- match.arg(sortDirection)
+    filterOperator <- match.arg(filterOperator)
+    name <- URLencode(name)
+    na_fun <- .avtable_na(na)
+
+    tbl <- .avtable_pages(
+        .avtable_paged1,
+        namespace = namespace, name = name, table = table,
+        sortField = sortField, sortDirection = sortDirection,
+        filterTerms = filterTerms, filterOperator = filterOperator,
+        n = n, page = page, pageSize = pageSize
+    )
+    names(tbl) <- sub("^name$", paste0(table, "_id"), names(tbl))
+    tbl %>%
+        mutate(across(where(is.character), na_fun))
+}
+
+.avtable_import_set_entity <-
+    function(.data, entity)
+{
+    oentity <- entity
+    idx <- match(entity, names(.data))
+
+    if (!startsWith(entity, "entity:"))
+        entity <- paste0("entity:", entity)
+    if (!endsWith(entity, "_id"))
+        entity <- paste0(entity, "_id")
+
+    if (is.na(idx)) {                   # new column, arbitrary index
+        .data[[entity]] <- seq_len(nrow(.data))
+    } else {                           # existing column, maybe rename
+        names(.data)[idx] <- entity
+    }
+
+    stopifnot(!anyDuplicated(.data[[entity]]), !anyNA(.data[[entity]]))
+
+    .data[c(entity, setdiff(names(.data), entity))]
+}
+
+.avtable_import_write_dataset <-
+    function(.data, na)
+{
+    destination <- tempfile()
+    write.table(
+        .data, destination,
+        quote = FALSE, sep = "\t", row.names=FALSE, na = na
+    )
+
+    destination
+}
+
+#' @rdname av-deprecated
+#'
+#' @param .data A tibble or data.frame for import as an AnVIL table.
+#'
+#' @param entity `character(1)` column name of `.data` to be used as
+#'     imported table name. When the table comes from R, this is
+#'     usually a column name such as `sample`. The data will be
+#'     imported into AnVIL as a table `sample`, with the `sample`
+#'     column included with suffix `_id`, e.g., `sample_id`. A column
+#'     in `.data` with suffix `_id` can also be used, e.g., `entity =
+#'     "sample_id"`, creating the table `sample` with column
+#'     `sample_id` in AnVIL. Finally, a value of `entity` that is not
+#'     a column in `.data`, e.g., `entity = "unknown"`, will cause a
+#'     new table with name `entity` and entity values
+#'     `seq_len(nrow(.data))`.
+#'
+#' @param delete_empty_values logical(1) when `TRUE`, remove entities
+#'     not include in `.data` from the DATA table. Default: `FALSE`.
+#'
+#' @details `avtable_import()` tries to work around limitations in
+#'     `.data` size in the AnVIL platform, using `pageSize` (number of
+#'     rows) to import so that approximately 1500000 elements (rows x
+#'     columns) are uploaded per chunk. For large `.data`, a progress
+#'     bar summarizes progress on the import. Individual chunks may
+#'     nonetheless fail to upload, with common reasons being an
+#'     internal server error (HTTP error code 500) or transient
+#'     authorization failure (HTTP 401). In these and other cases
+#'     `avtable_import()` reports the failed page(s) as warnings. The
+#'     user can attempt to import these individually using the `page`
+#'     argument. If many pages fail to import, a strategy might be to
+#'     provide an explicit `pageSize` less than the automatically
+#'     determined size.
+#'
+#' @return `avtable_import()` returns a `tibble()` containing the page
+#'     number, 'from' and 'to' rows included in the page, job
+#'     identifier, initial status of the uploaded 'chunks', and any
+#'     (error) messages generated during status check. Use
+#'     `avtable_import_status()` to query current status.
+#'
+#' @importFrom utils write.table
+#'
+#' @export
+avtable_import <-
+    function(.data, entity = names(.data)[[1]],
+        namespace = avworkspace_namespace(), name = avworkspace_name(),
+        delete_empty_values = FALSE, na = "NA",
+        n = Inf, page = 1L, pageSize = NULL)
+{
+    stopifnot(
+        is.data.frame(.data),
+        .is_scalar_character(entity),
+        .is_scalar_character(namespace),
+        .is_scalar_character(name),
+        .is_scalar_logical(delete_empty_values),
+        .is_scalar_character(na, zchar = TRUE),
+        .is_scalar_numeric(n, infinite.ok = TRUE),
+        .is_scalar_integer(as.integer(page)),
+        is.null(pageSize) || .is_scalar_integer(as.integer(pageSize))
+    )
+
+    .life_cycle(
+        newpackage = "AnVILGCP",
+        cycle = "deprecated",
+        title = "av"
+    )
+    ## identify the 'entity' column
+    .data <- .avtable_import_set_entity(.data, entity)
+    ## divide large tables into chunks, if necessary
+    .avtable_import_chunks(
+        .data, namespace, name, delete_empty_values, na,
+        n, page, pageSize
+    )
+}
+
+.avtable_import_pages_index <-
+    function(.data, n, page, pageSize)
+{
+    ## import table in chunks to avoid server timeout;
+    ## https://github.com/Bioconductor/AnVIL/issues/76
+
+    ## arbitrary: use page size so that each 'chunk' is about 1M elements
+    if (is.null(pageSize)) {
+        N_ELEMENTS <- 1500000
+        pageSize <- ifelse(
+            prod(dim(.data)) > N_ELEMENTS,
+            as.integer(floor(N_ELEMENTS / NCOL(.data))),
+            NROW(.data)
+        )
+    }
+
+    row_index <- seq_len(NROW(.data))
+    ## assign all rows a page
+    page_id <- (row_index - 1L) %/% pageSize + 1L
+    ## exclude rows before `page`
+    page_id[page_id < page] <- 0L
+    ## return a maximum of `n` elements after the first non-zero element
+    if (is.finite(n))
+        page_id[row_index > sum(page_id == 0) + n] <- 0L
+
+    pages <- split(row_index, page_id)
+    pages <- pages[names(pages) != "0"]
+    message("pageSize = ", pageSize, " rows (", length(pages), " pages)")
+    pages
+}
+
+.avtable_import_chunks <-
+    function(
+        .data, namespace, name, delete_empty_values, na,
+        n, page, pageSize
+    )
+{
+    ## divide large tables into chunks, if necessary
+    pages <- .avtable_import_pages_index(.data, n, page, pageSize)
+
+    ## progress bar
+    n_uploaded <- 0L
+    progress_bar <- NULL
+    if (length(pages) > 1L && interactive()) {
+        progress_bar <- txtProgressBar(max = sum(lengths(pages)), style = 3L)
+        on.exit(close(progress_bar))
+    }
+
+    status <- rep("Failed", length(pages))
+    job_id <- rep(NA_character_, length(pages))
+    ## iterate through pages
+    for (chunk_index in seq_along(pages)) {
+        chunk_idx <- pages[[chunk_index]]
+        chunk_name <- names(pages)[[chunk_index]]
+        chunk <- .data[chunk_idx, , drop = FALSE]
+        job_id[[chunk_index]] <- tryCatch({
+            .avtable_import(chunk, namespace, name, delete_empty_values, na)
+        }, error = function(err) {
+            msg <- paste(strwrap(paste0(
+                "failed to import page ", chunk_name,
+                "; continuing to next page"
+            )), collapse = "\n")
+            warning(msg, "\n", conditionMessage(err), immediate. = TRUE)
+            NA_character_
+        })
+        n_uploaded <- n_uploaded + length(chunk_idx)
+        if (!is.null(progress_bar))
+            setTxtProgressBar(progress_bar, n_uploaded)
+    }
+    status[!is.na(job_id)] <- "Uploaded"
+    tibble(
+        page = seq_along(pages),
+        from_row = vapply(pages, min, integer(1)),
+        to_row = vapply(pages, max, integer(1)),
+        job_id = job_id,
+        status = status,
+        message = rep(NA_character_, length(status))
+    )
+}
+
+.avtable_import <-
+    function(.data, namespace, name, delete_empty_values, na)
+{
+    destination <- .avtable_import_write_dataset(.data, na)
+    entities <- httr::upload_file(destination)
+
+    response <- Terra()$flexibleImportEntities(
+        namespace, URLencode(name),
+        async = TRUE,
+        deleteEmptyValues = delete_empty_values,
+        entities = entities
+    )
+    .avstop_for_status(response, "avtable_import")
+    content(response)$jobId
+}
+
+#' @rdname av-deprecated
+#'
+#' @param origin character(1) name of the entity (table) used to
+#'     create the set e.g "sample", "participant",
+#'     etc.
+#'
+#' @param set `character(1)` column name of `.data` identifying the
+#'     set(s) to be created.
+#'
+#' @param member `character()` vector of entity from the avtable
+#'     identified by `origin`. The values may repeat if an ID is in
+#'     more than one set
+#'
+#' @details `avtable_import_set()` creates new rows in a table
+#'     `<origin>_set`. One row will be created for each distinct value
+#'     in the column identified by `set`. Each row entry has a
+#'     corresponding column `<origin>` linking to one or more rows in
+#'     the `<origin>` table, as given in the `member` column. The
+#'     operation is somewhat like `split(member, set)`.
+#'
+#' @return `avtable_import_set()` returns a `character(1)` name of the
+#'     imported AnVIL tibble.
+#'
+#' @importFrom utils write.table
+#'
+#' @examples
+#' \dontrun{
+#' ## editable copy of '1000G-high-coverage-2019' workspace
+#' avworkspace("bioconductor-rpci-anvil/1000G-high-coverage-2019")
+#' sample <-
+#'     avtable("sample") %>%                               # existing table
+#'     mutate(set = sample(head(LETTERS), nrow(.), TRUE))  # arbitrary groups
+#' sample %>%                                   # new 'participant_set' table
+#'     avtable_import_set("participant", "set", "participant")
+#' sample %>%                                   # new 'sample_set' table
+#'     avtable_import_set("sample", "set", "name")
+#' }
+#'
+#' @export
+avtable_import_set <-
+    function(
+        .data, origin, set = names(.data)[[1]], member = names(.data)[[2]],
+        namespace = avworkspace_namespace(), name = avworkspace_name(),
+        delete_empty_values = FALSE, na = "NA",
+        n = Inf, page = 1L, pageSize = NULL)
+{
+    stopifnot(
+        is.data.frame(.data),
+        .is_scalar_character(origin),
+        .is_scalar_character(set),
+        set %in% names(.data),
+        .is_scalar_character(member),
+        !identical(set, member), member %in% names(.data),
+        .is_scalar_character(namespace),
+        .is_scalar_character(name),
+        .is_scalar_logical(delete_empty_values),
+        .is_scalar_character(na, zchar = TRUE),
+        .is_scalar_numeric(n, infinite.ok = TRUE),
+        .is_scalar_integer(as.integer(page)),
+        is.null(pageSize) || .is_scalar_integer(as.integer(pageSize))
+    )
+    .life_cycle(
+        newpackage = "AnVILGCP",
+        cycle = "deprecated",
+        title = "av"
+    )
+    origin <- URLencode(origin)
+
+    .data <-
+        .data |>
+        select(set, member)
+    names(.data)[[1]] <- paste0("membership:", origin, "_set_id")
+    names(.data)[[2]] <- origin
+
+    .avtable_import_chunks(
+        .data, namespace, name, delete_empty_values, na,
+        n, page, pageSize
+    )
+}
+
+#' @rdname av-deprecated
+#'
+#' @description `avtable_import_status()` queries for the status of an
+#'     'asynchronous' table import.
+#'
+#' @param job_status tibble() of job identifiers, returned by
+#'     `avtable_import()` and `avtable_import_set()`.
+#'
+#' @export
+avtable_import_status <-
+    function(job_status,
+        namespace = avworkspace_namespace(), name = avworkspace_name())
+{
+    stopifnot(
+        is.data.frame(job_status),
+        c("job_id", "status") %in% colnames(job_status),
+        .is_character(job_status$job_id, na.ok = TRUE),
+        .is_character(job_status$status),
+        .is_scalar_character(namespace),
+        .is_scalar_character(name)
+    )
+    .life_cycle(
+        newpackage = "AnVILGCP",
+        cycle = "deprecated",
+        title = "av"
+    )
+    todo <- !job_status$status %in% c("Done", "Failed")
+    job_ids <- job_status$job_id[todo]
+    n_jobs <- length(job_ids)
+    updated_status <- rep(NA_character_, n_jobs)
+    updated_message <- job_status$message
+    names(updated_status) <- names(updated_message) <- job_ids
+
+    progress_bar <- NULL
+    message("checking status of ", n_jobs, " avtable import jobs")
+    if (n_jobs > 1L && interactive()) {
+        progress_bar <- txtProgressBar(max = n_jobs, style = 3L)
+        on.exit(close(progress_bar))
+    }
+
+    for (job_index in seq_len(n_jobs)) {
+        job_id <- job_ids[[job_index]]
+        tryCatch({
+            response <- Terra()$importJobStatus(namespace, name, job_id)
+            .avstop_for_status(response, "avtable_import_status")
+            content <- httr::content(response)
+            updated_status[[job_index]] <- content$status
+            if ("message" %in% names(content)) {
+                updated_message[[job_index]] <- gsub(
+                    "[[:space:]]+", " ", content$message
+                )
+            } else {
+                updated_message[[job_index]] <- NA_character_
+            }
+        }, error = function(err) {
+            msg <- paste(strwrap(paste0(
+                "failed to get status of job_id '", job_id, "'; ",
+                "continuing to next job"
+            )), collapse = "\n")
+            warning(msg, "\n", conditionMessage(err), immediate. = TRUE)
+        })
+        if (!is.null(progress_bar))
+            setTxtProgressBar(progress_bar, job_index)
+    }
+
+    job_status$status[todo] <- updated_status
+    job_status$message[todo] <- updated_message
+    job_status
+}
+
+#' @rdname av-deprecated
+#'
+#' @param values vector of values in the entity (key) column of
+#'     `table` to be deleted. A table `sample` has an associated
+#'     entity column with suffix `_id`, e.g., `sample_id`. Rows with
+#'     entity column entries matching `values` are deleted.
+#'
+#' @return `avtable_delete_values()` returns a `tibble` representing
+#'     deleted entities, invisibly.
+#'
+#' @importFrom utils capture.output
+#'
+#' @export
+avtable_delete_values <-
+    function(table, values,
+        namespace = avworkspace_namespace(),
+        name = avworkspace_name())
+{
+    stopifnot(
+        .is_scalar_character(table),
+        .is_scalar_character(namespace),
+        .is_scalar_character(name)
+    )
+
+    .life_cycle(
+        newpackage = "AnVILGCP",
+        cycle = "deprecated",
+        title = "av"
+    )
+    name <- URLencode(name)
+    body <- tibble(entityType = table, entityName = as.character(values))
+
+    response <- Terra()$deleteEntities(namespace, URLencode(name), body)
+    if (status_code(response) == 409L) {
+        tbl <-
+            response %>%
+            flatten() %>%
+            capture.output() %>%
+            paste(collapse = "\n")
+        stop(
+            "\n",
+            "  'values' (entityName) appear in more than one table (entityType);",
+            "\n  delete entityName from leaf tables first\n\n",
+            tbl
+        )
+    }
+    .avstop_for_status(response, "avtable_delete_values") # other errors
+
+    invisible(body)
+}
+
+#' @rdname av-deprecated
+#'
+#' @description `avdata()` returns key-value tables representing the
+#'     information visualized under the DATA tab, 'REFERENCE DATA' and
+#'     'OTHER DATA' items.  `avdata_import()` updates (modifies or
+#'     creates new, but does not delete) rows in 'REFERENCE DATA' or
+#'     'OTHER DATA' tables.
+#'
+#' @return `avdata()` returns a tibble with five columns: `"type"`
+#'     represents the origin of the data from the 'REFERENCE' or
+#'     'OTHER' data menus. `"table"` is the table name in the
+#'     `REFERENCE` menu, or 'workspace' for the table in the 'OTHER'
+#'     menu, the key used to access the data element, the value label
+#'     associated with the data element and the value (e.g., google
+#'     bucket) of the element.
+#'
+#' @examples
+#' if (gcloud_exists() && nzchar(avworkspace_name())) {
+#'     ## from within AnVIL
+#'     data <- avdata()
+#'     data
+#' }
+#'
+#' @export
+avdata <-
+    function(namespace = avworkspace_namespace(), name = avworkspace_name())
+{
+    stopifnot(
+        .is_scalar_character(namespace),
+        .is_scalar_character(name)
+    )
+
+    name <- URLencode(name)
+    response <- Terra()$getWorkspace(
+        namespace, URLencode(name), "workspace.attributes"
+    )
+    .avstop_for_status(response, "avworkspace_data")
+
+    content <- content(response)[[1]][["attributes"]]
+
+    ## a workspace DATA element may be preceeded by the 'workspace:'
+    ## tag, remove it
+    names(content) <- sub("^workspace:", "", names(content))
+    ## remove non-DATA attributes. `description` is from the workspace
+    ## landing page. The `:` seems to be used as a delimiter, e.g.,
+    ## `tag:tags`
+    exclude <-
+        names(content) %in% "description" |
+        grepl("^[a-z]+:", names(content))
+    content <- content[!exclude]
+
+    ## some elements are lists, e.g., a vector of google
+    ## buckets. Translate these to their character(1) representation,
+    ## so the tibble has a column of type <chr> and shows the value of
+    ## the character(1) entries, rather than a column of type list
+    ## showing "chr(1)" for most elements
+    is_character <- vapply(content, is.character, logical(1))
+    content[!is_character] <- vapply(
+        content[!is_character],
+        ## list-like elements usually have a key-value structure, use
+        ## the value
+        function(x) jsonlite::toJSON(unlist(x[["items"]], use.names = FALSE)),
+        character(1)
+    )
+
+    ## create the referenceData tibble; 'referenceData' keys start
+    ## with "referenceData_"
+    referenceData_id <- "referenceData_"
+    referenceData_regex <- "^referenceData_([^_]+)_(.*)$"
+    is_referenceData <- startsWith(names(content), referenceData_id)
+    referenceData <- content[is_referenceData]
+    referenceData_tbl <- tibble(
+        type = rep("reference", length(referenceData)),
+        table = sub(referenceData_regex, "\\1", names(referenceData)),
+        key = sub(referenceData_regex, "\\2", names(referenceData)),
+        value = as.character(unlist(referenceData, use.names = FALSE))
+    )
+
+    ## 'other' data
+    otherData <- content[!is_referenceData]
+    otherData_tbl <- tibble(
+        type = "other",
+        table = "workspace",
+        key = names(otherData),
+        value = as.character(unlist(otherData, use.names = FALSE))
+    )
+
+    bind_rows(otherData_tbl, referenceData_tbl)
+}
+
+#' @rdname av-deprecated
+#'
+#' @return `avdata_import()` returns, invisibly, the subset of the
+#'     input table used to update the AnVIL tables.
+#'
+#' @examples
+#' \dontrun{
+#' avdata_import(data)
+#' }
+#'
+#' @export
+avdata_import <-
+    function(
+        .data, namespace = avworkspace_namespace(), name = avworkspace_name()
+    )
+{
+    stopifnot(
+        is.data.frame(.data),
+        all(c("type", "table", "key", "value") %in% names(.data)),
+        all(vapply(
+            select(.data, "type", "table", "key", "value"),
+            is.character,
+            logical(1)
+        )),
+        .is_scalar_character(namespace),
+        .is_scalar_character(name)
+    )
+
+    .life_cycle(
+        newpackage = "AnVILGCP",
+        cycle = "deprecated",
+        title = "av"
+    )
+    .data <- filter(.data, .data$type == "other", table %in% "workspace")
+
+    if (!nrow(.data)) {
+        message(
+            "'avdata_import()' has no rows of type 'other' and ",
+            "table 'workspace'"
+        )
+        return(invisible(.data))
+    }
+
+    ## create a 'wide' table, with keys as column names and values as
+    ## first row. Prefix "workspace:" to first column, for import
+    keys <- paste0("workspace:", paste(.data$key, collapse = "\t"))
+    values <- paste(.data$value, collapse = "\t")
+    destination <- tempfile()
+    writeLines(c(keys, values), destination)
+
+    ## upload the table to AnVIL
+    entities <- httr::upload_file(destination)
+    response <- Terra()$importAttributesTSV(
+        namespace, URLencode(name), entities
+    )
+    .avstop_for_status(response, "avdata_import")
+
+    invisible(.data)
+}
+
+##
+## workspace bucket
+##
+
+.avbucket_cache <- local({
+    .key <- function(namespace, name)
+        paste(namespace, name, sep = "/")
+    buckets <- new.env(parent = emptyenv())
+
+    list(exists = function(namespace, name) {
+        exists(.key(namespace, name), envir = buckets)
+    }, get = function(namespace, name) {
+        buckets[[ .key(namespace, name) ]]
+    }, set = function(namespace, name, bucket) {
+        buckets[[ .key(namespace, name) ]] <- bucket
+    }, keys = function() {
+        names(buckets)
+    }, flush = function() {
+        rm(list = names(buckets), envir = buckets)
+    })
+})
+
 #' @name av-deprecated
 #'
 #' @aliases avbucket avfiles_ls avfiles_backup avfiles_restore avfiles_rm
@@ -282,762 +1159,197 @@ avfiles_rm <-
     invisible(unlist(result))
 }
 
-.avnotebooks_runtime_path <-
-    function(name)
-{
-    path.expand(file.path("~", name, "edit"))
-}
-
-.avnotebooks_workspace_path <-
-    function(namespace, name)
-{
-    paste(avbucket(namespace, name), "notebooks", sep = "/")
-}
-
-#' @rdname av-deprecated
-#'
-#' @title Notebook management
-#'
-#' @description `avnotebooks()` returns the names of the notebooks
-#'     associated with the current workspace.
-#'
-#' @param local = `logical(1)` notebooks located on the workspace
-#'     (`local = FALSE`, default) or runtime / local instance (`local
-#'     = TRUE`). When `local = TRUE`, the notebook path is
-#'     `<avworkspace_name>/notebooks`.
-#'
-#' @param namespace character(1) AnVIL workspace namespace as returned
-#'     by, e.g., `avworkspace_namespace()`
-#'
-#' @param name character(1) AnVIL workspace name as returned by, eg.,
-#'     `avworkspace_name()`.
-#'
-#' @return `avnotebooks()` returns a character vector of buckets /
-#'     files located in the workspace 'Files/notebooks' bucket path,
-#'     or on the local file system.
-#'
-#' @examples
-#' if (gcloud_exists() && nzchar(avworkspace_name()))
-#'     avnotebooks()
-#'
-#' @export
-avnotebooks <-
-    function(local = FALSE,
-             namespace = avworkspace_namespace(), name = avworkspace_name())
-{
-    stopifnot(
-        .is_scalar_logical(local),
-        !local || (.is_scalar_character(namespace) && .is_scalar_character(name))
-    )
-
-    .life_cycle(
-        newpackage = "AnVILGCP",
-        cycle = "deprecated",
-        title = "av"
-    )
-
-    if (local) {
-        dir(.avnotebooks_runtime_path(name))
-    } else {
-        basename(gsutil_ls(.avnotebooks_workspace_path(namespace, name)))
-    }
-}
-
-#' @rdname av-deprecated
-#'
-#' @description `avnotebooks_localize()` synchronizes the content of
-#'     the workspace bucket to the local file system.
-#'
-#' @param destination missing or character(1) file path to the local
-#'     file system directory for synchronization. The default location
-#'     is `~/<avworkspace_name>/notebooks`. Out-of-date local files
-#'     are replaced with the workspace version.
-#'
-#' @param dry `logical(1)`, when `TRUE` (default), return the
-#'     consequences of the operation without actually performing the
-#'     operation.
-#'
-#' @return `avnotebooks_localize()` returns the exit status of
-#'     `gsutil_rsync()`.
-#'
-#' @examples
-#' if (gcloud_exists() && nzchar(avworkspace_name()))
-#'     avnotebooks_localize()  # dry run
-#'
-#' @export
-avnotebooks_localize <-
-    function(destination,
-             namespace = avworkspace_namespace(), name = avworkspace_name(),
-             dry = TRUE)
-{
-    ## FIXME: localize to persistent disk independent of current location
-    ## .avnotebooks_localize_runtime(source, name, runtime_name, dry)
-
-    stopifnot(
-        missing(destination) || .is_scalar_character(destination),
-        .is_scalar_character(namespace),
-        .is_scalar_character(name),
-        .is_scalar_logical(dry)
-    )
-
-    .life_cycle(
-        newpackage = "AnVILGCP",
-        cycle = "deprecated",
-        title = "av"
-    )
-
-    source <- .avnotebooks_workspace_path(namespace, name)
-    if (missing(destination)) {
-        destination = .avnotebooks_runtime_path(name)
-        if (!dry && !dir.exists(destination))
-            dir.create(destination, recursive = TRUE)
-    }
-    localize(source, destination, dry = dry)
-}
-
-#' @rdname av-deprecated
-#'
-#' @description `avnotebooks_delocalize()` synchronizes the content of
-#'     the notebook location of the local file system to the workspace
-#'     bucket.
-#'
-#' @param source missing or character(1) file path to the local file
-#'     system directory for synchronization. The default location is
-#'     `~/<avworkspace_name>/notebooks`. Out-of-date local files are
-#'     replaced with the workspace version.
-#'
-#' @param dry `logical(1)`, when `TRUE` (default), return the
-#'     consequences of the operation without actually performing the
-#'     operation.
-#'
-#' @return `avnotebooks_delocalize()` returns the exit status of
-#'     `gsutil_rsync()`.
-#'
-#' @examples
-#' if (gcloud_exists() && nzchar(avworkspace_name()))
-#'     try(avnotebooks_delocalize())  # dry run, fails if no local resource
-#'
-#' @export
-avnotebooks_delocalize <-
-    function(source,
-             namespace = avworkspace_namespace(), name = avworkspace_name(),
-             dry = TRUE)
-{
-    stopifnot(
-        missing(source) || .is_scalar_character(source),
-        .is_scalar_character(namespace),
-        .is_scalar_character(name),
-        .is_scalar_logical(dry)
-    )
-
-    .life_cycle(
-        newpackage = "AnVILGCP",
-        cycle = "deprecated",
-        title = "av"
-    )
-
-    if (missing(source))
-        source <- .avnotebooks_runtime_path(name)
-    destination <- .avnotebooks_workspace_path(namespace, name)
-    delocalize(source, destination, dry = dry)
-}
-
-#' @rdname av-deprecated
-#' @name avworkflow_configurations
-#' @aliases avworkflow_configurations
-#'
-#' @title Workflow configuration
-#'
-#' @description Funtions on this help page facilitate getting,
-#'     updating, and setting workflow configuration parameters. See
-#'     `?avworkflow` for additional relevant functionality.
-#'
-#' @seealso The help page `?avworkflow` for discovering, running,
-#'     stopping, and retrieving outputs from workflows.
-NULL
-
-
 ##
-## namespace / name management
+## runtimes / persistent disks
 ##
 
-.avworkflow <- local({
-    hash <- new.env(parent = emptyenv())
-    function(key, value) {
-        if (!is.null(value))
-            hash[[key]] <- value
-        hash[[key]]
-    }
-})
-
 #' @rdname av-deprecated
 #'
-#' @description `avworkflow_namespace()` and `avworkflow_name()` are
-#'     utility functions to record the workflow namespace and name
-#'     required when working with workflow
-#'     configurations. `avworkflow()` provides a convenient way to
-#'     provide workflow namespace and name in a single command,
-#'     `namespace/name`.
+#' @description `avruntimes()` returns a tibble containing information
+#'     about runtimes (notebooks or RStudio instances, for example)
+#'     that the current user has access to.
 #'
-#' @param workflow_namespace character(1) AnVIL workflow namespace, as
-#'     returned by, e.g., the `namespace` column of `avworkflows()`.
+#' @return `avruntimes()` returns a tibble with columns
 #'
-#' @param workflow_name character(1) AnVIL workflow name, as returned
-#'     by, e.g., the `name` column of `avworkflows()`.
-#'
-#' @param workflow character(1) representing the combined workflow
-#'     namespace and name, as `namespace/name`.
-#'
-#' @return `avworkflow_namespace()`, and `avworkflow_name()` return
-#'     `character(1)` identifiers. `avworkflow()` returns the
-#'     character(1) concatenated namespace and name. The value
-#'     returned by `avworkflow_name()` will be percent-encoded (e.g.,
-#'     spaces `" "` replaced by `"%20"`).
-#'
-#' @export
-avworkflow_namespace <-
-    function(workflow_namespace = NULL)
-{
-    .life_cycle(
-        newpackage = "AnVILGCP",
-        cycle = "deprecated",
-        title = "av"
-    )
-    .avworkflow("NAMESPACE", workflow_namespace)
-}
-
-#' @rdname av-deprecated
-#'
-#' @export
-avworkflow_name <-
-    function(workflow_name = NULL)
-{
-    .life_cycle(
-        newpackage = "AnVILGCP",
-        cycle = "deprecated",
-        title = "av"
-    )
-    value <- .avworkflow("NAME", workflow_name)
-    URLencode(value)
-}
-
-#' @rdname av-deprecated
-#'
-#' @export
-avworkflow <-
-    function(workflow = NULL)
-{
-    stopifnot(
-        is.null(workflow) || .is_scalar_character(workflow)
-    )
-
-    .life_cycle(
-        newpackage = "AnVILGCP",
-        cycle = "deprecated",
-        title = "av"
-    )
-
-    if (!is.null(workflow)) {
-        wkflow <- strsplit(workflow, "/")[[1]]
-        if (length(wkflow) != 2L)
-            stop(
-                "'workflow' must be fo the form 'namespace/name', ",
-                "with a single '/'"
-            )
-        avworkflow_namespace(wkflow[[1]])
-        avworkflow_name(wkflow[[2]])
-    }
-    paste0(avworkflow_namespace(), "/", avworkflow_name())
-}
-
-.avworkflow_response <-
-    function(config)
-{
-    response <- Rawls()$method_inputs_outputs(
-        config$name,
-        config$namespace,
-        config$methodRepoMethod$methodPath,
-        config$methodRepoMethod$methodUri,
-        config$methodRepoMethod$methodVersion,
-        config$methodRepoMethod$sourceRepo
-    )
-    .avstop_for_status(response, "avworkflow_response")
-}
-
-#' @importFrom dplyr left_join
-.avworkflow_configuration_template_io <-
-    function(template, config)
-{
-    if (length(config)) {
-        config <-
-            tibble::enframe(config, value = "attribute") |>
-            tidyr::unnest("attribute")
-        template <- left_join(
-            template,
-            config,
-            by = "name"
-        )
-    } else {
-        template <- cbind(template, attribute = character(nrow(template)))
-    }
-    as_tibble(template)
-}
-
-#' @rdname av-deprecated
-#'
-#' @description `avworkflow_configuration_get()` returns a list structure
-#'     describing an existing workflow configuration.
-#'
-#' @return `avworkflow_configuration_get()` returns a list structure
-#'     describing the configuration. See
-#'     `avworkflow_configuration_template()` for the structure of a
-#'     typical workflow.
-#'
-#' @export
-avworkflow_configuration_get <-
-    function(workflow_namespace = avworkflow_namespace(),
-             workflow_name = avworkflow_name(),
-             namespace = avworkspace_namespace(),
-             name = avworkspace_name())
-{
-    stopifnot(
-        .is_scalar_character(workflow_name),
-        .is_scalar_character(workflow_namespace),
-        .is_scalar_character(namespace),
-        .is_scalar_character(name)
-    )
-
-    .life_cycle(
-        newpackage = "AnVILGCP",
-        cycle = "deprecated",
-        title = "av"
-    )
-
-    config <- Rawls()$get_method_configuration(
-        namespace, URLencode(name),
-        workflow_namespace, workflow_name
-    )
-    .avstop_for_status(config, "avworkflow_methods")
-    config_list <- config %>% as.list()
-    class(config_list) <- c("avworkflow_configuration", class(config_list))
-    config_list
-}
-
-#' @rdname av-deprecated
-#'
-#' @description `avworkflow_configuration_inputs()` returns a
-#'     data.frame template for the inputs defined in a workflow
-#'     configuration.  This template can be used to provide custom
-#'     inputs for a configuration.
-#'
-#' @return `avworkflow_configuration_inputs()` returns a data.frame
-#'     providing a template for the configuration inputs, with the
-#'     following columns:
-#'
-#' - inputType
-#' - name
-#' - optional
-#' - attribute
-#'
-#' @return The only column of interest to the user is the `attribute`
-#'     column, this is the column that should be changed for
-#'     customization.
-#'
-#' @export
-avworkflow_configuration_inputs <-
-    function(config)
-{
-    .life_cycle(
-        newpackage = "AnVILGCP",
-        cycle = "deprecated",
-        title = "av"
-    )
-    stopifnot(inherits(config, "avworkflow_configuration"))
-    response <- .avworkflow_response(config)
-    inputs_tmpl <- as.list(response)$inputs
-    inputs_config <- config$inputs
-    .avworkflow_configuration_template_io(inputs_tmpl, inputs_config)
-}
-
-#' @rdname av-deprecated
-#'
-#' @description `avworkflow_configuration_outputs()` returns a
-#'     data.frame template for the outputs defined in a workflow
-#'     configuration.  This template can be used to provide custom
-#'     outputs for a configuration.
-#'
-#' @return `avworkflow_configuration_outputs()` returns a data.frame
-#'     providing a template for the configuration outputs, with the
-#'     following columns:
-#' - name
-#' - outputType
-#' - attribute
-#'
-#' @return The only column of interest to the user is the `attribute`
-#'     column, this is the column that should be changed for
-#'     customization.
-#'
-#' @export
-avworkflow_configuration_outputs <-
-    function(config)
-{
-    .life_cycle(
-        newpackage = "AnVILGCP",
-        cycle = "deprecated",
-        title = "av"
-    )
-    stopifnot(inherits(config, "avworkflow_configuration"))
-    response <- .avworkflow_response(config)
-    outputs_tmpl <- as.list(response)$outputs
-    outputs_config <- config$outputs
-    .avworkflow_configuration_template_io(outputs_tmpl, outputs_config)
-}
-
-.avworkflow_MethodRepoMethod_validate <-
-    function(methodRepoMethod, .schema)
-{
-    args <- formals(.schema)
-    unknown <- setdiff(names(methodRepoMethod), names(args))
-    if (length(unknown))
-        stop(
-            "unknown 'methodRepoMethod' names: '",
-            paste(unknown, collapse = "' '"),
-            "'"
-        )
-    idx <- !names(methodRepoMethod) %in% "methodVersion"
-    ok <- vapply(methodRepoMethod[idx], .is_scalar_character, logical(1))
-    if (!all(ok))
-        stop(
-            "'methodRepoMethod' values must be character(1); bad values: '",
-            paste(names(ok)[!ok], collapse = "' '"),
-            "'"
-        )
-    methodVersion <- methodRepoMethod$methodVersion
-    stopifnot(
-        `'methodRepoMethod$methodVersion' must be character(1) or integer(1)` =
-            .is_scalar_character(methodVersion) ||
-            .is_scalar_integer(as.integer(methodVersion))
-    )
-
-    ## all elements are unboxed
-    lapply(methodRepoMethod, jsonlite::unbox)
-}
-
-.avworkflow_configuration_set_validate_response <-
-    function(response, op)
-{
-    lens <- lengths(response)
-    bad <- grepl("^(extra|invalid)", names(lens)) & lens != 0L
-    if (any(bad)) {
-        warning(
-            "'avworkflow_configuration_set' bad values:", immediate. = TRUE
-        )
-        sink(stderr())
-        on.exit(sink(NULL))
-        print(response[bad])
-    }
-
-    invisible(response)
-}
-
-#' @rdname av-deprecated
-#'
-#' @description `avworkflow_configuration_update()` returns a list structure
-#'     describing a workflow configuration with updated inputs and / or outputs.
-#'
-#' @param config an `avworkflow_configuration` object to be updated.
-#'
-#' @param inputs the new inputs to be updated in the workflow configuration. If
-#'     none are specified, the inputs from the original configuration will be
-#'     used and no changes will be made.
-#'
-#' @param outputs the new outputs to be updated in the workflow configuration.
-#'     If none are specified, the outputs from the original configuration will
-#'     be used and no changes will be made.
-#'
-#' @return `avworkflow_configuration_update()` returns a list structure
-#'     describing the updated configuration.
-#'
-#' @export
-avworkflow_configuration_update <-
-    function(config,
-             inputs = avworkflow_configuration_inputs(config),
-             outputs = avworkflow_configuration_outputs(config))
-{
-    stopifnot(
-        inherits(config, "avworkflow_configuration"),
-        all(c("name", "attribute") %in% names(inputs)),
-        all(c("name", "attribute") %in% names(outputs)),
-        is(inputs, "data.frame"), is(outputs, "data.frame")
-    )
-    .life_cycle(
-        newpackage = "AnVILGCP",
-        cycle = "deprecated",
-        title = "av"
-    )
-    config$inputs <-
-        lapply(setNames(as.list(inputs$attribute), inputs$name), unbox)
-    config$outputs <-
-        lapply(setNames(as.list(outputs$attribute), outputs$name), unbox)
-    config
-}
-
-#' @rdname av-deprecated
-#'
-#' @description `avworkflow_configuration_set()` updates an existing
-#'     configuration in Terra / AnVIL, e.g., changing inputs to the
-#'     workflow.
-#'
-#' @param config a named list describing the full configuration, e.g.,
-#'     created from editing the return value of
-#'     `avworkflow_configuration_set()` or
-#'     `avworkflow_configuration_template()`.
-#'
-#' @param dry logical(1) when `TRUE` (default), report the
-#'     consequences but do not perform the action requested. When
-#'     `FALSE`, perform the action.
-#'
-#' @return `avworkflow_configuration_set()` returns an object
-#'     describing the updated configuration. The return value includes
-#'     invalid or unused elements of the `config` input. Invalid or
-#'     unused elements of `config` are also reported as a warning.
+#' - id: integer() runtime identifier.
+#' - googleProject: character() billing account.
+#' - tool: character() e.g., "Jupyter", "RStudio".
+#' - status character() e.g., "Stopped", "Running".
+#' - creator character() AnVIL account, typically "user@gmail.com".
+#' - createdDate character() creation date.
+#' - destroyedDate character() destruction date, or NA.
+#' - dateAccessed character() date of (first?) access.
+#' - runtimeName character().
+#' - clusterServiceAccount character() service ('pet') account for
+#'   this runtime.
+#' - masterMachineType character() It is unclear which 'tool' populates
+#'   which of the machineType columns).
+#' - workerMachineType character().
+#' - machineType character().
+#' - persistentDiskId integer() identifier of persistent disk (see
+#'   `avdisks()`), or `NA`.
 #'
 #' @examples
-#' ## set the namespace and name as appropriate
-#' avworkspace("bioconductor-rpci-anvil/Bioconductor-Workflow-DESeq2")
-#'
-#' ## discover available workflows in the workspace
 #' if (gcloud_exists())
-#'     avworkflows()
+#'     ## from within AnVIL
+#'     avruntimes()
 #'
-#' ## record the workflow of interest
-#' avworkflow("bioconductor-rpci-anvil/AnVILBulkRNASeq")
+#' @importFrom dplyr rename_with
 #'
-#' ## what workflows are available?
-#' if (gcloud_exists()) {
-#'     available_workflows <- avworkflows()
-#'
-#'     ## retrieve the current configuration
-#'     config <- avworkflow_configuration_get()
-#'     config
-#'
-#'     ## what are the inputs and outputs?
-#'     inputs <- avworkflow_configuration_inputs(config)
-#'     inputs
-#'
-#'     outputs <- avworkflow_configuration_outputs(config)
-#'     outputs
-#'
-#'     ## update inputs or outputs, e.g., this input can be anything...
-#'     inputs <-
-#'         inputs |>
-#'         mutate(attribute = ifelse(
-#'             name == "salmon.transcriptome_index_name",
-#'             '"new_index_name"',
-#'             attribute
-#'         ))
-#'     new_config <- avworkflow_configuration_update(config, inputs)
-#'     new_config
-#'
-#'     ## set the new configuration in AnVIL; use dry = FALSE to actually
-#'     ## update the configuration
-#'     avworkflow_configuration_set(config)
-#' }
-#'
-#' ## avworkflow_configuration_template() is a utility function that may
-#' ## help understanding what the inputs and outputs should be
-#' avworkflow_configuration_template() |>
-#'     str()
+#' @importFrom tidyselect everything
 #'
 #' @export
-avworkflow_configuration_set <-
-    function(config,
-             namespace = avworkspace_namespace(),
-             name = avworkspace_name(),
-             dry = TRUE)
-{
-    stopifnot(
-        inherits(config, "avworkflow_configuration"),
-        .is_scalar_character(namespace),
-        .is_scalar_character(name)
-    )
-
-    .life_cycle(
-        newpackage = "AnVILGCP",
-        cycle = "deprecated",
-        title = "av"
-    )
-
-    rawls <- Rawls()
-
-    config$methodRepoMethod <- .avworkflow_MethodRepoMethod_validate(
-        config$methodRepoMethod, schemas(rawls)$MethodRepoMethod
-    )
-
-    if (dry) {
-        message(
-            "'avworkflow_configuration_set()' arguments validated; ",
-            "use 'dry = FALSE' to update ",
-            "workflow ", paste0(config$namespace, "/", config$name), " in ",
-            "workspace ", paste0(namespace, "/", name)
-        )
-        return(invisible(config))
-    }
-
-    response <- rawls$update_method_configuration(
-        namespace, URLencode(name), config$namespace, config$name,
-        .__body__ = config
-    )
-    .avstop_for_status(response, "avworkflow_configuration_set")
-
-    response <-
-        response %>%
-        as.list()
-    .avworkflow_configuration_set_validate_response(response)
-    return(invisible(config))
-}
-
-#' @rdname av-deprecated
-#'
-#' @description `avworkflow_configuration_template()` returns a
-#'     template for defining workflow configurations. This template
-#'     can be used as a starting point for providing a custom
-#'     configuration.
-#'
-#' @details The exact format of the configuration is important.
-#'
-#' One common problem is that a scalar character vector `"bar"` is
-#' interpretted as a json 'array' `["bar"]` rather than a json string
-#' `"bar"`. Enclose the string with `jsonlite::unbox("bar")` in the
-#' configuration list if the length 1 character vector in R is to be
-#' interpretted as a json string.
-#'
-#' A second problem is that an unquoted unboxed character string
-#' `unbox("foo")` is required by AnVIL to be quoted. This is reported
-#' as a warning() about invalid inputs or outputs, and the solution is
-#' to provide a quoted string `unbox('"foo"')`.
-#'
-#' @return `avworkflow_configuration_template()` returns a list
-#'     providing a template for configuration lists, with the
-#'     following structure:
-#'
-#' - namespace character(1) configuration namespace.
-#' - name character(1) configuration name.
-#' - rootEntityType character(1) or missing. the name of the table
-#'   (from `avtables()`) containing the entitites referenced in
-#'   inputs, etc., by the keyword 'this.'
-#' - prerequisites named list (possibly empty) of prerequisites.
-#' - inputs named list (possibly empty) of inputs. Form of input
-#'   depends on method, and might include, e.g., a reference to a
-#'   field in a table referenced by `avtables()` or a character string
-#'   defining an input constant.
-#' - outputs named list (possibly empty) of outputs.
-#' - methodConfigVersion integer(1) identifier for the method
-#'   configuration.
-#' - methodRepoMethod named list describing the method, with
-#'   character(1) elements described in the return value for `avworkflows()`.
-#'   - methodUri
-#'   - sourceRepo
-#'   - methodPath
-#'   - methodVersion. The REST specification indicates that this has
-#'     type `integer`, but the documentation indicates either
-#'     `integer` or `string`.
-#' - deleted logical(1) of uncertain purpose.
-#'
-#' @examples
-#' avworkflow_configuration_template()
-#'
-#' @export
-avworkflow_configuration_template <-
+avruntimes <-
     function()
 {
+    template <- list(
+        id = integer(0),
+        googleProject = character(0),
+        labels.tool = character(0),
+        status = character(0),
+        auditInfo.creator = character(0),
+        auditInfo.createdDate = character(0),
+        auditInfo.destroyedDate = logical(0),
+        auditInfo.dateAccessed = character(0),
+        runtimeName = character(0),
+        labels.clusterServiceAccount = character(0),
+        runtimeConfig.masterMachineType = character(0),
+        runtimeConfig.workerMachineType = logical(0),
+        runtimeConfig.machineType = character(0),
+        runtimeConfig.persistentDiskId = integer(0)
+    )
+
     .life_cycle(
         newpackage = "AnVILGCP",
         cycle = "deprecated",
         title = "av"
     )
-    list(
-        ## method namespace and name, not workspace namespace and name
-        namespace = character(1),
-        name = character(1),
-        rootEntityType = character(0),
-        prerequisites = setNames(list(), character()),
-        inputs = setNames(list(), character()),
-        outputs = setNames(list(), character()),
-        methodConfigVersion = integer(1),
-        methodRepoMethod = list(
-            methodUri = unbox(character(1)),
-            sourceRepo = unbox(character(1)),
-            methodPath = unbox(character(1)),
-            methodVersion = unbox(character(1))
-        ),
-        deleted = logical(1)
-    )
+    leo <- Leonardo()
+    response <- leo$listRuntimes()
+    .avstop_for_status(response, "avruntimes")
+    runtimes <- flatten(response)
+
+    .tbl_with_template(runtimes, template) %>%
+        rename_with(~ sub(".*\\.", "", .x))
 }
 
 #' @rdname av-deprecated
 #'
-#' @param x Object of class `avworkflow_configuration`.
+#' @description `avruntime()` returns a tibble with the runtimes
+#'     associated with a particular google project and account number;
+#'     usually there is a single runtime satisfiying these criteria,
+#'     and it is the runtime active in AnVIL.
 #'
-#' @param ... additional arguments to `print()`; unused.
+#' @param project `character(1)` project (billing account) name, as
+#'     returned by, e.g., `gcloud_project()` or
+#'     `avworkspace_namespace()`.
+#'
+#' @param account `character(1)` google account (email address
+#'     associated with billing account), as returned by
+#'     `gcloud_account()`.
+#'
+#' @return `avruntime()` returns a tibble witht he same structure as
+#'     the return value of `avruntimes()`.
 #'
 #' @export
-print.avworkflow_configuration <-
-    function(x, ...)
+avruntime <-
+    function(project = gcloud_project(), account = gcloud_account())
 {
-    str(x)
-}
-
-#' @rdname av-deprecated
-#'
-#' @aliases avworkflow_configuration
-#'
-#' @title Deprecated functions in package \sQuote{AnVIL}
-#'
-#' @description These functions are provided for compatibility with
-#'     older versions of \sQuote{AnVIL} only, and will be defunct at
-#'     the next release.
-#'
-#' @param configuration_namespace character(1).
-#'
-#' @param configuration_name character(1).
-#'
-#' @param config `avworkflow_configuration` object.
-#'
-#' @param namespace character(1).
-#'
-#' @param name character(1).
-#'
-#' @details The following functions are deprecated and will be made
-#'     defunct; use the replacement indicated below:
-#'
-#' - `avworkflow_configuration()`: \code{\link{avworkflow_configuration_get}}
-#' - `avworkflow_import_configuration()`: \code{\link{avworkflow_configuration_set}}
-avworkflow_configuration <-
-    function(configuration_namespace, configuration_name,
-             namespace = avworkspace_namespace(),
-             name = avworkspace_name())
-{
+    stopifnot(
+        .is_scalar_character(project),
+        .is_scalar_character(account)
+    )
     .life_cycle(
-        newfun = "avworkflow_configuration_get",
+        newpackage = "AnVILGCP",
         cycle = "deprecated",
         title = "av"
     )
-    avworkflow_configuration_get(
-        configuration_namespace, configuration_name,
-        namespace, name
-    )
+    rt <- avruntimes()
+    rt %>%
+        filter(.data$googleProject == project, .data$creator == account)
 }
 
-#' @rdname av-deprecated
-avworkflow_import_configuration <-
-    function(config,
-             namespace = avworkspace_namespace(), name = avworkspace_name())
+#' @importFrom dplyr pull
+.runtime_pet <-
+    function(creator, tool = c("Jupyter", "RStudio"),
+             namespace = avworkspace_namespace())
 {
+    tool <- match.arg(tool)
+    stopifnot(
+        .is_scalar_character(tool),
+        .is_scalar_character(creator),
+        .is_scalar_character(namespace)
+    )
+
+    runtimes <- avruntimes()
+    pet <-
+        runtimes %>%
+        filter(
+            .data$tool == {{ tool }},
+            .data$creator == {{ creator }},
+            .data$googleProject == {{ namespace }}
+        ) %>%
+        pull(.data$clusterServiceAccount)
+
+    if (!.is_scalar_character(pet))
+        warning("'.runtime_pet' return value is not scalar")
+    pet
+}
+
+#' @name av-deprecated
+#'
+#' @description 'avdisks()` returns a tibble containing information
+#'     about persistent disks associated with the current user.
+#'
+#' @return `avdisks()` returns a tibble with columns
+#'
+#' - id character() disk identifier.
+#' - googleProject: character() billing account.
+#' - status, e.g, "Ready"
+#' - size integer() in GB.
+#' - diskType character().
+#' - blockSize integer().
+#' - creator character() AnVIL account, typically "user@gmail.com".
+#' - createdDate character() creation date.
+#' - destroyedDate character() destruction date, or NA.
+#' - dateAccessed character() date of (first?) access.
+#' - zone character() e.g.. "us-central1-a".
+#' - name character().
+#'
+#' @examples
+#' if (gcloud_exists())
+#'     ## from within AnVIL
+#'     avdisks()
+#'
+#' @export
+avdisks <-
+    function()
+{
+    template <- list(
+        id = integer(0),
+        googleProject = character(0),
+        status = character(0),
+        size = integer(0),
+        diskType = character(0),
+        blockSize = integer(0),
+        auditInfo.creator = character(0),
+        auditInfo.createdDate = character(0),
+        auditInfo.destroyedDate = logical(0),
+        auditInfo.dateAccessed = character(0),
+        name = character(0),
+        zone = character(0)
+    )
+
     .life_cycle(
-        newfun = "avworkflow_configuration_set",
+        newpackage = "AnVILGCP",
         cycle = "deprecated",
         title = "av"
     )
-    avworkflow_configuration_set(config, namespace = namespace, name = name)
+    leo <- Leonardo()
+    response <- leo$listDisks()
+    .avstop_for_status(response, "avdisks")
+    runtimes <- flatten(response)
+
+    .tbl_with_template(runtimes, template) %>%
+        rename_with(~sub(".*\\.", "", .x))
 }

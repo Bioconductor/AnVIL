@@ -46,9 +46,10 @@ Collate:
     utilities.R install.R authenticate.R api.R
     Service.R Services.R Leonardo.R Terra.R Rawls.R Dockstore.R Gen3.R
     Response.R
-    AnVIL-deprecated.R av-deprecated.R
-    avworkflow-deprecated.R avworkspace-deprecated.R
-    av-utilities.R localize-deprecated.R drs.R av.R
+    gcloud-deprecated.R gsutil-deprecated.R av-deprecated.R
+    avworkspace-deprecated.R avworkflow-deprecated.R
+    avworkflow_configuration-deprecated.R avnotebooks-deprecated.R
+    av-utilities.R localize-deprecated.R drs.R
     gadgets.R zzz.R
 VignetteBuilder: knitr
 biocViews: Infrastructure

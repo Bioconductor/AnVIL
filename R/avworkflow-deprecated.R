@@ -1,8 +1,8 @@
 #' @rdname avworkflow-deprecated
 #'
-#' @name avworkflows
+#' @name avworkflow-deprecated
 #'
-#' @title Workflow submissions and file outputs
+#' @title Workflow submissions and file outputs (DEPRECATED)
 #'
 #' @inheritParams avworkspace
 NULL
@@ -38,6 +38,11 @@ avworkflows <-
     stopifnot(
         .is_scalar_character(namespace),
         .is_scalar_character(name)
+    )
+    .life_cycle(
+        newpackage = "AnVILGCP",
+        cycle = "deprecated",
+        title = "avworkflow"
     )
     workflows <- Rawls()$list_method_configurations(
         namespace, URLencode(name), TRUE
@@ -99,6 +104,11 @@ avworkflow_jobs <-
         .is_scalar_character(name)
     )
 
+    .life_cycle(
+        newpackage = "AnVILGCP",
+        cycle = "deprecated",
+        title = "avworkflow"
+    )
     response <- Terra()$listSubmissions(namespace, URLencode(name))
     .avstop_for_status(response, "avworkflow_jobs")
 
@@ -390,7 +400,11 @@ avworkflow_files <-
         .is_scalar_character(name),
         is.null(workflowId) || .is_scalar_character(workflowId)
     )
-
+    .life_cycle(
+        newpackage = "AnVILGCP",
+        cycle = "deprecated",
+        title = "avworkflow"
+    )
     if (is_tibble(submissionId)) {
         stopifnot()
     } else if (.is_character(submissionId)) {
@@ -504,7 +518,11 @@ avworkflow_localize <-
         is.null(destination) || .is_scalar_character(destination),
         .is_scalar_character(submissionId)
     )
-
+    .life_cycle(
+        newpackage = "AnVILGCP",
+        cycle = "deprecated",
+        title = "avworkflow"
+    )
     if (is.null(destination))
         destination <- paste0("./", submissionId)
     if (dry && !dir.exists(destination)) {
@@ -618,7 +636,11 @@ avworkflow_run <-
         .is_scalar_character(name),
         .is_scalar_logical(dry)
     )
-
+    .life_cycle(
+        newpackage = "AnVILGCP",
+        cycle = "deprecated",
+        title = "avworkflow"
+    )
     if (dry) {
         message(
             "'avworkflow_run()' arguments validated, use 'dry = FALSE' ",
@@ -680,7 +702,11 @@ avworkflow_stop <-
         .is_scalar_character(name),
         .is_scalar_logical(dry)
     )
-
+    .life_cycle(
+        newpackage = "AnVILGCP",
+        cycle = "deprecated",
+        title = "avworkflow"
+    )
     if (dry) {
         message(
             .pretty_text(
