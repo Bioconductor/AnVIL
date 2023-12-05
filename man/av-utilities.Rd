@@ -31,6 +31,13 @@ matching.}
 \item{destination}{\code{character(1)}, Either a Google Cloud Storage bucket,
 Azure Blob Storage container, or a local file system destination path.}
 
+\item{file}{\code{character(1)} a path to a remote file or folder on either Google
+Cloud Storage or Azure Blob Storage. The file path must be prefixed with
+\verb{gs://} for Google Cloud Storage and may contain a wildcard (\code{*}) to
+represent multiple files within a folder. For Azure Blob Storage, the file
+path can be relative to the default container path and may also be a
+folder.}
+
 \item{recursive}{\code{logical(1)} Whether to remove files or directories
 recursively.}
 

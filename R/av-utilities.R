@@ -27,8 +27,6 @@
 
 #' @name av-utilities
 #'
-#' @aliases avcopy avlist avremove
-#'
 #' @title List, copy, and remove files in either a Google Cloud Storage bucket
 #'   or Azure Blob Storage container
 #'
@@ -41,6 +39,13 @@
 #' @param source `character(1)` a path to a Google Cloud Storage bucket or Azure
 #'   Blob Storage container, possibly with wild-cards for file-level pattern
 #'   matching.
+#'
+#' @param file `character(1)` a path to a remote file or folder on either Google
+#'   Cloud Storage or Azure Blob Storage. The file path must be prefixed with
+#'   `gs://` for Google Cloud Storage and may contain a wildcard (`*`) to
+#'   represent multiple files within a folder. For Azure Blob Storage, the file
+#'   path can be relative to the default container path and may also be a
+#'   folder.
 #'
 #' @param destination `character(1)`, Either a Google Cloud Storage bucket,
 #'   Azure Blob Storage container, or a local file system destination path.
