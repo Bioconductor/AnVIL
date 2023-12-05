@@ -5,6 +5,9 @@
 \alias{avcopy}
 \alias{avlist}
 \alias{avremove}
+\alias{avbackup}
+\alias{avrestore}
+\alias{avstorage}
 \title{List, copy, and remove files in either a Google Cloud Storage bucket
 or Azure Blob Storage container}
 \usage{
@@ -13,6 +16,12 @@ avcopy(source, destination, ...)
 avlist()
 
 avremove(file, recursive, ...)
+
+avbackup(source, destination = "", ...)
+
+avrestore(source, destination = ".", ...)
+
+avstorage()
 }
 \arguments{
 \item{source}{\code{character(1)} a path to a Google Cloud Storage bucket or Azure
