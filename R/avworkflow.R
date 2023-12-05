@@ -357,6 +357,7 @@ avworkflow_jobs <-
 #'   submissionId.
 #'
 #' @importFrom tibble is_tibble
+#' @importFrom rlang .env
 #'
 #' @examples
 #' if (gcloud_exists() && nzchar(avworkspace_name())) {
