@@ -101,6 +101,10 @@ snapshot data in the Terra Data Repository at \url{https://data.terra.bio}.
 RESTful services useful for AnVIL developers
 }
 \details{
+Note the services \code{Terra()}, \code{Rawls()}, and \code{Leonardo()} require the
+\code{AnVILGCP} package for authentication to the Google Cloud Platform. See
+\code{?AnVILGCP::gcloud_access_token()} for details.
+
 When using \code{$} to select a service, some arguments appear
 in 'body' of the REST request. Specify these using the
 \verb{.__body__=} argument, as illustrated for
@@ -129,6 +133,7 @@ if (gcloud_exists()) {
 
 Dockstore()
 
+library(AnVILGCP)
 if (gcloud_exists())
     TDR()
 

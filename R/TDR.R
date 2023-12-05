@@ -18,6 +18,7 @@
 #' @format NULL
 #'
 #' @examples
+#' library(AnVILGCP)
 #' if (gcloud_exists())
 #'     TDR()
 #'
@@ -25,7 +26,9 @@
 TDR <-
     function()
 {
-    access_token <- .gcloud_access_token("tdr")
+    if (!requireNamespace("AnVILGCP", quietly = TRUE))
+        stop("Install 'AnVILGCP' to use 'TDR()'", call. = FALSE)
+    access_token <- AnVILGCP::gcloud_access_token("tdr")
     api_header <- c(
         Authorization = paste("Bearer", access_token)
     )

@@ -27,7 +27,9 @@
 Leonardo <-
     function()
 {
-    access_token <- .gcloud_access_token("leonardo")
+    if (!requireNamespace("AnVILGCP", quietly = TRUE))
+        stop("Install 'AnVILGCP' to use 'Leonardo()'", call. = FALSE)
+    access_token <- AnVILGCP::gcloud_access_token("leonardo")
     api_header <- c(
         Authorization = paste("Bearer", access_token),
         Referer = "https://leonardo.dsde-prod.broadinstitute.org"

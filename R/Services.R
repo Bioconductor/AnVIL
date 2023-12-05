@@ -4,6 +4,10 @@
 #'
 #' @title RESTful services useful for AnVIL developers
 #'
+#' @details Note the services `Terra()`, `Rawls()`, and `Leonardo()` require the
+#'   `AnVILGCP` package for authentication to the Google Cloud Platform. See
+#'   `?AnVILGCP::gcloud_access_token()` for details.
+#'
 #' @aliases .DollarNames.Service operations,Service-method
 #'     schemas,Service-method show,Service-method Service-class
 NULL
