@@ -70,7 +70,7 @@ gsutil_requesterpays <-
 {
     stopifnot(all(.gsutil_is_uri(source)))
     .life_cycle(
-        newpackage = "AnVILGCP", cycle = "deprecated", title = "gcloud"
+        newpackage = "AnVILGCP", cycle = "deprecated", title = "gsutil"
     )
     project <- gcloud_project()
     buckets <- regmatches(source, regexpr("^gs://[^/]+", source))
@@ -132,7 +132,7 @@ gsutil_ls <-
         .is_scalar_logical(recursive)
     )
     .life_cycle(
-        newpackage = "AnVILGCP", cycle = "deprecated", title = "gcloud"
+        newpackage = "AnVILGCP", cycle = "deprecated", title = "gsutil"
     )
     args <- c(
         .gsutil_requesterpays_flag(source),
@@ -176,6 +176,9 @@ gsutil_exists <-
         is.character(source), !anyNA(source),
         .gsutil_is_uri(source)
     )
+    .life_cycle(
+        newpackage = "AnVILGCP", cycle = "deprecated", title = "gsutil"
+    )
     .Deprecated(
         msg = c(
             "'gcloud_*' and 'gsutil_*' functions are deprecated.\n",
@@ -211,12 +214,8 @@ gsutil_stat <-
     function(source)
 {
     stopifnot(.gsutil_is_uri(source))
-    .Deprecated(
-        msg = c(
-            "'gcloud_*' and 'gsutil_*' functions are deprecated.\n",
-            "Use the 'AnVILGCP' package instead.\n",
-            "See help(\"AnVIL-deprecated\")"
-        )
+    .life_cycle(
+        newpackage = "AnVILGCP", cycle = "deprecated", title = "gsutil"
     )
     args <- c(.gsutil_requesterpays_flag(source), "stat", shQuote(source))
     result <- .gsutil_do(args)
@@ -278,12 +277,8 @@ gsutil_stat <-
 gsutil_cp <-
     function(source, destination, ..., recursive = FALSE, parallel = TRUE)
 {
-    .Deprecated(
-        msg = c(
-            "'gcloud_*' and 'gsutil_*' functions are deprecated.\n",
-            "Use the 'AnVILGCP' package instead.\n",
-            "See help(\"AnVIL-deprecated\")"
-        )
+    .life_cycle(
+        newpackage = "AnVILGCP", cycle = "deprecated", title = "gsutil"
     )
     location <- c(source, destination)
     location_is_uri <- .gsutil_is_uri(location)
@@ -326,12 +321,8 @@ gsutil_rm <-
         .is_scalar_logical(recursive),
         .is_scalar_logical(parallel)
     )
-    .Deprecated(
-        msg = c(
-            "'gcloud_*' and 'gsutil_*' functions are deprecated.\n",
-            "Use the 'AnVILGCP' package instead.\n",
-            "See help(\"AnVIL-deprecated\")"
-        )
+    .life_cycle(
+        newpackage = "AnVILGCP", cycle = "deprecated", title = "gsutil"
     )
     ## remove
     args <- c(
@@ -399,12 +390,8 @@ gsutil_rsync <-
         .is_scalar_logical(recursive),
         .is_scalar_logical(parallel)
     )
-    .Deprecated(
-        msg = c(
-            "'gcloud_*' and 'gsutil_*' functions are deprecated.\n",
-            "Use the 'AnVILGCP' package instead.\n",
-            "See help(\"AnVIL-deprecated\")"
-        )
+    .life_cycle(
+        newpackage = "AnVILGCP", cycle = "deprecated", title = "gsutil"
     )
     ## if destination is not a google cloud repo, and does not exist
     if (!dry && !.gsutil_is_uri(destination) && !dir.exists(destination))
@@ -454,12 +441,8 @@ gsutil_cat <-
         all(diff(range[!is.na(range)]) > 0L),
         length(range) == 0L || length(range) == 2L
     )
-    .Deprecated(
-        msg = c(
-            "'gcloud_*' and 'gsutil_*' functions are deprecated.\n",
-            "Use the 'AnVILGCP' package instead.\n",
-            "See help(\"AnVIL-deprecated\")"
-        )
+    .life_cycle(
+        newpackage = "AnVILGCP", cycle = "deprecated", title = "gsutil"
     )
     if (length(range)) {
         range[is.na(range)] <- ""
@@ -497,12 +480,8 @@ gsutil_help <-
     function(cmd = character(0))
 {
     stopifnot(.is_character_0_or_1(cmd))
-    .Deprecated(
-        msg = c(
-            "'gcloud_*' and 'gsutil_*' functions are deprecated.\n",
-            "Use the 'AnVILGCP' package instead.\n",
-            "See help(\"AnVIL-deprecated\")"
-        )
+    .life_cycle(
+        newpackage = "AnVILGCP", cycle = "deprecated", title = "gsutil"
     )
     result <- .gsutil_do(c("help", cmd))
     .gcloud_sdk_result(result)
@@ -541,12 +520,8 @@ gsutil_pipe <-
         .is_scalar_character(source),
         .is_scalar_character(open)
     )
-    .Deprecated(
-        msg = c(
-            "'gcloud_*' and 'gsutil_*' functions are deprecated.\n",
-            "Use the 'AnVILGCP' package instead.\n",
-            "See help(\"AnVIL-deprecated\")"
-        )
+    .life_cycle(
+        newpackage = "AnVILGCP", cycle = "deprecated", title = "gsutil"
     )
     is_read <- identical(substr(open, 1, 1), "r")
     args <- c(
