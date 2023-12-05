@@ -55,10 +55,13 @@
 #'   are called for the side effect of moving / removing files.
 #'
 #' @examples
-#' if (AnVILGCP::gcloud_exists()) {
-#'     src <- "gs://genomics-public-data/1000-genomes/other/sample_info/sample_info.csv"
+#' if (interactive() && AnVILGCP::gcloud_exists()) {
+#'     src <- paste0(
+#'         "gs://genomics-public-data/1000-genomes/",
+#'         "other/sample_info/sample_info.csv"
+#'     )
 #'     avcopy(src, tempdir())
-#' } else if (AnVILAz::az_exists()) {
+#' } else if (interactive() && AnVILAz::az_exists()) {
 #'     src <- paste0(
 #'         "https://curated1000genomes.blob.core.windows.net/dataset/nested/",
 #'         "chr1/part-00002-tid-5326935979355877101-dd68248e-aa4b-419a-b1ce-",
@@ -66,12 +69,11 @@
 #'     )
 #'     avcopy(src, tempdir())
 #' }
-#'
 #' @export
 avcopy <- function(source, destination, ...) {
     stopifnot(
-        isScalarCharacter(source),
-        isScalarCharacter(destination)
+        .is_scalar_character(source),
+        .is_scalar_character(destination)
     )
     if (.platform_available("AnVILGCP"))
         AnVILGCP::gsutil_cp(source, destination, ...)
@@ -103,6 +105,7 @@ avremove <- function(file, recursive, ...) {
         stop("Install either 'AnVILGCP' or 'AnVILAz' for your workspace.")
 }
 
+#' @rdname av-utilities
 #' @export
 avbackup <- function(
     source,
@@ -121,6 +124,7 @@ avbackup <- function(
         stop("Install either 'AnVILGCP' or 'AnVILAz' for your workspace.")
 }
 
+#' @rdname av-utilities
 #' @export
 avrestore <- function(
     source,
@@ -139,6 +143,7 @@ avrestore <- function(
         stop("Install either 'AnVILGCP' or 'AnVILAz' for your workspace.")
 }
 
+#' @rdname av-utilities
 #' @export
 avstorage <- function() {
     if (.platform_available("AnVILGCP"))

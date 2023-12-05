@@ -40,10 +40,13 @@ Storage bucket or an Azure Blob Storage container using \code{gsutil} or
 \code{az_copy_from_storage()} in the \code{AnVILAz} package.
 }
 \examples{
-if (AnVILGCP::gcloud_exists()) {
-    src <- "gs://genomics-public-data/1000-genomes/other/sample_info/sample_info.csv"
+if (interactive() && AnVILGCP::gcloud_exists()) {
+    src <- paste0(
+        "gs://genomics-public-data/1000-genomes/",
+        "other/sample_info/sample_info.csv"
+    )
     avcopy(src, tempdir())
-} else if (AnVILAz::az_exists()) {
+} else if (interactive() && AnVILAz::az_exists()) {
     src <- paste0(
         "https://curated1000genomes.blob.core.windows.net/dataset/nested/",
         "chr1/part-00002-tid-5326935979355877101-dd68248e-aa4b-419a-b1ce-",
@@ -51,5 +54,4 @@ if (AnVILGCP::gcloud_exists()) {
     )
     avcopy(src, tempdir())
 }
-
 }
