@@ -36,6 +36,7 @@ setOldClass("request")
 
 #' @importFrom tools md5sum
 #' @importFrom utils download.file
+#' @importFrom AnVILBase avstop_for_status
 .service_validate_md5sum <-
     function(reference_url, reference_md5sum, reference_headers, api_file)
 {

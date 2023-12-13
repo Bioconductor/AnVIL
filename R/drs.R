@@ -39,7 +39,7 @@
     )
     body_json <- jsonlite::toJSON(body)
     response <- POST(.DRS_MARTHA, headers, body = body_json, encode="raw")
-    .avstop_for_status(response, "DRS resolution")
+    avstop_for_status(response, "DRS resolution")
 
     ## add drs field to response
     lst <- c(as.list(response), list(drs = drs))

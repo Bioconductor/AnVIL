@@ -33,6 +33,7 @@ NULL
 #'
 #' @importFrom BiocBaseUtils isScalarCharacter
 #' @importFrom dplyr %>%
+#'
 #' @examples
 #' library(AnVILBase)
 #' if (
@@ -53,7 +54,7 @@ avworkflows <-
     workflows <- Rawls()$list_method_configurations(
         namespace, URLencode(name), TRUE
     )
-    .avstop_for_status(workflows, "avworkflows")
+    avstop_for_status(workflows, "avworkflows")
     workflows %>% flatten()
 }
 
@@ -83,6 +84,7 @@ avworkflows <-
     type
 }
 
+#' @importFrom httr status_code
 .avworkflow_files_from_api <-
     function(response, submissionId, namespace, name)
 {
@@ -113,7 +115,7 @@ avworkflows <-
             ## no submissionId / workflowId association
             return(NULL)
         }
-        .avstop_for_status(
+        avstop_for_status(
             outputs, "avworkflow_files() 'workflowOutputsInSubmission'"
         )
         response <- content(outputs)
@@ -210,7 +212,7 @@ avworkflows <-
     monitor <- Terra()$monitorSubmission(
         namespace, URLencode(name), submissionId
     )
-    .avstop_for_status(monitor, "avworkflow_files() 'monitorSubmission'")
+    avstop_for_status(monitor, "avworkflow_files() 'monitorSubmission'")
     response <- content(monitor)
 
     ## FIXME -- how to know if information on outputs from workflow?
@@ -586,7 +588,7 @@ avworkflow_run <-
         ## userComment                  : NULL
         workflowFailureMode = "NoNewCalls")
 
-    .avstop_for_status(run_workflow, "avworkflow_run")
+    avstop_for_status(run_workflow, "avworkflow_run")
 
     submissionId <- content(run_workflow)$submissionId
     message(
@@ -655,7 +657,7 @@ avworkflow_stop <-
         workspaceNamespace = namespace,
         workspaceName = URLencode(name),
         submissionId = submissionId)
-    .avstop_for_status(response, "avworkflow_stop (current status)")
+    avstop_for_status(response, "avworkflow_stop (current status)")
     current_status <- content(response, encoding = "UTF-8")$status
     WORKFLOW_STATUS_ENUM <- c("Aborting", "Aborted", "Done")
     if (current_status %in% WORKFLOW_STATUS_ENUM) {
@@ -689,7 +691,7 @@ avworkflow_stop <-
         workspaceNamespace = namespace,
         workspaceName = URLencode(name),
         submissionId = submissionId)
-    .avstop_for_status(abort_workflow, "avworkflow_stop (abort workflow)")
+    avstop_for_status(abort_workflow, "avworkflow_stop (abort workflow)")
 
     invisible(TRUE)
 }
