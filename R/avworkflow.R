@@ -4,7 +4,12 @@
 #'
 #' @title Workflow submissions and file outputs
 #'
-#' @inheritParams avworkspace
+#' @param namespace character(1) AnVIL workspace namespace as returned
+#'     by, e.g., `avworkspace_namespace()`
+#'
+#' @param name character(1) AnVIL workspace name as returned by, eg.,
+#'     `avworkspace_name()`.
+#'
 NULL
 
 #' @rdname avworkflow
@@ -27,8 +32,13 @@ NULL
 #'   'main' branch of a github repository.
 #'
 #' @importFrom BiocBaseUtils isScalarCharacter
+#' @importFrom dplyr %>%
 #' @examples
-#' if (gcloud_exists() && nzchar(avworkspace_name()))
+#' library(AnVILBase)
+#' if (
+#'     gcloud_exists() && identical(avplatform_namespace(), "AnVILGCP") &&
+#'     nzchar(avworkspace_name())
+#' )
 #'     ## from within AnVIL
 #'     avworkflows() %>% select(namespace, name)
 #'
@@ -45,88 +55,6 @@ avworkflows <-
     )
     .avstop_for_status(workflows, "avworkflows")
     workflows %>% flatten()
-}
-
-.avworkflow_job <-
-    function(x)
-{
-    succeeded <- 0L
-    failed <- 0L
-    if ("Succeeded" %in% names(x$workflowStatuses))
-        succeeded <- x$workflowStatuses$Succeeded
-    if ("Failed" %in% names(x$workflowStatuses))
-        failed <- x$workflowStatuses$Failed
-
-    list(
-      submissionId = x[["submissionId"]],
-      submitter = x[["submitter"]],
-      submissionDate = x[["submissionDate"]],
-      status = x[["status"]],
-      succeeded = succeeded,
-      failed = failed,
-      submissionRoot = x[["submissionRoot"]]
-    )
-}
-
-#' @rdname avworkflow
-#'
-#' @description `avworkflow_jobs()` returns a tibble summarizing
-#'     submitted workflow jobs for a namespace and name.
-#'
-#' @return `avworkflow_jobs()` returns a tibble, sorted by
-#'     `submissionDate`, with columns
-#'
-#' - submissionId character() job identifier from the workflow runner.
-#' - submitter character() AnVIL user id of individual submitting the job.
-#' - submissionDate POSIXct() date (in local time zone) of job submission.
-#' - status character() job status, with values 'Accepted' 'Evaluating'
-#'   'Submitting' 'Submitted' 'Aborting' 'Aborted' 'Done'
-#' - succeeded integer() number of workflows succeeding.
-#' - failed integer() number of workflows failing.
-#'
-#' @examples
-#' if (gcloud_exists() && nzchar(avworkspace_name()))
-#'     ## from within AnVIL
-#'     avworkflow_jobs()
-#'
-#' @importFrom dplyr bind_rows mutate desc
-#'
-#' @export
-avworkflow_jobs <-
-    function(namespace = avworkspace_namespace(), name = avworkspace_name())
-{
-    stopifnot(
-        isScalarCharacter(namespace),
-        isScalarCharacter(name)
-    )
-
-    response <- Terra()$listSubmissions(namespace, URLencode(name))
-    .avstop_for_status(response, "avworkflow_jobs")
-
-    submissions <- content(response, encoding = "UTF-8")
-    if (length(submissions)) {
-        submissions <- lapply(submissions, .avworkflow_job)
-    } else {
-        submissions <- list(
-            submissionId = character(),
-            submitter = character(),
-            submissionDate = character(),
-            status = character(),
-            succeeded = integer(),
-            failed = integer(),
-            submissionRoot = character()
-        )
-    }
-
-    bind_rows(submissions) |>
-        mutate(
-            submissionDate = .POSIXct(as.numeric(
-                as.POSIXct(.data$submissionDate, "%FT%T", tz="UTC")
-            )),
-            namespace = namespace,
-            name = name
-        ) |>
-        arrange(desc(.data$submissionDate))
 }
 
 .WORKFLOW_LOGS <- "workflow.logs"
@@ -361,7 +289,10 @@ avworkflow_jobs <-
 #' @importFrom rlang .env
 #'
 #' @examples
-#' if (gcloud_exists() && nzchar(avworkspace_name())) {
+#' if (
+#'     gcloud_exists() && identical(avplatform_namespace(), "AnVILGCP") &&
+#'     nzchar(avworkspace_name())
+#' ) {
 #'     ## e.g., from within AnVIL
 #'     avworkflow_jobs() |>
 #'     ## select most recent workflow
@@ -425,7 +356,7 @@ avworkflow_files <-
             "provided submissionId"
         ))
     } else if (!is.null(workflowId)) {
-      tbl <- 
+      tbl <-
         tbl |>
         filter(.data$workflowId == .env$workflowId)
     }
@@ -479,7 +410,10 @@ avworkflow_files <-
 #' @importFrom BiocBaseUtils isScalarLogical
 #'
 #' @examples
-#' if (gcloud_exists() && nzchar(avworkspace_name())) {
+#' if (
+#'     gcloud_exists() && identical(avplatform_namespace(), "AnVILGCP") &&
+#'     nzchar(avworkspace_name())
+#' ) {
 #'     avworkflow_localize(dry = TRUE)
 #' }
 #'
@@ -773,7 +707,10 @@ avworkflow_stop <-
 #' @importFrom dplyr distinct select
 #'
 #' @examples
-#' if (gcloud_exists() && nzchar(avworkspace_name())) {
+#' if (
+#'     gcloud_exists() && identical(avplatform_namespace(), "AnVILGCP") &&
+#'     nzchar(avworkspace_name())
+#' ) {
 #'     avworkflow_info()
 #' }
 #'

@@ -2,7 +2,6 @@
 % Please edit documentation in R/avworkflow.R
 \name{avworkflows}
 \alias{avworkflows}
-\alias{avworkflow_jobs}
 \alias{avworkflow_files}
 \alias{avworkflow_localize}
 \alias{avworkflow_run}
@@ -11,8 +10,6 @@
 \title{Workflow submissions and file outputs}
 \usage{
 avworkflows(namespace = avworkspace_namespace(), name = avworkspace_name())
-
-avworkflow_jobs(namespace = avworkspace_namespace(), name = avworkspace_name())
 
 avworkflow_files(
   submissionId = NULL,
@@ -127,18 +124,6 @@ method might reference a github repository.
 'main' branch of a github repository.
 }
 
-\code{avworkflow_jobs()} returns a tibble, sorted by
-\code{submissionDate}, with columns
-\itemize{
-\item submissionId character() job identifier from the workflow runner.
-\item submitter character() AnVIL user id of individual submitting the job.
-\item submissionDate POSIXct() date (in local time zone) of job submission.
-\item status character() job status, with values 'Accepted' 'Evaluating'
-'Submitting' 'Submitted' 'Aborting' 'Aborted' 'Done'
-\item succeeded integer() number of workflows succeeding.
-\item failed integer() number of workflows failing.
-}
-
 \code{avworkflow_files()} returns a tibble with columns
 \itemize{
 \item file: character() 'base name' of the file in the bucket.
@@ -182,9 +167,6 @@ inputs and outputs.
 \description{
 \code{avworkflows()} returns a tibble summarizing available
 workflows.
-
-\code{avworkflow_jobs()} returns a tibble summarizing
-submitted workflow jobs for a namespace and name.
 
 \code{avworkflow_files()} returns a tibble containing
 information and file paths to workflow outputs.
@@ -231,15 +213,18 @@ object. The new \code{config} object has an added \code{LastSubmissionId} value 
 identifies the submitted job.
 }
 \examples{
-if (gcloud_exists() && nzchar(avworkspace_name()))
+library(AnVILBase)
+if (
+    gcloud_exists() && identical(avplatform_namespace(), "AnVILGCP") &&
+    nzchar(avworkspace_name())
+)
     ## from within AnVIL
     avworkflows() \%>\% select(namespace, name)
 
-if (gcloud_exists() && nzchar(avworkspace_name()))
-    ## from within AnVIL
-    avworkflow_jobs()
-
-if (gcloud_exists() && nzchar(avworkspace_name())) {
+if (
+    gcloud_exists() && identical(avplatform_namespace(), "AnVILGCP") &&
+    nzchar(avworkspace_name())
+) {
     ## e.g., from within AnVIL
     avworkflow_jobs() |>
     ## select most recent workflow
@@ -248,7 +233,10 @@ if (gcloud_exists() && nzchar(avworkspace_name())) {
     avworkflow_files()
 }
 
-if (gcloud_exists() && nzchar(avworkspace_name())) {
+if (
+    gcloud_exists() && identical(avplatform_namespace(), "AnVILGCP") &&
+    nzchar(avworkspace_name())
+) {
     avworkflow_localize(dry = TRUE)
 }
 
@@ -263,7 +251,10 @@ avworkflow_run(new_config, entityName)
 avworkflow_stop()
 }
 
-if (gcloud_exists() && nzchar(avworkspace_name())) {
+if (
+    gcloud_exists() && identical(avplatform_namespace(), "AnVILGCP") &&
+    nzchar(avworkspace_name())
+) {
     avworkflow_info()
 }
 

@@ -31,7 +31,7 @@ Description: The AnVIL is a cloud computing resource developed in part
     to formats more amenable to manipulation in R.
 License: Artistic-2.0
 Encoding: UTF-8
-Depends: R (>= 3.6), dplyr
+Depends: R (>= 3.6), dplyr, AnVILBase
 Imports:
     stats, utils, methods,
     futile.logger,
@@ -41,14 +41,13 @@ Imports:
     shiny, DT, miniUI, htmltools,
     BiocManager, BiocBaseUtils
 Suggests: parallel, knitr, rmarkdown, testthat, withr, readr, BiocStyle,
-    devtools
+    devtools, AnVILAz, AnVILGCP
 Collate:
     utilities.R authenticate.R api.R
     Service.R Services.R Leonardo.R Terra.R Rawls.R Dockstore.R TDR.R
-    Response.R
     gcloud_sdk.R gcloud.R gsutil.R localize.R drs.R
-    av.R avworkspace.R avworkflow.R avworkflow_configuration.R avnotebooks.R
-    AnVIL-defunct.R
+    av.R avworkflow.R avworkflow_configuration.R
+    AnVIL-deprecated.R AnVIL-defunct.R
     gadgets.R zzz.R
 VignetteBuilder: knitr
 biocViews: Infrastructure

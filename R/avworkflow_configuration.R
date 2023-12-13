@@ -4,7 +4,7 @@
 #'
 #' @title Workflow configuration
 #'
-#' @inheritParams avworkspace
+#' @inheritParams avworkflow
 #'
 #' @description Funtions on this help page facilitate getting,
 #'     updating, and setting workflow configuration parameters. See
@@ -129,6 +129,8 @@ avworkflow <-
 #'
 #' @description `avworkflow_configuration_get()` returns a list structure
 #'     describing an existing workflow configuration.
+#'
+#' @inheritParams av
 #'
 #' @return `avworkflow_configuration_get()` returns a list structure
 #'     describing the configuration. See
@@ -324,45 +326,48 @@ avworkflow_configuration_update <-
 #'     unused elements of `config` are also reported as a warning.
 #'
 #' @examples
+#' library(AnVILBase)
+#' if (
+#'     gcloud_exists() && identical(avplatform_namespace(), "AnVILGCP") &&
+#'     nzchar(avworkspace_name())
+#' ) {
 #' ## set the namespace and name as appropriate
 #' avworkspace("bioconductor-rpci-anvil/Bioconductor-Workflow-DESeq2")
 #'
 #' ## discover available workflows in the workspace
-#' if (gcloud_exists())
-#'     avworkflows()
+#' avworkflows()
 #'
 #' ## record the workflow of interest
 #' avworkflow("bioconductor-rpci-anvil/AnVILBulkRNASeq")
 #'
 #' ## what workflows are available?
-#' if (gcloud_exists()) {
-#'     available_workflows <- avworkflows()
+#' available_workflows <- avworkflows()
 #'
-#'     ## retrieve the current configuration
-#'     config <- avworkflow_configuration_get()
-#'     config
+#' ## retrieve the current configuration
+#' config <- avworkflow_configuration_get()
+#' config
 #'
-#'     ## what are the inputs and outputs?
-#'     inputs <- avworkflow_configuration_inputs(config)
-#'     inputs
+#' ## what are the inputs and outputs?
+#' inputs <- avworkflow_configuration_inputs(config)
+#' inputs
 #'
-#'     outputs <- avworkflow_configuration_outputs(config)
-#'     outputs
+#' outputs <- avworkflow_configuration_outputs(config)
+#' outputs
 #'
-#'     ## update inputs or outputs, e.g., this input can be anything...
-#'     inputs <-
-#'         inputs |>
-#'         mutate(attribute = ifelse(
-#'             name == "salmon.transcriptome_index_name",
-#'             '"new_index_name"',
-#'             attribute
-#'         ))
-#'     new_config <- avworkflow_configuration_update(config, inputs)
-#'     new_config
+#' ## update inputs or outputs, e.g., this input can be anything...
+#' inputs <-
+#'     inputs |>
+#'     mutate(attribute = ifelse(
+#'         name == "salmon.transcriptome_index_name",
+#'         '"new_index_name"',
+#'         attribute
+#'     ))
+#' new_config <- avworkflow_configuration_update(config, inputs)
+#' new_config
 #'
-#'     ## set the new configuration in AnVIL; use dry = FALSE to actually
-#'     ## update the configuration
-#'     avworkflow_configuration_set(config)
+#' ## set the new configuration in AnVIL; use dry = FALSE to actually
+#' ## update the configuration
+#' avworkflow_configuration_set(config)
 #' }
 #'
 #' ## avworkflow_configuration_template() is a utility function that may

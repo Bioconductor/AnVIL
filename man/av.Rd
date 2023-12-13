@@ -2,13 +2,8 @@
 % Please edit documentation in R/av.R
 \name{av}
 \alias{av}
-\alias{avtables}
-\alias{avtable}
 \alias{avtable_paged}
-\alias{avtable_import}
-\alias{avtable_import_set}
 \alias{avtable_import_status}
-\alias{avtable_delete_values}
 \alias{avdata}
 \alias{avdata_import}
 \alias{avbucket}
@@ -21,15 +16,6 @@
 \alias{avdisks}
 \title{TABLE, DATA, files, bucket, runtime, and disk elements}
 \usage{
-avtables(namespace = avworkspace_namespace(), name = avworkspace_name())
-
-avtable(
-  table,
-  namespace = avworkspace_namespace(),
-  name = avworkspace_name(),
-  na = c("", "NA")
-)
-
 avtable_paged(
   table,
   n = Inf,
@@ -44,41 +30,8 @@ avtable_paged(
   na = c("", "NA")
 )
 
-avtable_import(
-  .data,
-  entity = names(.data)[[1]],
-  namespace = avworkspace_namespace(),
-  name = avworkspace_name(),
-  delete_empty_values = FALSE,
-  na = "NA",
-  n = Inf,
-  page = 1L,
-  pageSize = NULL
-)
-
-avtable_import_set(
-  .data,
-  origin,
-  set = names(.data)[[1]],
-  member = names(.data)[[2]],
-  namespace = avworkspace_namespace(),
-  name = avworkspace_name(),
-  delete_empty_values = FALSE,
-  na = "NA",
-  n = Inf,
-  page = 1L,
-  pageSize = NULL
-)
-
 avtable_import_status(
   job_status,
-  namespace = avworkspace_namespace(),
-  name = avworkspace_name()
-)
-
-avtable_delete_values(
-  table,
-  values,
   namespace = avworkspace_namespace(),
   name = avworkspace_name()
 )
@@ -138,18 +91,7 @@ avruntime(project = gcloud_project(), account = gcloud_account())
 avdisks()
 }
 \arguments{
-\item{namespace}{character(1) AnVIL workspace namespace as returned
-by, e.g., \code{avworkspace_namespace()}}
-
-\item{name}{character(1) AnVIL workspace name as returned by, eg.,
-\code{avworkspace_name()}.}
-
 \item{table}{character(1) table name as returned by, e.g., \code{avtables()}.}
-
-\item{na}{in \code{avtable()} and \code{avtable_paged()}, character() of
-strings to be interpretted as missing values. In
-\code{avtable_import()} character(1) value to use for representing
-\code{NA_character_}. See Details.}
 
 \item{n}{numeric(1) maximum number of rows to return}
 
@@ -170,40 +112,21 @@ an exact (substring) matches in column.}
 \item{filterOperator}{character(1) operator to use when multiple
 terms in \verb{filterTerms=}, either \code{"and"} (default) or \code{"or"}.}
 
-\item{.data}{A tibble or data.frame for import as an AnVIL table.}
+\item{namespace}{character(1) AnVIL workspace namespace as returned
+by, e.g., \code{avworkspace_namespace()}}
 
-\item{entity}{\code{character(1)} column name of \code{.data} to be used as
-imported table name. When the table comes from R, this is
-usually a column name such as \code{sample}. The data will be
-imported into AnVIL as a table \code{sample}, with the \code{sample}
-column included with suffix \verb{_id}, e.g., \code{sample_id}. A column
-in \code{.data} with suffix \verb{_id} can also be used, e.g., \code{entity = "sample_id"}, creating the table \code{sample} with column
-\code{sample_id} in AnVIL. Finally, a value of \code{entity} that is not
-a column in \code{.data}, e.g., \code{entity = "unknown"}, will cause a
-new table with name \code{entity} and entity values
-\code{seq_len(nrow(.data))}.}
+\item{name}{character(1) AnVIL workspace name as returned by, eg.,
+\code{avworkspace_name()}.}
 
-\item{delete_empty_values}{logical(1) when \code{TRUE}, remove entities
-not include in \code{.data} from the DATA table. Default: \code{FALSE}.}
-
-\item{origin}{character(1) name of the entity (table) used to
-create the set e.g "sample", "participant",
-etc.}
-
-\item{set}{\code{character(1)} column name of \code{.data} identifying the
-set(s) to be created.}
-
-\item{member}{\code{character()} vector of entity from the avtable
-identified by \code{origin}. The values may repeat if an ID is in
-more than one set}
+\item{na}{in \code{avtable()} and \code{avtable_paged()}, character() of
+strings to be interpretted as missing values. In
+\code{avtable_import()} character(1) value to use for representing
+\code{NA_character_}. See Details.}
 
 \item{job_status}{tibble() of job identifiers, returned by
 \code{avtable_import()} and \code{avtable_import_set()}.}
 
-\item{values}{vector of values in the entity (key) column of
-\code{table} to be deleted. A table \code{sample} has an associated
-entity column with suffix \verb{_id}, e.g., \code{sample_id}. Rows with
-entity column entries matching \code{values} are deleted.}
+\item{.data}{A tibble or data.frame for import as an AnVIL table.}
 
 \item{as_path}{logical(1) when TRUE (default) return bucket with
 prefix \verb{gs://} (for \code{avbucket()}) or \verb{gs://<bucket-id>} (for
@@ -235,26 +158,8 @@ associated with billing account), as returned by
 \code{gcloud_account()}.}
 }
 \value{
-\code{avtables()}: A tibble with columns identifying the table,
-the number of records, and the column names.
-
-\code{avtable()}: a tibble of data corresponding to the AnVIL
-table \code{table} in the specified workspace.
-
 \code{avtable_paged()}: a tibble of data corresponding to the
 AnVIL table \code{table} in the specified workspace.
-
-\code{avtable_import()} returns a \code{tibble()} containing the page
-number, 'from' and 'to' rows included in the page, job
-identifier, initial status of the uploaded 'chunks', and any
-(error) messages generated during status check. Use
-\code{avtable_import_status()} to query current status.
-
-\code{avtable_import_set()} returns a \code{character(1)} name of the
-imported AnVIL tibble.
-
-\code{avtable_delete_values()} returns a \code{tibble} representing
-deleted entities, invisibly.
 
 \code{avdata()} returns a tibble with five columns: \code{"type"}
 represents the origin of the data from the 'REFERENCE' or
@@ -320,16 +225,6 @@ the return value of \code{avruntimes()}.
 }
 }
 \description{
-\code{avtables()} describes tables available in a
-workspace. Tables can be visualized under the DATA tab, TABLES
-item.  \code{avtable()} returns an AnVIL table.  \code{avtable_paged()}
-retrieves an AnVIL table by requesting the table in 'chunks',
-and may be appropriate for large tables. \code{avtable_import()}
-imports a data.frame to an AnVIL table.  \code{avtable_import_set()}
-imports set membership (i.e., a subset of an existing table)
-information to an AnVIL table.  \code{avtable_delete_values()}
-removes rows from an AnVIL table.
-
 \code{avtable_import_status()} queries for the status of an
 'asynchronous' table import.
 
@@ -363,55 +258,6 @@ and it is the runtime active in AnVIL.
 about persistent disks associatd with the current user.
 }
 \details{
-Treatment of missing values in \code{avtable()},
-\code{avtable_paged()} and \code{avtable_import()} are handled by the
-\code{na} parameter.
-
-\code{avtable()} may sometimes result in a curl error 'Error in
-curl::curl_fetch_memory' or a 'Internal Server Error (HTTP
-500)' This may be due to a server time-out when trying to read
-a large (more than 50,000 rows?) table; using \code{avtable_paged()}
-may address this problem.
-
-For \code{avtable()} and \code{avtable_paged()}, the default \code{na = c("", "NA")} treats empty cells or cells containing "NA" in a Terra
-data table as \code{NA_character_} in R. Use \code{na = character()} to
-indicate no missing values, \code{na = "NA"} to retain the
-distinction between \code{""} and \code{NA_character_}.
-
-For \code{avtable_import()}, the default \code{na = "NA"} records
-\code{NA_character_} in R as the character string \code{"NA"} in an AnVIL
-data table.
-
-The default setting (\code{na = "NA"} in \code{avtable_import()},
-\verb{na = c("",  NA_character_")} in \code{avtable()}, is appropriate to
-'round-trip' data from R to AnVIL and back when character vectors
-contain only \code{NA_character_}. Use \code{na = "NA"} in both functions to
-round-trip data containing both \code{NA_character_} and "NA". Use
-a distinct string, e.g., \code{na = "__MISSING_VALUE__"}, for both
-arguments if the data contains a string \code{"NA"} as well as
-\code{NA_character_}.
-
-\code{avtable_import()} tries to work around limitations in
-\code{.data} size in the AnVIL platform, using \code{pageSize} (number of
-rows) to import so that approximately 1500000 elements (rows x
-columns) are uploaded per chunk. For large \code{.data}, a progress
-bar summarizes progress on the import. Individual chunks may
-nonetheless fail to upload, with common reasons being an
-internal server error (HTTP error code 500) or transient
-authorization failure (HTTP 401). In these and other cases
-\code{avtable_import()} reports the failed page(s) as warnings. The
-user can attempt to import these individually using the \code{page}
-argument. If many pages fail to import, a strategy might be to
-provide an explicit \code{pageSize} less than the automatically
-determined size.
-
-\code{avtable_import_set()} creates new rows in a table
-\verb{<origin>_set}. One row will be created for each distinct value
-in the column identified by \code{set}. Each row entry has a
-corresponding column \verb{<origin>} linking to one or more rows in
-the \verb{<origin>} table, as given in the \code{member} column. The
-operation is somewhat like \code{split(member, set)}.
-
 \code{avfiles_backup()} can be used to back-up individual files
 or entire directories, recursively.  When \code{recursive = FALSE},
 files are backed up to the bucket with names approximately
@@ -423,19 +269,11 @@ full.names = TRUE))\verb{.  Naming conventions are described in detail in }gsuti
 the compute node file system.
 }
 \examples{
-\dontrun{
-## editable copy of '1000G-high-coverage-2019' workspace
-avworkspace("anvil-datastorage/1000G-high-coverage-2019")
-sample <-
-    avtable("sample") \%>\%                               # existing table
-    mutate(set = sample(head(LETTERS), nrow(.), TRUE))  # arbitrary groups
-sample \%>\%                                   # new 'participant_set' table
-    avtable_import_set("participant", "set", "participant")
-sample \%>\%                                   # new 'sample_set' table
-    avtable_import_set("sample", "set", "name")
-}
-
-if (gcloud_exists() && nzchar(avworkspace_name())) {
+library(AnVILBase)
+if (
+    gcloud_exists() && identical(avplatform_namespace(), "AnVILGCP") &&
+    nzchar(avworkspace_name())
+) {
     ## from within AnVIL
     data <- avdata()
     data
@@ -445,10 +283,13 @@ if (gcloud_exists() && nzchar(avworkspace_name())) {
 avdata_import(data)
 }
 
-if (gcloud_exists() && nzchar(avworkspace_name()))
+if (
+    gcloud_exists() && identical(avplatform_namespace(), "AnVILGCP") &&
+    nzchar(avworkspace_name())
+) {
     ## From within AnVIL...
-    bucket <- avbucket()                        # discover bucket
-
+    bucket <- avstorage()                        # discover bucket
+}
 \dontrun{
 path <- file.path(bucket, "mtcars.tab")
 gsutil_ls(dirname(path))                    # no 'mtcars.tab'...
@@ -456,7 +297,10 @@ write.table(mtcars, gsutil_pipe(path, "w")) # write to bucket
 gsutil_stat(path)                           # yep, there!
 read.table(gsutil_pipe(path, "r"))          # read from bucket
 }
-if (gcloud_exists() && nzchar(avworkspace_name()))
+if (
+    gcloud_exists() && identical(avplatform_namespace(), "AnVILGCP") &&
+    nzchar(avworkspace_name())
+)
     avfiles_ls()
 
 \dontrun{
