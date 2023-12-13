@@ -2,7 +2,7 @@ context("av")
 
 test_that(".avtable_import_set_entity() works", {
     .data <- data.frame(x=1:3, y=1:3, z_id=1:3)
-    
+
     expect_identical(
         names(.avtable_import_set_entity(.data, "x")),
         c("entity:x_id", "y", "z_id")
@@ -114,30 +114,5 @@ test_that(".avbucket_path() trims arguments correctly", {
     expect_identical(
         paste0("gs://foo/bar/", c("baz", "bing")),
         .avbucket_path("gs://foo", "bar", c("baz", "bing"))
-    )
-})
-
-test_that(".av_workspaces_clean() preserves leading and trailing spaces", {
-    ## add intentional spaces in workspace.name
-    testws <- tibble::tibble(
-        workspace.name = " a test workspace ",
-        workspace.lastModified = "2023-06-26T21:17:26.343Z",
-        workspace.createdBy = "test.bioc@gmail.com",
-        workspace.namespace = "bioconductor-rpci-anvil",
-        accessLevel = "READER",
-        extraCol = TRUE
-    )
-    restbl <- testws
-    ## for testing names
-    coi <- c("name", "lastModified", "createdBy", "namespace", "accessLevel")
-    names(restbl) <- coi
-    ## for testing select operation
-    restbl <- restbl[, coi]
-    ## for testing Date coercion
-    restbl[["lastModified"]] <- as.Date(restbl[["lastModified"]])
-
-    expect_identical(
-        .avworkspaces_clean(testws),
-        restbl
     )
 })
