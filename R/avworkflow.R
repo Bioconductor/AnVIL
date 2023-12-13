@@ -26,6 +26,8 @@ NULL
 #' - methodRepoMethod.methodVersion: the version of the method, e.g.,
 #'   'main' branch of a github repository.
 #'
+#' @importFrom dplyr %>%
+#'
 #' @examples
 #' if (gcloud_exists() && nzchar(avworkspace_name()))
 #'     ## from within AnVIL

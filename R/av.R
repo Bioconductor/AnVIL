@@ -9,7 +9,7 @@ NULL
 ## internal
 ##
 
-#' @importFrom httr status_code http_condition headers
+#' @importFrom httr status_code http_condition headers content
 .avstop_for_status <-
     function(response, op)
 {
@@ -43,48 +43,6 @@ NULL
 ## tables
 ##
 
-#' @rdname av
-#'
-#' @description `avtables()` describes tables available in a
-#'     workspace. Tables can be visualized under the DATA tab, TABLES
-#'     item.  `avtable()` returns an AnVIL table.  `avtable_paged()`
-#'     retrieves an AnVIL table by requesting the table in 'chunks',
-#'     and may be appropriate for large tables. `avtable_import()`
-#'     imports a data.frame to an AnVIL table.  `avtable_import_set()`
-#'     imports set membership (i.e., a subset of an existing table)
-#'     information to an AnVIL table.  `avtable_delete_values()`
-#'     removes rows from an AnVIL table.
-#'
-#' @param namespace character(1) AnVIL workspace namespace as returned
-#'     by, e.g., `avworkspace_namespace()`
-#'
-#' @param name character(1) AnVIL workspace name as returned by, eg.,
-#'     `avworkspace_name()`.
-#'
-#' @return `avtables()`: A tibble with columns identifying the table,
-#'     the number of records, and the column names.
-#'
-#' @export
-avtables <-
-    function(namespace = avworkspace_namespace(), name = avworkspace_name())
-{
-    stopifnot(
-        .is_scalar_character(namespace),
-        .is_scalar_character(name)
-    )
-
-    types <- Terra()$getEntityTypes(namespace, URLencode(name))
-    .avstop_for_status(types, "avtables")
-    lst <- content(types)
-    table <- names(lst)
-    count <- vapply(lst, `[[`, integer(1), "count")
-    colnames <- vapply(lst, function(elt) {
-        value <- unlist(elt[c("idName", "attributeNames")], use.names=FALSE)
-        paste(value, collapse=", ")
-    }, character(1))
-    tibble(table, count, colnames)
-}
-
 .is_avtable <-
     function(table, namespace, name)
 {
@@ -106,96 +64,6 @@ avtables <-
         x[x %in% na] <- NA_character_
         x
     }
-}
-
-#' @rdname av
-#'
-#' @param table character(1) table name as returned by, e.g., `avtables()`.
-#'
-#' @param na in `avtable()` and `avtable_paged()`, character() of
-#'     strings to be interpretted as missing values. In
-#'     `avtable_import()` character(1) value to use for representing
-#'     `NA_character_`. See Details.
-#'
-#' @details Treatment of missing values in `avtable()`,
-#'     `avtable_paged()` and `avtable_import()` are handled by the
-#'     `na` parameter.
-#'
-#' @details `avtable()` may sometimes result in a curl error 'Error in
-#'     curl::curl_fetch_memory' or a 'Internal Server Error (HTTP
-#'     500)' This may be due to a server time-out when trying to read
-#'     a large (more than 50,000 rows?) table; using `avtable_paged()`
-#'     may address this problem.
-#'
-#' @details For `avtable()` and `avtable_paged()`, the default `na = c("",
-#'     "NA")` treats empty cells or cells containing "NA" in a Terra
-#'     data table as `NA_character_` in R. Use `na = character()` to
-#'     indicate no missing values, `na = "NA"` to retain the
-#'     distinction between `""` and `NA_character_`.
-#'
-#' @details For `avtable_import()`, the default `na = "NA"` records
-#'     `NA_character_` in R as the character string `"NA"` in an AnVIL
-#'     data table.
-#'
-#' @details The default setting (`na = "NA"` in `avtable_import()`,
-#'     `na = c("",  NA_character_")` in `avtable()`, is appropriate to
-#'     'round-trip' data from R to AnVIL and back when character vectors
-#'     contain only `NA_character_`. Use `na = "NA"` in both functions to
-#'     round-trip data containing both `NA_character_` and "NA". Use
-#'     a distinct string, e.g., `na = "__MISSING_VALUE__"`, for both
-#'     arguments if the data contains a string `"NA"` as well as
-#'     `NA_character_`.
-#'
-#' @return `avtable()`: a tibble of data corresponding to the AnVIL
-#'     table `table` in the specified workspace.
-#'
-#' @importFrom dplyr "%>%" select starts_with ends_with across where
-#'
-#' @export
-avtable <-
-    function(table, namespace = avworkspace_namespace(),
-        name = avworkspace_name(), na = c("", "NA"))
-{
-    stopifnot(
-        .is_scalar_character(table),
-        .is_scalar_character(namespace),
-        .is_scalar_character(name)
-       ## ,
-       ##  `unknown table; use 'avtables()' for valid names` =
-       ##      .is_avtable(table, namespace, name)
-    )
-    na_fun <- .avtable_na(na)
-
-    tryCatch({
-        entities <- Rawls()$list_entities(
-            namespace, URLencode(name), URLencode(table)
-        )
-    }, error = function(err) {
-        msg <- paste0(
-            "'avtable()' failed, see 'Details' of `?avtable` for help\n",
-            "  ", conditionMessage(err)
-        )
-        stop(msg, call. = FALSE)
-    })
-    .avstop_for_status(entities, "avtable")
-    tbl <-
-        entities %>%
-        flatten()
-    if (!"name" %in% names(tbl)) {
-        stop(
-            "table '", table, "' does not exist; see 'avtables()'\n",
-            "    namespace: ", namespace, "\n",
-            "    name: ", name, "\n"
-        )
-    }
-    tbl <-
-        tbl %>%
-        select("name", starts_with("attributes"), -ends_with("entityType")) %>%
-        mutate(across(where(is.character), na_fun))
-    names(tbl) <- sub("^attributes.", "", names(tbl))
-    names(tbl) <- sub(".entityName$", "", names(tbl))
-    names(tbl) <- sub("^name$", paste0(table, "_id"), names(tbl))
-    tbl
 }
 
 #' @importFrom utils txtProgressBar setTxtProgressBar
@@ -225,6 +93,7 @@ avtable <-
 }
 
 #' @importFrom dplyr bind_cols
+#' @importFrom tibble as_tibble
 .avtable_paged1 <-
     function(
         namespace, name, table,
@@ -257,6 +126,8 @@ avtable <-
 
 #' @rdname av
 #'
+#' @param table character(1) table name as returned by, e.g., `avtables()`.
+#'
 #' @param n numeric(1) maximum number of rows to return
 #'
 #' @param page integer(1) first page of iteration
@@ -276,9 +147,22 @@ avtable <-
 #' @param filterOperator character(1) operator to use when multiple
 #'     terms in `filterTerms=`, either `"and"` (default) or `"or"`.
 #'
+#' @param namespace character(1) AnVIL workspace namespace as returned
+#'     by, e.g., `avworkspace_namespace()`
+#'
+#' @param name character(1) AnVIL workspace name as returned by, eg.,
+#'     `avworkspace_name()`.
+#'
+#' @param na in `avtable()` and `avtable_paged()`, character() of
+#'     strings to be interpretted as missing values. In
+#'     `avtable_import()` character(1) value to use for representing
+#'     `NA_character_`. See Details.
+#'
 #' @return `avtable_paged()`: a tibble of data corresponding to the
 #'     AnVIL table `table` in the specified workspace.
 #'
+#' @importFrom dplyr across where
+#' @import AnVILBase
 #' @export
 avtable_paged <-
     function(table,
@@ -343,6 +227,7 @@ avtable_paged <-
     .data[c(entity, setdiff(names(.data), entity))]
 }
 
+#' @importFrom utils write.table
 .avtable_import_write_dataset <-
     function(.data, na)
 {
@@ -353,75 +238,6 @@ avtable_paged <-
     )
 
     destination
-}
-
-#' @rdname av
-#'
-#' @param .data A tibble or data.frame for import as an AnVIL table.
-#'
-#' @param entity `character(1)` column name of `.data` to be used as
-#'     imported table name. When the table comes from R, this is
-#'     usually a column name such as `sample`. The data will be
-#'     imported into AnVIL as a table `sample`, with the `sample`
-#'     column included with suffix `_id`, e.g., `sample_id`. A column
-#'     in `.data` with suffix `_id` can also be used, e.g., `entity =
-#'     "sample_id"`, creating the table `sample` with column
-#'     `sample_id` in AnVIL. Finally, a value of `entity` that is not
-#'     a column in `.data`, e.g., `entity = "unknown"`, will cause a
-#'     new table with name `entity` and entity values
-#'     `seq_len(nrow(.data))`.
-#'
-#' @param delete_empty_values logical(1) when `TRUE`, remove entities
-#'     not include in `.data` from the DATA table. Default: `FALSE`.
-#'
-#' @details `avtable_import()` tries to work around limitations in
-#'     `.data` size in the AnVIL platform, using `pageSize` (number of
-#'     rows) to import so that approximately 1500000 elements (rows x
-#'     columns) are uploaded per chunk. For large `.data`, a progress
-#'     bar summarizes progress on the import. Individual chunks may
-#'     nonetheless fail to upload, with common reasons being an
-#'     internal server error (HTTP error code 500) or transient
-#'     authorization failure (HTTP 401). In these and other cases
-#'     `avtable_import()` reports the failed page(s) as warnings. The
-#'     user can attempt to import these individually using the `page`
-#'     argument. If many pages fail to import, a strategy might be to
-#'     provide an explicit `pageSize` less than the automatically
-#'     determined size.
-#'
-#' @return `avtable_import()` returns a `tibble()` containing the page
-#'     number, 'from' and 'to' rows included in the page, job
-#'     identifier, initial status of the uploaded 'chunks', and any
-#'     (error) messages generated during status check. Use
-#'     `avtable_import_status()` to query current status.
-#'
-#' @importFrom utils write.table
-#'
-#' @export
-avtable_import <-
-    function(.data, entity = names(.data)[[1]],
-        namespace = avworkspace_namespace(), name = avworkspace_name(),
-        delete_empty_values = FALSE, na = "NA",
-        n = Inf, page = 1L, pageSize = NULL)
-{
-    stopifnot(
-        is.data.frame(.data),
-        .is_scalar_character(entity),
-        .is_scalar_character(namespace),
-        .is_scalar_character(name),
-        .is_scalar_logical(delete_empty_values),
-        .is_scalar_character(na, zchar = TRUE),
-        .is_scalar_numeric(n, infinite.ok = TRUE),
-        .is_scalar_integer(as.integer(page)),
-        is.null(pageSize) || .is_scalar_integer(as.integer(pageSize))
-    )
-
-    ## identify the 'entity' column
-    .data <- .avtable_import_set_entity(.data, entity)
-    ## divide large tables into chunks, if necessary
-    .avtable_import_chunks(
-        .data, namespace, name, delete_empty_values, na,
-        n, page, pageSize
-    )
 }
 
 .avtable_import_pages_index <-
@@ -522,81 +338,6 @@ avtable_import <-
 
 #' @rdname av
 #'
-#' @param origin character(1) name of the entity (table) used to
-#'     create the set e.g "sample", "participant",
-#'     etc.
-#'
-#' @param set `character(1)` column name of `.data` identifying the
-#'     set(s) to be created.
-#'
-#' @param member `character()` vector of entity from the avtable
-#'     identified by `origin`. The values may repeat if an ID is in
-#'     more than one set
-#'
-#' @details `avtable_import_set()` creates new rows in a table
-#'     `<origin>_set`. One row will be created for each distinct value
-#'     in the column identified by `set`. Each row entry has a
-#'     corresponding column `<origin>` linking to one or more rows in
-#'     the `<origin>` table, as given in the `member` column. The
-#'     operation is somewhat like `split(member, set)`.
-#'
-#' @return `avtable_import_set()` returns a `character(1)` name of the
-#'     imported AnVIL tibble.
-#'
-#' @importFrom utils write.table
-#'
-#' @examples
-#' \dontrun{
-#' ## editable copy of '1000G-high-coverage-2019' workspace
-#' avworkspace("anvil-datastorage/1000G-high-coverage-2019")
-#' sample <-
-#'     avtable("sample") %>%                               # existing table
-#'     mutate(set = sample(head(LETTERS), nrow(.), TRUE))  # arbitrary groups
-#' sample %>%                                   # new 'participant_set' table
-#'     avtable_import_set("participant", "set", "participant")
-#' sample %>%                                   # new 'sample_set' table
-#'     avtable_import_set("sample", "set", "name")
-#' }
-#'
-#' @export
-avtable_import_set <-
-    function(
-        .data, origin, set = names(.data)[[1]], member = names(.data)[[2]],
-        namespace = avworkspace_namespace(), name = avworkspace_name(),
-        delete_empty_values = FALSE, na = "NA",
-        n = Inf, page = 1L, pageSize = NULL)
-{
-    stopifnot(
-        is.data.frame(.data),
-        .is_scalar_character(origin),
-        .is_scalar_character(set),
-        set %in% names(.data),
-        .is_scalar_character(member),
-        !identical(set, member), member %in% names(.data),
-        .is_scalar_character(namespace),
-        .is_scalar_character(name),
-        .is_scalar_logical(delete_empty_values),
-        .is_scalar_character(na, zchar = TRUE),
-        .is_scalar_numeric(n, infinite.ok = TRUE),
-        .is_scalar_integer(as.integer(page)),
-        is.null(pageSize) || .is_scalar_integer(as.integer(pageSize))
-    )
-    origin <- URLencode(origin)
-
-    .data <-
-        .data |>
-        select(set, member)
-    names(.data)[[1]] <- paste0("membership:", origin, "_set_id")
-    names(.data)[[2]] <- origin
-
-    .avtable_import_chunks(
-        .data, namespace, name, delete_empty_values, na,
-        n, page, pageSize
-    )
-}
-
-#' @rdname av
-#'
 #' @description `avtable_import_status()` queries for the status of an
 #'     'asynchronous' table import.
 #'
@@ -667,52 +408,6 @@ avtable_import_status <-
     job_status$status[todo] <- updated_status
     job_status$message[todo] <- updated_message
     job_status
-}
-
-#' @rdname av
-#'
-#' @param values vector of values in the entity (key) column of
-#'     `table` to be deleted. A table `sample` has an associated
-#'     entity column with suffix `_id`, e.g., `sample_id`. Rows with
-#'     entity column entries matching `values` are deleted.
-#'
-#' @return `avtable_delete_values()` returns a `tibble` representing
-#'     deleted entities, invisibly.
-#'
-#' @importFrom utils capture.output
-#'
-#' @export
-avtable_delete_values <-
-    function(table, values,
-        namespace = avworkspace_namespace(),
-        name = avworkspace_name())
-{
-    stopifnot(
-        .is_scalar_character(table),
-        .is_scalar_character(namespace),
-        .is_scalar_character(name)
-    )
-
-    name <- URLencode(name)
-    body <- tibble(entityType = table, entityName = as.character(values))
-
-    response <- Terra()$deleteEntities(namespace, URLencode(name), body)
-    if (status_code(response) == 409L) {
-        tbl <-
-            response %>%
-            flatten() %>%
-            capture.output() %>%
-            paste(collapse = "\n")
-        stop(
-            "\n",
-            "  'values' (entityName) appear in more than one table (entityType);",
-            "\n  delete entityName from leaf tables first\n\n",
-            tbl
-        )
-    }
-    .avstop_for_status(response, "avtable_delete_values") # other errors
-
-    invisible(body)
 }
 
 #' @rdname av
@@ -806,6 +501,8 @@ avdata <-
 }
 
 #' @rdname av
+#'
+#' @param .data A tibble or data.frame for import as an AnVIL table.
 #'
 #' @return `avdata_import()` returns, invisibly, the subset of the
 #'     input table used to update the AnVIL tables.

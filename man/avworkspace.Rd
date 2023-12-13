@@ -2,20 +2,9 @@
 % Please edit documentation in R/avworkspace.R
 \name{avworkspace}
 \alias{avworkspace}
-\alias{avworkspaces}
-\alias{avworkspace_namespace}
-\alias{avworkspace_name}
 \alias{avworkspace_clone}
 \title{Workspace management}
 \usage{
-avworkspaces()
-
-avworkspace_namespace(namespace = NULL, warn = TRUE)
-
-avworkspace_name(name = NULL, warn = TRUE)
-
-avworkspace(workspace = NULL)
-
 avworkspace_clone(
   namespace = avworkspace_namespace(),
   name = avworkspace_name(),
@@ -28,15 +17,8 @@ avworkspace_clone(
 \item{namespace}{character(1) AnVIL workspace namespace as returned
 by, e.g., \code{avworkspace_namespace()}}
 
-\item{warn}{logical(1) when \code{TRUE} (default), generate a warning
-when the workspace namespace or name cannot be determined.}
-
 \item{name}{character(1) AnVIL workspace name as returned by, eg.,
 \code{avworkspace_name()}.}
-
-\item{workspace}{when present, a \code{character(1)} providing the
-concatenated namespace and name, e.g.,
-\code{"bioconductor-rpci-anvil/Bioconductor-Package-AnVIL"}}
 
 \item{to_namespace}{character(1) workspace (billing account) in
 which to make the clone.}
@@ -48,48 +30,10 @@ the default) in which bucket attached to the workspace should
 be created.}
 }
 \value{
-\code{avworkspaces()} returns a tibble with columns including
-the name, last modification time, namespace, and owner status.
-
-\code{avworkspace_namespace()}, and \code{avworkspace_name()} return
-\code{character(1)} identifiers. \code{avworkspace()} returns the
-character(1) concatenated namespace and name. The value
-returned by \code{avworkspace_name()} will be percent-encoded (e.g.,
-spaces \code{" "} replaced by \code{"\%20"}).
-
 \code{avworkspace_clone()} returns the namespace and name, in
 the format \code{namespace/name}, of the cloned workspace.
 }
 \description{
-\code{avworkspaces()} returns a tibble with available
-workspaces.
-
-\code{avworkspace_namespace()} and \code{avworkspace_name()} are
-utiliity functions to retrieve workspace namespace and name
-from environment variables or interfaces usually available in
-AnVIL notebooks or RStudio sessions.  \code{avworkspace()} provides
-a convenient way to specify workspace namespace and name in a
-single command.
-
 \code{avworkspace_clone()} clones (copies) an existing
 workspace, possibly into a new namespace (billing account).
-}
-\details{
-\code{avworkspace_namespace()} is the billing account. If the
-\verb{namespace=} argument is not provided, try \code{gcloud_project()},
-and if that fails try \code{Sys.getenv("WORKSPACE_NAMESPACE")}.
-
-\code{avworkspace_name()} is the name of the workspace as it appears in
-\url{https://app.terra.bio/#workspaces}. If not provided,
-\code{avworkspace_name()} tries to use \code{Sys.getenv("WORKSPACE_NAME")}.
-
-Namespace and name values are cached across sessions, so explicitly
-providing \verb{avworkspace_name*()} is required at most once per
-session. Revert to system settings with arguments \code{NA}.
-}
-\examples{
-avworkspace_namespace()
-avworkspace_name()
-avworkspace()
-
 }
