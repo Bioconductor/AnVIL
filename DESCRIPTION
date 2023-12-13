@@ -41,7 +41,7 @@ Imports:
     shiny, DT, miniUI, htmltools,
     BiocManager
 Suggests: parallel, knitr, rmarkdown, testthat, withr, readr, BiocStyle,
-    devtools, AnVILGCP, AnVILAz
+    devtools
 Collate:
     utilities.R install.R authenticate.R api.R
     Service.R Services.R Leonardo.R Terra.R Rawls.R Dockstore.R Gen3.R
@@ -49,7 +49,7 @@ Collate:
     gcloud-deprecated.R gsutil-deprecated.R av-deprecated.R
     avworkspace-deprecated.R avworkflow-deprecated.R
     avworkflow_configuration-deprecated.R avnotebooks-deprecated.R
-    av-utilities.R localize-deprecated.R drs.R
+    localize-deprecated.R drs.R
     gadgets.R zzz.R
 VignetteBuilder: knitr
 biocViews: Infrastructure
