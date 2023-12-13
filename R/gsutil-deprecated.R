@@ -179,13 +179,6 @@ gsutil_exists <-
     .life_cycle(
         newpackage = "AnVILGCP", cycle = "deprecated", title = "gsutil"
     )
-    .Deprecated(
-        msg = c(
-            "'gcloud_*' and 'gsutil_*' functions are deprecated.\n",
-            "Use the 'AnVILGCP' package instead.\n",
-            "See help(\"AnVIL-deprecated\")"
-        )
-    )
     gsutil <- .gcloud_sdk_find_binary("gsutil")
     stopifnot(file.exists(gsutil))      # bad environment variables
 
