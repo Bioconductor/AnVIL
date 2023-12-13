@@ -752,6 +752,8 @@ avworkflow_stop <-
 #'     submissionId, workflowId, workflowName,status, start, end,
 #'     inputs and outputs.
 #'
+#' @importFrom dplyr distinct select
+#'
 #' @examples
 #' if (gcloud_exists() && nzchar(avworkspace_name())) {
 #'     avworkflow_info()
@@ -779,10 +781,10 @@ avworkflow_info <-
     ## workflows and files associated with the submissionId
     workflow_files <-
         avworkflow_files(submissionId) |>
-        select(submissionId, workflowId, file)
+        select(.data$submissionId, .data$workflowId, .data$file)
 
-    workflowIds <- workflow_files |> distinct(workflowId) |>
-        pull(workflowId)
+    workflowIds <- workflow_files |> distinct(.data$workflowId) |>
+        pull(.data$workflowId)
 
     ## inputs used for each workflow
     workflow_info <-
