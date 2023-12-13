@@ -103,7 +103,7 @@ avworkflow <-
         config$methodRepoMethod$methodVersion,
         config$methodRepoMethod$sourceRepo
     )
-    .avstop_for_status(response, "avworkflow_response")
+    avstop_for_status(response, "avworkflow_response")
 }
 
 #' @importFrom dplyr left_join
@@ -155,7 +155,7 @@ avworkflow_configuration_get <-
         namespace, URLencode(name),
         workflow_namespace, workflow_name
     )
-    .avstop_for_status(config, "avworkflow_methods")
+    avstop_for_status(config, "avworkflow_methods")
     config_list <- config %>% as.list()
     class(config_list) <- c("avworkflow_configuration", class(config_list))
     config_list
@@ -408,7 +408,7 @@ avworkflow_configuration_set <-
         namespace, URLencode(name), config$namespace, config$name,
         .__body__ = config
     )
-    .avstop_for_status(response, "avworkflow_configuration_set")
+    avstop_for_status(response, "avworkflow_configuration_set")
 
     response <-
         response %>%

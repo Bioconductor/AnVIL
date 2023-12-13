@@ -70,6 +70,7 @@
 #' build system.
 #'
 #' @importFrom utils available.packages
+#' @importFrom httr headers HEAD
 #'
 #' @examples
 #' stats <- repository_stats() # obtain statistics

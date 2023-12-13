@@ -25,6 +25,7 @@ setOldClass("request")
 #' @importFrom tools md5sum
 #' @importFrom utils download.file
 #' @importFrom httr write_disk
+#' @importFrom AnVILBase avstop_for_status
 .service_validate_md5sum <-
     function(reference_url, reference_md5sum, reference_headers)
 {
@@ -40,7 +41,7 @@ setOldClass("request")
         add_headers(.headers = reference_headers),
         write_disk(fl)
     )
-    .avstop_for_status(response, ".service_validate_md5sum")
+    avstop_for_status(response, ".service_validate_md5sum")
     md5sum <- md5sum(fl)
     test <-
         identical(unname(md5sum), reference_md5sum) ||
@@ -115,7 +116,7 @@ setOldClass("request")
 #' MyService <- function() {
 #'     .MyService(Service("my_service", host="my.api.org"))
 #' }
-#' 
+#'
 #' @export
 Service <-
     function(
