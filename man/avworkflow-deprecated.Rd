@@ -8,12 +8,8 @@
 \alias{avworkflow_localize}
 \alias{avworkflow_run}
 \alias{avworkflow_stop}
-<<<<<<< HEAD
 \alias{avworkflow_info}
-\title{Workflow submissions and file outputs}
-=======
 \title{Workflow submissions and file outputs (DEPRECATED)}
->>>>>>> cbb5bef (deprecate all av* functions)
 \usage{
 avworkflows(namespace = avworkspace_namespace(), name = avworkspace_name())
 

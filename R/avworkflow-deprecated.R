@@ -768,7 +768,7 @@ avworkflow_stop <-
     invisible(TRUE)
 }
 
-#' @rdname avworkflow
+#' @rdname avworkflow-deprecated
 #'
 #' @description `avworkflow_info()` returns a tibble containing workflow
 #'     information, including workflowName, status, start and end time,
