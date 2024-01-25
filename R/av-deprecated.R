@@ -118,7 +118,7 @@ avtables <-
 #' @return `avtable()`: a tibble of data corresponding to the AnVIL
 #'     table `table` in the specified workspace.
 #'
-#' @importFrom dplyr "%>%" select starts_with ends_with across where
+#' @importFrom dplyr %>% select starts_with ends_with across where
 #'
 #' @export
 avtable <-
