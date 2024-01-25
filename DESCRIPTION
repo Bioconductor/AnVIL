@@ -53,5 +53,5 @@ Collate:
     gadgets.R zzz.R
 VignetteBuilder: knitr
 biocViews: Infrastructure
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.0
 Roxygen: list(markdown = TRUE)
