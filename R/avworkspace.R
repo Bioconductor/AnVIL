@@ -59,7 +59,7 @@ avworkspaces <-
     function()
 {
 
-    response <- Terra()$listWorkspaces()
+    response <- Rawls()$listWorkspaces()
     .avstop_for_status(response, "avworkspaces")
 
     flatten(response) %>%
@@ -197,7 +197,7 @@ avworkspace_clone <-
             !identical(namespace, to_namespace) || !identical(name, to_name)
     )
 
-    response <- Terra()$cloneWorkspace(
+    response <- Rawls()$clone(
         workspaceNamespace = namespace,
         workspaceName = URLencode(name),
         .__body__ = list(
@@ -207,7 +207,7 @@ avworkspace_clone <-
             namespace = to_namespace,
             name = URLencode(to_name)
         )
-        )
+    )
     .avstop_for_status(response, "avworkspace_clone")
 
     paste(to_namespace, to_name, sep = "/")

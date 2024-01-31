@@ -133,8 +133,8 @@ tags <-
 #' @examples
 #' if (gcloud_exists()) {
 #'     ## Arguments to be used as the 'body' (`.__body__=`) of a REST query
-#'     Terra()$createBillingProjectFull       # 6 arguments...
-#'     args(Terra()$createBillingProjectFull) # ... passed as `.__body__ = list(...)`
+#'     Rawls()$createBillingProjectFull       # 6 arguments...
+#'     args(Rawls()$createBillingProjectFull) # ... passed as `.__body__ = list(...)`
 #' }
 #' @export
 setMethod(

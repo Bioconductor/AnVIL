@@ -73,7 +73,7 @@ avtables <-
         .is_scalar_character(name)
     )
 
-    types <- Terra()$getEntityTypes(namespace, URLencode(name))
+    types <- Rawls()$entity_type_metadata(namespace, URLencode(name))
     .avstop_for_status(types, "avtables")
     lst <- content(types)
     table <- names(lst)
