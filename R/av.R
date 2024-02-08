@@ -643,12 +643,20 @@ avtable_import_status <-
             } else {
                 updated_message[[job_index]] <- NA_character_
             }
+            if (identical(tolower(content$status),  "error"))
+                stop(
+                    "job failed with error status: ",
+                    updated_message[[job_index]], call. = FALSE
+                )
         }, error = function(err) {
+            err_msg <- conditionMessage(err)
+            is_err_status <- grepl("job failed with error status", err_msg)
+            status_msg <- if (is_err_status) "error" else "failed to get"
             msg <- paste(strwrap(paste0(
-                "failed to get status of job_id '", job_id, "'; ",
+                status_msg, " status of job_id '", job_id, "'; ",
                 "continuing to next job"
             )), collapse = "\n")
-            warning(msg, "\n", conditionMessage(err), immediate. = TRUE)
+            warning(msg, "\n", err_msg, immediate. = TRUE)
         })
         if (!is.null(progress_bar))
             setTxtProgressBar(progress_bar, job_index)
