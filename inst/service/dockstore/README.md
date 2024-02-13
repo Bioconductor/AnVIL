@@ -13,8 +13,10 @@ $ npm install -g api-spec-converter
 and then ran the command
 
 ```
+wget https://dockstore.org/openapi.yaml
+## Forbidden 403 on direct URL
 api-spec-converter -f openapi_3 -t swagger_2 \
-  https://dockstore.org/openapi.yaml > \
+  openapi.yaml > \
   api.yaml
 ```
 
