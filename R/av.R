@@ -546,7 +546,7 @@ avtable_import <-
 #' @examples
 #' \dontrun{
 #' ## editable copy of '1000G-high-coverage-2019' workspace
-#' avworkspace("bioconductor-rpci-anvil/1000G-high-coverage-2019")
+#' avworkspace("anvil-datastorage/1000G-high-coverage-2019")
 #' sample <-
 #'     avtable("sample") %>%                               # existing table
 #'     mutate(set = sample(head(LETTERS), nrow(.), TRUE))  # arbitrary groups
