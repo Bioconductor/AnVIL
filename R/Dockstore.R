@@ -36,9 +36,11 @@ Dockstore <-
     }
     .Dockstore(
         Service(
-            "dockstore", host="dockstore.org", authenticate = FALSE,
-            api_url = "https://dockstore.org/swagger.json",
-            api_reference_md5sum = "1ea8b7659454180eb83598d6bd2b4d01"
+            "dockstore",
+            host="dockstore.org",
+            config = httr::config(ssl_verifypeer = 0L, ssl_verifyhost = 0L),
+            authenticate = FALSE,
+            api_reference_url = "https://dockstore.org/openapi.yaml",
         ),
         api_header = api_header
     )
