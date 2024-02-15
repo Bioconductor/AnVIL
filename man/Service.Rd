@@ -14,6 +14,7 @@ Service(
   schemes = "https",
   api_reference_url = api_url,
   api_reference_md5sum = character(),
+  api_reference_version = character(),
   api_reference_headers = NULL
 )
 }

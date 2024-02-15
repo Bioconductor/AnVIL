@@ -39,8 +39,9 @@ Dockstore <-
             "dockstore",
             host="dockstore.org",
             config = httr::config(ssl_verifypeer = 0L, ssl_verifyhost = 0L),
+            api_reference_version = "1.15.0-SNAPSHOT",
             authenticate = FALSE,
-            api_reference_url = "https://dockstore.org/openapi.yaml",
+            api_reference_url = "https://dockstore.org/api/openapi.yaml",
         ),
         api_header = api_header
     )

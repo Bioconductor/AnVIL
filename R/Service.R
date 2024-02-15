@@ -20,13 +20,24 @@ setOldClass("request")
 
 .config <- function(x) x@config
 
+.service_get_api_file <- function(reference_url, reference_headers) {
+    fl <- tempfile()
+    response <- GET(
+        reference_url,
+        add_headers(.headers = reference_headers),
+        write_disk(fl)
+    )
+    .avstop_for_status(response, ".service_validate_md5sum")
+    fl
+}
+
 .service_validate_md5sum_warn <- new.env(parent = emptyenv())
 
 #' @importFrom tools md5sum
 #' @importFrom utils download.file
 #' @importFrom httr write_disk
 .service_validate_md5sum <-
-    function(reference_url, reference_md5sum, reference_headers)
+    function(reference_url, reference_md5sum, reference_headers, api_file)
 {
     flog.debug("Service reference url: %s", reference_url)
     flog.debug("Service reference md5sum: %s", reference_md5sum)
@@ -52,6 +63,31 @@ setOldClass("request")
             "\n    service url: ", reference_url,
             "\n    observed md5sum: ", md5sum,
             "\n    expected md5sum: ", reference_md5sum
+        )
+}
+
+.service_validate_version <-
+    function(reference_url, reference_version, reference_headers, api_file)
+{
+    flog.debug("Service reference url: %s", reference_url)
+    flog.debug("Service reference version: %s", reference_version)
+
+    if (!length(reference_version))
+        return()
+
+    yaml_file <- yaml::read_yaml(api_file)
+    version <- yaml_file[["info"]][["version"]]
+
+    if (!length(version))
+        return()
+
+    test <- identical(version, reference_version)
+    if (!test)
+        warning(
+            "service version differs from validated version",
+            "\n    service url: ", reference_url,
+            "\n    observed version: ", version,
+            "\n    expected version: ", reference_version
         )
 }
 
@@ -115,7 +151,7 @@ setOldClass("request")
 #' MyService <- function() {
 #'     .MyService(Service("my_service", host="my.api.org"))
 #' }
-#' 
+#'
 #' @export
 Service <-
     function(
@@ -123,6 +159,7 @@ Service <-
         api_url = character(), package = "AnVIL", schemes = "https",
         api_reference_url = api_url,
         api_reference_md5sum = character(),
+        api_reference_version = character(),
         api_reference_headers = NULL)
 {
     stopifnot(
@@ -134,12 +171,22 @@ Service <-
             isScalarCharacter(api_reference_url),
         length(api_reference_md5sum) == 0L ||
             isScalarCharacter(api_reference_md5sum),
+        length(api_reference_version) == 0L ||
+            isScalarCharacter(api_reference_version),
         is.null(api_reference_headers) || isCharacter(api_reference_headers)
     )
     flog.debug("Service(): %s", service)
 
+    api_file <- .service_get_api_file(api_reference_url, api_reference_headers)
+
     .service_validate_md5sum(
-        api_reference_url, api_reference_md5sum, api_reference_headers
+        api_reference_url, api_reference_md5sum,
+        api_reference_headers, api_file
+    )
+
+    .service_validate_version(
+        api_reference_url, api_reference_version,
+        api_reference_headers, api_file
     )
 
     if (authenticate)
