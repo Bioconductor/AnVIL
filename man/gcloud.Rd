@@ -7,6 +7,8 @@
 \alias{gcloud_project}
 \alias{gcloud_help}
 \alias{gcloud_cmd}
+\alias{gcloud_storage}
+\alias{gcloud_storage_buckets}
 \title{gcloud command line utility interface}
 \usage{
 gcloud_exists()
@@ -18,6 +20,10 @@ gcloud_project(project = NULL)
 gcloud_help(...)
 
 gcloud_cmd(cmd, ...)
+
+gcloud_storage(cmd, ...)
+
+gcloud_storage_buckets(bucket_cmd = "create", bucket, ...)
 }
 \arguments{
 \item{account}{character(1) Google account (e.g., \code{user@gmail.com})
@@ -29,6 +35,13 @@ to use for authentication.}
 
 \item{cmd}{\code{character(1)} representing a command used to evaluate
 \verb{gcloud cmd ...}.}
+
+\item{bucket_cmd}{\code{character(1)} representing a buckets command typically
+used to create a new bucket. It can also be used to
+\code{add-iam-policy-binding} or \code{remove-iam-policy-binding} to a bucket.}
+
+\item{bucket}{\code{character(1)} representing a unique bucket name to be created
+or modified.}
 }
 \value{
 \code{gcloud_exists()} returns \code{TRUE} when the \code{gcloud}
@@ -69,6 +82,14 @@ command or sub-comand via \verb{gcloud help ...}.
 \code{gcloud_cmd()} allows arbitrary \code{gcloud} command
 execution via \verb{gcloud ...}. Use pre-defined functions in
 preference to this.
+
+\code{gcloud_storage()} allows arbitrary \verb{gcloud storage} command
+execution via \verb{gcloud storage ...}. Typically used for bucket management
+commands such as \code{rm} and \code{cp}.
+
+\code{gcloud_storage_buckets()} provides an interface to the
+\verb{gcloud storage buckets} command. This command can be used to create a new
+bucket via \verb{gcloud storage buckets create ...}.
 }
 \examples{
 gcloud_exists()

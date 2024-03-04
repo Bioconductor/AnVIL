@@ -188,3 +188,34 @@ gcloud_help <- function(...)
 #' @export
 gcloud_cmd <- function(cmd, ...)
     .gcloud_do(cmd, ...)
+
+#' @rdname gcloud
+#'
+#' @description `gcloud_storage()` allows arbitrary `gcloud storage` command
+#'   execution via `gcloud storage ...`. Typically used for bucket management
+#'   commands such as `rm` and `cp`.
+#'
+#' @export
+gcloud_storage <- function(cmd, ...)
+    .gcloud_do("storage", cmd, ...)
+
+#' @rdname gcloud
+#'
+#' @description `gcloud_storage_buckets()` provides an interface to the
+#'  `gcloud storage buckets` command. This command can be used to create a new
+#'   bucket via `gcloud storage buckets create ...`.
+#'
+#' @param bucket_cmd `character(1)` representing a buckets command typically
+#'   used to create a new bucket. It can also be used to
+#'   `add-iam-policy-binding` or `remove-iam-policy-binding` to a bucket.
+#'
+#' @param bucket `character(1)` representing a unique bucket name to be created
+#'   or modified.
+#'
+#' @export
+gcloud_storage_buckets <- function(bucket_cmd = "create", bucket, ...) {
+    stopifnot(
+        .is_scalar_character(bucket_cmd), .is_scalar_character(bucket)
+    )
+    gcloud_storage("buckets", bucket_cmd, bucket, ...)
+}
