@@ -167,7 +167,9 @@ avtable <-
     na_fun <- .avtable_na(na)
 
     tryCatch({
-        entities <- Terra()$getEntities(namespace, URLencode(name), table)
+        entities <- Rawls()$list_entities(
+            namespace, URLencode(name), URLencode(table)
+        )
     }, error = function(err) {
         msg <- paste0(
             "'avtable()' failed, see 'Details' of `?avtable` for help\n",
