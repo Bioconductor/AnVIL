@@ -4,7 +4,7 @@
 #'
 #' @title Workflow configuration
 #'
-#' @inheritParams avworkspace
+#' @inheritParams avworkflow
 #'
 #' @description Funtions on this help page facilitate getting,
 #'     updating, and setting workflow configuration parameters. See

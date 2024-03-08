@@ -94,6 +94,7 @@ NULL
 
 #' @importFrom dplyr bind_cols
 #' @importFrom tibble as_tibble
+#' @importFrom utils URLencode
 .avtable_paged1 <-
     function(
         namespace, name, table,

@@ -4,7 +4,12 @@
 #'
 #' @title Workflow submissions and file outputs
 #'
-#' @inheritParams avworkspace
+#' @param namespace character(1) AnVIL workspace namespace as returned
+#'     by, e.g., `avworkspace_namespace()`
+#'
+#' @param name character(1) AnVIL workspace name as returned by, eg.,
+#'     `avworkspace_name()`.
+#'
 NULL
 
 #' @rdname avworkflow
