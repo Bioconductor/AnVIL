@@ -1,62 +1,3 @@
-BINARY_BASE_URL <- "https://bioconductor.org/packages/%s/container-binaries/%s"
-
-#' @rdname install
-#'
-#' @title Discover binary packages for fast installation
-#'
-#' @description `install()` is deprecated in favor of
-#'     `BiocManager::install()`.
-#'
-#' @param pkgs `character()` packages to install from binary repository.
-#'
-#' @param ... additional arguments. `install()` passes additional
-#'     arguments to
-#'     `BiocManager::install()`. `print.repository_stats()` ignores
-#'     the additional arguments.
-#'
-#' @param version `character(1)` or `package_version` Bioconductor
-#'     version, e.g., "3.12".
-#'
-#' @param binary_base_url `character(1)` host and base path for binary
-#'     package 'CRAN-style' repository; not usually required by the
-#'     end-user.
-#'
-#' @export
-install <-
-    function(
-        pkgs = character(), ...,
-        version = BiocManager::version(), binary_base_url = BINARY_BASE_URL
-    )
-{
-    .Deprecated("BiocManager::install()")
-    stopifnot(
-        .is_character(pkgs),
-        .is_scalar_character(version) || is.package_version(version),
-        .is_scalar_character(binary_base_url)
-    )
-    if ("site_repository" %in% names(list(...))) {
-        stop("'site_repository=' cannot be used with AnVIL::install()")
-    }
-
-    site_repository <- repository(version, binary_base_url)
-    BiocManager::install(
-                     pkgs = pkgs,
-                     ...,
-                     site_repository = site_repository,
-                     version = version
-                 )
-}
-
-## is the docker container configured correctly?
-.repository_container_version_test <-
-    function(bioconductor_version, container_version)
-{
-    bioconductor_version <- package_version(bioconductor_version)
-    docker_version <- package_version(container_version)
-    (bioconductor_version$major == docker_version$major) &&
-        (bioconductor_version$minor == docker_version$minor)
-}
-
 ## are we running on a docker container?
 .repository_container_version <-
     function()
@@ -72,94 +13,21 @@ install <-
     list(platform = platform, container_version = container_version)
 }
 
-#' @rdname install
+#' @name AnVIL-deprecated
 #'
-#' @aliases BINARY_BASE_URL
-#'
-#' @description `repository()` is deprecated in favor of
-#'     `BiocManager::containerRepository()`.
-#'
-#' @importFrom utils contrib.url
-#'
-#' @export
-repository <-
-    function(
-        version = BiocManager::version(),
-        binary_base_url = BINARY_BASE_URL)
-{
-    .Deprecated("BiocManager::containerRepository()")
-    stopifnot(
-        ## 'version' validated in '.repository_container_version_test()'
-        .is_scalar_character(binary_base_url)
-    )
-    .repository(version, binary_base_url)
-}
-
-.repository <-
-    function(version, binary_base_url)
-{
-    platform_docker <- .repository_container_version()
-    container_version <- platform_docker$container_version
-    platform <- platform_docker$platform
-
-    ## are we running on a known container?
-    if (!nzchar(container_version))
-        return(character())
-
-    ## do the versions of BiocManager::version() and the container match?
-    versions_match <- .repository_container_version_test(
-        version, container_version
-    )
-    if (!versions_match)
-        return(character())
-
-    ## does the binary repository exist?
-    binary_repos0 <- sprintf(binary_base_url, version, platform)
-    packages <- paste0(contrib.url(binary_repos0), "/PACKAGES.gz")
-    url <- url(packages)
-    binary_repository <- tryCatch({
-        suppressWarnings(open(url, "rb"))
-        close(url)
-        binary_repos0
-    }, error = function(...) {
-        close(url)
-        character()
-    })
-
-    binary_repository
-}
-
-#' @rdname install
-#'
-#' @description `repositories()` is deprecated in favor of
-#'     `BiocManager::repositories()`.
-#'
-#' @export
-repositories <-
-    function(
-        version = BiocManager::version(),
-        binary_base_url = BINARY_BASE_URL)
-{
-    .Deprecated("BiocManager::repositories()")
-    stopifnot(
-        .is_scalar_character(version) || is.package_version(version),
-        .is_scalar_character(binary_base_url)
-    )
-
-    repositories <- BiocManager::repositories()
-    binary_repository <- repository(version, binary_base_url)
-    if (length(binary_repository))
-        repositories <- c(BiocBinaries = binary_repository, repositories)
-
-    repositories
-}
-
-#' @rdname install
+#' @title Deprecated AnVIL functionality
 #'
 #' @aliases print.repository_stats
 #'
 #' @description `repository_stats():` summarize binary packages
 #'     compatible with the Bioconductor or Terra container in use.
+#'
+#' @param version `character(1)` or `package_version` Bioconductor
+#'     version, e.g., "3.12".
+#'
+#' @param binary_base_url `character(1)` host and base path for binary
+#'     package 'CRAN-style' repository; not usually required by the
+#'     end-user.
 #'
 #' @return `repository_stats()` returns a list of class
 #'     `repository_stats` with the following fields:
@@ -216,12 +84,13 @@ repository_stats <-
         version = BiocManager::version(),
         binary_base_url = BINARY_BASE_URL)
 {
+    .Deprecated("BiocPkgTools::repositoryStats()", package = "AnVIL")
     platform_docker <- .repository_container_version()
     container <- platform_docker$platform
     bioc_repository <- suppressMessages({
         BiocManager::repositories()[["BioCsoft"]]
     })
-    binary_repository <- .repository(version, binary_base_url)
+    binary_repository <- BiocManager::containerRepository(version)
     db_bioc <- available.packages(repos = bioc_repository)
     if (length(binary_repository)) {
         db_binary <- available.packages(repos = binary_repository)
@@ -275,10 +144,12 @@ repository_stats <-
     paste(strwrap(msg, indent = 2L, exdent = 2L), collaspe = "\n")
 }
 
-#' @describeIn install Print a summary of package
+#' @describeIn AnVIL-deprecated Print a summary of package
 #'     availability in binary repositories.
 #'
 #' @param x the object returned by `repository_stats()`.
+#'
+#' @param ... additional arguments (not used).
 #'
 #' @export
 print.repository_stats <-
@@ -307,35 +178,4 @@ print.repository_stats <-
             .repository_stats_package_format(x$out_of_date_binaries),
         sep = ""
     )
-}
-
-#' @rdname install
-#'
-#' @description `add_libpaths()`: Add local library paths to
-#'     `.libPaths()`.
-#'
-#' @param paths `character()`: vector of directories to add to
-#'     `.libPaths()`. Paths that do not exist will be created.
-#'
-#' @return `add_libpaths()`: updated .libPaths(), invisibly.
-#'
-#' @examples
-#' \dontrun{add_libpaths("/tmp/host-site-library")}
-#'
-#' @export
-add_libpaths <-
-    function(paths)
-{
-    stopifnot(is.character(paths))
-
-    ## make sure all paths exist
-    exist <- vapply(paths, dir.exists, logical(1))
-    ok <- vapply(paths[!exist], dir.create, logical(1))
-    if (!all(ok))
-        stop(
-            "'add_libpaths()' failed to create directories:\n",
-            "  '", paste(paths[!exist][!ok], collapse="'\n  '"), "'"
-        )
-
-    .libPaths(c(paths, .libPaths()))
 }

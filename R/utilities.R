@@ -1,3 +1,36 @@
+#' @name utilities
+#'
+#' @title Utilities for managing library paths
+#'
+#' @description `add_libpaths()`: Add local library paths to
+#'     `.libPaths()`.
+#'
+#' @param paths `character()`: vector of directories to add to
+#'     `.libPaths()`. Paths that do not exist will be created.
+#'
+#' @return `add_libpaths()`: updated .libPaths(), invisibly.
+#'
+#' @examples
+#' \dontrun{add_libpaths("/tmp/host-site-library")}
+#'
+#' @export
+add_libpaths <-
+    function(paths)
+{
+    stopifnot(is.character(paths))
+
+    ## make sure all paths exist
+    exist <- vapply(paths, dir.exists, logical(1))
+    ok <- vapply(paths[!exist], dir.create, logical(1))
+    if (!all(ok))
+        stop(
+            "'add_libpaths()' failed to create directories:\n",
+            "  '", paste(paths[!exist][!ok], collapse="'\n  '"), "'"
+        )
+
+    .libPaths(c(paths, .libPaths()))
+}
+
 .is_character <-
     function(x, na.ok = FALSE, zchar = FALSE)
 {
