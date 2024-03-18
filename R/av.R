@@ -428,7 +428,11 @@ avtable_import_status <-
 #'     bucket) of the element.
 #'
 #' @examples
-#' if (gcloud_exists() && nzchar(avworkspace_name())) {
+#' library(AnVILBase)
+#' if (
+#'     gcloud_exists() && identical(avplatform_namespace(), "AnVILGCP") &&
+#'     nzchar(avworkspace_name())
+#' ) {
 #'     ## from within AnVIL
 #'     data <- avdata()
 #'     data
@@ -590,10 +594,13 @@ avdata_import <-
 #'     prefixed with `gs://` if `as_path = TRUE`.
 #'
 #' @examples
-#' if (gcloud_exists() && nzchar(avworkspace_name()))
+#' if (
+#'     gcloud_exists() && identical(avplatform_namespace(), "AnVILGCP") &&
+#'     nzchar(avworkspace_name())
+#' ) {
 #'     ## From within AnVIL...
-#'     bucket <- avbucket()                        # discover bucket
-#'
+#'     bucket <- avstorage()                        # discover bucket
+#' }
 #' \dontrun{
 #' path <- file.path(bucket, "mtcars.tab")
 #' gsutil_ls(dirname(path))                    # no 'mtcars.tab'...
@@ -679,7 +686,10 @@ avbucket <-
 #'     workspace bucket.
 #'
 #' @examples
-#' if (gcloud_exists() && nzchar(avworkspace_name()))
+#' if (
+#'     gcloud_exists() && identical(avplatform_namespace(), "AnVILGCP") &&
+#'     nzchar(avworkspace_name())
+#' )
 #'     avfiles_ls()
 #'
 #' @export

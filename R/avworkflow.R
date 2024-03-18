@@ -34,7 +34,10 @@ NULL
 #' @importFrom dplyr %>%
 #'
 #' @examples
-#' if (gcloud_exists() && nzchar(avworkspace_name()))
+#' if (
+#'     gcloud_exists() && identical(avplatform_namespace(), "AnVILGCP") &&
+#'     nzchar(avworkspace_name())
+#' )
 #'     ## from within AnVIL
 #'     avworkflows() %>% select(namespace, name)
 #'
@@ -91,7 +94,10 @@ avworkflows <-
 #' - failed integer() number of workflows failing.
 #'
 #' @examples
-#' if (gcloud_exists() && nzchar(avworkspace_name()))
+#' if (
+#'     gcloud_exists() && identical(avplatform_namespace(), "AnVILGCP") &&
+#'     nzchar(avworkspace_name())
+#' )
 #'     ## from within AnVIL
 #'     avworkflow_jobs()
 #'
@@ -367,7 +373,10 @@ avworkflow_jobs <-
 #' @importFrom rlang .env
 #'
 #' @examples
-#' if (gcloud_exists() && nzchar(avworkspace_name())) {
+#' if (
+#'     gcloud_exists() && identical(avplatform_namespace(), "AnVILGCP") &&
+#'     nzchar(avworkspace_name())
+#' ) {
 #'     ## e.g., from within AnVIL
 #'     avworkflow_jobs() |>
 #'     ## select most recent workflow
@@ -431,7 +440,7 @@ avworkflow_files <-
             "provided submissionId"
         ))
     } else if (!is.null(workflowId)) {
-      tbl <- 
+      tbl <-
         tbl |>
         filter(.data$workflowId == .env$workflowId)
     }
@@ -483,7 +492,10 @@ avworkflow_files <-
 #'     name and bucket path of files to be synchronized.
 #'
 #' @examples
-#' if (gcloud_exists() && nzchar(avworkspace_name())) {
+#' if (
+#'     gcloud_exists() && identical(avplatform_namespace(), "AnVILGCP") &&
+#'     nzchar(avworkspace_name())
+#' ) {
 #'     avworkflow_localize(dry = TRUE)
 #' }
 #'
@@ -762,7 +774,10 @@ avworkflow_stop <-
 #' @importFrom dplyr distinct select
 #'
 #' @examples
-#' if (gcloud_exists() && nzchar(avworkspace_name())) {
+#' if (
+#'     gcloud_exists() && identical(avplatform_namespace(), "AnVILGCP") &&
+#'     nzchar(avworkspace_name())
+#' ) {
 #'     avworkflow_info()
 #' }
 #'

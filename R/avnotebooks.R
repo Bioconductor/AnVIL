@@ -33,7 +33,10 @@
 #'     or on the local file system.
 #'
 #' @examples
-#' if (gcloud_exists() && nzchar(avworkspace_name()))
+#' if (
+#'     gcloud_exists() && identical(avplatform_namespace(), "AnVILGCP") &&
+#'     nzchar(avworkspace_name())
+#' )
 #'     avnotebooks()
 #'
 #' @export
@@ -71,7 +74,10 @@ avnotebooks <-
 #'     `gsutil_rsync()`.
 #'
 #' @examples
-#' if (gcloud_exists() && nzchar(avworkspace_name()))
+#' if (
+#'     gcloud_exists() && identical(avplatform_namespace(), "AnVILGCP") &&
+#'     nzchar(avworkspace_name())
+#' )
 #'     avnotebooks_localize()  # dry run
 #'
 #' @export
@@ -118,7 +124,10 @@ avnotebooks_localize <-
 #'     `gsutil_rsync()`.
 #'
 #' @examples
-#' if (gcloud_exists() && nzchar(avworkspace_name()))
+#' if (
+#'     gcloud_exists() && identical(avplatform_namespace(), "AnVILGCP") &&
+#'     nzchar(avworkspace_name())
+#' )
 #'     try(avnotebooks_delocalize())  # dry run, fails if no local resource
 #'
 #' @export

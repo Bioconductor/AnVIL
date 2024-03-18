@@ -74,13 +74,22 @@ the notebook location of the local file system to the workspace
 bucket.
 }
 \examples{
-if (gcloud_exists() && nzchar(avworkspace_name()))
+if (
+    gcloud_exists() && identical(avplatform_namespace(), "AnVILGCP") &&
+    nzchar(avworkspace_name())
+)
     avnotebooks()
 
-if (gcloud_exists() && nzchar(avworkspace_name()))
+if (
+    gcloud_exists() && identical(avplatform_namespace(), "AnVILGCP") &&
+    nzchar(avworkspace_name())
+)
     avnotebooks_localize()  # dry run
 
-if (gcloud_exists() && nzchar(avworkspace_name()))
+if (
+    gcloud_exists() && identical(avplatform_namespace(), "AnVILGCP") &&
+    nzchar(avworkspace_name())
+)
     try(avnotebooks_delocalize())  # dry run, fails if no local resource
 
 }
