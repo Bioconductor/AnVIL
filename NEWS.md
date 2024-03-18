@@ -1,3 +1,28 @@
+# AnVIL 1.16.0
+
+USER VISIBLE CHANGES
+
+- (v 1.15.8) Add `gcloud_storage()` and `gcloud_storage_buckets()` to
+  create and manage Google Cloud Storage buckets (@LiNk-NY, #72).
+
+- Gen3 services, `avworkflow*_configuration()` functions, `install()`,
+  `repository()`, and `repositories()` are defunct.
+
+- (v 1.15.5) Catch `avtable_import_status()` errors in the response object.
+
+- (v 1.15.1) Update vignette with examples for `avworkflow_info()` (@mtmorgan,
+  @yubocheng).
+  
+BUG FIXES
+
+- (v 1.15.7) Use `URLencode` for table in `avtable` and direct request to
+  Rawls endpoint (@LiNk-NY, #98)
+
+- (v 1.15.6) Update the Dockstore API reference URL and use
+  `api_referenc_url` instead of API file (@LiNk-NY).
+
+- Update namespace in vignette and examples (@kozo2, #54)
+
 # AnVIL 1.14.0
 
 NEW FEATURES
@@ -21,6 +46,11 @@ USER VISIBLE CHANGES
 
 - (v 1.13.8) Update documentation on updating workflow configurations.
   (@amstilp, #84)
+
+- (v 1.13.11) Added workflowId to `avworkflow_files()` and
+  `avworkflow_localize()` to allow for filtering by workflow
+  (@yubocheng, #90).
+
 
 # AnVIL 1.12.0
 
