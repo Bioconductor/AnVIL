@@ -67,6 +67,7 @@ NULL
 }
 
 #' @importFrom utils txtProgressBar setTxtProgressBar
+#' @importFrom dplyr bind_rows
 .avtable_pages <-
     function(FUN, ..., n, page, pageSize)
 {
@@ -162,7 +163,7 @@ NULL
 #' @return `avtable_paged()`: a tibble of data corresponding to the
 #'     AnVIL table `table` in the specified workspace.
 #'
-#' @importFrom dplyr across where
+#' @importFrom dplyr across where mutate
 #' @import AnVILBase
 #' @export
 avtable_paged <-
