@@ -33,6 +33,7 @@
 #'     or on the local file system.
 #'
 #' @examples
+#' library(AnVILBase)
 #' if (
 #'     gcloud_exists() && identical(avplatform_namespace(), "AnVILGCP") &&
 #'     nzchar(avworkspace_name())
@@ -74,6 +75,7 @@ avnotebooks <-
 #'     `gsutil_rsync()`.
 #'
 #' @examples
+#' library(AnVILBase)
 #' if (
 #'     gcloud_exists() && identical(avplatform_namespace(), "AnVILGCP") &&
 #'     nzchar(avworkspace_name())
@@ -124,6 +126,7 @@ avnotebooks_localize <-
 #'     `gsutil_rsync()`.
 #'
 #' @examples
+#' library(AnVILBase)
 #' if (
 #'     gcloud_exists() && identical(avplatform_namespace(), "AnVILGCP") &&
 #'     nzchar(avworkspace_name())

@@ -206,6 +206,7 @@ copy individual files from the bucket to the local drive.
 workflow job are candidates for localization.
 }
 \examples{
+library(AnVILBase)
 if (
     gcloud_exists() && identical(avplatform_namespace(), "AnVILGCP") &&
     nzchar(avworkspace_name())
@@ -213,6 +214,7 @@ if (
     ## from within AnVIL
     avworkflows() \%>\% select(namespace, name)
 
+library(AnVILBase)
 if (
     gcloud_exists() && identical(avplatform_namespace(), "AnVILGCP") &&
     nzchar(avworkspace_name())
@@ -225,12 +227,12 @@ if (
     avworkflow_files()
 }
 
+library(AnVILBase)
 if (
     gcloud_exists() && identical(avplatform_namespace(), "AnVILGCP") &&
     nzchar(avworkspace_name())
-) {
+)
     avworkflow_localize(dry = TRUE)
-}
 
 \dontrun{
 entityName <- avtable("participant_set") |>
@@ -243,11 +245,11 @@ avworkflow_run(new_config, entityName)
 avworkflow_stop()
 }
 
+library(AnVILBase)
 if (
     gcloud_exists() && identical(avplatform_namespace(), "AnVILGCP") &&
     nzchar(avworkspace_name())
-) {
+)
     avworkflow_info()
-}
 
 }

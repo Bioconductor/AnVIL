@@ -283,13 +283,14 @@ if (
 avdata_import(data)
 }
 
+library(AnVILBase)
 if (
     gcloud_exists() && identical(avplatform_namespace(), "AnVILGCP") &&
     nzchar(avworkspace_name())
-) {
+)
     ## From within AnVIL...
-    bucket <- avstorage()                        # discover bucket
-}
+    bucket <- avbucket()                        # discover bucket
+
 \dontrun{
 path <- file.path(bucket, "mtcars.tab")
 gsutil_ls(dirname(path))                    # no 'mtcars.tab'...
@@ -297,6 +298,7 @@ write.table(mtcars, gsutil_pipe(path, "w")) # write to bucket
 gsutil_stat(path)                           # yep, there!
 read.table(gsutil_pipe(path, "r"))          # read from bucket
 }
+library(AnVILBase)
 if (
     gcloud_exists() && identical(avplatform_namespace(), "AnVILGCP") &&
     nzchar(avworkspace_name())

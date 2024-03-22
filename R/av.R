@@ -595,13 +595,14 @@ avdata_import <-
 #'     prefixed with `gs://` if `as_path = TRUE`.
 #'
 #' @examples
+#' library(AnVILBase)
 #' if (
 #'     gcloud_exists() && identical(avplatform_namespace(), "AnVILGCP") &&
 #'     nzchar(avworkspace_name())
-#' ) {
+#' )
 #'     ## From within AnVIL...
-#'     bucket <- avstorage()                        # discover bucket
-#' }
+#'     bucket <- avbucket()                        # discover bucket
+#'
 #' \dontrun{
 #' path <- file.path(bucket, "mtcars.tab")
 #' gsutil_ls(dirname(path))                    # no 'mtcars.tab'...
@@ -687,6 +688,7 @@ avbucket <-
 #'     workspace bucket.
 #'
 #' @examples
+#' library(AnVILBase)
 #' if (
 #'     gcloud_exists() && identical(avplatform_namespace(), "AnVILGCP") &&
 #'     nzchar(avworkspace_name())

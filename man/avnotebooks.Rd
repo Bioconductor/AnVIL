@@ -74,18 +74,21 @@ the notebook location of the local file system to the workspace
 bucket.
 }
 \examples{
+library(AnVILBase)
 if (
     gcloud_exists() && identical(avplatform_namespace(), "AnVILGCP") &&
     nzchar(avworkspace_name())
 )
     avnotebooks()
 
+library(AnVILBase)
 if (
     gcloud_exists() && identical(avplatform_namespace(), "AnVILGCP") &&
     nzchar(avworkspace_name())
 )
     avnotebooks_localize()  # dry run
 
+library(AnVILBase)
 if (
     gcloud_exists() && identical(avplatform_namespace(), "AnVILGCP") &&
     nzchar(avworkspace_name())
