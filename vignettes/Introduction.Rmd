@@ -137,24 +137,9 @@ tab.
 
 # For end users
 
-## Fast binary package installation
+## Project-specific library
 
-The AnVIL cloud compute environment makes use of docker containers
-with defined installations of binary system software. It is thus
-possible to archive pre-built 'binary' _R_ packages, and to install
-these without requiring compilation. The AnVIL function `install()`
-arranges to install binary packages (when these are available) and
-current; it defaults to installing packages from source using standard
-`BiocManager::install()` facilities.
-
-```{r, eval = FALSE}
-AnVIL::install("GenomicFeatures")
-```
-
-Thus `AnVIL::install()` can be used as an improved method for
-installing _CRAN_ and _Bioconductor_ packages.
-
-Because package installation is fast, it can be convenient to install
+Because binary package installation is fast, it can be convenient to install
 packages into libraries on a project-specific basis, e.g., to create a
 'snapshot' of packages for reproducible analysis. Use
 
