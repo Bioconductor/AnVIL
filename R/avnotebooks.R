@@ -42,8 +42,8 @@ avnotebooks <-
              namespace = avworkspace_namespace(), name = avworkspace_name())
 {
     stopifnot(
-        .is_scalar_logical(local),
-        !local || (.is_scalar_character(namespace) && .is_scalar_character(name))
+        isScalarLogical(local),
+        !local || (isScalarCharacter(namespace) && isScalarCharacter(name))
     )
 
     if (local) {
@@ -84,10 +84,10 @@ avnotebooks_localize <-
     ## .avnotebooks_localize_runtime(source, name, runtime_name, dry)
 
     stopifnot(
-        missing(destination) || .is_scalar_character(destination),
-        .is_scalar_character(namespace),
-        .is_scalar_character(name),
-        .is_scalar_logical(dry)
+        missing(destination) || isScalarCharacter(destination),
+        isScalarCharacter(namespace),
+        isScalarCharacter(name),
+        isScalarLogical(dry)
     )
 
     source <- .avnotebooks_workspace_path(namespace, name)
@@ -128,10 +128,10 @@ avnotebooks_delocalize <-
              dry = TRUE)
 {
     stopifnot(
-        missing(source) || .is_scalar_character(source),
-        .is_scalar_character(namespace),
-        .is_scalar_character(name),
-        .is_scalar_logical(dry)
+        missing(source) || isScalarCharacter(source),
+        isScalarCharacter(namespace),
+        isScalarCharacter(name),
+        isScalarLogical(dry)
     )
 
     if (missing(source))

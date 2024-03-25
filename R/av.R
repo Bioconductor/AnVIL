@@ -69,8 +69,8 @@ avtables <-
     function(namespace = avworkspace_namespace(), name = avworkspace_name())
 {
     stopifnot(
-        .is_scalar_character(namespace),
-        .is_scalar_character(name)
+        isScalarCharacter(namespace),
+        isScalarCharacter(name)
     )
 
     types <- Terra()$getEntityTypes(namespace, URLencode(name))
@@ -97,7 +97,7 @@ avtables <-
 .avtable_na <-
     function(na)
 {
-    stopifnot(.is_character(na, zchar = TRUE))
+    stopifnot(isCharacter(na, zchar = TRUE))
     function(x) {
         ## flatten() has changed "" (no attribute in the entity set)to
         ## NA_character_; change to ""
@@ -157,9 +157,9 @@ avtable <-
         name = avworkspace_name(), na = c("", "NA"))
 {
     stopifnot(
-        .is_scalar_character(table),
-        .is_scalar_character(namespace),
-        .is_scalar_character(name)
+        isScalarCharacter(table),
+        isScalarCharacter(namespace),
+        isScalarCharacter(name)
        ## ,
        ##  `unknown table; use 'avtables()' for valid names` =
        ##      .is_avtable(table, namespace, name)
@@ -279,6 +279,8 @@ avtable <-
 #' @return `avtable_paged()`: a tibble of data corresponding to the
 #'     AnVIL table `table` in the specified workspace.
 #'
+#' @importFrom BiocBaseUtils isScalarNumber isScalarInteger
+#'
 #' @export
 avtable_paged <-
     function(table,
@@ -292,14 +294,14 @@ avtable_paged <-
     page <- as.integer(page)
     pageSize <- as.integer(pageSize)
     stopifnot(
-        .is_scalar_character(table),
-        .is_scalar_numeric(n, infinite.ok = TRUE),
-        .is_scalar_integer(page),
-        .is_scalar_integer(pageSize),
-        .is_scalar_character(sortField),
-        length(filterTerms) == 0L || .is_scalar_character(filterTerms),
-        .is_scalar_character(namespace),
-        .is_scalar_character(name)
+        isScalarCharacter(table),
+        isScalarNumber(n, infinite.ok = TRUE),
+        isScalarInteger(page),
+        isScalarInteger(pageSize),
+        isScalarCharacter(sortField),
+        length(filterTerms) == 0L || isScalarCharacter(filterTerms),
+        isScalarCharacter(namespace),
+        isScalarCharacter(name)
         ## ,
         ## `unknown table; use 'avtables()' for valid names` =
         ##     .is_avtable(table, namespace, name)
@@ -405,14 +407,14 @@ avtable_import <-
 {
     stopifnot(
         is.data.frame(.data),
-        .is_scalar_character(entity),
-        .is_scalar_character(namespace),
-        .is_scalar_character(name),
-        .is_scalar_logical(delete_empty_values),
-        .is_scalar_character(na, zchar = TRUE),
-        .is_scalar_numeric(n, infinite.ok = TRUE),
-        .is_scalar_integer(as.integer(page)),
-        is.null(pageSize) || .is_scalar_integer(as.integer(pageSize))
+        isScalarCharacter(entity),
+        isScalarCharacter(namespace),
+        isScalarCharacter(name),
+        isScalarLogical(delete_empty_values),
+        isScalarCharacter(na, zchar = TRUE),
+        isScalarNumber(n, infinite.ok = TRUE),
+        isScalarInteger(as.integer(page)),
+        is.null(pageSize) || isScalarInteger(as.integer(pageSize))
     )
 
     ## identify the 'entity' column
@@ -568,18 +570,18 @@ avtable_import_set <-
 {
     stopifnot(
         is.data.frame(.data),
-        .is_scalar_character(origin),
-        .is_scalar_character(set),
+        isScalarCharacter(origin),
+        isScalarCharacter(set),
         set %in% names(.data),
-        .is_scalar_character(member),
+        isScalarCharacter(member),
         !identical(set, member), member %in% names(.data),
-        .is_scalar_character(namespace),
-        .is_scalar_character(name),
-        .is_scalar_logical(delete_empty_values),
-        .is_scalar_character(na, zchar = TRUE),
-        .is_scalar_numeric(n, infinite.ok = TRUE),
-        .is_scalar_integer(as.integer(page)),
-        is.null(pageSize) || .is_scalar_integer(as.integer(pageSize))
+        isScalarCharacter(namespace),
+        isScalarCharacter(name),
+        isScalarLogical(delete_empty_values),
+        isScalarCharacter(na, zchar = TRUE),
+        isScalarNumber(n, infinite.ok = TRUE),
+        isScalarInteger(as.integer(page)),
+        is.null(pageSize) || isScalarInteger(as.integer(pageSize))
     )
     origin <- URLencode(origin)
 
@@ -611,10 +613,10 @@ avtable_import_status <-
     stopifnot(
         is.data.frame(job_status),
         c("job_id", "status") %in% colnames(job_status),
-        .is_character(job_status$job_id, na.ok = TRUE),
-        .is_character(job_status$status),
-        .is_scalar_character(namespace),
-        .is_scalar_character(name)
+        isCharacter(job_status$job_id, na.ok = TRUE),
+        isCharacter(job_status$status),
+        isScalarCharacter(namespace),
+        isScalarCharacter(name)
     )
 
     todo <- !job_status$status %in% c("Done", "Failed")
@@ -688,9 +690,9 @@ avtable_delete_values <-
         name = avworkspace_name())
 {
     stopifnot(
-        .is_scalar_character(table),
-        .is_scalar_character(namespace),
-        .is_scalar_character(name)
+        isScalarCharacter(table),
+        isScalarCharacter(namespace),
+        isScalarCharacter(name)
     )
 
     name <- URLencode(name)
@@ -743,8 +745,8 @@ avdata <-
     function(namespace = avworkspace_namespace(), name = avworkspace_name())
 {
     stopifnot(
-        .is_scalar_character(namespace),
-        .is_scalar_character(name)
+        isScalarCharacter(namespace),
+        isScalarCharacter(name)
     )
 
     name <- URLencode(name)
@@ -829,8 +831,8 @@ avdata_import <-
             is.character,
             logical(1)
         )),
-        .is_scalar_character(namespace),
-        .is_scalar_character(name)
+        isScalarCharacter(namespace),
+        isScalarCharacter(name)
     )
 
     .data <- filter(.data, .data$type == "other", table %in% "workspace")
@@ -910,9 +912,9 @@ avbucket <-
         as_path = TRUE)
 {
     stopifnot(
-        .is_scalar_character(namespace),
-        .is_scalar_character(name),
-        .is_scalar_logical(as_path)
+        isScalarCharacter(namespace),
+        isScalarCharacter(name),
+        isScalarLogical(as_path)
     )
 
     if (.avbucket_cache$exists(namespace, name)) {
@@ -994,9 +996,9 @@ avfiles_ls <-
         name = avworkspace_name())
 {
     stopifnot(
-        .is_scalar_character(path, zchar = TRUE),
-        .is_scalar_character(namespace),
-        .is_scalar_character(name)
+        isScalarCharacter(path, zchar = TRUE),
+        isScalarCharacter(namespace),
+        isScalarCharacter(name)
     )
 
     bucket <- avbucket(namespace, name)
@@ -1057,11 +1059,11 @@ avfiles_backup <-
 {
     stopifnot(
         `some 'source' paths do not exist` = all(file.exists(source)),
-        .is_scalar_character(destination, zchar = TRUE),
-        .is_scalar_logical(recursive),
-        .is_scalar_logical(parallel),
-        .is_scalar_character(namespace),
-        .is_scalar_character(name)
+        isScalarCharacter(destination, zchar = TRUE),
+        isScalarLogical(recursive),
+        isScalarLogical(parallel),
+        isScalarCharacter(namespace),
+        isScalarCharacter(name)
     )
 
     bucket <- avbucket(namespace, name)
@@ -1087,13 +1089,13 @@ avfiles_restore <-
     )
 {
     stopifnot(
-        .is_character(source),
-        .is_scalar_character(destination),
+        isCharacter(source),
+        isScalarCharacter(destination),
         `'destination' is not a directory` = dir.exists(destination),
-        .is_scalar_logical(recursive),
-        .is_scalar_logical(parallel),
-        .is_scalar_character(namespace),
-        .is_scalar_character(name)
+        isScalarLogical(recursive),
+        isScalarLogical(parallel),
+        isScalarCharacter(namespace),
+        isScalarCharacter(name)
     )
 
     bucket <- avbucket(namespace, name)
@@ -1117,11 +1119,11 @@ avfiles_rm <-
     )
 {
     stopifnot(
-        .is_character(source),
-        .is_scalar_logical(recursive),
-        .is_scalar_logical(parallel),
-        .is_scalar_character(namespace),
-        .is_scalar_character(name)
+        isCharacter(source),
+        isScalarLogical(recursive),
+        isScalarLogical(parallel),
+        isScalarCharacter(namespace),
+        isScalarCharacter(name)
     )
 
     bucket <- avbucket(namespace, name)
@@ -1224,8 +1226,8 @@ avruntime <-
     function(project = gcloud_project(), account = gcloud_account())
 {
     stopifnot(
-        .is_scalar_character(project),
-        .is_scalar_character(account)
+        isScalarCharacter(project),
+        isScalarCharacter(account)
     )
     rt <- avruntimes()
     rt %>%
@@ -1239,9 +1241,9 @@ avruntime <-
 {
     tool <- match.arg(tool)
     stopifnot(
-        .is_scalar_character(tool),
-        .is_scalar_character(creator),
-        .is_scalar_character(namespace)
+        isScalarCharacter(tool),
+        isScalarCharacter(creator),
+        isScalarCharacter(namespace)
     )
 
     runtimes <- avruntimes()
@@ -1254,7 +1256,7 @@ avruntime <-
         ) %>%
         pull(.data$clusterServiceAccount)
 
-    if (!.is_scalar_character(pet))
+    if (!isScalarCharacter(pet))
         warning("'.runtime_pet' return value is not scalar")
     pet
 }

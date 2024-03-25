@@ -107,6 +107,8 @@ setOldClass("request")
 #'
 #' @return An object of class \code{Service}.
 #'
+#' @importFrom BiocBaseUtils isScalarLogical isCharacter
+#'
 #' @examples
 #' .MyService <- setClass("MyService", contains = "Service")
 #'
@@ -124,15 +126,15 @@ Service <-
         api_reference_headers = NULL)
 {
     stopifnot(
-        .is_scalar_character(service),
-        .is_scalar_character(host),
-        .is_scalar_logical(authenticate),
-        length(api_url) == 0L || .is_scalar_character(api_url),
+        isScalarCharacter(service),
+        isScalarCharacter(host),
+        isScalarLogical(authenticate),
+        length(api_url) == 0L || isScalarCharacter(api_url),
         length(api_reference_url) == 0L ||
-            .is_scalar_character(api_reference_url),
+            isScalarCharacter(api_reference_url),
         length(api_reference_md5sum) == 0L ||
-            .is_scalar_character(api_reference_md5sum),
-        is.null(api_reference_headers) || .is_character(api_reference_headers)
+            isScalarCharacter(api_reference_md5sum),
+        is.null(api_reference_headers) || isCharacter(api_reference_headers)
     )
     flog.debug("Service(): %s", service)
 

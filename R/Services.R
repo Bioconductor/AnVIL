@@ -52,7 +52,7 @@ setMethod(
     function(x, ..., auto_unbox = FALSE, .deprecated = FALSE)
 {
     stopifnot(
-        .is_scalar_logical(auto_unbox)
+        isScalarLogical(auto_unbox)
     )
     operations <- .api_get_operations(.api(x), ...)
     deprecated <- .operation_field(operations, "deprecated")

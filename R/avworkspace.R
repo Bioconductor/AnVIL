@@ -188,11 +188,11 @@ avworkspace_clone <-
              bucket_location = "US")
 {
     stopifnot(
-        .is_scalar_character(namespace),
-        .is_scalar_character(name),
-        .is_scalar_character(to_namespace),
-        .is_scalar_character(to_name),
-        .is_scalar_character(bucket_location),
+        isScalarCharacter(namespace),
+        isScalarCharacter(name),
+        isScalarCharacter(to_namespace),
+        isScalarCharacter(to_name),
+        isScalarCharacter(bucket_location),
         `source and destination 'namespace/name' must be different` =
             !identical(namespace, to_namespace) || !identical(name, to_name)
     )

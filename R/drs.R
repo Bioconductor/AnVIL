@@ -21,7 +21,7 @@
 .drs_is_uri <-
     function(source)
 {
-    .is_character(source) & grepl("drs://[^/]+", source)
+    isCharacter(source) & grepl("drs://[^/]+", source)
 }
 
 #' @importFrom httr POST add_headers
@@ -300,7 +300,7 @@ drs_cp.drs_stat_tbl <-
             anyDuplicated(source$fileName) == 0L,
         `'destination' must be a google bucket or existing local directory` =
             .gsutil_is_uri(destination) || .is_local_directory(destination),
-        .is_scalar_logical(overwrite)
+        isScalarLogical(overwrite)
     )
     destination <- sub("/$", "", destination)
     tbl <- source

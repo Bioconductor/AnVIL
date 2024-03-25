@@ -77,8 +77,8 @@ print.gcloud_sdk_result <-
     function(command, args)
 {
     stopifnot(
-        .is_scalar_character(command),
-        .is_character(args, na.ok = FALSE)
+        isScalarCharacter(command),
+        isCharacter(args, na.ok = FALSE)
     )
     bin <- .gcloud_sdk_find_binary(command)
     stopifnot(file.exists(bin))

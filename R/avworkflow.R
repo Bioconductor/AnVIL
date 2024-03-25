@@ -26,6 +26,7 @@ NULL
 #' - methodRepoMethod.methodVersion: the version of the method, e.g.,
 #'   'main' branch of a github repository.
 #'
+#' @importFrom BiocBaseUtils isScalarCharacter
 #' @examples
 #' if (gcloud_exists() && nzchar(avworkspace_name()))
 #'     ## from within AnVIL
@@ -36,8 +37,8 @@ avworkflows <-
     function(namespace = avworkspace_namespace(), name = avworkspace_name())
 {
     stopifnot(
-        .is_scalar_character(namespace),
-        .is_scalar_character(name)
+        isScalarCharacter(namespace),
+        isScalarCharacter(name)
     )
     workflows <- Rawls()$list_method_configurations(
         namespace, URLencode(name), TRUE
@@ -95,8 +96,8 @@ avworkflow_jobs <-
     function(namespace = avworkspace_namespace(), name = avworkspace_name())
 {
     stopifnot(
-        .is_scalar_character(namespace),
-        .is_scalar_character(name)
+        isScalarCharacter(namespace),
+        isScalarCharacter(name)
     )
 
     response <- Terra()$listSubmissions(namespace, URLencode(name))
@@ -272,9 +273,9 @@ avworkflow_jobs <-
     function(submissionId, namespace, name)
 {
     stopifnot(
-        .is_scalar_character(submissionId),
-        .is_scalar_character(namespace),
-        .is_scalar_character(name)
+        isScalarCharacter(submissionId),
+        isScalarCharacter(namespace),
+        isScalarCharacter(name)
     )
 
     ## find the submission
@@ -386,14 +387,14 @@ avworkflow_files <-
         ), call. = FALSE)
     }
     stopifnot(
-        .is_scalar_character(namespace),
-        .is_scalar_character(name),
-        is.null(workflowId) || .is_scalar_character(workflowId)
+        isScalarCharacter(namespace),
+        isScalarCharacter(name),
+        isScalarCharacter_or_NULL(workflowId)
     )
 
     if (is_tibble(submissionId)) {
         stopifnot()
-    } else if (.is_character(submissionId)) {
+    } else if (isCharacter(submissionId)) {
         submissionId <- tibble(
             submissionId = submissionId,
             namespace = namespace,
@@ -475,6 +476,8 @@ avworkflow_files <-
 #'     localized. `avworkflow_localize()` returns a tibble of file
 #'     name and bucket path of files to be synchronized.
 #'
+#' @importFrom BiocBaseUtils isScalarLogical
+#'
 #' @examples
 #' if (gcloud_exists() && nzchar(avworkspace_name())) {
 #'     avworkflow_localize(dry = TRUE)
@@ -499,10 +502,10 @@ avworkflow_localize <-
             head(1)
 
     stopifnot(
-        .is_scalar_logical(dry),
-        is.null(workflowId) || .is_scalar_character(workflowId),
-        is.null(destination) || .is_scalar_character(destination),
-        .is_scalar_character(submissionId)
+        isScalarLogical(dry),
+        is.null(workflowId) || isScalarCharacter(workflowId),
+        is.null(destination) || isScalarCharacter(destination),
+        isScalarCharacter(submissionId)
     )
 
     if (is.null(destination))
@@ -609,14 +612,14 @@ avworkflow_run <-
 {
     stopifnot(
         inherits(config, "avworkflow_configuration"),
-        .is_scalar_character_or_NULL(entityName),
-        .is_scalar_character_or_NULL(entityType),
-        .is_scalar_logical(deleteIntermediateOutputFiles),
-        .is_scalar_logical(useCallCache),
-        .is_scalar_logical(useReferenceDisks),
-        .is_scalar_character(namespace),
-        .is_scalar_character(name),
-        .is_scalar_logical(dry)
+        isScalarCharacter_or_NULL(entityName),
+        isScalarCharacter_or_NULL(entityType),
+        isScalarLogical(deleteIntermediateOutputFiles),
+        isScalarLogical(useCallCache),
+        isScalarLogical(useReferenceDisks),
+        isScalarCharacter(namespace),
+        isScalarCharacter(name),
+        isScalarLogical(dry)
     )
 
     if (dry) {
@@ -675,10 +678,10 @@ avworkflow_stop <-
     }
 
     stopifnot(
-        .is_scalar_character(submissionId),
-        .is_scalar_character(namespace),
-        .is_scalar_character(name),
-        .is_scalar_logical(dry)
+        isScalarCharacter(submissionId),
+        isScalarCharacter(namespace),
+        isScalarCharacter(name),
+        isScalarLogical(dry)
     )
 
     if (dry) {
@@ -767,8 +770,8 @@ avworkflow_info <-
         name = avworkspace_name())
 {
     stopifnot(
-        .is_scalar_character(namespace),
-        .is_scalar_character(name)
+        isScalarCharacter(namespace),
+        isScalarCharacter(name)
     )
 
    if (is.null(submissionId)) {

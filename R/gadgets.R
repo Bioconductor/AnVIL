@@ -115,7 +115,7 @@
     function(title, tibble, DONE_FUN)
 {
     stopifnot(
-        .is_scalar_character(title),
+        isScalarCharacter(title),
         is.data.frame(tibble)
     )
     suppressMessages({
@@ -215,7 +215,7 @@ avworkspace_gadget <-
 browse_workspace <-
     function(use_avworkspace = TRUE)
 {
-    stopifnot(.is_scalar_logical(use_avworkspace))
+    stopifnot(isScalarLogical(use_avworkspace))
 
     workspace <- .workspace_get(use_avworkspace)
     url <- paste0("https://app.terra.bio/#workspaces/", workspace)

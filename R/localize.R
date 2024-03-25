@@ -26,8 +26,8 @@ localize <-
 {
     stopifnot(
         .gsutil_is_uri(source),
-        .is_scalar_character(destination), dir.exists(destination),
-        .is_scalar_logical(dry)
+        isScalarCharacter(destination), dir.exists(destination),
+        isScalarLogical(dry)
     )
     if (dry)
         warning("use 'dry = FALSE' to localize source / destination")
@@ -56,10 +56,10 @@ delocalize <-
     function(source, destination, unlink = FALSE, dry = TRUE)
 {
     stopifnot(
-        .is_scalar_character(source), file.exists(source),
+        isScalarCharacter(source), file.exists(source),
         .gsutil_is_uri(destination),
-        .is_scalar_logical(unlink),
-        .is_scalar_logical(dry)
+        isScalarLogical(unlink),
+        isScalarLogical(dry)
     )
     if (dry)
         warning("use 'dry = FALSE' to delocalize source / destination")

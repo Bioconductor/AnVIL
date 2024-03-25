@@ -76,7 +76,7 @@ avworkflow <-
     function(workflow = NULL)
 {
     stopifnot(
-        is.null(workflow) || .is_scalar_character(workflow)
+        isScalarCharacter_or_NULL(workflow)
     )
 
     if (!is.null(workflow)) {
@@ -143,10 +143,10 @@ avworkflow_configuration_get <-
              name = avworkspace_name())
 {
     stopifnot(
-        .is_scalar_character(workflow_name),
-        .is_scalar_character(workflow_namespace),
-        .is_scalar_character(namespace),
-        .is_scalar_character(name)
+        isScalarCharacter(workflow_name),
+        isScalarCharacter(workflow_namespace),
+        isScalarCharacter(namespace),
+        isScalarCharacter(name)
     )
 
     config <- Rawls()$get_method_configuration(
@@ -231,7 +231,7 @@ avworkflow_configuration_outputs <-
             "'"
         )
     idx <- !names(methodRepoMethod) %in% "methodVersion"
-    ok <- vapply(methodRepoMethod[idx], .is_scalar_character, logical(1))
+    ok <- vapply(methodRepoMethod[idx], isScalarCharacter, logical(1))
     if (!all(ok))
         stop(
             "'methodRepoMethod' values must be character(1); bad values: '",
@@ -241,8 +241,8 @@ avworkflow_configuration_outputs <-
     methodVersion <- methodRepoMethod$methodVersion
     stopifnot(
         `'methodRepoMethod$methodVersion' must be character(1) or integer(1)` =
-            .is_scalar_character(methodVersion) ||
-            .is_scalar_integer(as.integer(methodVersion))
+            isScalarCharacter(methodVersion) ||
+            isScalarInteger(as.integer(methodVersion))
     )
 
     ## all elements are unboxed
@@ -379,8 +379,8 @@ avworkflow_configuration_set <-
 {
     stopifnot(
         inherits(config, "avworkflow_configuration"),
-        .is_scalar_character(namespace),
-        .is_scalar_character(name)
+        isScalarCharacter(namespace),
+        isScalarCharacter(name)
     )
 
     rawls <- Rawls()

@@ -122,7 +122,7 @@ gcloud_exists <-
 #'
 #' @export
 gcloud_account <- function(account = NULL) {
-    stopifnot(is.null(account) || .is_scalar_character(account))
+    stopifnot(isScalarCharacter_or_NULL(account))
 
     if (!is.null(account))
         .gcloud_do("config", "set", "account", account)
@@ -143,7 +143,7 @@ gcloud_account <- function(account = NULL) {
 #' @export
 gcloud_project <- function(project = NULL) {
     stopifnot(
-        is.null(project) || .is_scalar_character(project)
+        isScalarCharacter_or_NULL(project)
     )
 
     if (!is.null(project))
@@ -212,10 +212,11 @@ gcloud_storage <- function(cmd, ...)
 #' @param bucket `character(1)` representing a unique bucket name to be created
 #'   or modified.
 #'
+#' @importFrom BiocBaseUtils isScalarCharacter
 #' @export
 gcloud_storage_buckets <- function(bucket_cmd = "create", bucket, ...) {
     stopifnot(
-        .is_scalar_character(bucket_cmd), .is_scalar_character(bucket)
+        isScalarCharacter(bucket_cmd), isScalarCharacter(bucket)
     )
     gcloud_storage("buckets", bucket_cmd, bucket, ...)
 }

@@ -31,48 +31,19 @@ add_libpaths <-
     .libPaths(c(paths, .libPaths()))
 }
 
-.is_character <-
-    function(x, na.ok = FALSE, zchar = FALSE)
-{
-    is.character(x) &&
-        (na.ok || all(!is.na(x))) &&
-        (zchar || all(nzchar(x)))
-}
-
-.is_scalar_character <- function(x, na.ok = FALSE, zchar = FALSE)
-    length(x) == 1L && .is_character(x, na.ok, zchar)
-
-.is_scalar_character_or_NULL <- function(x, na.ok = FALSE, zchar = FALSE)
-    .is_scalar_character(x, na.ok, zchar) || is.null(x)
-
-.is_character_0_or_1 <-
-    function(x, na.ok = FALSE, zchar = FALSE)
-{
-    (length(x) == 0L || length(x) == 1L) &&
-        .is_character(x, na.ok, zchar)
-}
-
-.is_scalar_logical <- function(x, na.ok = FALSE)
-    is.logical(x) && length(x) == 1L && (na.ok || !is.na(x))
-
-.is_scalar_integer <- function(x, na.ok = FALSE)
-    is.integer(x) && length(x) == 1L && (na.ok || !is.na(x))
-
-.is_scalar_numeric <- function(x, na.ok = FALSE, infinite.ok = FALSE)
-    is.numeric(x) && length(x) == 1L &&
-        (na.ok || !is.na(x)) &&
-        (infinite.ok || is.finite(x))
+isScalarCharacter_or_NULL <- function(x, na.ok = FALSE, zchar = FALSE)
+    isScalarCharacter(x, na.ok, zchar) || is.null(x)
 
 .is_local_directory <- function(x)
-    .is_scalar_character(x) && dir.exists(x)
+    isScalarCharacter(x) && dir.exists(x)
 
 .is_https <- function(x)
-    .is_character(x) & startsWith(x, "https://")
+    isCharacter(x) & startsWith(x, "https://")
 
 .is_workspace <-
     function(x)
 {
-    .is_scalar_character(x) &&
+    isScalarCharacter(x) &&
         ## exactly 1 `/`
         identical(lengths(regmatches(x, gregexpr("/", x, fixed = TRUE))), 1L)
 }

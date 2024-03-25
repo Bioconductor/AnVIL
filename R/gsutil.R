@@ -35,7 +35,7 @@ NULL
 .gsutil_is_uri <-
     function(source)
 {
-    .is_character(source) & grepl("gs://[^/]+", source)
+    isCharacter(source) & grepl("gs://[^/]+", source)
 }
 
 .gsutil_sh_quote <-
@@ -124,7 +124,7 @@ gsutil_ls <-
 {
     stopifnot(
         .gsutil_is_uri(source),
-        .is_scalar_logical(recursive)
+        isScalarLogical(recursive)
     )
 
     args <- c(
@@ -262,9 +262,9 @@ gsutil_cp <-
     location <- c(source, destination)
     location_is_uri <- .gsutil_is_uri(location)
     stopifnot(
-        .is_character(source), .is_scalar_character(destination),
+        isCharacter(source), isScalarCharacter(destination),
         any(location_is_uri),
-        .is_scalar_logical(recursive), .is_scalar_logical(parallel)
+        isScalarLogical(recursive), isScalarLogical(parallel)
     )
 
     args <- c(
@@ -296,9 +296,9 @@ gsutil_rm <-
 {
     stopifnot(
         .gsutil_is_uri(source),
-        .is_scalar_logical(force),
-        .is_scalar_logical(recursive),
-        .is_scalar_logical(parallel)
+        isScalarLogical(force),
+        isScalarLogical(recursive),
+        isScalarLogical(parallel)
     )
 
     ## remove
@@ -359,13 +359,13 @@ gsutil_rsync <-
         delete = FALSE, recursive = FALSE, parallel = TRUE)
 {
     stopifnot(
-        .is_scalar_character(source), .is_scalar_character(destination),
+        isScalarCharacter(source), isScalarCharacter(destination),
         .gsutil_is_uri(source) || .gsutil_is_uri(destination),
-        is.null(exclude) || .is_scalar_character(exclude),
-        .is_scalar_logical(dry),
-        .is_scalar_logical(delete),
-        .is_scalar_logical(recursive),
-        .is_scalar_logical(parallel)
+        isScalarCharacter_or_NULL(exclude),
+        isScalarLogical(dry),
+        isScalarLogical(delete),
+        isScalarLogical(recursive),
+        isScalarLogical(parallel)
     )
     ## if destination is not a google cloud repo, and does not exist
     if (!dry && !.gsutil_is_uri(destination) && !dir.exists(destination))
@@ -408,8 +408,8 @@ gsutil_cat <-
     function(source, ..., header = FALSE, range = integer())
 {
     stopifnot(
-        .is_scalar_character(source),
-        .is_scalar_logical(header),
+        isScalarCharacter(source),
+        isScalarLogical(header),
         is.numeric(range),
         all(range[!is.na(range)] >= 0),
         all(diff(range[!is.na(range)]) > 0L),
@@ -443,6 +443,8 @@ gsutil_cat <-
 #'
 #' @return `gsutil_help()`: `character()` help text for subcommand `cmd`.
 #'
+#' @importFrom BiocBaseUtils isZeroOneCharacter
+#'
 #' @examples
 #' if (gcloud_exists())
 #'     gsutil_help("ls")
@@ -451,7 +453,7 @@ gsutil_cat <-
 gsutil_help <-
     function(cmd = character(0))
 {
-    stopifnot(.is_character_0_or_1(cmd))
+    stopifnot(isZeroOneCharacter(cmd))
     result <- .gsutil_do(c("help", cmd))
     .gcloud_sdk_result(result)
 }
@@ -486,8 +488,8 @@ gsutil_pipe <-
     function(source, open = "r", ...)
 {
     stopifnot(
-        .is_scalar_character(source),
-        .is_scalar_character(open)
+        isScalarCharacter(source),
+        isScalarCharacter(open)
     )
 
     is_read <- identical(substr(open, 1, 1), "r")

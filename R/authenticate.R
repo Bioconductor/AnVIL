@@ -22,7 +22,7 @@ authenticate <-
     function(service, cache = getOption("httr_oauth_cache"))
 {
     interactive() || return(invisible(NULL))
-    stopifnot(.is_scalar_character(service))
+    stopifnot(isScalarCharacter(service))
 
     access <- list(
         client_id = getOption("anvil_client_id"),
