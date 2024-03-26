@@ -8,6 +8,7 @@
 )
 
 .api_header <- function(x) x@api_header
+.DOCKSTORE_API_REFERENCE_VERSION <- "1.15.0-SNAPSHOT"
 
 ## construct a singleton instance for this service
 
@@ -39,7 +40,7 @@ Dockstore <-
             "dockstore",
             host="dockstore.org",
             config = httr::config(ssl_verifypeer = 0L, ssl_verifyhost = 0L),
-            api_reference_version = "1.15.0-SNAPSHOT",
+            api_reference_version = .DOCKSTORE_API_REFERENCE_VERSION,
             authenticate = FALSE,
             api_reference_url = "https://dockstore.org/api/openapi.yaml",
         ),

@@ -20,6 +20,7 @@ setOldClass("request")
 
 .config <- function(x) x@config
 
+#' @importFrom httr write_disk
 .service_get_api_file <- function(reference_url, reference_headers) {
     fl <- tempfile()
     response <- GET(
@@ -27,7 +28,7 @@ setOldClass("request")
         add_headers(.headers = reference_headers),
         write_disk(fl)
     )
-    .avstop_for_status(response, ".service_validate_md5sum")
+    .avstop_for_status(response, ".service_get_api_file")
     fl
 }
 
@@ -35,7 +36,6 @@ setOldClass("request")
 
 #' @importFrom tools md5sum
 #' @importFrom utils download.file
-#' @importFrom httr write_disk
 .service_validate_md5sum <-
     function(reference_url, reference_md5sum, reference_headers, api_file)
 {
@@ -45,14 +45,7 @@ setOldClass("request")
     if (length(reference_md5sum) == 0L)
         return()
 
-    fl <- tempfile()
-    response <- GET(
-        reference_url,
-        add_headers(.headers = reference_headers),
-        write_disk(fl)
-    )
-    .avstop_for_status(response, ".service_validate_md5sum")
-    md5sum <- md5sum(fl)
+    md5sum <- md5sum(api_file)
     test <-
         identical(unname(md5sum), reference_md5sum) ||
         exists(reference_url, envir = .service_validate_md5sum_warn)
@@ -64,6 +57,7 @@ setOldClass("request")
             "\n    observed md5sum: ", md5sum,
             "\n    expected md5sum: ", reference_md5sum
         )
+    test
 }
 
 .service_validate_version <-
@@ -89,6 +83,7 @@ setOldClass("request")
             "\n    observed version: ", version,
             "\n    expected version: ", reference_version
         )
+    test
 }
 
 #' @rdname Service
@@ -121,6 +116,11 @@ setOldClass("request")
 #'
 #' @param api_reference_md5sum character(1) the result of
 #'     `tools::md5sum()` applied to the reference API.
+#'
+#' @param api_reference_version character(1) the version of the
+#'    reference API. This is used to check that the version of the
+#'    service matches the version of the reference API. It is usally
+#'    set by the service generation function,. e.g., `AnVIL::Rawls()`.
 #'
 #' @param api_reference_headers character() header(s) to be used
 #'     (e.g., `c(Authorization = paste("Bearer", token))`) when
