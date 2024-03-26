@@ -36,7 +36,7 @@ Imports:
     stats, utils, methods,
     futile.logger,
     jsonlite, httr,
-    rapiclient (>= 0.1.3),
+    rapiclient (>= 0.1.3), yaml,
     tibble, tidyselect, tidyr, rlang,
     shiny, DT, miniUI, htmltools,
     BiocManager, BiocBaseUtils

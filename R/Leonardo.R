@@ -5,6 +5,8 @@
     slots = c(api_header = "character")
 )
 
+.LEONARDO_API_REFERENCE_VERSION <- "1.3.6"
+
 ## construct a singleton instance for this service
 
 #' @rdname Services
@@ -36,6 +38,7 @@ Leonardo <-
             host = "notebooks.firecloud.org",
             config = httr::config(ssl_verifypeer = 0L, ssl_verifyhost = 0L),
             authenticate = FALSE,
+            api_reference_version = .LEONARDO_API_REFERENCE_VERSION,
             api_reference_url = "https://notebooks.firecloud.org/api-docs.yaml",
         ),
         api_header = api_header

@@ -14,6 +14,7 @@ Service(
   schemes = "https",
   api_reference_url = api_url,
   api_reference_md5sum = character(),
+  api_reference_version = character(),
   api_reference_headers = NULL
 )
 }
@@ -42,6 +43,11 @@ Details.}
 
 \item{api_reference_md5sum}{character(1) the result of
 \code{tools::md5sum()} applied to the reference API.}
+
+\item{api_reference_version}{character(1) the version of the
+reference API. This is used to check that the version of the
+service matches the version of the reference API. It is usally
+set by the service generation function,. e.g., \code{AnVIL::Rawls()}.}
 
 \item{api_reference_headers}{character() header(s) to be used
 (e.g., \code{c(Authorization = paste("Bearer", token))}) when

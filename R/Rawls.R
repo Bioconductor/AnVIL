@@ -5,6 +5,8 @@
     slots = c(api_header = "character")
 )
 
+.RAWLS_API_REFERENCE_VERSION <- "1.0.0"
+
 ## construct a singleton instance for this service
 
 #' @rdname Services
@@ -33,7 +35,9 @@ Rawls <-
             "rawls",
             host = "rawls.dsde-prod.broadinstitute.org",
             authenticate = FALSE,
-            api_reference_url = "https://rawls.dsde-prod.broadinstitute.org/api-docs.yaml"
+            api_reference_version = .RAWLS_API_REFERENCE_VERSION,
+            api_reference_url =
+                "https://rawls.dsde-prod.broadinstitute.org/api-docs.yaml"
         ),
         api_header = api_header
     )
