@@ -60,6 +60,11 @@ setOldClass("request")
     test
 }
 
+.service_read_version <- function(file) {
+    yaml_file <- yaml::read_yaml(file)
+    yaml_file[["info"]][["version"]]
+}
+
 .service_validate_version <-
     function(reference_url, reference_version, reference_headers, api_file)
 {
@@ -69,8 +74,7 @@ setOldClass("request")
     if (!length(reference_version))
         return()
 
-    yaml_file <- yaml::read_yaml(api_file)
-    version <- yaml_file[["info"]][["version"]]
+    version <- .service_read_version(api_file)
 
     if (!length(version))
         return()
