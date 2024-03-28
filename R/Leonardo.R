@@ -13,9 +13,9 @@
 #'
 #' @aliases Leonardo-class operations,Leonardo-method
 #'
-#' @return `Leonardo()` creates the API of the Leonard container
+#' @return `Leonardo()` creates the API of the Leonardo container
 #'     deployment service at
-#'     https://notebooks.firecloud.org/api-docs.yaml.
+#'     https://leonardo.dsde-prod.broadinstitute.org/api-docs.yaml.
 #'
 #' @format NULL
 #'
@@ -30,16 +30,17 @@ Leonardo <-
     access_token <- .gcloud_access_token("leonardo")
     api_header <- c(
         Authorization = paste("Bearer", access_token),
-        Referer = "https://notebooks.firecloud.org"
+        Referer = "https://leonardo.dsde-prod.broadinstitute.org"
     )
     .Leonardo(
         Service(
             "leonardo",
-            host = "notebooks.firecloud.org",
+            host = "leonardo.dsde-prod.broadinstitute.org",
             config = httr::config(ssl_verifypeer = 0L, ssl_verifyhost = 0L),
             authenticate = FALSE,
             api_reference_version = .LEONARDO_API_REFERENCE_VERSION,
-            api_reference_url = "https://notebooks.firecloud.org/api-docs.yaml",
+            api_reference_url =
+                "https://leonardo.dsde-prod.broadinstitute.org/api-docs.yaml",
         ),
         api_header = api_header
     )

@@ -75,9 +75,9 @@ scalers.}
 arguments in function calls expecting the empty json object
 \verb{\\\{\\\}}.
 
-\code{Leonardo()} creates the API of the Leonard container
+\code{Leonardo()} creates the API of the Leonardo container
 deployment service at
-https://notebooks.firecloud.org/api-docs.yaml.
+https://leonardo.dsde-prod.broadinstitute.org/api-docs.yaml.
 
 \code{Terra()} creates the API of the Terra cloud computational
 environemnt at https://api.firecloud.org/.

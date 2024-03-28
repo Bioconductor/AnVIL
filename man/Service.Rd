@@ -22,7 +22,7 @@ Service(
 \item{service}{character(1) The \code{Service} class name, e.g., \code{"terra"}.}
 
 \item{host}{character(1) host name that provides the API resource,
-e.g., \code{"api.firecloud.org"}.}
+e.g., \code{"leonardo.dsde-prod.broadinstitute.org"}.}
 
 \item{config}{httr::config() curl options}
 
@@ -61,10 +61,10 @@ RESTful service constructor
 }
 \details{
 This function creates a RESTful interface to a service
-provided by a host, e.g., "api.firecloud.org". The function
-requires an OpenAPI \code{.json} or \code{.yaml} specifcation as well as
-an (optional) \code{.json} authentication token. These files are
-located in the source directory of a pacakge, at
+provided by a host, e.g., "leonardo.dsde-prod.broadinstitute.org".
+The function requires an OpenAPI \code{.json} or \code{.yaml} specifcation
+as well as an (optional) \code{.json} authentication token. These files
+are located in the source directory of a pacakge, at
 \verb{<package>/inst/service/<service>/api.json} and
 \verb{<package>/inst/service/<service>/auth.json}, or at \code{api_url}.
 

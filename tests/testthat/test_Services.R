@@ -63,8 +63,6 @@ test_that("Leonardo API reference version is constant", {
 })
 
 test_that("Terra API reference version is constant", {
-    # api_reference_url <-
-    #     "https://leonardo.dsde-prod.broadinstitute.org/api-docs.yaml"
     api_reference_url <- "https://api.firecloud.org/api-docs.yaml"
     # .service_read_version(api_reference_url)
     api_reference_headers <- NULL

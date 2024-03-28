@@ -99,7 +99,7 @@ setOldClass("request")
 #' @param service character(1) The `Service` class name, e.g., `"terra"`.
 #'
 #' @param host character(1) host name that provides the API resource,
-#'     e.g., `"api.firecloud.org"`.
+#'     e.g., `"leonardo.dsde-prod.broadinstitute.org"`.
 #'
 #' @param config httr::config() curl options
 #'
@@ -131,10 +131,10 @@ setOldClass("request")
 #'     retrieving the API reference for validation.
 #'
 #' @details This function creates a RESTful interface to a service
-#'     provided by a host, e.g., "api.firecloud.org". The function
-#'     requires an OpenAPI `.json` or `.yaml` specifcation as well as
-#'     an (optional) `.json` authentication token. These files are
-#'     located in the source directory of a pacakge, at
+#'     provided by a host, e.g., "leonardo.dsde-prod.broadinstitute.org".
+#'     The function requires an OpenAPI `.json` or `.yaml` specifcation
+#'     as well as an (optional) `.json` authentication token. These files
+#'     are located in the source directory of a pacakge, at
 #'     `<package>/inst/service/<service>/api.json` and
 #'     `<package>/inst/service/<service>/auth.json`, or at `api_url`.
 #'
