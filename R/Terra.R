@@ -5,7 +5,7 @@
     slots = c(api_header = "character")
 )
 
-.TERRA_API_REFERENCE_VERSION <- "1.0.0"
+.TERRA_API_REFERENCE_VERSION <- "0.1"
 
 ## construct a singleton instance for this service
 
