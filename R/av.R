@@ -1,6 +1,4 @@
-#' @rdname av
-#'
-#' @name av
+#' @name av-deprecated
 #'
 #' @title TABLE, DATA, files, bucket, runtime, and disk elements
 NULL
@@ -93,7 +91,7 @@ NULL
     )
 }
 
-#' @rdname av
+#' @rdname av-deprecated
 #'
 #' @param table character(1) table name as returned by, e.g., `avtables()`.
 #'
@@ -157,6 +155,10 @@ avtable_paged <-
         ## ,
         ## `unknown table; use 'avtables()' for valid names` =
         ##     .is_avtable(table, namespace, name)
+    )
+    .life_cycle(
+        newpackage = "AnVILGCP",
+        title = "av"
     )
     sortDirection <- match.arg(sortDirection)
     filterOperator <- match.arg(filterOperator)
@@ -307,7 +309,7 @@ avtable_paged <-
     content(response)$jobId
 }
 
-#' @rdname av
+#' @rdname av-deprecated
 #'
 #' @description `avtable_import_status()` queries for the status of an
 #'     'asynchronous' table import.
@@ -329,6 +331,10 @@ avtable_import_status <-
         isScalarCharacter(name)
     )
 
+    .life_cycle(
+        newpackage = "AnVILGCP",
+        title = "av"
+    )
     todo <- !job_status$status %in% c("Done", "Failed")
     job_ids <- job_status$job_id[todo]
     n_jobs <- length(job_ids)
@@ -381,7 +387,7 @@ avtable_import_status <-
     job_status
 }
 
-#' @rdname av
+#' @rdname av-deprecated
 #'
 #' @description `avdata()` returns key-value tables representing the
 #'     information visualized under the DATA tab, 'REFERENCE DATA' and
@@ -475,7 +481,7 @@ avdata <-
     bind_rows(otherData_tbl, referenceData_tbl)
 }
 
-#' @rdname av
+#' @rdname av-deprecated
 #'
 #' @param .data A tibble or data.frame for import as an AnVIL table.
 #'
@@ -554,7 +560,7 @@ avdata_import <-
     })
 })
 
-#' @rdname av
+#' @rdname av-deprecated
 #'
 #' @description `avbucket()` returns the workspace bucket, i.e., the
 #'     google bucket associated with a workspace. Bucket content can
@@ -588,6 +594,12 @@ avbucket <-
         isScalarCharacter(namespace),
         isScalarCharacter(name),
         isScalarLogical(as_path)
+    )
+
+    .life_cycle(
+        newfun = "avstorage",
+        newpackage = "AnVILGCP",
+        title = "av"
     )
 
     if (.avbucket_cache$exists(namespace, name)) {
@@ -628,7 +640,7 @@ avbucket <-
     paste0(bucket, ifelse(length(args), "/", ""), args)
 }
 
-#' @rdname av
+#' @rdname av-deprecated
 #'
 #' @description `avfiles_ls()` returns the paths of files in the
 #'     workspace bucket.  `avfiles_backup()` copies files from the
@@ -677,6 +689,11 @@ avfiles_ls <-
         isScalarCharacter(name)
     )
 
+    .life_cycle(
+        newpackage = "AnVILGCP",
+        title = "av"
+    )
+
     bucket <- avbucket(namespace, name)
     source <- .avbucket_path(bucket, path)
     result <- gsutil_ls(source, recursive = recursive)
@@ -687,7 +704,7 @@ avfiles_ls <-
     }
 }
 
-#' @rdname av
+#' @rdname av-deprecated
 #'
 #' @details `avfiles_backup()` can be used to back-up individual files
 #'     or entire directories, recursively.  When `recursive = FALSE`,
@@ -742,12 +759,17 @@ avfiles_backup <-
         isScalarCharacter(name)
     )
 
+    .life_cycle(
+        newpackage = "AnVILGCP",
+        title = "av"
+    )
+
     bucket <- avbucket(namespace, name)
     destination <- .avbucket_path(bucket, destination)
     gsutil_cp(source, destination, recursive = recursive, parallel = parallel)
 }
 
-#' @rdname av
+#' @rdname av-deprecated
 #'
 #' @details `avfiles_restore()` behaves in a manner analogous to
 #'     `avfiles_backup()`, copying files from the workspace bucket to
@@ -774,12 +796,17 @@ avfiles_restore <-
         isScalarCharacter(name)
     )
 
+    .life_cycle(
+        newpackage = "AnVILGCP",
+        title = "av"
+    )
+
     bucket <- avbucket(namespace, name)
     source <- .avbucket_path(bucket, source)
     gsutil_cp(source, destination, recursive = recursive, parallel = parallel)
 }
 
-#' @rdname av
+#' @rdname av-deprecated
 #'
 #' @return `avfiles_rm()` on success, returns a list of the return
 #'     codes of `gsutil_rm()`, invisibly.
@@ -802,6 +829,11 @@ avfiles_rm <-
         isScalarCharacter(name)
     )
 
+    .life_cycle(
+        newpackage = "AnVILGCP",
+        title = "av"
+    )
+
     bucket <- avbucket(namespace, name)
     source <- .avbucket_path(bucket, source)
     result <- lapply(
@@ -814,7 +846,7 @@ avfiles_rm <-
 ## runtimes / persistent disks
 ##
 
-#' @rdname av
+#' @rdname av-deprecated
 #'
 #' @description `avruntimes()` returns a tibble containing information
 #'     about runtimes (notebooks or RStudio instances, for example)
@@ -870,6 +902,11 @@ avruntimes <-
         runtimeConfig.persistentDiskId = integer(0)
     )
 
+    .life_cycle(
+        newpackage = "AnVILGCP",
+        title = "av"
+    )
+
     leo <- Leonardo()
     response <- leo$listRuntimes()
     avstop_for_status(response, "avruntimes")
@@ -879,7 +916,7 @@ avruntimes <-
         rename_with(~ sub(".*\\.", "", .x))
 }
 
-#' @rdname av
+#' @rdname av-deprecated
 #'
 #' @description `avruntime()` returns a tibble with the runtimes
 #'     associated with a particular google project and account number;
@@ -905,6 +942,12 @@ avruntime <-
         isScalarCharacter(project),
         isScalarCharacter(account)
     )
+
+    .life_cycle(
+        newpackage = "AnVILGCP",
+        title = "av"
+    )
+
     rt <- avruntimes()
     rt %>%
         filter(.data$googleProject == project, .data$creator == account)
@@ -937,7 +980,7 @@ avruntime <-
     pet
 }
 
-#' @name av
+#' @rdname av-deprecated
 #'
 #' @description 'avdisks()` returns a tibble containing information
 #'     about persistent disks associatd with the current user.
@@ -979,6 +1022,11 @@ avdisks <-
         auditInfo.dateAccessed = character(0),
         name = character(0),
         zone = character(0)
+    )
+
+    .life_cycle(
+        newpackage = "AnVILGCP",
+        title = "av"
     )
 
     leo <- Leonardo()

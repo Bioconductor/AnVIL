@@ -130,7 +130,7 @@ avworkflow <-
 #' @description `avworkflow_configuration_get()` returns a list structure
 #'     describing an existing workflow configuration.
 #'
-#' @inheritParams av
+#' @inheritParams av-deprecated
 #'
 #' @return `avworkflow_configuration_get()` returns a list structure
 #'     describing the configuration. See

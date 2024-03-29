@@ -31,6 +31,51 @@ add_libpaths <-
     .libPaths(c(paths, .libPaths()))
 }
 
+#' @name life_cycle
+#'
+#' @title Internal helpers
+#'
+#' @description These functions are not intended to be called directly by users.
+#'   They are used internally by the package.
+#'
+#' @param newfun The name of the function to use instead. It can be a specific
+#'   function within another package (e.g., `AnVIL::avstorage`) or a function in
+#'   the current package (e.g., `avstorage`).
+#'
+#' @param newpackage If a function is moved to a new package, the name of the
+#'   new package can be specified here. This is equivalent to specifying
+#'   `newfun = paste0(newpackage, "::", newfun)`.
+#'
+#' @param package The name of the package where the deprecated function resides.
+#'
+#' @param cycle The life cycle stage of the function. This can be either
+#'   `"deprecated"` or `"defunct"`.
+#'
+#' @param title The Rd name prefix of the documentation page where the
+#'   deprecation is documented (e.g., "av" for "av-deprecated").
+#'
+#' @keywords internal
+.life_cycle <- function(
+    newfun = oldfun, newpackage, package = "AnVIL",
+    cycle = c("deprecated", "defunct"), title = package
+) {
+    removal <- missing(newfun) && missing(newpackage)
+    oldfun <- as.character(sys.call(sys.parent())[1L])
+    cycle <- match.arg(cycle)
+
+    if (!missing(newpackage))
+        newfun <- paste0(newpackage, "::", newfun)
+
+    msg <- c(
+        gettextf("'%s' is %s.\n", oldfun, cycle),
+        if (!removal) gettextf("Use '%s' instead.\n", newfun),
+        gettextf("See help('%s').",  paste0(title, "-", cycle))
+    )
+    cycle_fun <- switch(cycle, deprecated = .Deprecated, defunct = .Defunct)
+    arglist <- list(new = newfun, msg = msg, package = package)
+    do.call(cycle_fun, arglist)
+}
+
 isScalarCharacter_or_NULL <- function(x, na.ok = FALSE, zchar = FALSE)
     isScalarCharacter(x, na.ok, zchar) || is.null(x)
 
