@@ -21,6 +21,7 @@ setOldClass("request")
 .config <- function(x) x@config
 
 #' @importFrom httr write_disk
+#' @importFrom AnVILBase avstop_for_status
 .service_get_api_file <- function(reference_url, reference_headers) {
     fl <- tempfile()
     response <- GET(
@@ -28,7 +29,7 @@ setOldClass("request")
         add_headers(.headers = reference_headers),
         write_disk(fl)
     )
-    .avstop_for_status(response, ".service_get_api_file")
+    avstop_for_status(response, ".service_get_api_file")
     fl
 }
 
@@ -36,7 +37,6 @@ setOldClass("request")
 
 #' @importFrom tools md5sum
 #' @importFrom utils download.file
-#' @importFrom AnVILBase avstop_for_status
 .service_validate_md5sum <-
     function(reference_url, reference_md5sum, reference_headers, api_file)
 {

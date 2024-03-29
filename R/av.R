@@ -1,6 +1,6 @@
 #' @name av-deprecated
 #'
-#' @title TABLE, DATA, files, bucket, runtime, and disk elements
+#' @title TABLE, DATA, files, bucket, runtime, and disk elements (DEPRECATED)
 NULL
 
 ##

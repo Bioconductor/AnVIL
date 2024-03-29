@@ -14,7 +14,7 @@
 \alias{avruntimes}
 \alias{avruntime}
 \alias{avdisks}
-\title{TABLE, DATA, files, bucket, runtime, and disk elements}
+\title{TABLE, DATA, files, bucket, runtime, and disk elements (DEPRECATED)}
 \usage{
 avtable_paged(
   table,

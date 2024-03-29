@@ -1,6 +1,6 @@
-#' @rdname gsutil
+#' @name gsutil-deprecated
 #'
-#' @name gsutil
+#' @aliases gsutil
 #'
 #' @title gsutil command line utility interface
 #'
@@ -50,7 +50,7 @@ NULL
     shQuote(source)
 }
 
-#' @rdname gsutil
+#' @rdname gsutil-deprecated
 #'
 #' @description `gsutil_requesterpays()`: does the google bucket
 #'     require that the requester pay for access?
@@ -67,6 +67,9 @@ gsutil_requesterpays <-
     function(source)
 {
     stopifnot(all(.gsutil_is_uri(source)))
+    .life_cycle(
+        newpackage = "AnVILGCP", title = "gsutil"
+    )
     project <- gcloud_project()
     buckets <- regmatches(source, regexpr("^gs://[^/]+", source))
     is_enabled <- FALSE
@@ -100,7 +103,7 @@ gsutil_requesterpays <-
     })
 }
 
-#' @rdname gsutil
+#' @rdname gsutil-deprecated
 #'
 #' @description `gsutil_ls()`: List contents of a google cloud bucket
 #'     or, if `source` is missing, all Cloud Storage buckets under
@@ -126,7 +129,9 @@ gsutil_ls <-
         .gsutil_is_uri(source),
         isScalarLogical(recursive)
     )
-
+    .life_cycle(
+        newfun = "avlist", newpackage = "AnVILGCP", title = "gsutil"
+    )
     args <- c(
         .gsutil_requesterpays_flag(source),
         "ls",
@@ -154,7 +159,7 @@ gsutil_ls <-
     is.null(attr(value, "status"))
 }
 
-#' @rdname gsutil
+#' @rdname gsutil-deprecated
 #'
 #' @description `gsutil_exists()`: check if the bucket or object
 #'     exists.
@@ -169,7 +174,9 @@ gsutil_exists <-
         is.character(source), !anyNA(source),
         .gsutil_is_uri(source)
     )
-
+    .life_cycle(
+        newpackage = "AnVILGCP", title = "gsutil"
+    )
     gsutil <- .gcloud_sdk_find_binary("gsutil")
     stopifnot(file.exists(gsutil))      # bad environment variables
 
@@ -177,7 +184,7 @@ gsutil_exists <-
     vapply(source, .gsutil_exists_1, logical(1), gsutil)
 }
 
-#' @rdname gsutil
+#' @rdname gsutil-deprecated
 #'
 #' @description `gsutil_stat()`: print, as a side effect, the status
 #'     of a bucket, directory, or file.
@@ -198,7 +205,9 @@ gsutil_stat <-
     function(source)
 {
     stopifnot(.gsutil_is_uri(source))
-
+    .life_cycle(
+        newpackage = "AnVILGCP", title = "gsutil"
+    )
     args <- c(.gsutil_requesterpays_flag(source), "stat", shQuote(source))
     result <- .gsutil_do(args)
 
@@ -231,7 +240,7 @@ gsutil_stat <-
         )
 }
 
-#' @rdname gsutil
+#' @rdname gsutil-deprecated
 #'
 #' @description `gsutil_cp()`: copy contents of `source` to
 #'     `destination`. At least one of `source` or `destination` must
@@ -266,7 +275,9 @@ gsutil_cp <-
         any(location_is_uri),
         isScalarLogical(recursive), isScalarLogical(parallel)
     )
-
+    .life_cycle(
+        "avcopy", "AnVILGCP",
+    )
     args <- c(
         .gsutil_requesterpays_flag(location),
         if (parallel) "-m", ## Makes the operations faster
@@ -280,7 +291,7 @@ gsutil_cp <-
     .gcloud_sdk_result(result)
 }
 
-#' @rdname gsutil
+#' @rdname gsutil-deprecated
 #'
 #' @description `gsutil_rm()`: remove contents of a google cloud
 #'     bucket.
@@ -300,7 +311,9 @@ gsutil_rm <-
         isScalarLogical(recursive),
         isScalarLogical(parallel)
     )
-
+    .life_cycle(
+        "avremove", "AnVILGCP", title = "gsutil"
+    )
     ## remove
     args <- c(
         .gsutil_requesterpays_flag(source),
@@ -315,7 +328,7 @@ gsutil_rm <-
     .gcloud_sdk_result(result)
 }
 
-#' @rdname gsutil
+#' @rdname gsutil-deprecated
 #'
 #' @description `gsutil_rsync()`: synchronize a source and a
 #'     destination. If the destination is on the local file system, it
@@ -367,6 +380,9 @@ gsutil_rsync <-
         isScalarLogical(recursive),
         isScalarLogical(parallel)
     )
+    .life_cycle(
+        newfun = "avbackup/avrestore", newpackage = "AnVILGCP", title = "gsutil"
+    )
     ## if destination is not a google cloud repo, and does not exist
     if (!dry && !.gsutil_is_uri(destination) && !dir.exists(destination))
         if (!dir.create(destination))
@@ -390,7 +406,7 @@ gsutil_rsync <-
     .gcloud_sdk_result(result)
 }
 
-#' @rdname gsutil
+#' @rdname gsutil-deprecated
 #'
 #' @description `gsutil_cat()`: concatenate bucket objects to standard output
 #'
@@ -415,7 +431,9 @@ gsutil_cat <-
         all(diff(range[!is.na(range)]) > 0L),
         length(range) == 0L || length(range) == 2L
     )
-
+    .life_cycle(
+        newpackage = "AnVILGCP", title = "gsutil"
+    )
     if (length(range)) {
         range[is.na(range)] <- ""
         range <- paste(range, collapse="-")
@@ -432,7 +450,7 @@ gsutil_cat <-
     .gsutil_do(args)
 }
 
-#' @rdname gsutil
+#' @rdname gsutil-deprecated
 #'
 #' @description `gsutil_help()`: print 'man' page for the `gsutil`
 #'     command or subcommand. Note that only commandes documented on this
@@ -454,6 +472,9 @@ gsutil_help <-
     function(cmd = character(0))
 {
     stopifnot(isZeroOneCharacter(cmd))
+    .life_cycle(
+        newpackage = "AnVILGCP", title = "gsutil"
+    )
     result <- .gsutil_do(c("help", cmd))
     .gcloud_sdk_result(result)
 }
@@ -462,7 +483,7 @@ gsutil_help <-
 ## higher-level implementations
 ##
 
-#' @rdname gsutil
+#' @rdname gsutil-deprecated
 #'
 #' @description `gsutil_pipe()`: create a pipe to read from or write
 #'     to a gooogle bucket object.
@@ -491,7 +512,9 @@ gsutil_pipe <-
         isScalarCharacter(source),
         isScalarCharacter(open)
     )
-
+    .life_cycle(
+        newpackage = "AnVILGCP", title = "gsutil"
+    )
     is_read <- identical(substr(open, 1, 1), "r")
     args <- c(
         if (is_read) .gsutil_requesterpays_flag(source),
