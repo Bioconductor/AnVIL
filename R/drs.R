@@ -108,7 +108,7 @@
     tbl
 }
 
-#' @rdname drs
+#' @name drs-deprecated
 #'
 #' @title DRS (Data Repository Service) URL management
 #'
@@ -191,7 +191,10 @@ drs_stat <-
         `'source' must be DRS URIs, i.e., starting with "drs://"` =
             all(.drs_is_uri(source))
     )
-
+    .life_cycle(
+        newpackage = "AnVILGCP",
+        title = "drs"
+    )
     tbl <- .drs_stat_impl(source, .DRS_STAT_TEMPLATE)
 
     select(tbl, -c("googleServiceAccount"))
@@ -229,7 +232,7 @@ drs_stat <-
     ))
 }
 
-#' @rdname drs
+#' @rdname drs-deprecated
 #'
 #' @description `drs_access_url()` returns a vector of 'signed' URLs
 #'     that allow access to restricted resources via standard https
@@ -247,7 +250,10 @@ drs_access_url <-
         `'source' must be DRS URIs, i.e., starting with "drs://"` =
             all(.drs_is_uri(source))
     )
-
+    .life_cycle(
+        newpackage = "AnVILGCP",
+        title = "drs"
+    )
     template_idx <- c("drs", "gsUri", "googleServiceAccount")
     template <- .DRS_STAT_TEMPLATE[template_idx]
     tbl <- .drs_stat_impl(source, template)
@@ -266,7 +272,7 @@ drs_access_url <-
     result
 }
 
-#' @rdname drs
+#' @rdname drs-deprecated
 #'
 #' @description `drs_cp()` copies 0 or more DRS URIs to a google
 #'     bucket or local folder
@@ -288,8 +294,13 @@ drs_access_url <-
 #' - destination: character() full path to retrieved object(s)
 #'
 #' @export
-drs_cp <- function(source, destination, ..., overwrite = FALSE)
+drs_cp <- function(source, destination, ..., overwrite = FALSE) {
+    .life_cycle(
+        newpackage = "AnVILGCP",
+        title = "drs"
+    )
     UseMethod("drs_cp")
+}
 
 #' @export
 drs_cp.drs_stat_tbl <-

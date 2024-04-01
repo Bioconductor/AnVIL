@@ -1,8 +1,9 @@
-#' @rdname localize
+#' @name localize-deprecated
 #'
-#' @title Copy packages, folders, or files to or from google buckets.
+#' @title Copy packages, folders, or files to or from google buckets
 #'
-#' @description `localize()`: recursively synchronizes files from a
+#' @description `r lifecycle::badge("deprecated")`\cr
+#'     `localize()`: recursively synchronizes files from a
 #'     Google storage bucket (`source`) to the local file system
 #'     (`destination`). This command acts recursively on the `source`
 #'     directory, and does not delete files in `destination` that are
@@ -29,6 +30,10 @@ localize <-
         isScalarCharacter(destination), dir.exists(destination),
         isScalarLogical(dry)
     )
+    .life_cycle(
+        newpackage = "AnVILGCP",
+        title = "localize"
+    )
     if (dry)
         warning("use 'dry = FALSE' to localize source / destination")
 
@@ -38,7 +43,7 @@ localize <-
     )
 }
 
-#' @rdname localize
+#' @name localize-deprecated
 #'
 #' @description `delocalize()`: synchronize files from a local file
 #'     system (`source`) to a Google storage bucket
@@ -60,6 +65,10 @@ delocalize <-
         .gsutil_is_uri(destination),
         isScalarLogical(unlink),
         isScalarLogical(dry)
+    )
+    .life_cycle(
+        newpackage = "AnVILGCP",
+        title = "localize"
     )
     if (dry)
         warning("use 'dry = FALSE' to delocalize source / destination")

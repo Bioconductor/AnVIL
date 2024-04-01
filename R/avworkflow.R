@@ -1,6 +1,4 @@
-#' @rdname avworkflow
-#'
-#' @name avworkflows
+#' @name avworkflows-deprecated
 #'
 #' @title Workflow submissions and file outputs
 #'
@@ -12,9 +10,10 @@
 #'
 NULL
 
-#' @rdname avworkflow
+#' @rdname avworkflows-deprecated
 #'
-#' @description `avworkflows()` returns a tibble summarizing available
+#' @description `r lifecycle::badge("deprecated")`\cr
+#' `avworkflows()` returns a tibble summarizing available
 #'     workflows.
 #'
 #' @return `avworkflows()` returns a tibble. Each workflow is in a
@@ -50,6 +49,10 @@ avworkflows <-
     stopifnot(
         isScalarCharacter(namespace),
         isScalarCharacter(name)
+    )
+    .life_cycle(
+        newpackage = "AnVILGCP",
+        title = "avworkflows"
     )
     workflows <- Rawls()$list_method_configurations(
         namespace, URLencode(name), TRUE
@@ -240,7 +243,7 @@ avworkflows <-
     )
 }
 
-#' @rdname avworkflow
+#' @rdname avworkflows-deprecated
 #'
 #' @description `avworkflow_files()` returns a tibble containing
 #'     information and file paths to workflow outputs.
@@ -324,7 +327,10 @@ avworkflow_files <-
         isScalarCharacter(name),
         isScalarCharacter_or_NULL(workflowId)
     )
-
+    .life_cycle(
+        newpackage = "AnVILGCP",
+        title = "avworkflow"
+    )
     if (is_tibble(submissionId)) {
         stopifnot()
     } else if (isCharacter(submissionId)) {
@@ -370,7 +376,7 @@ avworkflow_files <-
         )
 }
 
-#' @rdname avworkflow
+#' @rdname avworkflows-deprecated
 #'
 #' @description `avworkflow_localize()` creates or synchronizes a
 #'     local copy of files with files stored in the workspace bucket
@@ -443,7 +449,10 @@ avworkflow_localize <-
         is.null(destination) || isScalarCharacter(destination),
         isScalarCharacter(submissionId)
     )
-
+    .life_cycle(
+        newpackage = "AnVILGCP",
+        title = "avworkflows"
+    )
     if (is.null(destination))
         destination <- paste0("./", submissionId)
     if (dry && !dir.exists(destination)) {
@@ -500,7 +509,7 @@ avworkflow_localize <-
     invisible(tbl)
 }
 
-#' @rdname avworkflow
+#' @rdname avworkflows-deprecated
 #'
 #' @description `avworkflow_run()` submits and runs the workflow of the
 #'   configuration.
@@ -564,7 +573,10 @@ avworkflow_run <-
         isScalarCharacter(name),
         isScalarLogical(dry)
     )
-
+    .life_cycle(
+        newpackage = "AnVILGCP",
+        title = "avworkflows"
+    )
     if (dry) {
         message(
             "'avworkflow_run()' arguments validated, use 'dry = FALSE' ",
@@ -601,7 +613,7 @@ avworkflow_run <-
     invisible(config)
 }
 
-#' @rdname avworkflow
+#' @rdname avworkflows-deprecated
 #'
 #' @description `avworkflow_stop()` stops the most recently submitted workflow
 #'     jub from running.
@@ -634,7 +646,10 @@ avworkflow_stop <-
         isScalarCharacter(name),
         isScalarLogical(dry)
     )
-
+    .life_cycle(
+        newpackage = "AnVILGCP",
+        title = "avworkflows"
+    )
     if (dry) {
         message(
             .pretty_text(
@@ -696,7 +711,7 @@ avworkflow_stop <-
     invisible(TRUE)
 }
 
-#' @rdname avworkflow
+#' @rdname avworkflows-deprecated
 #'
 #' @description `avworkflow_info()` returns a tibble containing workflow
 #'     information, including workflowName, status, start and end time,
@@ -727,7 +742,10 @@ avworkflow_info <-
         isScalarCharacter(namespace),
         isScalarCharacter(name)
     )
-
+    .life_cycle(
+        newpackage = "AnVILGCP",
+        title = "avworkflows"
+    )
    if (is.null(submissionId)) {
         submissionId <-
             as.character((avworkflow_jobs(namespace = namespace, name = name) |>

@@ -1,16 +1,17 @@
-#' @rdname avworkflow_configuration
+#' @name avworkflow_config-deprecated
 #'
-#' @name avworkflow_configurations
+#' @aliases avworkflow_configurations
 #'
 #' @title Workflow configuration
 #'
-#' @inheritParams avworkflow
+#' @inheritParams avworkflows-deprecated
 #'
-#' @description Funtions on this help page facilitate getting,
+#' @description `r lifecycle::badge("deprecated")`\cr
+#' Functions on this help page facilitate getting,
 #'     updating, and setting workflow configuration parameters. See
-#'     `?avworkflow` for additional relevant functionality.
+#'     `?avworkflows` for additional relevant functionality.
 #'
-#' @seealso The help page `?avworkflow` for discovering, running,
+#' @seealso The help page `?avworkflows` for discovering, running,
 #'     stopping, and retrieving outputs from workflows.
 NULL
 
@@ -28,7 +29,7 @@ NULL
     }
 })
 
-#' @rdname avworkflow_configuration
+#' @rdname avworkflow_config-deprecated
 #'
 #' @description `avworkflow_namespace()` and `avworkflow_name()` are
 #'     utility functions to record the workflow namespace and name
@@ -56,20 +57,28 @@ NULL
 avworkflow_namespace <-
     function(workflow_namespace = NULL)
 {
+    .life_cycle(
+        newpackage = "AnVILGCP",
+        title = "avworkflow_config"
+    )
     .avworkflow("NAMESPACE", workflow_namespace)
 }
 
-#' @rdname avworkflow_configuration
+#' @rdname avworkflow_config-deprecated
 #'
 #' @export
 avworkflow_name <-
     function(workflow_name = NULL)
 {
+    .life_cycle(
+        newpackage = "AnVILGCP",
+        title = "avworkflow_config"
+    )
     value <- .avworkflow("NAME", workflow_name)
     URLencode(value)
 }
 
-#' @rdname avworkflow_configuration
+#' @rdname avworkflow_config-deprecated
 #'
 #' @export
 avworkflow <-
@@ -79,6 +88,10 @@ avworkflow <-
         isScalarCharacter_or_NULL(workflow)
     )
 
+    .life_cycle(
+        newpackage = "AnVILGCP",
+        title = "avworkflow_config"
+    )
     if (!is.null(workflow)) {
         wkflow <- strsplit(workflow, "/")[[1]]
         if (length(wkflow) != 2L)
@@ -125,7 +138,7 @@ avworkflow <-
     as_tibble(template)
 }
 
-#' @rdname avworkflow_configuration
+#' @rdname avworkflow_config-deprecated
 #'
 #' @description `avworkflow_configuration_get()` returns a list structure
 #'     describing an existing workflow configuration.
@@ -150,7 +163,10 @@ avworkflow_configuration_get <-
         isScalarCharacter(namespace),
         isScalarCharacter(name)
     )
-
+    .life_cycle(
+        newpackage = "AnVILGCP",
+        title = "avworkflow_config"
+    )
     config <- Rawls()$get_method_configuration(
         namespace, URLencode(name),
         workflow_namespace, workflow_name
@@ -161,7 +177,7 @@ avworkflow_configuration_get <-
     config_list
 }
 
-#' @rdname avworkflow_configuration
+#' @rdname avworkflow_config-deprecated
 #'
 #' @description `avworkflow_configuration_inputs()` returns a
 #'     data.frame template for the inputs defined in a workflow
@@ -186,13 +202,17 @@ avworkflow_configuration_inputs <-
     function(config)
 {
     stopifnot(inherits(config, "avworkflow_configuration"))
+    .life_cycle(
+        newpackage = "AnVILGCP",
+        title = "avworkflow_config"
+    )
     response <- .avworkflow_response(config)
     inputs_tmpl <- as.list(response)$inputs
     inputs_config <- config$inputs
     .avworkflow_configuration_template_io(inputs_tmpl, inputs_config)
 }
 
-#' @rdname avworkflow_configuration
+#' @rdname avworkflow_config-deprecated
 #'
 #' @description `avworkflow_configuration_outputs()` returns a
 #'     data.frame template for the outputs defined in a workflow
@@ -215,6 +235,10 @@ avworkflow_configuration_outputs <-
     function(config)
 {
     stopifnot(inherits(config, "avworkflow_configuration"))
+    .life_cycle(
+        newpackage = "AnVILGCP",
+        title = "avworkflow_config"
+    )
     response <- .avworkflow_response(config)
     outputs_tmpl <- as.list(response)$outputs
     outputs_config <- config$outputs
@@ -268,7 +292,7 @@ avworkflow_configuration_outputs <-
     invisible(response)
 }
 
-#' @rdname avworkflow_configuration
+#' @rdname avworkflow_config-deprecated
 #'
 #' @description `avworkflow_configuration_update()` returns a list structure
 #'     describing a workflow configuration with updated inputs and / or outputs.
@@ -298,6 +322,10 @@ avworkflow_configuration_update <-
         all(c("name", "attribute") %in% names(outputs)),
         is(inputs, "data.frame"), is(outputs, "data.frame")
     )
+    .life_cycle(
+        newpackage = "AnVILGCP",
+        title = "avworkflow_config"
+    )
     config$inputs <-
         lapply(setNames(as.list(inputs$attribute), inputs$name), unbox)
     config$outputs <-
@@ -305,7 +333,7 @@ avworkflow_configuration_update <-
     config
 }
 
-#' @rdname avworkflow_configuration
+#' @rdname avworkflow_config-deprecated
 #'
 #' @description `avworkflow_configuration_set()` updates an existing
 #'     configuration in Terra / AnVIL, e.g., changing inputs to the
@@ -387,7 +415,10 @@ avworkflow_configuration_set <-
         isScalarCharacter(namespace),
         isScalarCharacter(name)
     )
-
+    .life_cycle(
+        newpackage = "AnVILGCP",
+        title = "avworkflow_config"
+    )
     rawls <- Rawls()
 
     config$methodRepoMethod <- .avworkflow_MethodRepoMethod_validate(
@@ -417,7 +448,7 @@ avworkflow_configuration_set <-
     return(invisible(config))
 }
 
-#' @rdname avworkflow_configuration
+#' @rdname avworkflow_config-deprecated
 #'
 #' @description `avworkflow_configuration_template()` returns a
 #'     template for defining workflow configurations. This template
@@ -471,6 +502,10 @@ avworkflow_configuration_set <-
 avworkflow_configuration_template <-
     function()
 {
+    .life_cycle(
+        newpackage = "AnVILGCP",
+        title = "avworkflow_config"
+    )
     list(
         ## method namespace and name, not workspace namespace and name
         namespace = character(1),
@@ -490,7 +525,7 @@ avworkflow_configuration_template <-
     )
 }
 
-#' @rdname avworkflow_configuration
+#' @rdname avworkflow_config-deprecated
 #'
 #' @param x Object of class `avworkflow_configuration`.
 #'

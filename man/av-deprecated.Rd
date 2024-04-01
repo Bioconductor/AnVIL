@@ -14,7 +14,7 @@
 \alias{avruntimes}
 \alias{avruntime}
 \alias{avdisks}
-\title{TABLE, DATA, files, bucket, runtime, and disk elements (DEPRECATED)}
+\title{TABLE, DATA, files, bucket, runtime, and disk elements}
 \usage{
 avtable_paged(
   table,
@@ -225,6 +225,8 @@ the return value of \code{avruntimes()}.
 }
 }
 \description{
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}\cr
+
 \code{avtable_import_status()} queries for the status of an
 'asynchronous' table import.
 

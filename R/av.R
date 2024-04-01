@@ -1,6 +1,8 @@
 #' @name av-deprecated
 #'
-#' @title TABLE, DATA, files, bucket, runtime, and disk elements (DEPRECATED)
+#' @title TABLE, DATA, files, bucket, runtime, and disk elements
+#'
+#' @description `r lifecycle::badge("deprecated")`\cr
 NULL
 
 ##
@@ -422,7 +424,10 @@ avdata <-
         isScalarCharacter(namespace),
         isScalarCharacter(name)
     )
-
+    .life_cycle(
+        newpackage = "AnVILGCP",
+        title = "av"
+    )
     name <- URLencode(name)
     response <- Terra()$getWorkspace(
         namespace, URLencode(name), "workspace.attributes"
@@ -511,6 +516,10 @@ avdata_import <-
         isScalarCharacter(name)
     )
 
+    .life_cycle(
+        newpackage = "AnVILGCP",
+        title = "av"
+    )
     .data <- filter(.data, .data$type == "other", table %in% "workspace")
 
     if (!nrow(.data)) {

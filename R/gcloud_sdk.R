@@ -73,6 +73,7 @@ print.gcloud_sdk_result <-
     )
 }
 
+#' @importFrom BiocBaseUtils isScalarCharacter isCharacter
 .gcloud_sdk_do <-
     function(command, args)
 {
@@ -96,7 +97,7 @@ print.gcloud_sdk_result <-
     }, warning = function(warn) {
         invokeRestart("muffleWarning")
     })
-        
+
     if (!is.null(attr(value, "status"))) {
         msg <- paste0(
             "'", command, " ", paste(args, collapse = " "), "' failed:",

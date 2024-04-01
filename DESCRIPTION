@@ -41,9 +41,9 @@ Imports:
     shiny, DT, miniUI, htmltools,
     BiocManager, BiocBaseUtils
 Suggests: parallel, knitr, rmarkdown, testthat, withr, readr, BiocStyle,
-    devtools, AnVILAz, AnVILGCP
+    devtools, AnVILAz, AnVILGCP, lifecycle
 Collate:
-    utilities.R authenticate.R api.R
+    utilities.R authenticate.R api.R AnVIL-package.R
     Service.R Services.R Leonardo.R Terra.R Rawls.R Dockstore.R TDR.R
     gcloud_sdk.R gcloud.R gsutil.R localize.R drs.R
     av.R avworkflow.R avworkflow_configuration.R

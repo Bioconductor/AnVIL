@@ -55,18 +55,18 @@
     }
 })
 
-#' @rdname gcloud
+#' @name gcloud-deprecated
 #'
-#' @name gcloud
+#' @aliases gcloud
 #'
 #' @title gcloud command line utility interface
 #'
-#' @description These functions invoke the `gcloud` command line
-#'     utility. See \link{gsutil} for details on how `gcloud` is
-#'     located.
+#' @description `r lifecycle::badge("deprecated")`\cr
+#' These functions invoke the `gcloud` command line utility. See \link{gsutil}
+#'   for details on how `gcloud` is located.
 NULL
 
-#' @rdname gcloud
+#' @rdname gcloud-deprecated
 #'
 #' @description `gcloud_exists()` tests whether the `gcloud()` command
 #'     can be found on this system. See 'Details' section of `gsutil`
@@ -82,6 +82,10 @@ NULL
 gcloud_exists <-
     function()
 {
+    .life_cycle(
+        newpackage = "AnVILGCP",
+        title = "gcloud"
+    )
     result <- tryCatch({
         .gcloud_sdk_find_binary("gcloud")
     }, error = function(...) "")
@@ -104,7 +108,7 @@ gcloud_exists <-
     value
 }
 
-#' @rdname gcloud
+#' @rdname gcloud-deprecated
 #'
 #' @description `gcloud_account()`: report the current gcloud account
 #'     via `gcloud config get-value account`.
@@ -123,14 +127,17 @@ gcloud_exists <-
 #' @export
 gcloud_account <- function(account = NULL) {
     stopifnot(isScalarCharacter_or_NULL(account))
-
+    .life_cycle(
+        newpackage = "AnVILGCP",
+        title = "gcloud"
+    )
     if (!is.null(account))
         .gcloud_do("config", "set", "account", account)
     result <- .gcloud_do("config", "get-value", "account")
     .gcloud_get_value_check(result, "gcloud_account")
 }
 
-#' @rdname gcloud
+#' @rdname gcloud-deprecated
 #'
 #' @description `gcloud_project()`: report the current gcloud project
 #'     via `gcloud config get-value project`.
@@ -145,7 +152,10 @@ gcloud_project <- function(project = NULL) {
     stopifnot(
         isScalarCharacter_or_NULL(project)
     )
-
+    .life_cycle(
+        newpackage = "AnVILGCP",
+        title = "gcloud"
+    )
     if (!is.null(project))
         .gcloud_do("config", "set", "project", project)
     result <- .gcloud_do("config", "get-value", "project")
@@ -154,7 +164,7 @@ gcloud_project <- function(project = NULL) {
     .gcloud_get_value_check(result, "gcloud_account")
 }
 
-#' @rdname gcloud
+#' @rdname gcloud-deprecated
 #'
 #' @description `gcloud_help()`: queries `gcloud` for help for a
 #'     command or sub-comand via `gcloud help ...`.
@@ -170,10 +180,15 @@ gcloud_project <- function(project = NULL) {
 #'     gcloud_help()
 #'
 #' @export
-gcloud_help <- function(...)
+gcloud_help <- function(...) {
+    .life_cycle(
+        newpackage = "AnVILGCP",
+        title = "gcloud"
+    )
     .gcloud_sdk_result(.gcloud_do("help", ...))
+}
 
-#' @rdname gcloud
+#' @rdname gcloud-deprecated
 #'
 #' @description `gcloud_cmd()` allows arbitrary `gcloud` command
 #'     execution via `gcloud ...`. Use pre-defined functions in
@@ -186,20 +201,30 @@ gcloud_help <- function(...)
 #'     the text of the output of `gcloud cmd ...`
 #'
 #' @export
-gcloud_cmd <- function(cmd, ...)
+gcloud_cmd <- function(cmd, ...) {
+    .life_cycle(
+        newpackage = "AnVILGCP",
+        title = "gcloud"
+    )
     .gcloud_do(cmd, ...)
+}
 
-#' @rdname gcloud
+#' @rdname gcloud-deprecated
 #'
 #' @description `gcloud_storage()` allows arbitrary `gcloud storage` command
 #'   execution via `gcloud storage ...`. Typically used for bucket management
 #'   commands such as `rm` and `cp`.
 #'
 #' @export
-gcloud_storage <- function(cmd, ...)
+gcloud_storage <- function(cmd, ...) {
+    .life_cycle(
+        newpackage = "AnVILGCP",
+        title = "gcloud"
+    )
     .gcloud_do("storage", cmd, ...)
+}
 
-#' @rdname gcloud
+#' @rdname gcloud-deprecated
 #'
 #' @description `gcloud_storage_buckets()` provides an interface to the
 #'  `gcloud storage buckets` command. This command can be used to create a new
@@ -217,6 +242,10 @@ gcloud_storage <- function(cmd, ...)
 gcloud_storage_buckets <- function(bucket_cmd = "create", bucket, ...) {
     stopifnot(
         isScalarCharacter(bucket_cmd), isScalarCharacter(bucket)
+    )
+    .life_cycle(
+        newpackage = "AnVILGCP",
+        title = "gcloud"
     )
     gcloud_storage("buckets", bucket_cmd, bucket, ...)
 }
