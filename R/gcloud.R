@@ -28,6 +28,8 @@
     list(token = token, expires = expires)
 }
 
+# .gcloud_access_token ----------------------------------------------------
+
 .gcloud_access_token <-
     local(
 {
