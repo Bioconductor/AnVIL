@@ -201,7 +201,7 @@ avworkspace_clone <-
         workspaceNamespace = namespace,
         workspaceName = URLencode(name),
         .__body__ = list(
-            attributes = setNames(list(), character()),  # json '{}'
+            attributes = empty_object,  # json '{}'
             bucketLocation = bucket_location,
             copyFilesWithPrefix = "notebooks/",
             namespace = to_namespace,

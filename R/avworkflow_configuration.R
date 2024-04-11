@@ -471,9 +471,9 @@ avworkflow_configuration_template <-
         namespace = character(1),
         name = character(1),
         rootEntityType = character(0),
-        prerequisites = setNames(list(), character()),
-        inputs = setNames(list(), character()),
-        outputs = setNames(list(), character()),
+        prerequisites = empty_object,
+        inputs = empty_object,
+        outputs = empty_object,
         methodConfigVersion = integer(1),
         methodRepoMethod = list(
             methodUri = unbox(character(1)),
