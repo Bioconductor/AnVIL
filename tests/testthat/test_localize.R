@@ -1,11 +1,13 @@
 test_that("repositories() works", {
     ## unknown repository; return BiocManager::repositories()
     envvars <- c(BIOCONDUCTOR_DOCKER_VERSION = "3.0")
-    expect_warning(withr::with_envvar(envvars, repositories("3.0")))
+    expect_warning(object <- withr::with_envvar(envvars, repositories("3.0")))
     ## need to suppress deprecation warnings
     suppressWarnings({
-        object <- withr::with_envvar(envvars, repositories("3.0"))
-        expect_identical(object, BiocManager::repositories())
+        expect_identical(
+            object,
+            withr::with_envvar(envvars, BiocManager::repositories())
+        )
 
         ## existing repository
         envvars <- c(BIOCONDUCTOR_DOCKER_VERSION = "3.14.0")
@@ -15,7 +17,7 @@ test_that("repositories() works", {
                 "https://bioconductor.org/packages/3.14/container-binaries/",
                 "bioconductor_docker"
             ),
-            BiocManager::repositories()
+            withr::with_envvar(envvars, BiocManager::repositories())
         )
         expect_identical(object, expected)
     })
