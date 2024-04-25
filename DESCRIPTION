@@ -44,7 +44,7 @@ Suggests: parallel, knitr, rmarkdown, testthat, withr, readr, BiocStyle,
     devtools
 Collate:
     utilities.R authenticate.R api.R
-    Service.R Services.R Leonardo.R Terra.R Rawls.R Dockstore.R
+    Service.R Services.R Leonardo.R Terra.R Rawls.R Dockstore.R TDR.R
     Response.R
     gcloud_sdk.R gcloud.R gsutil.R localize.R drs.R
     av.R avworkspace.R avworkflow.R avworkflow_configuration.R avnotebooks.R
