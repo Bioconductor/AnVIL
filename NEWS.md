@@ -2,6 +2,9 @@
 
 USER VISIBLE CHANGES
 
+- (v 1.15.10) Validate API versions against hardcoded variables; produce warning
+  when discordant (@LiNk-NY, #101).
+
 - (v 1.15.8) Add `gcloud_storage()` and `gcloud_storage_buckets()` to
   create and manage Google Cloud Storage buckets (@LiNk-NY, #72).
 
@@ -13,7 +16,11 @@ USER VISIBLE CHANGES
 - (v 1.15.1) Update vignette with examples for `avworkflow_info()` (@mtmorgan,
   @yubocheng).
   
-BUG FIXES
+BUG FIXES AND MINOR IMPROVEMENTS
+
+- (v 1.15.11) Update Dockstore API file, version, and URL
+
+- (v 1.15.9) Use assertions from `BiocBaseUtils`
 
 - (v 1.15.7) Use `URLencode` for table in `avtable` and direct request to
   Rawls endpoint (@LiNk-NY, #98)
