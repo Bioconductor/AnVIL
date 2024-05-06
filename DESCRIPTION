@@ -48,7 +48,7 @@ Collate:
     Response.R
     gcloud_sdk.R gcloud.R gsutil.R localize.R drs.R
     av.R avworkspace.R avworkflow.R avworkflow_configuration.R avnotebooks.R
-    AnVIL-deprecated.R AnVIL-defunct.R
+    AnVIL-defunct.R
     gadgets.R zzz.R
 VignetteBuilder: knitr
 biocViews: Infrastructure

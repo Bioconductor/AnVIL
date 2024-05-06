@@ -1,174 +1,78 @@
-BINARY_BASE_URL <- "https://bioconductor.org/packages/%s/container-binaries/%s"
-
-#' @rdname AnVIL-defunct
-#'
 #' @name AnVIL-defunct
 #'
-#' @title Defunct functions in package \sQuote{AnVIL}
+#' @title Defunct AnVIL functionality
 #'
-#' @description These functions are provided for compatibility with
-#'     older versions of \sQuote{AnVIL} only, and will be defunct at
-#'     the next release.
+#' @aliases print.repository_stats
 #'
-#' @param configuration_namespace character(1).
+#' @description `repository_stats():` summarize binary packages
+#'     compatible with the Bioconductor or Terra container in use.
 #'
-#' @param configuration_name character(1).
+#' @param version `character(1)` or `package_version` Bioconductor
+#'     version, e.g., "3.12".
 #'
-#' @param config `avworkflow_configuration` object.
+#' @param binary_base_url `character(1)` host and base path for binary
+#'     package 'CRAN-style' repository; not usually required by the
+#'     end-user.
 #'
-#' @param namespace character(1).
+#' @return `repository_stats()` returns a list of class
+#'     `repository_stats` with the following fields:
 #'
-#' @param name character(1).
+#' * container: character(1) container label, e.g.,
+#' \code{bioconductor_docker}, or NA if not evaluated on a supported
+#' container
 #'
-#' @details The following functions are defunct and will be deleted after the
-#'   next Bioconductor release of \sQuote{AnVIL}. Use the replacement indicated
-#'   below:
+#' * bioconductor_version: \code{package_version} the
+#' Bioconductor version provided by the user.
 #'
-#' - `avworkflow_configuration()`: \code{\link{avworkflow_configuration_get}}
-#' - `avworkflow_import_configuration()`: \code{\link{avworkflow_configuration_set}}
-avworkflow_configuration <-
-    function(configuration_namespace, configuration_name,
-             namespace = avworkspace_namespace(),
-             name = avworkspace_name())
-{
-    .Defunct("avworkflow_configuration_get", package = "AnVIL")
-}
-
-#' @rdname AnVIL-defunct
-avworkflow_import_configuration <-
-    function(config,
-             namespace = avworkspace_namespace(), name = avworkspace_name())
-{
-    .Defunct("avworkflow_configuration_set", package = "AnVIL")
-}
-
-#' @rdname AnVIL-defunct
+#' * repository_exists: logical(1) TRUE if a binary repository
+#' exists for the container and Bioconductor_Version version.
 #'
-#' @return `gen3_*` APIs are not fully implemented, because a service
-#'     endpoint has not been identified.
+#' * bioconductor_binary_repository: character(1) repository
+#' location, if available, or NA if the repository does not exist.
 #'
-#' @return `Gen3Fence()` returns the authentication API at
-#'     https://raw.githubusercontent.com/uc-cdis/fence/master/openapis/swagger.yaml
-#' @format NULL
+#' * n_software_packages: integer(1) number of software packages
+#' in the Bioconductor source repository.
 #'
-#' @export
-Gen3Fence <-
-    function()
-{
-    .Defunct(msg = "'Gen3Fence()' is deprecated, and will be removed")
-    Service(
-        "gen3/fence", "FIXME:service_path",
-        api_url = "https://raw.githubusercontent.com/uc-cdis/fence/master/openapis/swagger.yaml"
-    )
-}
-
-#' @rdname AnVIL-defunct
+#' * n_binary_packages: integer(1) number of binary packages
+#' available. When a binary repository exists, this number is likely
+#' to be larger than the number of source software packages, because
+#' it includes the binary version of the source software packages, as
+#' well as the (possibly CRAN) dependencies of the binary packages
 #'
-#' @return `Gen3Indexd()` returns the indexing service API documented at
-#'     https://raw.githubusercontent.com/uc-cdis/indexd/master/openapis/swagger.yaml
-#' @format NULL
+#' * n_binary_software_packages: integer(1) number of binary
+#' packages derived from Bioconductor source packages. This number is
+#' less than or equal to \code{n_software_packages}.
+#'
+#' * missing_binaries: integer(1) the number of Bioconductor
+#' source software packages that are not present in the binary
+#' repository.
+#'
+#' * out_of_date_binaries: integer(1) the number of Bioconductor
+#' source software packages that are newer than their binary
+#' counterpart. A newer source software package
+#' might occur when the main Bioconductor build system has
+#' updated a package after the most recent run of the binary
+#' build system.
 #'
 #' @export
-Gen3Indexd <-
-    function()
-{
-    .Defunct(msg = "'Gen3Index()' is deprecated, and will be removed")
-    Service(
-        "gen3/indexd", "gen3.theanvil.io",
-        api_url = "https://raw.githubusercontent.com/uc-cdis/indexd/master/openapis/swagger.yaml"
-    )
-}
-
-#' @rdname AnVIL-defunct
-#'
-#' @return `Gen3Sheepdog` returns the submission services API at
-#'     https://raw.githubusercontent.com/uc-cdis/sheepdog/master/openapi/swagger.yml
-#'
-#' @format NULL
-#'
-#' @export
-Gen3Sheepdog <-
-    function()
-{
-    .Defunct(msg = "'Gen3Sheepdog()' is deprecated, and will be removed")
-    Service(
-        "gen3/sheepdog", "FIXME:service_path",
-        api_url = "https://raw.githubusercontent.com/uc-cdis/sheepdog/master/openapi/swagger.yml"
-    )
-}
-
-#' @rdname AnVIL-defunct
-#'
-#' @return `Gen3Peregrine` returns the graphQL query services API at
-#'     https://raw.githubusercontent.com/uc-cdis/peregrine/master/openapis/swagger.yaml
-#'
-#' @format NULL
-#'
-#' @export
-Gen3Peregrine <-
-    function()
-{
-    .Defunct(msg = "'Gen3Peregrine()' is deprecated, and will be removed")
-    Service(
-        "gen3/peregrine", "FIXME:service_path",
-        api_url = "https://raw.githubusercontent.com/uc-cdis/peregrine/master/openapis/swagger.yaml"
-    )
-}
-
-#' @rdname AnVIL-defunct
-#'
-#' @title Discover binary packages for fast installation
-#'
-#' @description `install()` is deprecated in favor of
-#'     `BiocManager::install()`.
-#'
-#' @inheritParams AnVIL-deprecated
-#'
-#' @param pkgs `character()` packages to install from binary repository.
-#'
-#' @param ... additional arguments. `install()` passes additional
-#'     arguments to
-#'     `BiocManager::install()`. `print.repository_stats()` ignores
-#'     the additional arguments.
-#'
-#' @export
-install <-
-    function(
-        pkgs = character(), ...,
-        version = BiocManager::version(), binary_base_url = BINARY_BASE_URL
-    )
-{
-    .Defunct("BiocManager::install()", "AnVIL")
-}
-
-#' @rdname AnVIL-defunct
-#'
-#' @aliases BINARY_BASE_URL
-#'
-#' @description `repository()` is deprecated in favor of
-#'     `BiocManager::containerRepository()`.
-#'
-#' @importFrom utils contrib.url
-#'
-#' @export
-repository <-
+repository_stats <-
     function(
         version = BiocManager::version(),
         binary_base_url = BINARY_BASE_URL)
 {
-    .Defunct("BiocManager::containerRepository()")
+    .Defunct("BiocPkgTools::repositoryStats", package = "AnVIL")
 }
 
-#' @rdname AnVIL-defunct
+#' @describeIn AnVIL-defunct Print a summary of package
+#'     availability in binary repositories.
 #'
-#' @description `repositories()` is deprecated in favor of
-#'     `BiocManager::repositories()`.
+#' @param x the object returned by `repository_stats()`.
+#'
+#' @param ... additional arguments (not used).
 #'
 #' @export
-repositories <-
-    function(
-        version = BiocManager::version(),
-        binary_base_url = BINARY_BASE_URL)
+print.repository_stats <-
+    function(x, ...)
 {
-    .Defunct("BiocManager::repositories()")
+    .Defunct("BiocPkgTools:::print.repositoryStats", package = "AnVIL")
 }
