@@ -1,3 +1,5 @@
+BINARY_BASE_URL <- "https://bioconductor.org/packages/%s/container-binaries/%s"
+
 #' @name AnVIL-defunct
 #'
 #' @title Defunct AnVIL functionality
