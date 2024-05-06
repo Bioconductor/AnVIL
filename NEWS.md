@@ -1,3 +1,13 @@
+# AnVIL 1.18.0
+
+USER VISIBLE CHANGES
+
+- (v 1.16.1) Gen3 services, `avworkflow*_configuration()` functions, `install()`,
+  `repository()`, and `repositories()` have been removed.
+
+- (v 1.16.1) Defunct `repository_stats` function in favor of
+`BiocPkgTools::repositoryStats` (@LiNk-NY)
+
 # AnVIL 1.16.0
 
 USER VISIBLE CHANGES
