@@ -167,7 +167,9 @@ are not older than the bucket files), then no files are
 localized. \code{avworkflow_localize()} returns a tibble of file
 name and bucket path of files to be synchronized.
 
-\code{avworkflow_run()} returns \code{config}, invisibly.
+\code{avworkflow_run()} returns \code{config}, invisibly. Note that \code{config}
+has an added \code{LastSubmissionId} value for the submission ID of the last
+run workflow.
 
 \code{avworkflow_stop()} returns (invisibly) \code{TRUE} on
 successfully requesting that the workflow stop, \code{FALSE} if the
@@ -191,7 +193,8 @@ information and file paths to workflow outputs.
 local copy of files with files stored in the workspace bucket
 and produced by the workflow.
 
-\code{avworkflow_run()} runs the workflow of the configuration.
+\code{avworkflow_run()} submits and runs the workflow of the
+configuration.
 
 \code{avworkflow_stop()} stops the most recently submitted workflow
 jub from running.
@@ -222,6 +225,10 @@ copy individual files from the bucket to the local drive.
 \code{avworkflow_localize()} treats \verb{submissionId=} in the same way as
 \code{avworkflow_files()}: when missing, files from the most recent
 workflow job are candidates for localization.
+
+\code{avworkflow_run()} invisibly returns a slightly modified \code{config}
+object. The new \code{config} object has an added \code{LastSubmissionId} value that
+identifies the submitted job.
 }
 \examples{
 if (gcloud_exists() && nzchar(avworkspace_name()))

@@ -566,7 +566,12 @@ avworkflow_localize <-
 
 #' @rdname avworkflow
 #'
-#' @description `avworkflow_run()` runs the workflow of the configuration.
+#' @description `avworkflow_run()` submits and runs the workflow of the
+#'   configuration.
+#'
+#' @details `avworkflow_run()` invisibly returns a slightly modified `config`
+#'   object. The new `config` object has an added `LastSubmissionId` value that
+#'   identifies the submitted job.
 #'
 #' @param config a `avworkflow_configuration` object of the workflow
 #'     that will be run. Only `entityType` and method configuration
@@ -590,7 +595,9 @@ avworkflow_localize <-
 #' @param useReferenceDisks logical(1) whether or not to use pre-built
 #'     disks for common genome references. Default: `FALSE`.
 #'
-#' @return `avworkflow_run()` returns `config`, invisibly.
+#' @return `avworkflow_run()` returns `config`, invisibly. Note that `config`
+#'   has an added `LastSubmissionId` value for the submission ID of the last
+#'   run workflow.
 #'
 #' @examples
 #' \dontrun{
