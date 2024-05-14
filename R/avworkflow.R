@@ -647,6 +647,14 @@ avworkflow_run <-
 
     .avstop_for_status(run_workflow, "avworkflow_run")
 
+    submissionId <- content(run_workflow)$submissionId
+    message(
+        "Workflow submitted; Setting config$LastSubmissionId: ",
+        submissionId,
+        "\n  See avworkflow_jobs() for more details."
+    )
+    config$LastSubmissionId <- submissionId
+
     invisible(config)
 }
 
