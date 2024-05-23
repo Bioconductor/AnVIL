@@ -18,19 +18,16 @@
 #' @format NULL
 #'
 #' @examples
-#'
 #' TDR()
 #'
 #' @export
 TDR <-
     function()
 {
-    api_header <- character()
-    path <- authenticate_path("tdr")
-    if (file.exists(path)) {
-        token <- read_json(path)$token
-        api_header <- c(Authorization = paste("Bearer", token))
-    }
+    access_token <- .gcloud_access_token("tdr")
+    api_header <- c(
+        Authorization = paste("Bearer", access_token)
+    )
     .TDR(
         Service(
             "tdr",
