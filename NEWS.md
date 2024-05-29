@@ -2,6 +2,9 @@
 
 USER VISIBLE CHANGES
 
+- (v 1.17.3) Added Terra Data Repository (TDR) service as `TDR()`. See service
+  at https://data.terra.bio.
+
 - (v 1.17.1) Gen3 services, `avworkflow*_configuration()` functions, `install()`,
   `repository()`, and `repositories()` have been removed.
 
