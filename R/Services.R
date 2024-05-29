@@ -12,7 +12,7 @@ NULL
 #'
 #' @return `empty_object` returns a representation to be used as
 #'     arguments in function calls expecting the empty json object
-#'     `\{\}`.
+#'     `{}`.
 #'
 #' @format NULL
 #'

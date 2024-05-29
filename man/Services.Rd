@@ -78,7 +78,7 @@ scalers.}
 \value{
 \code{empty_object} returns a representation to be used as
 arguments in function calls expecting the empty json object
-\verb{\\\{\\\}}.
+\code{{}}.
 
 \code{Leonardo()} creates the API of the Leonardo container
 deployment service at
