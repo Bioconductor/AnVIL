@@ -81,7 +81,9 @@
 .api_get_content_type <-
     function(op_def)
 {
-    type <- ifelse(is.null(op_def$consumes), "*/*", op_def$consumes)
+    type <- ifelse(
+        is.null(op_def$consumes), "application/json", op_def$consumes
+    )
     content_type(type)
 }
 
