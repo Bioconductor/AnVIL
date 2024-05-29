@@ -18,7 +18,7 @@
 #'
 #' @return `Dockstore()` represents the API of the Dockstore platform to
 #'     share Docker-based tools in CWL or WDL or Nextflow at
-#'     https://dockstore.org
+#'     \url{https://dockstore.org}
 #'
 #' @format NULL
 #'

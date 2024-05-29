@@ -82,20 +82,20 @@ arguments in function calls expecting the empty json object
 
 \code{Leonardo()} creates the API of the Leonardo container
 deployment service at
-https://leonardo.dsde-prod.broadinstitute.org/api-docs.yaml.
+\url{https://leonardo.dsde-prod.broadinstitute.org/api-docs.yaml}.
 
 \code{Terra()} creates the API of the Terra cloud computational
-environemnt at https://api.firecloud.org/.
+environemnt at \url{https://api.firecloud.org/}.
 
 \code{Rawls()} creates the API of the Rawls cloud computational
-environemnt at https://rawls.dsde-prod.broadinstitute.org.
+environemnt at \url{https://rawls.dsde-prod.broadinstitute.org}.
 
 \code{Dockstore()} represents the API of the Dockstore platform to
 share Docker-based tools in CWL or WDL or Nextflow at
-https://dockstore.org
+\url{https://dockstore.org}
 
 \code{TDR()} creates the API of the Terra Data Repository to work with
-snapshot data in the Terra Data Repository at \url{data.terra.bio}.
+snapshot data in the Terra Data Repository at \url{https://data.terra.bio}.
 }
 \description{
 RESTful services useful for AnVIL developers
@@ -128,7 +128,6 @@ if (gcloud_exists()) {
 }
 
 Dockstore()
-
 
 TDR()
 

@@ -15,7 +15,7 @@
 #'
 #' @return `Leonardo()` creates the API of the Leonardo container
 #'     deployment service at
-#'     https://leonardo.dsde-prod.broadinstitute.org/api-docs.yaml.
+#'     \url{https://leonardo.dsde-prod.broadinstitute.org/api-docs.yaml}.
 #'
 #' @format NULL
 #'

@@ -14,7 +14,7 @@
 #' @aliases Rawls-class operations,Rawls-method schemas,Rawls-method
 #'
 #' @return `Rawls()` creates the API of the Rawls cloud computational
-#'     environemnt at https://rawls.dsde-prod.broadinstitute.org.
+#'     environemnt at \url{https://rawls.dsde-prod.broadinstitute.org}.
 #'
 #' @format NULL
 #'

@@ -13,7 +13,7 @@
 #' @aliases TDR-class operations,TDR-method
 #'
 #' @return `TDR()` creates the API of the Terra Data Repository to work with
-#'   snapshot data in the Terra Data Repository at \url{data.terra.bio}.
+#'   snapshot data in the Terra Data Repository at \url{https://data.terra.bio}.
 #'
 #' @format NULL
 #'
