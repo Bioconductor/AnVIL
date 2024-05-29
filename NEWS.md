@@ -2,11 +2,15 @@
 
 USER VISIBLE CHANGES
 
-- (v 1.16.1) Gen3 services, `avworkflow*_configuration()` functions, `install()`,
+- (v 1.17.1) Gen3 services, `avworkflow*_configuration()` functions, `install()`,
   `repository()`, and `repositories()` have been removed.
 
-- (v 1.16.1) Defunct `repository_stats` function in favor of
+- (v 1.17.1) Defunct `repository_stats` function in favor of
 `BiocPkgTools::repositoryStats` (@LiNk-NY)
+
+BUG FIXES AND MINOR IMPROVEMENTS
+
+- (v 1.17.2) Use `application/json` as default `Content-Type`.
 
 # AnVIL 1.16.0
 
