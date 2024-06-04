@@ -129,7 +129,8 @@ if (gcloud_exists()) {
 
 Dockstore()
 
-TDR()
+if (gcloud_exists())
+    TDR()
 
 }
 \keyword{datasets}

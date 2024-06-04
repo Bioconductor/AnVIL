@@ -18,7 +18,8 @@
 #' @format NULL
 #'
 #' @examples
-#' TDR()
+#' if (gcloud_exists())
+#'     TDR()
 #'
 #' @export
 TDR <-
