@@ -8,7 +8,7 @@
 )
 
 .api_header <- function(x) x@api_header
-.DOCKSTORE_API_REFERENCE_VERSION <- "1.15.2"
+.DOCKSTORE_API_REFERENCE_VERSION <- "1.15.3"
 
 ## construct a singleton instance for this service
 

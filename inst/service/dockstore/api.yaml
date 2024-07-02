@@ -13,7 +13,7 @@
     },
     "termsOfService": "https://github.com/dockstore/dockstore-ui2/raw/develop/src/assets/docs/Dockstore_Terms_of_Service.pdf",
     "title": "Dockstore API",
-    "version": "1.15.2"
+    "version": "1.15.3"
   },
   "basePath": "/api",
   "paths": {
@@ -14613,6 +14613,13 @@
               "description": "The total time it took for the execution to complete in ISO 8601 duration format",
               "example": "PT30S",
               "type": "string"
+            },
+            "executionTimeSeconds": {
+              "description": "In seconds, automatically calculated from executionTime and dateExecuted",
+              "example": 30,
+              "format": "int64",
+              "readOnly": true,
+              "type": "integer"
             },
             "memoryRequirementsGB": {
               "description": "Memory requirements for the execution in GB",
