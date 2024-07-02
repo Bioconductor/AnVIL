@@ -13,7 +13,7 @@ info:
   license:
     name: Apache License Version 2.0
     url: https://github.com/dockstore/dockstore/blob/develop/LICENSE
-  version: 1.15.2
+  version: 1.15.3
 servers:
 - url: /api
   description: Current server when hosted on AWS
@@ -11455,6 +11455,13 @@ components:
             description: The total time it took for the execution to complete in ISO
               8601 duration format
             example: PT30S
+          executionTimeSeconds:
+            type: integer
+            description: "In seconds, automatically calculated from executionTime\
+              \ and dateExecuted"
+            format: int64
+            readOnly: true
+            example: 30
           memoryRequirementsGB:
             type: number
             description: Memory requirements for the execution in GB
