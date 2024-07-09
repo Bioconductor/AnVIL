@@ -64,7 +64,7 @@ add_libpaths <-
     cycle <- match.arg(cycle)
 
     if (!missing(newpackage))
-        newfun <- paste0(newpackage, "::", newfun)
+        newfun <- paste0(newpackage, "::", gsub("^.*::", "", newfun))
 
     msg <- c(
         gettextf("'%s' is %s.\n", oldfun, cycle),
