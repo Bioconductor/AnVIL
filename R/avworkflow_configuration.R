@@ -357,16 +357,10 @@ avworkflow_configuration_update <-
 #' library(AnVILBase)
 #' if (
 #'     gcloud_exists() && identical(avplatform_namespace(), "AnVILGCP") &&
-#'     nzchar(avworkspace_name())
+#'     nzchar(avworkspace_name()) && interactive()
 #' ) {
-#' ## set the namespace and name as appropriate
-#' avworkspace("bioconductor-rpci-anvil/Bioconductor-Workflow-DESeq2")
-#'
 #' ## discover available workflows in the workspace
 #' avworkflows()
-#'
-#' ## record the workflow of interest
-#' avworkflow("bioconductor-rpci-anvil/AnVILBulkRNASeq")
 #'
 #' ## what workflows are available?
 #' available_workflows <- avworkflows()
