@@ -30,8 +30,9 @@ vignette: |
 ---
 
 ```{r, include = FALSE}
+has_gcloud <- AnVIL::gcloud_exists()
 knitr::opts_chunk$set(
-    eval = AnVIL::gcloud_exists(), collapse = TRUE, cache = TRUE
+    eval = has_gcloud, collapse = TRUE, cache = TRUE
 )
 options(width=75)
 ```
@@ -176,7 +177,7 @@ The `gcloud_*()` family of functions provide access to Google cloud
 functions implemented by the `gcloud` binary. `gcloud_project()`
 returns the current billing account.
 
-```{r}
+```{r, eval = has_gcloud}
 gcloud_account() # authentication account
 gcloud_project() # billing project information
 ```
@@ -184,7 +185,7 @@ gcloud_project() # billing project information
 A convenient way to access _any_ `gcloud` SDK command is to use
 `gcloud_cmd()`, e.g.,
 
-```{r}
+```{r, eval = has_gcloud}
 gcloud_cmd("projects", "list") %>%
     readr::read_table() %>%
     filter(startsWith(PROJECT_ID, "anvil"))
@@ -213,7 +214,7 @@ src <- "gs://genomics-public-data/1000-genomes/"
 `gsutil_ls()` lists bucket content; `gsutil_stat()` additional detail
 about fully-specified buckets.
 
-```{r}
+```{r, eval = has_gcloud}
 gsutil_ls(src)
 
 other <- paste0(src, "other")
@@ -227,7 +228,7 @@ gsutil_stat(sample_info)
 to cloud storage requires write permission, of course. One or both of
 the arguments can be cloud endpoints.
 
-```{r}
+```{r, eval = has_gcloud}
 fl <- tempfile()
 gsutil_cp(sample_info, fl)
 
@@ -238,7 +239,7 @@ csv
 `gsutil_pipe()` provides a streaming interface that does not require
 intermediate disk storage.
 
-```{r}
+```{r, eval = has_gcloud}
 pipe <- gsutil_pipe(fl, "rb")
 readr::read_csv(pipe, guess_max = 5000L, col_types = readr::cols()) %>%
     dplyr::select("Sample", "Family_ID", "Population", "Gender")
@@ -249,7 +250,7 @@ bucket. This can be a powerful operation when `delete = TRUE`
 (removing local or remote files), and has default option `dry = TRUE`
 to indicate the consequences of the sync.
 
-```{r}
+```{r, eval = has_gcloud}
 destination <- tempfile()
 stopifnot(dir.create(destination))
 source <- paste0(src, "other/sample_info")
@@ -306,7 +307,7 @@ OTHER DATA     | `avbucket()`
 Workspace Data | `avdata()`
 Files          | `avfiles_ls()`, `avfiles_backup()`, `avfiles_restore()`
 
-```{r, include = FALSE, cache = FALSE}
+```{r, include = FALSE, cache = FALSE, eval = has_gcloud}
 avworkspace_namespace("pathogen-genomic-surveillance")
 avworkspace_name("COVID-19")
 ```
@@ -316,7 +317,7 @@ Data tables in a workspace are available by specifying the `namespace`
 on the AnVIL in a Jupyter notebook or RStudio, this information can be
 discovered with
 
-```{r}
+```{r, eval = has_gcloud}
 avworkspace_namespace()
 avworkspace_name()
 ```
@@ -324,7 +325,7 @@ avworkspace_name()
 It is also possible to specify, when not in the AnVIL compute
 environment, the data resource to work with.
 
-```{r}
+```{r, eval = has_gcloud}
 ## N.B.: IT MAY NOT BE NECESSARY TO SET THESE WHEN ON ANVIL
 avworkspace_namespace("pathogen-genomic-surveillance")
 avworkspace_name("COVID-19")
@@ -336,7 +337,7 @@ Accessing data tables use the `av*()` functions. Use `avtables()` to
 discover available tables, and `avtable()` to retrieve a particular
 table
 
-```{r}
+```{r, eval = has_gcloud}
 avtables()
 sample <- avtable("sample")
 sample
@@ -346,7 +347,7 @@ The data in the table can then be manipulated using standard _R_
 commands, e.g., to identify SRA samples for which a final assembly
 fasta file is available.
 
-```{r}
+```{r, eval = has_gcloud}
 sample %>%
     select("sample_id", contains("fasta")) %>%
     filter(!is.na(final_assembly_fasta))
@@ -434,7 +435,7 @@ individual rows from a table. Use `avtable_delete_values()`.
 The 'Workspace Data' is accessible through `avdata()` (the example
 below shows that some additional parsing may be necessary).
 
-```{r}
+```{r, eval = has_gcloud}
 avdata()
 ```
 
@@ -444,14 +445,14 @@ Each workspace is associated with a google bucket, with the content
 summarized in the 'Files' portion of the workspace. The location of
 the files is
 
-```{r}
+```{r, eval = has_gcloud}
 bucket <- avbucket()
 bucket
 ```
 
 The content of the bucket can be viewed with
 
-```{r}
+```{r, eval = has_gcloud}
 avfiles_ls()
 ```
 
@@ -559,7 +560,7 @@ article][DRS] provides more information, though not about DRS in R!
 
 The following DRS URIs identify a 1000 Genomes VCF file and it's index
 
-```{r}
+```{r, eval = has_gcloud}
 uri <- c(
     vcf = "drs://dg.ANV0/6f633518-f2de-4460-aaa4-a27ee6138ab5",
     tbi = "drs://dg.ANV0/4fb9e77f-c92a-4deb-ac90-db007dc633aa"
@@ -645,13 +646,13 @@ about available endpoints. Terra / AnVIL project services usually have
 Swagger / OpenApi-generated documentation, e.g., for the [Terra
 service][].
 
-```{r}
+```{r, eval = has_gcloud}
 terra <- Terra()
 ```
 
 Printing the return object displays a brief summary of endpoints
 
-```{r}
+```{r, eval = has_gcloud}
 terra
 ```
 
@@ -660,7 +661,7 @@ providing some level of organization when exploring the service. Tags
 display consists of endpoints (available as a tibble with
 `tags(terra)`).
 
-```{r}
+```{r, eval = has_gcloud}
 terra %>% tags("Status")
 ```
 
@@ -671,7 +672,7 @@ brief documentation string (derived from the schema
 specification. Including parentheses (and necessary arguments) invokes
 the endpoint.
 
-```{r}
+```{r, eval = has_gcloud}
 terra$status
 terra$status()
 ```
@@ -681,14 +682,14 @@ as a list specified with `.__body__ = list(...)`; use `args()` to
 discover whether arguments should be present in the body of the
 request. For instance,
 
-```{r}
+```{r, eval = has_gcloud}
 args(terra$createBillingProjectFull)
 ```
 
 shows that all arguments should be included in the `.__body__=`
 argument. A more complicated example is
 
-```{r}
+```{r, eval = has_gcloud}
 args(terra$overwriteWorkspaceMethodConfig)
 ```
 
@@ -709,7 +710,7 @@ object (named list without content) required by some endpoints.
 
 Endpoints return objects of class `response`, defined in the [httr][] package
 
-```{r}
+```{r, eval = has_gcloud}
 status <- terra$status()
 class(status)
 ```
@@ -723,7 +724,7 @@ structure of the response. Note that this is not the literal structure
 of the `response` object (use `utils::str(status)` for that), but
 rather the structure of the JSON response received from the service.
 
-```{r}
+```{r, eval = has_gcloud}
 str(status)
 ```
 
@@ -732,7 +733,7 @@ attempts to transform the list into a tibble. `flatten()` is effective
 when the response is in fact a JSON row-wise representation of
 tibble-like data.
 
-```{r}
+```{r, eval = has_gcloud}
 lst <- status %>% as.list()
 lengths(lst)
 lengths(lst$systems)

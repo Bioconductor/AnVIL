@@ -25,8 +25,9 @@ vignette: |
 ---
 
 ```{r, include = FALSE}
+has_gcloud <- AnVIL::gcloud_exists()
 knitr::opts_chunk$set(
-    eval =  AnVIL::gcloud_exists(), collapse = TRUE, cache = TRUE
+    eval =  has_gcloud, collapse = TRUE, cache = TRUE
 )
 options(width=75)
 ```
@@ -56,7 +57,7 @@ name of the workspace to be used with the functions. In our case we
 will be using the Bioconductor AnVIL namespace and a DESeq2 workflow
 as the intended workspace.
 
-```{r workspace}
+```{r workspace, eval = has_gcloud}
 avworkspace("bioconductor-rpci-anvil/Bioconductor-Workflow-DESeq2")
 ```
 
@@ -64,14 +65,14 @@ Each workspace can have 0 or more workflows. The workflows have a
 `name` and `namespace`, just as workspaces. Discover the workflows
 available in a workspace
 
-```{r workflows}
+```{r workflows, eval = has_gcloud}
 avworkflows()
 ```
 
 From the table returned by `avworkflows()`, record the namespace and
 name of the workflow of interest using `avworkflow()`.
 
-```{r workflow}
+```{r workflow, eval = has_gcloud}
 avworkflow("bioconductor-rpci-anvil/AnVILBulkRNASeq")
 ```
 
@@ -81,7 +82,7 @@ Each workflow defines inputs, outputs and certain code
 execution. These workflow 'configurations' that can be retrieved with
 `avworkflow_configuration_get`.
 
-```{r configuration}
+```{r configuration, eval = has_gcloud}
 config <- avworkflow_configuration_get()
 config
 ```
@@ -108,7 +109,7 @@ inputs and outputs, they are `avworkflow_configuration_inputs` and
 information in a `tibble` structure which users are most likely
 familiar with.
 
-```{r inputs_outputs}
+```{r inputs_outputs, eval = has_gcloud}
 inputs <- avworkflow_configuration_inputs(config)
 inputs
 
@@ -119,7 +120,7 @@ outputs
 Let's change the `salmon.transcriptome_index_name` field; this is an
 arbitrary string identifier in our workflow.
 
-```{r change_input}
+```{r change_input, eval = has_gcloud}
 inputs <-
     inputs |>
     mutate(
@@ -140,7 +141,7 @@ the configuration of the workflow. We can do this with
 inputs and outputs of the original configuration, just in case there were no
 changes to one of them (like in our example our outputs weren't changed).
 
-```{r update_config}
+```{r update_config, eval = has_gcloud}
 new_config <- avworkflow_configuration_update(config, inputs)
 new_config
 ```
@@ -150,7 +151,7 @@ new_config
 Use `avworkflow_configuration_set()` to permanently update the
 workflow to new parameter values.
 
-```{r set_config}
+```{r set_config, eval = has_gcloud}
 avworkflow_configuration_set(new_config)
 ```
 
@@ -170,7 +171,7 @@ To finally run the new workflow we need to know the name of the data set to be
 used in the workflow. This can be discovered by looking at the table of
 interest and using the name of the data set.
 
-```{r entityName}
+```{r entityName, eval = has_gcloud}
 entityName <- avtable("participant_set") |>
     pull(participant_set_id) |>
     head(1)
@@ -196,7 +197,7 @@ function. The elements of the table are ordered chronologically, with
 the most recent submission (most likely the job we just started!)
 listed first.
 
-```{r checking_workflow}
+```{r checking_workflow, eval = has_gcloud}
 avworkflow_jobs()
 ```
 
@@ -206,7 +207,7 @@ Use `avworkflow_stop()` to stop a currently running workflow. This
 will change the status of the job, reported by `avworkflow_jobs()`,
 from 'Submitted' to 'Aborted'.
 
-```{r stop_workflow}
+```{r stop_workflow, eval = has_gcloud}
 avworkflow_stop() # dry = FALSE to stop
 
 avworkflow_jobs()
@@ -222,7 +223,7 @@ analysis. Use the `submissionId` from `avworkflow_jobs()` to discover
 files produced by a submission; the default behavior lists files
 produced by the most recent job.
 
-```{r files}
+```{r files, eval = has_gcloud}
 submissionId <- "fb8e35b7-df5d-49e6-affa-9893aaeebf37"
 avworkflow_files(submissionId)
 ```
@@ -233,7 +234,7 @@ localized to the persistent disk of the current runtime using
 the most recently submitted job; use `type=` to influence which files
 ('control' e.g., log files, 'output', or 'all') are localized.
 
-```{r localize}
+```{r localize, eval = has_gcloud}
 avworkflow_localize(
     submissionId,
     type = "output"
@@ -315,7 +316,7 @@ In the example used so far, each workflow produces a single file. A
 different examples is a workflow that produces multiple output
 files. This corresponds to the following submissionId:
 
-```{r, eval = FALSE}
+```{r, eval = FALSE, eval = has_gcloud}
 submissionId <- "35280de1-42d8-492b-aa8c-5feff984bffa"
 info_2 <- avworkflow_info(submissionId)
 ```
