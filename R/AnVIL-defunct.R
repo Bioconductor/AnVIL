@@ -62,7 +62,9 @@ repository_stats <-
         version = BiocManager::version(),
         binary_base_url = BINARY_BASE_URL)
 {
-    .Defunct("BiocPkgTools::repositoryStats", package = "AnVIL")
+    .life_cycle(
+        newpackage = "BiocPkgTools", cycle = "defunct"
+    )
 }
 
 #' @describeIn AnVIL-defunct Print a summary of package
@@ -76,5 +78,7 @@ repository_stats <-
 print.repository_stats <-
     function(x, ...)
 {
-    .Defunct("BiocPkgTools:::print.repositoryStats", package = "AnVIL")
+    .life_cycle(
+        newpackage = "BiocPkgTools", cycle = "defunct"
+    )
 }
