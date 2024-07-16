@@ -1,6 +1,6 @@
 test_that("positional matching works for body arguments", {
-    skip_if(!gcloud_exists())
-    
+    skip_if(!AnVILGCP::gcloud_exists())
+
     ## two arguments for URL, one for BODY
     fun <- Terra()$flexibleImportEntities
 
@@ -35,7 +35,7 @@ test_that("'accept' defaults to */*", {
 ## previously recorded versions.
 
 test_that("Interfaces are current", {
-    skip_if(!gcloud_exists())
+    skip_if(!AnVILGCP::gcloud_exists())
 
     service_status <- .api_test_check(Terra(), "Terra")
     expect_identical(service_status$removed_in_use, character())
