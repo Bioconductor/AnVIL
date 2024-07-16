@@ -407,6 +407,7 @@ avtable_import_status <-
 #'
 #' @examples
 #' library(AnVILBase)
+#' library(AnVILGCP)
 #' if (
 #'     gcloud_exists() && identical(avplatform_namespace(), "AnVILGCP") &&
 #'     nzchar(avworkspace_name())

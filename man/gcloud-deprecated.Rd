@@ -93,6 +93,7 @@ commands such as \code{rm} and \code{cp}.
 bucket via \verb{gcloud storage buckets create ...}.
 }
 \examples{
+library(AnVILGCP)
 gcloud_exists()
 
 if (gcloud_exists())

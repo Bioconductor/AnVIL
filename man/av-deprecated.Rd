@@ -272,6 +272,7 @@ the compute node file system.
 }
 \examples{
 library(AnVILBase)
+library(AnVILGCP)
 if (
     gcloud_exists() && identical(avplatform_namespace(), "AnVILGCP") &&
     nzchar(avworkspace_name())

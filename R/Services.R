@@ -135,6 +135,7 @@ tags <-
 #'     `createBillingProjectFull()`, below.
 #'
 #' @examples
+#' library(AnVILGCP)
 #' if (gcloud_exists()) {
 #'     ## Arguments to be used as the 'body' (`.__body__=`) of a REST query
 #'     Terra()$createBillingProjectFull       # 6 arguments...

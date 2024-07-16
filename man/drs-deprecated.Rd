@@ -102,6 +102,7 @@ drs <- c(
     tbi = "drs://dg.ANV0/4fb9e77f-c92a-4deb-ac90-db007dc633aa"
 )
 
+library(AnVILGCP)
 if (gcloud_exists() && startsWith(gcloud_account(), "pet-")) {
     ## from within AnVIL
     tbl <- drs_stat(uri)

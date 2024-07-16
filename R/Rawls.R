@@ -19,6 +19,7 @@
 #' @format NULL
 #'
 #' @examples
+#' library(AnVILGCP)
 #' if (gcloud_exists()) {
 #'     tags(Rawls())
 #'     tags(Rawls(), "billing")

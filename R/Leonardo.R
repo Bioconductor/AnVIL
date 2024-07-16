@@ -20,6 +20,7 @@
 #' @format NULL
 #'
 #' @examples
+#' library(AnVILGCP)
 #' if (gcloud_exists())
 #'     Leonardo()
 #'

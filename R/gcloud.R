@@ -78,6 +78,7 @@ NULL
 #'     application can be found, FALSE otherwise.
 #'
 #' @examples
+#' library(AnVILGCP)
 #' gcloud_exists()
 #'
 #' @export

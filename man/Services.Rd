@@ -113,19 +113,23 @@ in 'body' of the REST request. Specify these using the
 \examples{
 empty_object
 
+library(AnVILGCP)
 if (gcloud_exists()) {
     ## Arguments to be used as the 'body' (`.__body__=`) of a REST query
     Terra()$createBillingProjectFull       # 6 arguments...
     args(Terra()$createBillingProjectFull) # ... passed as `.__body__ = list(...)`
 }
+library(AnVILGCP)
 if (gcloud_exists())
     Leonardo()
 
+library(AnVILGCP)
 if (gcloud_exists()) {
     tags(Terra())
     tags(Terra(), "Billing")
 }
 
+library(AnVILGCP)
 if (gcloud_exists()) {
     tags(Rawls())
     tags(Rawls(), "billing")

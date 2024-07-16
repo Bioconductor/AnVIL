@@ -217,6 +217,7 @@ to provide a quoted string \code{unbox('"foo"')}.
 }
 \examples{
 library(AnVILBase)
+library(AnVILGCP)
 if (
     gcloud_exists() && identical(avplatform_namespace(), "AnVILGCP") &&
     nzchar(avworkspace_name()) && interactive()

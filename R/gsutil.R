@@ -59,6 +59,7 @@ NULL
 #'     when requester-pays is enabled.
 #'
 #' @examples
+#' library(AnVILGCP)
 #' if (gcloud_exists())
 #'     gsutil_requesterpays(src) # FALSE -- no cost download
 #'
