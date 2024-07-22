@@ -4,59 +4,6 @@
     .gcloud_sdk_do("gcloud", c(...))
 }
 
-.gcloud_access_token_new <-
-    function(app_default, now)
-{
-    ## obtain the access token
-    token <- .gcloud_do("auth", app_default, "print-access-token")
-
-    ## There is only one token per service account, so requesting a
-    ## token may return one with expiration less than 60 minutes. So
-    ## check the actual expiry time of the token.
-    ##
-    ## Calculating expiry from before the call (`now` argument) is
-    ## conservative -- we underestimate the time by the latency
-    ## involved in the POST and result parsing.
-    response <- POST(
-        "https://www.googleapis.com/oauth2/v1/tokeninfo",
-        httr::content_type("application/x-www-form-urlencoded"),
-        body = paste0("access_token=", token)
-    )
-    avstop_for_status(response, ".gcloud_access_token_expires")
-    expires <- now + content(response)$expires_in
-
-    list(token = token, expires = expires)
-}
-
-# .gcloud_access_token ----------------------------------------------------
-
-.gcloud_access_token <-
-    local(
-{
-    tokens <- new.env(parent = emptyenv())
-    function(service) {
-        app_default <-
-            if (identical(Sys.getenv("USER"), "jupyter-user"))
-                "application-default"
-
-        key <- paste0(service, ":", app_default, ":", gcloud_account())
-        now <- Sys.time()
-        if (is.null(tokens[[key]])) {
-            tokens[[key]] <- .gcloud_access_token_new(app_default, now)
-        } else {
-            expires_in <- tokens[[key]]$expires - now
-            if (expires_in < 1L) {
-                ## allow a nearly expired token to fully expire
-                if (expires_in > 0L)
-                    Sys.sleep(expires_in)
-                tokens[[key]] <- .gcloud_access_token_new(app_default, now)
-            }
-        }
-
-        tokens[[key]]$token
-    }
-})
-
 #' @name gcloud-deprecated
 #'
 #' @aliases gcloud

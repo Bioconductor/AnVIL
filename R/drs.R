@@ -60,7 +60,9 @@
 .drs_stat_impl <-
     function(source, template)
 {
-    access_token <- .gcloud_access_token("drs")
+    if (!requireNamespace("AnVILGCP", quietly = TRUE))
+        stop("Install 'AnVILGCP' to use resolve DRS URLs", call. = FALSE)
+    access_token <- AnVILGCP::gcloud_access_token("drs")
 
     if (identical(.Platform$OS.type, "windows")) {
         mc.cores <- 1L
