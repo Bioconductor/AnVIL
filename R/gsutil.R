@@ -229,10 +229,10 @@ gsutil_stat <-
     )
 
     ## reshape to one row per bucket
-    tbl %>%
+    tbl |>
         pivot_wider(
             id_cols = .data$path, names_from = "key", values_from = "value"
-        ) %>%
+        ) |>
         mutate(
             `Creation time` =
                 as.POSIXct(.data$`Creation time`, tz = "GMT", format = tz_format),

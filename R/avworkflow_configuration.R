@@ -172,7 +172,7 @@ avworkflow_configuration_get <-
         workflow_namespace, workflow_name
     )
     avstop_for_status(config, "avworkflow_methods")
-    config_list <- config %>% as.list()
+    config_list <- config |> as.list()
     class(config_list) <- c("avworkflow_configuration", class(config_list))
     config_list
 }
@@ -437,7 +437,7 @@ avworkflow_configuration_set <-
     avstop_for_status(response, "avworkflow_configuration_set")
 
     response <-
-        response %>%
+        response |>
         as.list()
     .avworkflow_configuration_set_validate_response(response)
     return(invisible(config))

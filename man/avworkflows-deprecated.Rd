@@ -222,7 +222,7 @@ if (
     nzchar(avworkspace_name())
 )
     ## from within AnVIL
-    avworkflows() \%>\% select(namespace, name)
+    avworkflows() |> select(namespace, name)
 
 if (
     gcloud_exists() && identical(avplatform_namespace(), "AnVILGCP") &&

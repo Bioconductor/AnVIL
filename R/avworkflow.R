@@ -31,7 +31,6 @@ NULL
 #'   'main' branch of a github repository.
 #'
 #' @importFrom BiocBaseUtils isScalarCharacter
-#' @importFrom dplyr %>%
 #'
 #' @examples
 #' library(AnVILBase)
@@ -41,7 +40,7 @@ NULL
 #'     nzchar(avworkspace_name())
 #' )
 #'     ## from within AnVIL
-#'     avworkflows() %>% select(namespace, name)
+#'     avworkflows() |> select(namespace, name)
 #'
 #' @export
 avworkflows <-
@@ -59,7 +58,7 @@ avworkflows <-
         namespace, URLencode(name), TRUE
     )
     avstop_for_status(workflows, "avworkflows")
-    workflows %>% flatten()
+    workflows |> flatten()
 }
 
 .WORKFLOW_LOGS <- "workflow.logs"
@@ -440,8 +439,8 @@ avworkflow_localize <-
     type <- match.arg(type)
     if (is.null(submissionId))
         submissionId <-
-            avworkflow_jobs() %>%
-            pull(submissionId) %>%
+            avworkflow_jobs() |>
+            pull(submissionId) |>
             head(1)
 
     stopifnot(

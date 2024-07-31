@@ -102,7 +102,7 @@ isScalarCharacter_or_NULL <- function(x, na.ok = FALSE, zchar = FALSE)
         have <- intersect(names(tbl), names(tmpl))
         tbl <- select(tbl, have)
         result <-
-            full_join(tbl, result, by = have) %>%
+            full_join(tbl, result, by = have) |>
             select(names(tmpl))
     }
     result
