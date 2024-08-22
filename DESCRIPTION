@@ -1,10 +1,10 @@
 Package: AnVIL
 Title: Bioconductor on the AnVIL compute environment
-Version: 1.17.11
+Version: 1.17.12
 Authors@R: c(
     person(
         "Marcel", "Ramos", role = c("aut", "cre"),
-        email = "marcel.ramos@roswellpark.org",
+        email = "marcel.ramos@sph.cuny.edu",
         comment = c(ORCID = "0000-0002-3242-0582")
     ),
     person(
@@ -53,4 +53,4 @@ VignetteBuilder: knitr
 biocViews: Infrastructure
 RoxygenNote: 7.3.2
 Roxygen: list(markdown = TRUE)
-Date: 2024-07-22
+Date: 2024-08-22
