@@ -490,6 +490,8 @@ avworkflow_configuration_set <-
 #'     `integer` or `string`.
 #' - deleted logical(1) of uncertain purpose.
 #'
+#' @importFrom jsonlite unbox
+#'
 #' @examples
 #' avworkflow_configuration_template()
 #'

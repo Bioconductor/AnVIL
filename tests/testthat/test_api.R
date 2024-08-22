@@ -16,16 +16,6 @@ test_that("positional matching works for body arguments", {
 
 })
 
-test_that("'accept' defaults to */*", {
-    op_def <- list(produces = NULL)
-    expect_identical(.api_get_accept(op_def), httr::accept("*/*"))
-
-    produces <- "*/*"
-    op_def <- list(produces = produces)
-    expect_identical(.api_get_accept(op_def), httr::accept(produces))
-})
-
-
 ## Check that the API calls used by AnVIL are consistent with the API
 ## in the YAML. Requires manual investigation of any removed or
 ## updated_args_in_use functions.

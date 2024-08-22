@@ -4,7 +4,7 @@ setOldClass("rapi_api")
 
 setOldClass("request")
 
-#' @importFrom rapiclient get_api get_operations get_schemas
+#' @importFrom rapiclient get_api
 #'
 #' @export
 .Service <- setClass(
@@ -20,7 +20,7 @@ setOldClass("request")
 
 .config <- function(x) x@config
 
-#' @importFrom httr write_disk
+#' @importFrom httr write_disk GET
 #' @importFrom AnVILBase avstop_for_status
 .service_get_api_file <- function(reference_url, reference_headers) {
     fl <- tempfile()

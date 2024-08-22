@@ -50,6 +50,8 @@ setGeneric(
 #'     automatically 'unbox' R scalar values from JSON arrays to JSON
 #'     scalers.
 #'
+#' @importFrom rapiclient get_operations
+#'
 #' @export
 setMethod(
     "operations", "Service",
@@ -58,7 +60,7 @@ setMethod(
     stopifnot(
         isScalarLogical(auto_unbox)
     )
-    operations <- .api_get_operations(.api(x), ...)
+    operations <- get_operations(.api(x), ...)
     deprecated <- .operation_field(operations, "deprecated")
     keep <- .deprecated | !vapply(deprecated, isTRUE, logical(1))
     operations[keep]
@@ -70,6 +72,7 @@ setMethod(
 setGeneric("schemas", function(x) standardGeneric("schemas"))
 
 #' @export
+#' @importFrom rapiclient get_schemas
 setMethod(
     "schemas", "Service",
     function(x)
