@@ -25,7 +25,10 @@ vignette: |
 ---
 
 ```{r, include = FALSE}
-has_gcloud <- AnVIL::gcloud_exists()
+has_gcloud <- function() {
+    AnVILGCP::gcloud_exists() &&
+    identical(AnVILBase::avplatform_namespace(), "AnVILGCP")
+}
 knitr::opts_chunk$set(
     eval =  has_gcloud, collapse = TRUE, cache = TRUE
 )
@@ -45,6 +48,7 @@ BiocManager::install("AnVIL")
 Once installed, load the package with
 
 ```{r, message = FALSE, eval = TRUE, cache = FALSE}
+library(AnVILGCP)
 library(AnVIL)
 ```
 
@@ -300,7 +304,7 @@ info_1 |>
 
 The outputs (files summarizing the single-cell analysis, and the
 timestamps associated with each step in the analysis) involve two
-levels of nesting; following the strategy outlined in 
+levels of nesting; following the strategy outlined in
 [R for Data Science][r4ds], the outputs (google bucket locations) are
 
 [r4ds]: https://r4ds.hadley.nz/rectangling
