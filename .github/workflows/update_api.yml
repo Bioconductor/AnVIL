@@ -1,0 +1,47 @@
+name: Update to Dockstore API
+
+on: workflow_dispatch
+
+jobs:
+  apiUpdate:
+    runs-on: ubuntu-24.04
+    container: bioconductor/bioconductor_docker:RELEASE_3_20
+
+    env:
+      R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Install Dependencies
+        run: Rscript -e "install.packages('yaml')"
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install lucybot converter
+        run: npm install -g api-spec-converter
+
+      - name: Add safe directory
+        run: git config --global --add safe.directory /__w/AnVIL/AnVIL
+
+      - name: Download API and write MD5
+        run: Rscript -e "source('./inst/scripts/update_dockstore_api.R')"
+
+      - name: Commit changes
+        if: ${{ success() }}
+        uses: EndBug/add-and-commit@v9
+        with:
+          add: '["inst/service/dockstore/api.yaml", "R/Dockstore.R"]'
+          message: 'Update API'
+
+      - name: Push action
+        uses: ad-m/github-push-action@master
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
