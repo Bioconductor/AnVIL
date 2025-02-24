@@ -13,7 +13,7 @@
     },
     "termsOfService": "https://github.com/dockstore/dockstore-ui2/raw/develop/src/assets/docs/Dockstore_Terms_of_Service.pdf",
     "title": "Dockstore API",
-    "version": "1.16.5"
+    "version": "1.16.6"
   },
   "basePath": "/api",
   "paths": {
@@ -1000,6 +1000,7 @@
               "NEXTFLOW_TOWER",
               "ELWAZI",
               "AGC",
+              "TOIL",
               "OTHER",
               "ALL"
             ],
@@ -1086,6 +1087,7 @@
               "NEXTFLOW_TOWER",
               "ELWAZI",
               "AGC",
+              "TOIL",
               "OTHER",
               "ALL"
             ],
@@ -1175,6 +1177,7 @@
               "NEXTFLOW_TOWER",
               "ELWAZI",
               "AGC",
+              "TOIL",
               "OTHER",
               "ALL"
             ],
@@ -12737,6 +12740,7 @@
             "NEXTFLOW_TOWER",
             "ELWAZI",
             "AGC",
+            "TOIL",
             "OTHER",
             "ALL"
           ],
@@ -15082,6 +15086,7 @@
             "NEXTFLOW_TOWER",
             "ELWAZI",
             "AGC",
+            "TOIL",
             "OTHER",
             "ALL"
           ],
@@ -16512,6 +16517,7 @@
             "NEXTFLOW_TOWER",
             "ELWAZI",
             "AGC",
+            "TOIL",
             "OTHER",
             "ALL"
           ],
