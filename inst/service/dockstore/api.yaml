@@ -13,7 +13,7 @@
     },
     "termsOfService": "https://github.com/dockstore/dockstore-ui2/raw/develop/src/assets/docs/Dockstore_Terms_of_Service.pdf",
     "title": "Dockstore API",
-    "version": "1.16.6"
+    "version": "1.17.0"
   },
   "basePath": "/api",
   "paths": {
@@ -9390,6 +9390,41 @@
         ],
         "description": "Get information about tokens with user id.",
         "operationId": "getUserTokens"
+      },
+      "post": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "format": "int64",
+            "in": "path",
+            "name": "userId",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The new token.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "BEARER": []
+          }
+        ],
+        "tags": [
+          "users"
+        ],
+        "description": "Create a Dockstore token for a metrics robot user.",
+        "operationId": "createMetricsRobotToken"
       }
     },
     "/users/{userId}/workflows": {
@@ -9584,6 +9619,55 @@
         ],
         "description": "Handles the deletion of a branch on GitHub. Will delete all workflow versions that match in all workflows that share the same repository.",
         "operationId": "handleGitHubBranchDeletion"
+      }
+    },
+    "/workflows/github/infer/{owner}/{repo}/{ref}": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "repo owner",
+            "in": "path",
+            "name": "owner",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "repo name",
+            "in": "path",
+            "name": "repo",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "reference, could contain slashes which need to be urlencoded",
+            "in": "path",
+            "name": "ref",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "default response",
+            "schema": {
+              "type": "string"
+            }
+          }
+        },
+        "security": [
+          {
+            "BEARER": []
+          }
+        ],
+        "tags": [
+          "workflows"
+        ],
+        "deprecated": true,
+        "description": "Infer the entries in the file tree of a GitHub repository reference.",
+        "operationId": "inferEntries"
       }
     },
     "/workflows/github/install": {
@@ -10576,6 +10660,76 @@
         "operationId": "getPublishedWorkflow"
       }
     },
+    "/workflows/published/{workflowId}/workflowVersions": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "id of the workflow",
+            "format": "int64",
+            "in": "path",
+            "name": "workflowId",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "default": 100,
+            "format": "int32",
+            "in": "query",
+            "maximum": 100,
+            "minimum": 1,
+            "name": "limit",
+            "type": "integer"
+          },
+          {
+            "default": 0,
+            "format": "int32",
+            "in": "query",
+            "minimum": 0,
+            "name": "offset",
+            "type": "integer"
+          },
+          {
+            "in": "query",
+            "name": "sortCol",
+            "type": "string"
+          },
+          {
+            "default": "desc",
+            "in": "query",
+            "name": "sortOrder",
+            "type": "string"
+          },
+          {
+            "description": "Comma-delimited list of fields to include: validations, aliases, images, authors, metrics",
+            "in": "query",
+            "name": "include",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get workflow versions in an entry. Default is 100 versions",
+            "schema": {
+              "items": {
+                "$ref": "#/definitions/WorkflowVersion"
+              },
+              "type": "array"
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        },
+        "tags": [
+          "workflows"
+        ],
+        "description": "Return paginated versions in an public entry",
+        "operationId": "getPublicWorkflowVersions"
+      }
+    },
     "/workflows/registries/{gitRegistry}/organizations/{organization}/repositories/{repositoryName}": {
       "delete": {
         "produces": [
@@ -10718,6 +10872,13 @@
             "in": "query",
             "name": "filter",
             "type": "string"
+          },
+          {
+            "description": "Only check GitHub repos with releases over this number of days. Don't set to check all repos",
+            "format": "int32",
+            "in": "query",
+            "name": "daysSinceLastRelease",
+            "type": "integer"
           }
         ],
         "responses": {
@@ -10777,6 +10938,45 @@
         ],
         "description": "List the versions for a published workflow.",
         "operationId": "tags_1"
+      }
+    },
+    "/workflows/versionsNeedingRetroactiveDoi": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "default": 100,
+            "format": "int32",
+            "in": "query",
+            "maximum": 1000,
+            "minimum": 1,
+            "name": "limit",
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "default response",
+            "schema": {
+              "items": {
+                "$ref": "#/definitions/WorkflowAndVersion"
+              },
+              "type": "array"
+            }
+          }
+        },
+        "security": [
+          {
+            "BEARER": []
+          }
+        ],
+        "tags": [
+          "workflows"
+        ],
+        "description": "Calculates a list of workflow versions that need a retroactive DOI",
+        "operationId": "getVersionsNeedingRetroactiveDoi"
       }
     },
     "/workflows/{entryId}/registerCheckerWorkflow/{descriptorType}": {
@@ -11478,6 +11678,56 @@
         "operationId": "refreshVersion"
       }
     },
+    "/workflows/{workflowId}/requestAutomaticDOI/{workflowVersionId}": {
+      "put": {
+        "consumes": [],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "format": "int64",
+            "in": "path",
+            "name": "workflowId",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "format": "int64",
+            "in": "path",
+            "name": "workflowVersionId",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "description": "This is here to appease Swagger. It requires PUT methods to have a body, even if it is empty. Please leave it empty.",
+            "in": "body",
+            "name": "body",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "default response",
+            "schema": {
+              "$ref": "#/definitions/WorkflowVersion"
+            }
+          }
+        },
+        "security": [
+          {
+            "BEARER": []
+          }
+        ],
+        "tags": [
+          "workflows"
+        ],
+        "description": "Request an automatic DOI for this version of a workflow.",
+        "operationId": "requestAutomaticDOIForWorkflowVersion"
+      }
+    },
     "/workflows/{workflowId}/requestDOI/{workflowVersionId}": {
       "put": {
         "consumes": [],
@@ -11617,41 +11867,6 @@
         ],
         "description": "Reset the workflow paths.",
         "operationId": "updateWorkflowPath"
-      }
-    },
-    "/workflows/{workflowId}/restub": {
-      "get": {
-        "produces": [
-          "application/json"
-        ],
-        "parameters": [
-          {
-            "format": "int64",
-            "in": "path",
-            "name": "workflowId",
-            "required": true,
-            "type": "integer"
-          }
-        ],
-        "responses": {
-          "default": {
-            "description": "default response",
-            "schema": {
-              "$ref": "#/definitions/Workflow"
-            }
-          }
-        },
-        "security": [
-          {
-            "BEARER": []
-          }
-        ],
-        "tags": [
-          "workflows"
-        ],
-        "description": "Restub a workflow",
-        "operationId": "restub",
-        "summary": "Restub a workflow"
       }
     },
     "/workflows/{workflowId}/secondaryDescriptors": {
@@ -12022,17 +12237,52 @@
         ],
         "parameters": [
           {
-            "description": "id of the worflow",
+            "description": "id of the workflow",
             "format": "int64",
             "in": "path",
             "name": "workflowId",
             "required": true,
             "type": "integer"
+          },
+          {
+            "default": 100,
+            "format": "int32",
+            "in": "query",
+            "maximum": 100,
+            "minimum": 1,
+            "name": "limit",
+            "type": "integer"
+          },
+          {
+            "default": 0,
+            "format": "int32",
+            "in": "query",
+            "minimum": 0,
+            "name": "offset",
+            "type": "integer"
+          },
+          {
+            "description": "column used to sort versions. if omitted, the webservice determines the sort order, currently default version first",
+            "in": "query",
+            "name": "sortCol",
+            "type": "string"
+          },
+          {
+            "default": "desc",
+            "in": "query",
+            "name": "sortOrder",
+            "type": "string"
+          },
+          {
+            "description": "Comma-delimited list of fields to include: validations, aliases, images, authors, metrics",
+            "in": "query",
+            "name": "include",
+            "type": "string"
           }
         ],
         "responses": {
           "200": {
-            "description": "Get list workflow versions in a workflow",
+            "description": "Get workflow versions in an entry. Default is 100 versions",
             "schema": {
               "items": {
                 "$ref": "#/definitions/WorkflowVersion"
@@ -12052,7 +12302,7 @@
         "tags": [
           "workflows"
         ],
-        "description": "Return first 200 versions in an entry",
+        "description": "Return paginated versions in an entry. Max pagination is 100 versions.",
         "operationId": "getWorkflowVersions"
       },
       "put": {
@@ -14194,6 +14444,14 @@
           "description": "The content of the file itself. One of url or content is required.",
           "type": "string"
         },
+        "dockstore_absolute_path": {
+          "description": "Absolute path of the file.  A descriptor's path can be used with zip from toolsIdVersionsVersionIdTypeFilesGet when format=zip is specified",
+          "type": "string"
+        },
+        "dockstore_self_url": {
+          "description": "Self URL to this file in the toolsIdVersionsVersionIdTypeDescriptorRelativePathGet endpoint",
+          "type": "string"
+        },
         "image_type": {
           "$ref": "#/definitions/OneOfFileWrapperImageType"
         },
@@ -15072,6 +15330,25 @@
         },
         "curator": {
           "type": "boolean"
+        },
+        "metricsRobotPartner": {
+          "enum": [
+            "GALAXY",
+            "TERRA",
+            "DNA_STACK",
+            "DNA_NEXUS",
+            "CGC",
+            "NHLBI_BIODATA_CATALYST",
+            "ANVIL",
+            "CAVATICA",
+            "NEXTFLOW_TOWER",
+            "ELWAZI",
+            "AGC",
+            "TOIL",
+            "OTHER",
+            "ALL"
+          ],
+          "type": "string"
         },
         "platformPartner": {
           "enum": [
@@ -16048,6 +16325,10 @@
         "checksum": {
           "$ref": "#/definitions/Checksum"
         },
+        "dockstore_absolute_path": {
+          "description": "Absolute path of the file.  A descriptor's path can be used with zip from toolsIdVersionsVersionIdTypeFilesGet when format=zip is specified",
+          "type": "string"
+        },
         "file_type": {
           "enum": [
             "TEST_FILE",
@@ -16496,6 +16777,29 @@
         "isAdmin": {
           "description": "Indicates whether the user is an admin.  The value is always false unless requested for oneself or by an admin",
           "type": "boolean"
+        },
+        "metricsRobot": {
+          "type": "boolean"
+        },
+        "metricsRobotPartner": {
+          "description": "Indicates whether this user is a robot that submits metrics",
+          "enum": [
+            "GALAXY",
+            "TERRA",
+            "DNA_STACK",
+            "DNA_NEXUS",
+            "CGC",
+            "NHLBI_BIODATA_CATALYST",
+            "ANVIL",
+            "CAVATICA",
+            "NEXTFLOW_TOWER",
+            "ELWAZI",
+            "AGC",
+            "TOIL",
+            "OTHER",
+            "ALL"
+          ],
+          "type": "string"
         },
         "name": {
           "type": "string"
@@ -17406,6 +17710,17 @@
       "required": [
         "type"
       ],
+      "type": "object"
+    },
+    "WorkflowAndVersion": {
+      "properties": {
+        "version": {
+          "$ref": "#/definitions/Version"
+        },
+        "workflow": {
+          "$ref": "#/definitions/Workflow"
+        }
+      },
       "type": "object"
     },
     "WorkflowSubClass": {
