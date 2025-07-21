@@ -13,7 +13,7 @@ info:
   license:
     name: Apache License Version 2.0
     url: https://github.com/dockstore/dockstore/blob/develop/LICENSE
-  version: 1.16.5
+  version: 1.17.1
 servers:
 - url: /api
   description: Current server when hosted on AWS
@@ -98,7 +98,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/WorkflowVersion'
+                $ref: "#/components/schemas/WorkflowVersion"
       security:
       - BEARER: []
   /aliases/workflow-versions/{alias}:
@@ -119,7 +119,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/WorkflowVersionPathInfo'
+                $ref: "#/components/schemas/WorkflowVersionPathInfo"
       security:
       - BEARER: []
   /categories:
@@ -148,7 +148,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Category'
+                  $ref: "#/components/schemas/Category"
   /categories/{id}:
     get:
       tags:
@@ -170,7 +170,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Category'
+                $ref: "#/components/schemas/Category"
         "404":
           description: Category not found
   /cloudInstances/{cloudInstanceId}:
@@ -210,7 +210,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/CloudInstance'
+                  $ref: "#/components/schemas/CloudInstance"
     post:
       tags:
       - Cloud Instances
@@ -221,7 +221,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CloudInstance'
+              $ref: "#/components/schemas/CloudInstance"
         required: true
       responses:
         "204":
@@ -260,7 +260,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Collection'
+                $ref: "#/components/schemas/Collection"
       security:
       - BEARER: []
   /organizations/{organizationId}/collections/{collectionId}/entry:
@@ -304,7 +304,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Collection'
+                $ref: "#/components/schemas/Collection"
       security:
       - BEARER: []
     delete:
@@ -346,7 +346,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Collection'
+                $ref: "#/components/schemas/Collection"
       security:
       - BEARER: []
   /organizations/{organizationId}/collections:
@@ -379,7 +379,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Collection'
+                  $ref: "#/components/schemas/Collection"
       security:
       - BEARER: []
     post:
@@ -401,7 +401,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Collection'
+              $ref: "#/components/schemas/Collection"
         required: true
       responses:
         default:
@@ -409,7 +409,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Collection'
+                $ref: "#/components/schemas/Collection"
       security:
       - BEARER: []
   /organizations/{organizationId}/collections/{collectionId}:
@@ -440,7 +440,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Collection'
+                $ref: "#/components/schemas/Collection"
       security:
       - BEARER: []
     put:
@@ -470,7 +470,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Collection'
+              $ref: "#/components/schemas/Collection"
         required: true
       responses:
         default:
@@ -478,7 +478,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Collection'
+                $ref: "#/components/schemas/Collection"
       security:
       - BEARER: []
     delete:
@@ -531,7 +531,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Collection'
+                $ref: "#/components/schemas/Collection"
   /organizations/{organizationName}/collections/{collectionName}/name:
     get:
       tags:
@@ -558,7 +558,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Collection'
+                $ref: "#/components/schemas/Collection"
       security:
       - BEARER: []
   /organizations/{organizationId}/collections/{collectionId}/description:
@@ -628,7 +628,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Collection'
+                $ref: "#/components/schemas/Collection"
       security:
       - BEARER: []
   /containers/{containerId}/testParameterFiles:
@@ -672,7 +672,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/SourceFile'
+                  $ref: "#/components/schemas/SourceFile"
       security:
       - BEARER: []
     put:
@@ -715,7 +715,7 @@ paths:
                 uniqueItems: true
                 type: array
                 items:
-                  $ref: '#/components/schemas/SourceFile'
+                  $ref: "#/components/schemas/SourceFile"
       security:
       - BEARER: []
     delete:
@@ -753,7 +753,7 @@ paths:
                 uniqueItems: true
                 type: array
                 items:
-                  $ref: '#/components/schemas/SourceFile'
+                  $ref: "#/components/schemas/SourceFile"
       security:
       - BEARER: []
   /containers/published:
@@ -801,7 +801,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/DockstoreTool'
+                  $ref: "#/components/schemas/DockstoreTool"
   /containers/{containerId}:
     get:
       tags:
@@ -825,7 +825,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DockstoreTool'
+                $ref: "#/components/schemas/DockstoreTool"
       security:
       - BEARER: []
     put:
@@ -847,14 +847,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/DockstoreTool'
+              $ref: "#/components/schemas/DockstoreTool"
       responses:
         default:
           description: default response
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DockstoreTool'
+                $ref: "#/components/schemas/DockstoreTool"
       security:
       - BEARER: []
     delete:
@@ -899,7 +899,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SourceFile'
+                $ref: "#/components/schemas/SourceFile"
       security:
       - BEARER: []
   /containers/path/{repository}:
@@ -923,7 +923,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/DockstoreTool'
+                  $ref: "#/components/schemas/DockstoreTool"
       security:
       - BEARER: []
   /containers/path/tool/{repository}:
@@ -949,7 +949,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DockstoreTool'
+                $ref: "#/components/schemas/DockstoreTool"
       security:
       - BEARER: []
   /containers/published/{containerId}:
@@ -975,7 +975,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DockstoreTool'
+                $ref: "#/components/schemas/DockstoreTool"
   /containers/path/{repository}/published:
     get:
       tags:
@@ -997,7 +997,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/DockstoreTool'
+                  $ref: "#/components/schemas/DockstoreTool"
       security:
       - BEARER: []
   /containers/path/tool/{repository}/published:
@@ -1023,7 +1023,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DockstoreTool'
+                $ref: "#/components/schemas/DockstoreTool"
   /containers/namespace/{namespace}/published:
     get:
       tags:
@@ -1044,7 +1044,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/DockstoreTool'
+                  $ref: "#/components/schemas/DockstoreTool"
   /containers/{containerId}/starredUsers:
     get:
       tags:
@@ -1067,7 +1067,7 @@ paths:
                 uniqueItems: true
                 type: array
                 items:
-                  $ref: '#/components/schemas/User'
+                  $ref: "#/components/schemas/User"
   /containers/{toolId}/zip/{tagId}:
     get:
       tags:
@@ -1115,7 +1115,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/User'
+                  $ref: "#/components/schemas/User"
       security:
       - BEARER: []
   /containers/{containerId}/primaryDescriptor:
@@ -1145,7 +1145,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SourceFile'
+                $ref: "#/components/schemas/SourceFile"
       security:
       - BEARER: []
   /containers/{containerId}/publish:
@@ -1165,14 +1165,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PublishRequest'
+              $ref: "#/components/schemas/PublishRequest"
       responses:
         default:
           description: default response
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DockstoreTool'
+                $ref: "#/components/schemas/DockstoreTool"
       security:
       - BEARER: []
   /containers/{containerId}/refresh:
@@ -1194,7 +1194,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DockstoreTool'
+                $ref: "#/components/schemas/DockstoreTool"
       security:
       - BEARER: []
   /containers/registerManual:
@@ -1207,14 +1207,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/DockstoreTool'
+              $ref: "#/components/schemas/DockstoreTool"
       responses:
         default:
           description: default response
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DockstoreTool'
+                $ref: "#/components/schemas/DockstoreTool"
       security:
       - BEARER: []
   /containers/{containerId}/descriptor/{relative-path}:
@@ -1249,7 +1249,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SourceFile'
+                $ref: "#/components/schemas/SourceFile"
       security:
       - BEARER: []
   /containers/{containerId}/secondaryDescriptors:
@@ -1293,7 +1293,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/SourceFile'
+                  $ref: "#/components/schemas/SourceFile"
       security:
       - BEARER: []
   /containers/{containerId}/star:
@@ -1315,7 +1315,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/StarRequest'
+              $ref: "#/components/schemas/StarRequest"
         required: true
       responses:
         default:
@@ -1344,7 +1344,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Tag'
+                  $ref: "#/components/schemas/Tag"
       security:
       - BEARER: []
   /containers/{toolId}/defaultVersion:
@@ -1371,7 +1371,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DockstoreTool'
+                $ref: "#/components/schemas/DockstoreTool"
       security:
       - BEARER: []
   /containers/{containerId}/labels:
@@ -1402,7 +1402,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DockstoreTool'
+                $ref: "#/components/schemas/DockstoreTool"
       security:
       - BEARER: []
   /containers/{containerId}/updateTagPaths:
@@ -1422,14 +1422,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/DockstoreTool'
+              $ref: "#/components/schemas/DockstoreTool"
       responses:
         default:
           description: default response
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DockstoreTool'
+                $ref: "#/components/schemas/DockstoreTool"
       security:
       - BEARER: []
   /containers/{containerId}/tags:
@@ -1451,7 +1451,7 @@ paths:
             schema:
               type: array
               items:
-                $ref: '#/components/schemas/Tag'
+                $ref: "#/components/schemas/Tag"
       responses:
         default:
           description: default response
@@ -1461,7 +1461,7 @@ paths:
                 uniqueItems: true
                 type: array
                 items:
-                  $ref: '#/components/schemas/Tag'
+                  $ref: "#/components/schemas/Tag"
       security:
       - BEARER: []
     post:
@@ -1482,7 +1482,7 @@ paths:
             schema:
               type: array
               items:
-                $ref: '#/components/schemas/Tag'
+                $ref: "#/components/schemas/Tag"
       responses:
         default:
           description: default response
@@ -1492,7 +1492,7 @@ paths:
                 uniqueItems: true
                 type: array
                 items:
-                  $ref: '#/components/schemas/Tag'
+                  $ref: "#/components/schemas/Tag"
       security:
       - BEARER: []
   /containers/{containerId}/tags/{tagId}:
@@ -1573,7 +1573,7 @@ paths:
                 uniqueItems: true
                 type: array
                 items:
-                  $ref: '#/components/schemas/Tag'
+                  $ref: "#/components/schemas/Tag"
       security:
       - BEARER: []
   /containers/{containerId}/tags/{tagId}/sourcefiles:
@@ -1637,7 +1637,7 @@ paths:
                 uniqueItems: true
                 type: array
                 items:
-                  $ref: '#/components/schemas/SourceFile'
+                  $ref: "#/components/schemas/SourceFile"
       security:
       - BEARER: []
   /containers/{containerId}/requestDOI/{tagId}:
@@ -1668,7 +1668,7 @@ paths:
                 uniqueItems: true
                 type: array
                 items:
-                  $ref: '#/components/schemas/Tag'
+                  $ref: "#/components/schemas/Tag"
       security:
       - BEARER: []
   /entries/{id}/aliases:
@@ -1694,7 +1694,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Entry'
+                $ref: "#/components/schemas/Entry"
       security:
       - BEARER: []
   /entries/{id}/archive:
@@ -1716,7 +1716,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Entry'
+                $ref: "#/components/schemas/Entry"
       security:
       - BEARER: []
   /entries/{entryId}/versions/{versionId}/descriptionMetrics:
@@ -1746,7 +1746,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DescriptionMetrics'
+                $ref: "#/components/schemas/DescriptionMetrics"
       security:
       - BEARER: []
   /entries/{id}:
@@ -1768,7 +1768,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Entry'
+                $ref: "#/components/schemas/Entry"
         "403":
           description: The specified entry is not deletable.
       security:
@@ -1795,7 +1795,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Category'
+                  $ref: "#/components/schemas/Category"
         "400":
           description: Entry must be published
   /entries/{id}/collections:
@@ -1820,7 +1820,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/CollectionOrganization'
+                  $ref: "#/components/schemas/CollectionOrganization"
   /entries/{entryId}/exportToOrcid:
     post:
       tags:
@@ -1847,7 +1847,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Entry'
+                $ref: "#/components/schemas/Entry"
         "500":
           description: Internal Server Error
         "404":
@@ -1875,7 +1875,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Entry'
+                $ref: "#/components/schemas/Entry"
       security:
       - BEARER: []
   /entries/{entryId}/verifiedPlatforms:
@@ -1900,7 +1900,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/VersionVerifiedPlatform'
+                  $ref: "#/components/schemas/VersionVerifiedPlatform"
       security:
       - BEARER: []
   /entries/{entryId}/versions/{versionId}/fileTypes:
@@ -1980,7 +1980,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Entry'
+                $ref: "#/components/schemas/Entry"
       security:
       - BEARER: []
   /entries/{entryId}/syncStatus:
@@ -2003,7 +2003,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SyncStatus'
+                $ref: "#/components/schemas/SyncStatus"
       security:
       - BEARER: []
   /entries/{id}/unarchive:
@@ -2025,7 +2025,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Entry'
+                $ref: "#/components/schemas/Entry"
       security:
       - BEARER: []
   /entries/updateLanguageVersions:
@@ -2117,7 +2117,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Event'
+                  $ref: "#/components/schemas/Event"
       security:
       - BEARER: []
   /events/{userId}:
@@ -2167,7 +2167,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Event'
+                  $ref: "#/components/schemas/Event"
         "404":
           description: User not found
   /containers/hostedEntry:
@@ -2212,7 +2212,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DockstoreTool'
+                $ref: "#/components/schemas/DockstoreTool"
       security:
       - BEARER: []
   /containers/hostedEntry/{entryId}:
@@ -2238,7 +2238,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Entry'
+                $ref: "#/components/schemas/Entry"
       security:
       - BEARER: []
     patch:
@@ -2263,7 +2263,7 @@ paths:
               uniqueItems: true
               type: array
               items:
-                $ref: '#/components/schemas/SourceFile'
+                $ref: "#/components/schemas/SourceFile"
         required: true
       responses:
         default:
@@ -2271,7 +2271,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DockstoreTool'
+                $ref: "#/components/schemas/DockstoreTool"
       security:
       - BEARER: []
   /workflows/hostedEntry/{entryId}:
@@ -2303,7 +2303,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Workflow'
+                $ref: "#/components/schemas/Workflow"
       deprecated: true
       security:
       - BEARER: []
@@ -2329,7 +2329,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Entry'
+                $ref: "#/components/schemas/Entry"
       security:
       - BEARER: []
     patch:
@@ -2354,7 +2354,7 @@ paths:
               uniqueItems: true
               type: array
               items:
-                $ref: '#/components/schemas/SourceFile'
+                $ref: "#/components/schemas/SourceFile"
         required: true
       responses:
         default:
@@ -2362,7 +2362,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Workflow'
+                $ref: "#/components/schemas/Workflow"
       security:
       - BEARER: []
   /workflows/hostedEntry:
@@ -2407,7 +2407,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Workflow'
+                $ref: "#/components/schemas/Workflow"
       security:
       - BEARER: []
   /lambdaEvents/{organization}:
@@ -2463,7 +2463,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/LambdaEvent'
+                  $ref: "#/components/schemas/LambdaEvent"
       security:
       - BEARER: []
   /lambdaEvents/user/{userid}:
@@ -2520,7 +2520,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/LambdaEvent'
+                  $ref: "#/components/schemas/LambdaEvent"
       security:
       - BEARER: []
   /metadata/elasticSearch:
@@ -2566,7 +2566,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/HealthCheckResult'
+                  $ref: "#/components/schemas/HealthCheckResult"
         "400":
           description: Bad Request
         "500":
@@ -2600,7 +2600,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CLIInfo'
+                $ref: "#/components/schemas/CLIInfo"
   /metadata/config.json:
     get:
       tags:
@@ -2614,7 +2614,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Config'
+                $ref: "#/components/schemas/Config"
   /metadata/descriptorLanguageList:
     get:
       tags:
@@ -2631,7 +2631,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/DescriptorLanguageBean'
+                  $ref: "#/components/schemas/DescriptorLanguageBean"
   /metadata/dockerRegistryList:
     get:
       tags:
@@ -2647,7 +2647,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/RegistryBean'
+                  $ref: "#/components/schemas/RegistryBean"
   /metadata/entryTypeMetadataList:
     get:
       tags:
@@ -2663,7 +2663,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/EntryTypeMetadata'
+                  $ref: "#/components/schemas/EntryTypeMetadata"
   /metadata/runner_dependencies:
     get:
       tags:
@@ -2726,7 +2726,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/SourceControlBean'
+                  $ref: "#/components/schemas/SourceControlBean"
   /metadata/rss:
     get:
       tags:
@@ -2774,7 +2774,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Notification'
+                  $ref: "#/components/schemas/Notification"
     post:
       tags:
       - curation
@@ -2785,7 +2785,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Notification'
+              $ref: "#/components/schemas/Notification"
         required: true
       responses:
         default:
@@ -2793,7 +2793,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Notification'
+                $ref: "#/components/schemas/Notification"
       security:
       - BEARER: []
   /curation/notifications/{id}:
@@ -2815,7 +2815,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Notification'
+                $ref: "#/components/schemas/Notification"
     put:
       tags:
       - curation
@@ -2832,14 +2832,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Notification'
+              $ref: "#/components/schemas/Notification"
       responses:
         default:
           description: default response
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Notification'
+                $ref: "#/components/schemas/Notification"
       security:
       - BEARER: []
     delete:
@@ -2919,7 +2919,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Organization'
+                $ref: "#/components/schemas/Organization"
       security:
       - BEARER: []
   /organizations/{organizationId}/user:
@@ -2967,7 +2967,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/OrganizationUser'
+                $ref: "#/components/schemas/OrganizationUser"
       security:
       - BEARER: []
     post:
@@ -3007,7 +3007,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/OrganizationUser'
+                $ref: "#/components/schemas/OrganizationUser"
       security:
       - BEARER: []
     delete:
@@ -3075,7 +3075,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/OrganizationUser'
+                $ref: "#/components/schemas/OrganizationUser"
       security:
       - BEARER: []
   /organizations/{organizationId}/approve:
@@ -3099,7 +3099,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Organization'
+                $ref: "#/components/schemas/Organization"
       security:
       - BEARER: []
   /organizations:
@@ -3118,7 +3118,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Organization'
+                  $ref: "#/components/schemas/Organization"
     post:
       tags:
       - organizations
@@ -3131,7 +3131,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Organization'
+              $ref: "#/components/schemas/Organization"
         required: true
       responses:
         default:
@@ -3139,7 +3139,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Organization'
+                $ref: "#/components/schemas/Organization"
       security:
       - BEARER: []
   /organizations/{organizationId}:
@@ -3163,7 +3163,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Organization'
+                $ref: "#/components/schemas/Organization"
       security:
       - BEARER: []
     put:
@@ -3186,7 +3186,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Organization'
+              $ref: "#/components/schemas/Organization"
         required: true
       responses:
         default:
@@ -3194,7 +3194,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Organization'
+                $ref: "#/components/schemas/Organization"
       security:
       - BEARER: []
     delete:
@@ -3248,7 +3248,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Organization'
+                  $ref: "#/components/schemas/Organization"
       security:
       - BEARER: []
   /organizations/{alias}/aliases:
@@ -3271,7 +3271,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Organization'
+                $ref: "#/components/schemas/Organization"
   /organizations/name/{name}:
     get:
       tags:
@@ -3292,7 +3292,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Organization'
+                $ref: "#/components/schemas/Organization"
       security:
       - BEARER: []
   /organizations/{organizationId}/description:
@@ -3348,7 +3348,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Organization'
+                $ref: "#/components/schemas/Organization"
       security:
       - BEARER: []
   /organizations/{organizationId}/events:
@@ -3394,7 +3394,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Event'
+                  $ref: "#/components/schemas/Event"
       security:
       - BEARER: []
   /organizations/{organizationId}/members:
@@ -3421,7 +3421,7 @@ paths:
                 uniqueItems: true
                 type: array
                 items:
-                  $ref: '#/components/schemas/OrganizationUser'
+                  $ref: "#/components/schemas/OrganizationUser"
       security:
       - BEARER: []
   /organizations/{organizationId}/starredUsers:
@@ -3448,7 +3448,7 @@ paths:
                 uniqueItems: true
                 type: array
                 items:
-                  $ref: '#/components/schemas/User'
+                  $ref: "#/components/schemas/User"
   /organizations/{organizationId}/reject:
     post:
       tags:
@@ -3470,7 +3470,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Organization'
+                $ref: "#/components/schemas/Organization"
       security:
       - BEARER: []
   /organizations/{organizationId}/request:
@@ -3495,7 +3495,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Organization'
+                $ref: "#/components/schemas/Organization"
       security:
       - BEARER: []
   /organizations/{organizationId}/star:
@@ -3518,7 +3518,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/StarRequest'
+              $ref: "#/components/schemas/StarRequest"
         required: true
       responses:
         default:
@@ -3544,7 +3544,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Token_User'
+                $ref: "#/components/schemas/Token_User"
         "400":
           description: Bad request
         "404":
@@ -3570,7 +3570,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Token_User'
+                $ref: "#/components/schemas/Token_User"
         "401":
           description: Unauthorized
         "403":
@@ -3596,7 +3596,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Token_User'
+                $ref: "#/components/schemas/Token_User"
         "400":
           description: Bad request
         "404":
@@ -3622,7 +3622,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Token_Auth'
+                $ref: "#/components/schemas/Token_Auth"
         "400":
           description: Bad request
         "401":
@@ -3654,7 +3654,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Token_User'
+                $ref: "#/components/schemas/Token_User"
         "400":
           description: Bad request
         "404":
@@ -3682,7 +3682,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Token_User'
+                $ref: "#/components/schemas/Token_User"
         "400":
           description: Bad request
         "404":
@@ -3709,7 +3709,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Token_Auth'
+                $ref: "#/components/schemas/Token_Auth"
         "401":
           description: Unauthorized
         "403":
@@ -3735,7 +3735,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Token_User'
+                $ref: "#/components/schemas/Token_User"
         "400":
           description: Bad request
         "404":
@@ -3763,7 +3763,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Token_User'
+                $ref: "#/components/schemas/Token_User"
         "404":
           description: Token not found
       security:
@@ -3802,7 +3802,7 @@ paths:
         required: true
         schema:
           type: string
-        example: '#workflow/github.com/dockstore/hello_world'
+        example: "#workflow/github.com/dockstore/hello_world"
       - name: tool_version_name
         in: query
         required: true
@@ -3855,7 +3855,7 @@ paths:
         required: true
         schema:
           type: string
-        example: '#workflow/github.com/dockstore/hello_world'
+        example: "#workflow/github.com/dockstore/hello_world"
       - name: tool_version_name
         in: query
         required: true
@@ -3870,7 +3870,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/ToolTesterLog'
+                  $ref: "#/components/schemas/ToolTesterLog"
   /users/{userId}/workflows:
     get:
       tags:
@@ -3893,7 +3893,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Workflow'
+                  $ref: "#/components/schemas/Workflow"
         "403":
           description: Forbidden
         "404":
@@ -3930,7 +3930,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Workflow'
+                  $ref: "#/components/schemas/Workflow"
         "400":
           description: Bad request
         "404":
@@ -3982,7 +3982,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
+                $ref: "#/components/schemas/User"
         "400":
           description: Bad request
         "403":
@@ -4016,6 +4016,57 @@ paths:
           description: User not found
       security:
       - BEARER: []
+  /users/{userId}/tokens:
+    get:
+      tags:
+      - users
+      description: Get information about tokens with user id.
+      operationId: getUserTokens
+      parameters:
+      - name: userId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: A list of tokens belonging to user specified by userId
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Token_User"
+        "403":
+          description: Forbidden
+        "404":
+          description: User not found
+      security:
+      - BEARER: []
+    post:
+      tags:
+      - users
+      description: Create a Dockstore token for a metrics robot user.
+      operationId: createMetricsRobotToken
+      parameters:
+      - name: userId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: The new token.
+          content:
+            application/json:
+              schema:
+                type: string
+        "403":
+          description: Forbidden
+      security:
+      - BEARER: []
   /users/{userId}/cloudInstances/{cloudInstanceId}:
     put:
       tags:
@@ -4042,7 +4093,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CloudInstance'
+              $ref: "#/components/schemas/CloudInstance"
         required: true
       responses:
         "204":
@@ -4100,7 +4151,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/UserInfo'
+                  $ref: "#/components/schemas/UserInfo"
         "403":
           description: Forbidden
       security:
@@ -4117,7 +4168,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ExtendedUserData'
+                $ref: "#/components/schemas/ExtendedUserData"
       security:
       - BEARER: []
   /users/starredNotebooks:
@@ -4134,7 +4185,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Entry'
+                  $ref: "#/components/schemas/Entry"
       security:
       - BEARER: []
   /users/starredOrganizations:
@@ -4151,7 +4202,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Organization'
+                  $ref: "#/components/schemas/Organization"
       security:
       - BEARER: []
   /users/starredServices:
@@ -4168,7 +4219,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Entry'
+                  $ref: "#/components/schemas/Entry"
       security:
       - BEARER: []
   /users/starredTools:
@@ -4185,7 +4236,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Entry'
+                  $ref: "#/components/schemas/Entry"
       security:
       - BEARER: []
   /users/starredWorkflows:
@@ -4202,7 +4253,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Entry'
+                  $ref: "#/components/schemas/Entry"
       security:
       - BEARER: []
   /users/user:
@@ -4217,7 +4268,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
+                $ref: "#/components/schemas/User"
       security:
       - BEARER: []
     delete:
@@ -4270,7 +4321,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/CloudInstance'
+                  $ref: "#/components/schemas/CloudInstance"
         "403":
           description: Forbidden
         "404":
@@ -4295,7 +4346,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CloudInstance'
+              $ref: "#/components/schemas/CloudInstance"
         required: true
       responses:
         "204":
@@ -4336,7 +4387,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/OrganizationUpdateTime'
+                  $ref: "#/components/schemas/OrganizationUpdateTime"
       security:
       - BEARER: []
   /users/users/entries:
@@ -4376,7 +4427,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/EntryUpdateTime'
+                  $ref: "#/components/schemas/EntryUpdateTime"
       security:
       - BEARER: []
   /users/github/events:
@@ -4427,7 +4478,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/LambdaEvent'
+                  $ref: "#/components/schemas/LambdaEvent"
       security:
       - BEARER: []
   /users/user/{userId}/limits:
@@ -4449,7 +4500,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Limits'
+                $ref: "#/components/schemas/Limits"
         "403":
           description: Forbidden
         "404":
@@ -4472,14 +4523,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Limits'
+              $ref: "#/components/schemas/Limits"
       responses:
         "200":
           description: Successfully updated the user's limits
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Limits'
+                $ref: "#/components/schemas/Limits"
         "403":
           description: Forbidden
         "404":
@@ -4500,7 +4551,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/OrganizationUser'
+                  $ref: "#/components/schemas/OrganizationUser"
       security:
       - BEARER: []
   /users/registries/{gitRegistry}/organizations/{organization}:
@@ -4537,7 +4588,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Repository'
+                  $ref: "#/components/schemas/Repository"
       security:
       - BEARER: []
   /users/registries/{gitRegistry}/organizations:
@@ -4594,34 +4645,6 @@ paths:
                   - gitlab.com
       security:
       - BEARER: []
-  /users/{userId}/tokens:
-    get:
-      tags:
-      - users
-      description: Get information about tokens with user id.
-      operationId: getUserTokens
-      parameters:
-      - name: userId
-        in: path
-        required: true
-        schema:
-          type: integer
-          format: int64
-      responses:
-        "200":
-          description: A list of tokens belonging to user specified by userId
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Token_User'
-        "403":
-          description: Forbidden
-        "404":
-          description: User not found
-      security:
-      - BEARER: []
   /users/username/{username}:
     get:
       tags:
@@ -4645,7 +4668,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
+                $ref: "#/components/schemas/User"
         "400":
           description: Bad request
         "404":
@@ -4681,7 +4704,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/DockstoreTool'
+                  $ref: "#/components/schemas/DockstoreTool"
         "400":
           description: Bad request
         "403":
@@ -4708,7 +4731,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PrivilegeRequest'
+              $ref: "#/components/schemas/PrivilegeRequest"
         required: true
       responses:
         "200":
@@ -4716,7 +4739,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
+                $ref: "#/components/schemas/User"
         "403":
           description: Forbidden
         "404":
@@ -4737,7 +4760,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Workflow'
+                  $ref: "#/components/schemas/Workflow"
         "400":
           description: Bad request
       security:
@@ -4754,7 +4777,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
+                $ref: "#/components/schemas/User"
       security:
       - BEARER: []
   /users/user/updateUserMetadata:
@@ -4784,7 +4807,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
+                $ref: "#/components/schemas/User"
         "403":
           description: Forbidden
       security:
@@ -4803,7 +4826,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/User'
+                  $ref: "#/components/schemas/User"
         "403":
           description: Forbidden
       security:
@@ -4843,7 +4866,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Workflow'
+                  $ref: "#/components/schemas/Workflow"
         "403":
           description: Forbidden
         "404":
@@ -4871,7 +4894,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/DockstoreTool'
+                  $ref: "#/components/schemas/DockstoreTool"
         "403":
           description: Forbidden
         "404":
@@ -4900,7 +4923,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Workflow'
+                  $ref: "#/components/schemas/Workflow"
         "403":
           description: Forbidden
         "404":
@@ -4928,7 +4951,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/DockstoreTool'
+                  $ref: "#/components/schemas/DockstoreTool"
         "403":
           description: Forbidden
         "404":
@@ -4956,7 +4979,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Workflow'
+                  $ref: "#/components/schemas/Workflow"
         "403":
           description: Forbidden
         "404":
@@ -4984,7 +5007,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Workflow'
+                  $ref: "#/components/schemas/Workflow"
         "403":
           description: Forbidden
         "404":
@@ -5089,7 +5112,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/SourceFile'
+                  $ref: "#/components/schemas/SourceFile"
       security:
       - BEARER: []
     put:
@@ -5128,7 +5151,7 @@ paths:
                 uniqueItems: true
                 type: array
                 items:
-                  $ref: '#/components/schemas/SourceFile'
+                  $ref: "#/components/schemas/SourceFile"
       security:
       - BEARER: []
     delete:
@@ -5162,7 +5185,7 @@ paths:
                 uniqueItems: true
                 type: array
                 items:
-                  $ref: '#/components/schemas/SourceFile'
+                  $ref: "#/components/schemas/SourceFile"
       security:
       - BEARER: []
   /workflows/registries/{gitRegistry}/organizations/{organization}/repositories/{repositoryName}:
@@ -5202,7 +5225,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/BioWorkflow'
+                $ref: "#/components/schemas/BioWorkflow"
       security:
       - BEARER: []
     delete:
@@ -5257,7 +5280,7 @@ paths:
         description: Which Workflow subclass to retrieve permissions for.
         required: true
         schema:
-          $ref: '#/components/schemas/WorkflowSubClass'
+          $ref: "#/components/schemas/WorkflowSubClass"
       responses:
         default:
           description: default response
@@ -5266,7 +5289,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Permission'
+                  $ref: "#/components/schemas/Permission"
       security:
       - BEARER: []
     delete:
@@ -5297,7 +5320,7 @@ paths:
         description: Which Workflow subclass to remove a role from.
         required: true
         schema:
-          $ref: '#/components/schemas/WorkflowSubClass'
+          $ref: "#/components/schemas/WorkflowSubClass"
       responses:
         default:
           description: default response
@@ -5306,7 +5329,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Permission'
+                  $ref: "#/components/schemas/Permission"
       security:
       - BEARER: []
     patch:
@@ -5325,12 +5348,12 @@ paths:
         description: Which Workflow subclass to add a permission to.
         required: true
         schema:
-          $ref: '#/components/schemas/WorkflowSubClass'
+          $ref: "#/components/schemas/WorkflowSubClass"
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Permission'
+              $ref: "#/components/schemas/Permission"
       responses:
         default:
           description: default response
@@ -5339,7 +5362,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Permission'
+                  $ref: "#/components/schemas/Permission"
       security:
       - BEARER: []
   /workflows/published:
@@ -5387,7 +5410,7 @@ paths:
       - name: subclass
         in: query
         schema:
-          $ref: '#/components/schemas/WorkflowSubClass'
+          $ref: "#/components/schemas/WorkflowSubClass"
       responses:
         default:
           description: default response
@@ -5396,7 +5419,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Workflow'
+                  $ref: "#/components/schemas/Workflow"
   /workflows/{workflowId}/deleteDOIEditLink:
     delete:
       tags:
@@ -5445,7 +5468,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Workflow'
+                  $ref: "#/components/schemas/Workflow"
       security:
       - BEARER: []
   /workflows/path/{repository}:
@@ -5470,7 +5493,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Workflow'
+                  $ref: "#/components/schemas/Workflow"
       security:
       - BEARER: []
   /workflows/{workflowId}/DOIEditLink:
@@ -5494,7 +5517,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AccessLink'
+                $ref: "#/components/schemas/AccessLink"
         "403":
           description: Forbidden
         "401":
@@ -5522,9 +5545,64 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Entry'
+                $ref: "#/components/schemas/Entry"
       security:
       - BEARER: []
+  /workflows/published/{workflowId}/workflowVersions:
+    get:
+      tags:
+      - workflows
+      description: Return paginated versions in an public entry
+      operationId: getPublicWorkflowVersions
+      parameters:
+      - name: workflowId
+        in: path
+        description: id of the workflow
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: limit
+        in: query
+        schema:
+          maximum: 100
+          minimum: 1
+          type: integer
+          format: int32
+          default: 100
+      - name: offset
+        in: query
+        schema:
+          minimum: 0
+          type: integer
+          format: int32
+          default: 0
+      - name: sortCol
+        in: query
+        schema:
+          type: string
+      - name: sortOrder
+        in: query
+        schema:
+          type: string
+          default: desc
+      - name: include
+        in: query
+        description: "Comma-delimited list of fields to include: validations, aliases,\
+          \ images, authors, metrics"
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Get workflow versions in an entry. Default is 100 versions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/WorkflowVersion"
+        "400":
+          description: Bad Request
   /workflows/path/entry/{repository}/published:
     get:
       tags:
@@ -5544,7 +5622,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Entry'
+                $ref: "#/components/schemas/Entry"
   /workflows/published/{workflowId}:
     get:
       tags:
@@ -5570,7 +5648,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Workflow'
+                $ref: "#/components/schemas/Workflow"
   /workflows/path/workflow/{repository}/published:
     get:
       tags:
@@ -5596,7 +5674,7 @@ paths:
         description: Which Workflow subclass to retrieve.
         required: true
         schema:
-          $ref: '#/components/schemas/WorkflowSubClass'
+          $ref: "#/components/schemas/WorkflowSubClass"
       - name: versionName
         in: query
         description: Version name
@@ -5608,7 +5686,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Workflow'
+                $ref: "#/components/schemas/Workflow"
   /workflows/organization/{organization}/published:
     get:
       tags:
@@ -5629,7 +5707,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Workflow'
+                  $ref: "#/components/schemas/Workflow"
   /workflows/{workflowId}/starredUsers:
     get:
       tags:
@@ -5652,7 +5730,7 @@ paths:
                 uniqueItems: true
                 type: array
                 items:
-                  $ref: '#/components/schemas/User'
+                  $ref: "#/components/schemas/User"
   /workflows/{workflowId}/tools/{workflowVersionId}:
     get:
       tags:
@@ -5702,7 +5780,34 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/User'
+                  $ref: "#/components/schemas/User"
+      security:
+      - BEARER: []
+  /workflows/versionsNeedingRetroactiveDoi:
+    get:
+      tags:
+      - workflows
+      description: Calculates a list of workflow versions that need a retroactive
+        DOI
+      operationId: getVersionsNeedingRetroactiveDoi
+      parameters:
+      - name: limit
+        in: query
+        schema:
+          maximum: 1000
+          minimum: 1
+          type: integer
+          format: int32
+          default: 100
+      responses:
+        default:
+          description: default response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/WorkflowAndVersion"
       security:
       - BEARER: []
   /workflows/{workflowId}:
@@ -5730,7 +5835,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Workflow'
+                $ref: "#/components/schemas/Workflow"
       security:
       - BEARER: []
     put:
@@ -5752,14 +5857,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Workflow'
+              $ref: "#/components/schemas/Workflow"
       responses:
         default:
           description: default response
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Workflow'
+                $ref: "#/components/schemas/Workflow"
       security:
       - BEARER: []
   /workflows/path/workflow/{repository}/actions:
@@ -5779,7 +5884,7 @@ paths:
         description: Which Workflow subclass to retrieve actions for.
         required: true
         schema:
-          $ref: '#/components/schemas/WorkflowSubClass'
+          $ref: "#/components/schemas/WorkflowSubClass"
       responses:
         default:
           description: default response
@@ -5821,14 +5926,14 @@ paths:
         description: Which Workflow subclass to retrieve.
         required: true
         schema:
-          $ref: '#/components/schemas/WorkflowSubClass'
+          $ref: "#/components/schemas/WorkflowSubClass"
       responses:
         default:
           description: default response
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Workflow'
+                $ref: "#/components/schemas/Workflow"
       security:
       - BEARER: []
   /workflows/{workflowId}/dag/{workflowVersionId}:
@@ -5892,7 +5997,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/WorkflowVersion'
+                $ref: "#/components/schemas/WorkflowVersion"
         "400":
           description: Bad Request
       security:
@@ -5958,7 +6063,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/OrcidAuthorInformation'
+                  $ref: "#/components/schemas/OrcidAuthorInformation"
         "400":
           description: Bad Request
       security:
@@ -5967,25 +6072,57 @@ paths:
     get:
       tags:
       - workflows
-      description: Return first 200 versions in an entry
+      description: Return paginated versions in an entry. Max pagination is 100 versions.
       operationId: getWorkflowVersions
       parameters:
       - name: workflowId
         in: path
-        description: id of the worflow
+        description: id of the workflow
         required: true
         schema:
           type: integer
           format: int64
+      - name: limit
+        in: query
+        schema:
+          maximum: 100
+          minimum: 1
+          type: integer
+          format: int32
+          default: 100
+      - name: offset
+        in: query
+        schema:
+          minimum: 0
+          type: integer
+          format: int32
+          default: 0
+      - name: sortCol
+        in: query
+        description: "column used to sort versions. if omitted, the webservice determines\
+          \ the sort order, currently default version first"
+        schema:
+          type: string
+      - name: sortOrder
+        in: query
+        schema:
+          type: string
+          default: desc
+      - name: include
+        in: query
+        description: "Comma-delimited list of fields to include: validations, aliases,\
+          \ images, authors, metrics"
+        schema:
+          type: string
       responses:
         "200":
-          description: Get list workflow versions in a workflow
+          description: Get workflow versions in an entry. Default is 100 versions
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/WorkflowVersion'
+                  $ref: "#/components/schemas/WorkflowVersion"
         "400":
           description: Bad Request
       security:
@@ -6008,7 +6145,7 @@ paths:
             schema:
               type: array
               items:
-                $ref: '#/components/schemas/WorkflowVersion'
+                $ref: "#/components/schemas/WorkflowVersion"
       responses:
         default:
           description: default response
@@ -6018,7 +6155,7 @@ paths:
                 uniqueItems: true
                 type: array
                 items:
-                  $ref: '#/components/schemas/WorkflowVersion'
+                  $ref: "#/components/schemas/WorkflowVersion"
       security:
       - BEARER: []
   /workflows/{workflowId}/workflowVersions/{workflowVersionId}/sourcefiles:
@@ -6082,7 +6219,7 @@ paths:
                 uniqueItems: true
                 type: array
                 items:
-                  $ref: '#/components/schemas/SourceFile'
+                  $ref: "#/components/schemas/SourceFile"
       security:
       - BEARER: []
   /workflows/{workflowId}/zip/{workflowVersionId}:
@@ -6174,7 +6311,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/InstallationRepositoriesPayload'
+              $ref: "#/components/schemas/InstallationRepositoriesPayload"
         required: true
       responses:
         "418":
@@ -6200,7 +6337,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PushPayload'
+              $ref: "#/components/schemas/PushPayload"
         required: true
       responses:
         default:
@@ -6227,13 +6364,48 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ReleasePayload'
+              $ref: "#/components/schemas/ReleasePayload"
         required: true
       responses:
         default:
           description: default response
           content:
             application/json: {}
+      security:
+      - BEARER: []
+  /workflows/github/infer/{owner}/{repo}/{ref}:
+    get:
+      tags:
+      - workflows
+      description: Infer the entries in the file tree of a GitHub repository reference.
+      operationId: inferEntries
+      parameters:
+      - name: owner
+        in: path
+        description: repo owner
+        required: true
+        schema:
+          type: string
+      - name: repo
+        in: path
+        description: repo name
+        required: true
+        schema:
+          type: string
+      - name: ref
+        in: path
+        description: "reference, could contain slashes which need to be urlencoded"
+        required: true
+        schema:
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json:
+              schema:
+                type: string
+      deprecated: true
       security:
       - BEARER: []
   /workflows/manualRegister:
@@ -6273,7 +6445,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Workflow'
+                $ref: "#/components/schemas/Workflow"
       security:
       - BEARER: []
   /workflows/{workflowId}/workflowVersions/{workflowVersionId}/parsedInformation:
@@ -6303,7 +6475,7 @@ paths:
         content:
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/LanguageParsingResponse'
+              $ref: "#/components/schemas/LanguageParsingResponse"
         required: true
       responses:
         default:
@@ -6350,7 +6522,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SourceFile'
+                $ref: "#/components/schemas/SourceFile"
       security:
       - BEARER: []
   /workflows/{workflowId}/publish:
@@ -6370,14 +6542,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PublishRequest'
+              $ref: "#/components/schemas/PublishRequest"
       responses:
         default:
           description: default response
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Workflow'
+                $ref: "#/components/schemas/Workflow"
       security:
       - BEARER: []
   /workflows/{workflowId}/refresh:
@@ -6404,7 +6576,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Workflow'
+                $ref: "#/components/schemas/Workflow"
       security:
       - BEARER: []
   /workflows/{workflowId}/refresh/{version}:
@@ -6436,7 +6608,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Workflow'
+                $ref: "#/components/schemas/Workflow"
       security:
       - BEARER: []
   /workflows/{entryId}/registerCheckerWorkflow/{descriptorType}:
@@ -6480,7 +6652,42 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Entry'
+                $ref: "#/components/schemas/Entry"
+      security:
+      - BEARER: []
+  /workflows/{workflowId}/requestAutomaticDOI/{workflowVersionId}:
+    put:
+      tags:
+      - workflows
+      description: Request an automatic DOI for this version of a workflow.
+      operationId: requestAutomaticDOIForWorkflowVersion
+      parameters:
+      - name: workflowId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: workflowVersionId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        description: "This is here to appease Swagger. It requires PUT methods to\
+          \ have a body, even if it is empty. Please leave it empty."
+        content:
+          '*/*':
+            schema:
+              type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WorkflowVersion"
       security:
       - BEARER: []
   /workflows/{workflowId}/requestDOIEditLink:
@@ -6504,7 +6711,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AccessLink'
+                $ref: "#/components/schemas/AccessLink"
         "403":
           description: Forbidden
         "401":
@@ -6546,30 +6753,7 @@ paths:
                 uniqueItems: true
                 type: array
                 items:
-                  $ref: '#/components/schemas/WorkflowVersion'
-      security:
-      - BEARER: []
-  /workflows/{workflowId}/restub:
-    get:
-      tags:
-      - workflows
-      summary: Restub a workflow
-      description: Restub a workflow
-      operationId: restub
-      parameters:
-      - name: workflowId
-        in: path
-        required: true
-        schema:
-          type: integer
-          format: int64
-      responses:
-        default:
-          description: default response
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Workflow'
+                  $ref: "#/components/schemas/WorkflowVersion"
       security:
       - BEARER: []
   /workflows/{workflowId}/descriptor/{relative-path}:
@@ -6615,7 +6799,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SourceFile'
+                $ref: "#/components/schemas/SourceFile"
       security:
       - BEARER: []
   /workflows/{workflowId}/secondaryDescriptors:
@@ -6658,7 +6842,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/SourceFile'
+                  $ref: "#/components/schemas/SourceFile"
       security:
       - BEARER: []
   /workflows/shared:
@@ -6675,7 +6859,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/SharedWorkflows'
+                  $ref: "#/components/schemas/SharedWorkflows"
       security:
       - BEARER: []
   /workflows/{workflowId}/star:
@@ -6695,7 +6879,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/StarRequest'
+              $ref: "#/components/schemas/StarRequest"
       responses:
         default:
           description: default response
@@ -6723,7 +6907,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/WorkflowVersion'
+                  $ref: "#/components/schemas/WorkflowVersion"
       security:
       - BEARER: []
   /workflows/{workflowId}/autogeneratedois:
@@ -6744,7 +6928,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AutoDoiRequest'
+              $ref: "#/components/schemas/AutoDoiRequest"
         required: true
       responses:
         default:
@@ -6779,7 +6963,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Workflow'
+                $ref: "#/components/schemas/Workflow"
       security:
       - BEARER: []
   /workflows/updateDois:
@@ -6796,6 +6980,13 @@ paths:
           \ only update entries for that repository"
         schema:
           type: string
+      - name: daysSinceLastRelease
+        in: query
+        description: Only check GitHub repos with releases over this number of days.
+          Don't set to check all repos
+        schema:
+          type: integer
+          format: int32
       responses:
         default:
           description: default response
@@ -6804,7 +6995,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Workflow'
+                  $ref: "#/components/schemas/Workflow"
       security:
       - BEARER: []
   /workflows/{workflowId}/labels:
@@ -6835,7 +7026,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Workflow'
+                $ref: "#/components/schemas/Workflow"
       security:
       - BEARER: []
   /workflows/{workflowId}/descriptorType:
@@ -6872,7 +7063,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Workflow'
+                $ref: "#/components/schemas/Workflow"
       security:
       - BEARER: []
   /workflows/{workflowId}/resetVersionPaths:
@@ -6892,14 +7083,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Workflow'
+              $ref: "#/components/schemas/Workflow"
       responses:
         default:
           description: default response
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Workflow'
+                $ref: "#/components/schemas/Workflow"
       security:
       - BEARER: []
   /api/ga4gh/v2/extended/{id}/versions/{version_id}/aggregatedMetrics:
@@ -6933,7 +7124,7 @@ paths:
               schema:
                 type: object
                 additionalProperties:
-                  $ref: '#/components/schemas/Metrics'
+                  $ref: "#/components/schemas/Metrics"
       security:
       - BEARER: []
     put:
@@ -6967,7 +7158,7 @@ paths:
             schema:
               type: object
               additionalProperties:
-                $ref: '#/components/schemas/Metrics'
+                $ref: "#/components/schemas/Metrics"
         required: true
       responses:
         "200":
@@ -6981,13 +7172,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
         "404":
           description: The tool cannot be found to add aggregated metrics.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
       security:
       - BEARER: []
   /api/ga4gh/v2/extended/{id}/aiTopicCandidate:
@@ -7014,14 +7205,14 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
         "404":
           description: The tool cannot be found to get a candidate version for topic
             generation.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
       security:
       - BEARER: []
   /api/ga4gh/v2/extended/organizations:
@@ -7061,7 +7252,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/ToolV1'
+                  $ref: "#/components/schemas/ToolV1"
   /api/ga4gh/v2/extended/{id}/versions/{version_id}/execution:
     get:
       tags:
@@ -7102,6 +7293,7 @@ paths:
           - NEXTFLOW_TOWER
           - ELWAZI
           - AGC
+          - TOIL
           - OTHER
           - ALL
       - name: executionId
@@ -7116,19 +7308,19 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ExecutionsRequestBody'
+                $ref: "#/components/schemas/ExecutionsRequestBody"
         "401":
           description: Credentials not provided or incorrect.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
         "404":
           description: The execution cannot be found.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
       security:
       - BEARER: []
   /api/ga4gh/v2/extended/{id}/versions/{version_id}/executions:
@@ -7172,6 +7364,7 @@ paths:
           - NEXTFLOW_TOWER
           - ELWAZI
           - AGC
+          - TOIL
           - OTHER
           - ALL
       - name: description
@@ -7185,7 +7378,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ExecutionsRequestBody'
+              $ref: "#/components/schemas/ExecutionsRequestBody"
         required: true
       responses:
         "207":
@@ -7194,19 +7387,19 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ExecutionsResponseBody'
+                $ref: "#/components/schemas/ExecutionsResponseBody"
         "401":
           description: Credentials not provided or incorrect.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
         "404":
           description: The tool cannot be found to update the executions.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
       security:
       - BEARER: []
     post:
@@ -7250,6 +7443,7 @@ paths:
           - NEXTFLOW_TOWER
           - ELWAZI
           - AGC
+          - TOIL
           - OTHER
           - ALL
       - name: description
@@ -7262,7 +7456,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ExecutionsRequestBody'
+              $ref: "#/components/schemas/ExecutionsRequestBody"
         required: true
       responses:
         "204":
@@ -7272,13 +7466,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
         "404":
           description: The tool cannot be found to submit execution metrics.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
       security:
       - BEARER: []
   /api/ga4gh/v2/extended/aiTopicCandidates:
@@ -7326,13 +7520,13 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/EntryLiteAndVersionName'
+                  $ref: "#/components/schemas/EntryLiteAndVersionName"
         "401":
           description: Credentials not provided or incorrect.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
       security:
       - BEARER: []
   /api/ga4gh/v2/extended/entryVersionsToAggregate:
@@ -7351,13 +7545,13 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/EntryLiteAndVersionName'
+                  $ref: "#/components/schemas/EntryLiteAndVersionName"
         "401":
           description: Credentials not provided or incorrect.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
       security:
       - BEARER: []
   /api/ga4gh/v2/extended/{id}/versions/{version_id}/{type}/tests/{relative_path}:
@@ -7419,13 +7613,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
         "404":
           description: The tool test cannot be found to annotate.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
       security:
       - BEARER: []
   /api/ga4gh/v2/extended/tools/index:
@@ -7490,7 +7684,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/ToolV1'
+                  $ref: "#/components/schemas/ToolV1"
   /api/ga4gh/v2/extended/{id}/updateAITopic:
     put:
       tags:
@@ -7517,7 +7711,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateAITopicRequest'
+              $ref: "#/components/schemas/UpdateAITopicRequest"
         required: true
       responses:
         "204":
@@ -7545,7 +7739,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/ToolV1'
+                  $ref: "#/components/schemas/ToolV1"
   /ga4gh/trs/v2/service-info:
     get:
       tags:
@@ -7560,7 +7754,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TRSService'
+                $ref: "#/components/schemas/TRSService"
   /ga4gh/trs/v2/toolClasses:
     get:
       tags:
@@ -7576,7 +7770,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/ToolClass'
+                  $ref: "#/components/schemas/ToolClass"
       security:
       - BEARER: []
   /ga4gh/trs/v2/tools:
@@ -7680,7 +7874,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Tool'
+                  $ref: "#/components/schemas/Tool"
       security:
       - BEARER: []
   /ga4gh/trs/v2/tools/{id}:
@@ -7705,19 +7899,19 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Tool'
+                $ref: "#/components/schemas/Tool"
             text/plain:
               schema:
-                $ref: '#/components/schemas/Tool'
+                $ref: "#/components/schemas/Tool"
         "404":
           description: The tool can not be found.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
             text/plain:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
       security:
       - BEARER: []
   /ga4gh/trs/v2/tools/{id}/versions:
@@ -7743,7 +7937,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/ToolVersion'
+                  $ref: "#/components/schemas/ToolVersion"
       security:
       - BEARER: []
   /ga4gh/trs/v2/tools/{id}/versions/{version_id}/containerfile:
@@ -7780,13 +7974,13 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/FileWrapper'
+                  $ref: "#/components/schemas/FileWrapper"
         "404":
           description: There are no container specifications for this tool.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
       security:
       - BEARER: []
   /ga4gh/trs/v2/tools/{id}/versions/{version_id}:
@@ -7818,13 +8012,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ToolVersion'
+                $ref: "#/components/schemas/ToolVersion"
         "404":
           description: The tool can not be found.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
       security:
       - BEARER: []
   /ga4gh/trs/v2/tools/{id}/versions/{version_id}/{type}/descriptor:
@@ -7878,19 +8072,19 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/FileWrapper'
+                $ref: "#/components/schemas/FileWrapper"
             text/plain:
               schema:
-                $ref: '#/components/schemas/FileWrapper'
+                $ref: "#/components/schemas/FileWrapper"
         "404":
           description: The tool descriptor can not be found.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
             text/plain:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
       security:
       - BEARER: []
   /ga4gh/trs/v2/tools/{id}/versions/{version_id}/{type}/descriptor/{relative_path}:
@@ -7960,19 +8154,19 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/FileWrapper'
+                $ref: "#/components/schemas/FileWrapper"
             text/plain:
               schema:
-                $ref: '#/components/schemas/FileWrapper'
+                $ref: "#/components/schemas/FileWrapper"
         "404":
           description: The tool can not be output in the specified type.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
             text/plain:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
       security:
       - BEARER: []
   /ga4gh/trs/v2/tools/{id}/versions/{version_id}/{type}/files:
@@ -8029,21 +8223,21 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/ToolFile'
+                  $ref: "#/components/schemas/ToolFile"
             application/zip:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/ToolFile'
+                  $ref: "#/components/schemas/ToolFile"
         "404":
           description: The tool can not be output in the specified type.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
             application/zip:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
       security:
       - BEARER: []
   /ga4gh/trs/v2/tools/{id}/versions/{version_id}/{type}/tests:
@@ -8099,21 +8293,21 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/FileWrapper'
+                  $ref: "#/components/schemas/FileWrapper"
             text/plain:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/FileWrapper'
+                  $ref: "#/components/schemas/FileWrapper"
         "404":
           description: The tool can not be output in the specified type.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
             text/plain:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
       security:
       - BEARER: []
   /api/ga4gh/v2/metadata:
@@ -8129,10 +8323,10 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/MetadataV20beta'
+                $ref: "#/components/schemas/MetadataV20beta"
             text/plain:
               schema:
-                $ref: '#/components/schemas/MetadataV20beta'
+                $ref: "#/components/schemas/MetadataV20beta"
   /api/ga4gh/v1/metadata:
     get:
       tags:
@@ -8159,12 +8353,12 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/ToolClassV20beta'
+                  $ref: "#/components/schemas/ToolClassV20beta"
             text/plain:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/ToolClassV20beta'
+                  $ref: "#/components/schemas/ToolClassV20beta"
   /api/ga4gh/v1/tool-classes:
     get:
       tags:
@@ -8239,12 +8433,12 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/ToolV20beta'
+                  $ref: "#/components/schemas/ToolV20beta"
             text/plain:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/ToolV20beta'
+                  $ref: "#/components/schemas/ToolV20beta"
   /api/ga4gh/v2/tools/{id}:
     get:
       tags:
@@ -8265,19 +8459,19 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ToolV20beta'
+                $ref: "#/components/schemas/ToolV20beta"
             text/plain:
               schema:
-                $ref: '#/components/schemas/ToolV20beta'
+                $ref: "#/components/schemas/ToolV20beta"
         "404":
           description: The tool can not be found.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorV20beta'
+                $ref: "#/components/schemas/ErrorV20beta"
             text/plain:
               schema:
-                $ref: '#/components/schemas/ErrorV20beta'
+                $ref: "#/components/schemas/ErrorV20beta"
   /api/ga4gh/v2/tools/{id}/versions:
     get:
       tags:
@@ -8299,12 +8493,12 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/ToolVersionV20beta'
+                  $ref: "#/components/schemas/ToolVersionV20beta"
             text/plain:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/ToolVersionV20beta'
+                  $ref: "#/components/schemas/ToolVersionV20beta"
   /api/ga4gh/v2/tools/{id}/versions/{version_id}/containerfile:
     get:
       tags:
@@ -8334,21 +8528,21 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/FileWrapperV20beta'
+                  $ref: "#/components/schemas/FileWrapperV20beta"
             text/plain:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/FileWrapperV20beta'
+                  $ref: "#/components/schemas/FileWrapperV20beta"
         "404":
           description: There are no container specifications for this tool
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorV20beta'
+                $ref: "#/components/schemas/ErrorV20beta"
             text/plain:
               schema:
-                $ref: '#/components/schemas/ErrorV20beta'
+                $ref: "#/components/schemas/ErrorV20beta"
   /api/ga4gh/v2/tools/{id}/versions/{version_id}:
     get:
       tags:
@@ -8373,19 +8567,19 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ToolVersionV20beta'
+                $ref: "#/components/schemas/ToolVersionV20beta"
             text/plain:
               schema:
-                $ref: '#/components/schemas/ToolVersionV20beta'
+                $ref: "#/components/schemas/ToolVersionV20beta"
         "404":
           description: The tool can not be found.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorV20beta'
+                $ref: "#/components/schemas/ErrorV20beta"
             text/plain:
               schema:
-                $ref: '#/components/schemas/ErrorV20beta'
+                $ref: "#/components/schemas/ErrorV20beta"
   /api/ga4gh/v2/tools/{id}/versions/{version_id}/{type}/descriptor:
     get:
       tags:
@@ -8416,19 +8610,19 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/FileWrapperV20beta'
+                $ref: "#/components/schemas/FileWrapperV20beta"
             text/plain:
               schema:
-                $ref: '#/components/schemas/FileWrapperV20beta'
+                $ref: "#/components/schemas/FileWrapperV20beta"
         "404":
           description: The tool descriptor can not be found.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorV20beta'
+                $ref: "#/components/schemas/ErrorV20beta"
             text/plain:
               schema:
-                $ref: '#/components/schemas/ErrorV20beta'
+                $ref: "#/components/schemas/ErrorV20beta"
   /api/ga4gh/v2/tools/{id}/versions/{version_id}/{type}/descriptor/{relative_path}:
     get:
       tags:
@@ -8470,19 +8664,19 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/FileWrapperV20beta'
+                $ref: "#/components/schemas/FileWrapperV20beta"
             text/plain:
               schema:
-                $ref: '#/components/schemas/FileWrapperV20beta'
+                $ref: "#/components/schemas/FileWrapperV20beta"
         "404":
           description: The tool can not be output in the specified type.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorV20beta'
+                $ref: "#/components/schemas/ErrorV20beta"
             text/plain:
               schema:
-                $ref: '#/components/schemas/ErrorV20beta'
+                $ref: "#/components/schemas/ErrorV20beta"
   /api/ga4gh/v2/tools/{id}/versions/{version_id}/{type}/files:
     get:
       tags:
@@ -8516,21 +8710,21 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/ToolFileV20beta'
+                  $ref: "#/components/schemas/ToolFileV20beta"
             text/plain:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/ToolFileV20beta'
+                  $ref: "#/components/schemas/ToolFileV20beta"
         "404":
           description: The tool can not be output in the specified type.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorV20beta'
+                $ref: "#/components/schemas/ErrorV20beta"
             text/plain:
               schema:
-                $ref: '#/components/schemas/ErrorV20beta'
+                $ref: "#/components/schemas/ErrorV20beta"
   /api/ga4gh/v2/tools/{id}/versions/{version_id}/{type}/tests:
     get:
       tags:
@@ -8563,21 +8757,21 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/FileWrapperV20beta'
+                  $ref: "#/components/schemas/FileWrapperV20beta"
             text/plain:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/FileWrapperV20beta'
+                  $ref: "#/components/schemas/FileWrapperV20beta"
         "404":
           description: The tool can not be output in the specified type.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorV20beta'
+                $ref: "#/components/schemas/ErrorV20beta"
             text/plain:
               schema:
-                $ref: '#/components/schemas/ErrorV20beta'
+                $ref: "#/components/schemas/ErrorV20beta"
   /api/ga4gh/v1/tools:
     get:
       tags:
@@ -8632,7 +8826,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/ToolV1'
+                  $ref: "#/components/schemas/ToolV1"
   /api/ga4gh/v1/tools/{id}:
     get:
       tags:
@@ -8653,7 +8847,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ToolV1'
+                $ref: "#/components/schemas/ToolV1"
   /api/ga4gh/v1/tools/{id}/versions:
     get:
       tags:
@@ -8675,7 +8869,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/ToolVersionV1'
+                  $ref: "#/components/schemas/ToolVersionV1"
   /api/ga4gh/v1/tools/{id}/versions/{version_id}/dockerfile:
     get:
       tags:
@@ -8700,7 +8894,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ToolDockerfile'
+                $ref: "#/components/schemas/ToolDockerfile"
   /api/ga4gh/v1/tools/{id}/versions/{version_id}:
     get:
       tags:
@@ -8725,7 +8919,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ToolVersionV1'
+                $ref: "#/components/schemas/ToolVersionV1"
   /api/ga4gh/v1/tools/{id}/versions/{version_id}/{type}/descriptor:
     get:
       tags:
@@ -8755,13 +8949,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ToolDescriptor'
+                $ref: "#/components/schemas/ToolDescriptor"
         "404":
           description: The tool can not be output in the specified type.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ToolDescriptor'
+                $ref: "#/components/schemas/ToolDescriptor"
   /api/ga4gh/v1/tools/{id}/versions/{version_id}/{type}/descriptor/{relative_path}:
     get:
       tags:
@@ -8798,13 +8992,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ToolDescriptor'
+                $ref: "#/components/schemas/ToolDescriptor"
         "404":
           description: The tool can not be output in the specified type.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ToolDescriptor'
+                $ref: "#/components/schemas/ToolDescriptor"
   /api/ga4gh/v1/tools/{id}/versions/{version_id}/{type}/tests:
     get:
       tags:
@@ -8835,7 +9029,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/ToolTestsV1'
+                  $ref: "#/components/schemas/ToolTestsV1"
         "404":
           description: The tool can not be output in the specified type.
           content:
@@ -8843,7 +9037,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/ToolTestsV1'
+                  $ref: "#/components/schemas/ToolTestsV1"
 components:
   schemas:
     Alias:
@@ -8894,7 +9088,7 @@ components:
       description: This describes aggregated cost metrics for workflow executions
         in USD.
       allOf:
-      - $ref: '#/components/schemas/Metric'
+      - $ref: "#/components/schemas/Metric"
       - type: object
         properties:
           minimum:
@@ -8927,7 +9121,7 @@ components:
       type: object
       description: This describes aggregated CPU metrics for workflow executions.
       allOf:
-      - $ref: '#/components/schemas/Metric'
+      - $ref: "#/components/schemas/Metric"
       - type: object
         properties:
           minimum:
@@ -8987,13 +9181,13 @@ components:
       type: object
       description: Aggregated metrics about workflow execution statuses
       allOf:
-      - $ref: '#/components/schemas/Metric'
+      - $ref: "#/components/schemas/Metric"
       - type: object
         properties:
           count:
             type: object
             additionalProperties:
-              $ref: '#/components/schemas/MetricsByStatus'
+              $ref: "#/components/schemas/MetricsByStatus"
             description: A map containing the metrics for each execution status
           numberOfSuccessfulExecutions:
             type: integer
@@ -9025,7 +9219,7 @@ components:
       description: This describes aggregated execution time metrics in seconds for
         workflow executions.
       allOf:
-      - $ref: '#/components/schemas/Metric'
+      - $ref: "#/components/schemas/Metric"
       - type: object
         properties:
           minimum:
@@ -9060,7 +9254,7 @@ components:
         checksums:
           type: array
           items:
-            $ref: '#/components/schemas/Checksum'
+            $ref: "#/components/schemas/Checksum"
         repository:
           type: string
         tag:
@@ -9106,7 +9300,7 @@ components:
       description: This describes aggregated memory metrics for workflow executions
         in GB.
       allOf:
-      - $ref: '#/components/schemas/Metric'
+      - $ref: "#/components/schemas/Metric"
       - type: object
         properties:
           minimum:
@@ -9154,9 +9348,9 @@ components:
           description: Implementation specific ID for the metrics in this webservice
           format: int64
         executionStatusCount:
-          $ref: '#/components/schemas/ExecutionStatusMetric'
+          $ref: "#/components/schemas/ExecutionStatusMetric"
         validationStatus:
-          $ref: '#/components/schemas/ValidationStatusMetric'
+          $ref: "#/components/schemas/ValidationStatusMetric"
       description: Aggregated metrics associated with entry versions
     MetricsByStatus:
       required:
@@ -9172,13 +9366,13 @@ components:
           description: The number of executions for the status
           format: int32
         executionTime:
-          $ref: '#/components/schemas/ExecutionTimeMetric'
+          $ref: "#/components/schemas/ExecutionTimeMetric"
         memory:
-          $ref: '#/components/schemas/MemoryMetric'
+          $ref: "#/components/schemas/MemoryMetric"
         cpu:
-          $ref: '#/components/schemas/CpuMetric'
+          $ref: "#/components/schemas/CpuMetric"
         cost:
-          $ref: '#/components/schemas/CostMetric'
+          $ref: "#/components/schemas/CostMetric"
       description: Aggregated metrics grouped by execution status
     OrcidAuthor:
       type: object
@@ -9280,11 +9474,11 @@ components:
         checksums:
           type: array
           items:
-            $ref: '#/components/schemas/Checksum'
+            $ref: "#/components/schemas/Checksum"
         verifiedBySource:
           type: object
           additionalProperties:
-            $ref: '#/components/schemas/VerificationInformation'
+            $ref: "#/components/schemas/VerificationInformation"
         state:
           type: string
           description: Enumerates the file state
@@ -9293,7 +9487,7 @@ components:
           - NOT_STORED
           - STUB
         metadata:
-          $ref: '#/components/schemas/SourceFileMetadata'
+          $ref: "#/components/schemas/SourceFileMetadata"
     SourceFileMetadata:
       type: object
       properties:
@@ -9304,7 +9498,7 @@ components:
           type: string
           description: The language version for the given descriptor file type
         parent:
-          $ref: '#/components/schemas/SourceFile'
+          $ref: "#/components/schemas/SourceFile"
     User:
       type: object
       properties:
@@ -9320,7 +9514,7 @@ components:
         userProfiles:
           type: object
           additionalProperties:
-            $ref: '#/components/schemas/Profile'
+            $ref: "#/components/schemas/Profile"
         avatarUrl:
           type: string
         curator:
@@ -9342,6 +9536,25 @@ components:
           - NEXTFLOW_TOWER
           - ELWAZI
           - AGC
+          - TOIL
+          - OTHER
+          - ALL
+        metricsRobotPartner:
+          type: string
+          description: Indicates whether this user is a robot that submits metrics
+          enum:
+          - GALAXY
+          - TERRA
+          - DNA_STACK
+          - DNA_NEXUS
+          - CGC
+          - NHLBI_BIODATA_CATALYST
+          - ANVIL
+          - CAVATICA
+          - NEXTFLOW_TOWER
+          - ELWAZI
+          - AGC
+          - TOIL
           - OTHER
           - ALL
         setupComplete:
@@ -9375,6 +9588,8 @@ components:
           type: integer
           format: int64
           writeOnly: true
+        metricsRobot:
+          type: boolean
     Validation:
       type: object
       properties:
@@ -9417,13 +9632,13 @@ components:
       type: object
       description: Aggregated metrics about workflow validation statuses
       allOf:
-      - $ref: '#/components/schemas/Metric'
+      - $ref: "#/components/schemas/Metric"
       - type: object
         properties:
           validatorTools:
             type: object
             additionalProperties:
-              $ref: '#/components/schemas/ValidatorInfo'
+              $ref: "#/components/schemas/ValidatorInfo"
             description: A map containing key-value pairs indicating whether the validator
               tool successfully validated the workflow
     ValidatorInfo:
@@ -9441,7 +9656,7 @@ components:
           uniqueItems: true
           type: array
           items:
-            $ref: '#/components/schemas/ValidatorVersionInfo'
+            $ref: "#/components/schemas/ValidatorVersionInfo"
         mostRecentVersionName:
           type: string
           description: The version of the validator tool that was most recently executed
@@ -9514,16 +9729,16 @@ components:
         dois:
           type: object
           additionalProperties:
-            $ref: '#/components/schemas/Doi'
+            $ref: "#/components/schemas/Doi"
           description: The DOIs for the version of the entry
         parsedInformationSet:
           type: array
           items:
-            $ref: '#/components/schemas/ParsedInformation'
+            $ref: "#/components/schemas/ParsedInformation"
         userIdToOrcidPutCode:
           type: object
           additionalProperties:
-            $ref: '#/components/schemas/OrcidPutCode'
+            $ref: "#/components/schemas/OrcidPutCode"
           description: The presence of the put code for a userid indicates the version
             was exported to ORCID for the corresponding Dockstore user.
         id:
@@ -9587,33 +9802,33 @@ components:
         dirtyBit:
           type: boolean
         versionMetadata:
-          $ref: '#/components/schemas/VersionMetadata'
+          $ref: "#/components/schemas/VersionMetadata"
         versionEditor:
-          $ref: '#/components/schemas/User'
+          $ref: "#/components/schemas/User"
         authors:
           uniqueItems: true
           type: array
           items:
-            $ref: '#/components/schemas/Author'
+            $ref: "#/components/schemas/Author"
         orcidAuthors:
           uniqueItems: true
           type: array
           items:
-            $ref: '#/components/schemas/OrcidAuthor'
+            $ref: "#/components/schemas/OrcidAuthor"
         validations:
           uniqueItems: true
           type: array
           items:
-            $ref: '#/components/schemas/Validation'
+            $ref: "#/components/schemas/Validation"
         images:
           uniqueItems: true
           type: array
           items:
-            $ref: '#/components/schemas/Image'
+            $ref: "#/components/schemas/Image"
         metricsByPlatform:
           type: object
           additionalProperties:
-            $ref: '#/components/schemas/Metrics'
+            $ref: "#/components/schemas/Metrics"
         userFiles:
           type: array
           items:
@@ -9623,7 +9838,7 @@ components:
         aliases:
           type: object
           additionalProperties:
-            $ref: '#/components/schemas/Alias'
+            $ref: "#/components/schemas/Alias"
         synced:
           type: boolean
         kernelImagePath:
@@ -9664,7 +9879,7 @@ components:
         dois:
           type: object
           additionalProperties:
-            $ref: '#/components/schemas/Doi'
+            $ref: "#/components/schemas/Doi"
           description: The DOIs for the version of the entry
         author:
           type: string
@@ -9679,7 +9894,7 @@ components:
           type: array
           writeOnly: true
           items:
-            $ref: '#/components/schemas/SourceFile'
+            $ref: "#/components/schemas/SourceFile"
         dbUpdateDate:
           type: integer
           format: int64
@@ -9687,12 +9902,12 @@ components:
           uniqueItems: true
           type: array
           items:
-            $ref: '#/components/schemas/FileFormat'
+            $ref: "#/components/schemas/FileFormat"
         output_file_formats:
           uniqueItems: true
           type: array
           items:
-            $ref: '#/components/schemas/FileFormat'
+            $ref: "#/components/schemas/FileFormat"
         workflow_path:
           type: string
         last_modified:
@@ -9711,7 +9926,7 @@ components:
       type: object
       properties:
         type:
-          $ref: '#/components/schemas/EntryType'
+          $ref: "#/components/schemas/EntryType"
         term:
           type: string
           description: Singular term used to refer to an instance of this entry type
@@ -9742,9 +9957,9 @@ components:
           type: string
           description: Dockstore path to workflow
         entryType:
-          $ref: '#/components/schemas/EntryType'
+          $ref: "#/components/schemas/EntryType"
         entryTypeMetadata:
-          $ref: '#/components/schemas/EntryTypeMetadata'
+          $ref: "#/components/schemas/EntryTypeMetadata"
         tagName:
           type: string
           description: Name of workflow version tag
@@ -9799,7 +10014,7 @@ components:
         aliases:
           type: object
           additionalProperties:
-            $ref: '#/components/schemas/Alias'
+            $ref: "#/components/schemas/Alias"
         dbCreateDate:
           type: integer
           format: int64
@@ -9809,7 +10024,7 @@ components:
         entries:
           type: array
           items:
-            $ref: '#/components/schemas/CollectionEntry'
+            $ref: "#/components/schemas/CollectionEntry"
         organizationName:
           type: string
       description: Category of entries
@@ -9865,7 +10080,7 @@ components:
         categories:
           type: array
           items:
-            $ref: '#/components/schemas/CategorySummary'
+            $ref: "#/components/schemas/CategorySummary"
     CloudInstance:
       type: object
       properties:
@@ -9886,6 +10101,7 @@ components:
           - NEXTFLOW_TOWER
           - ELWAZI
           - AGC
+          - TOIL
           - OTHER
           - ALL
         url:
@@ -9900,7 +10116,7 @@ components:
           uniqueItems: true
           type: array
           items:
-            $ref: '#/components/schemas/Language'
+            $ref: "#/components/schemas/Language"
     Language:
       type: object
       properties:
@@ -9968,7 +10184,7 @@ components:
         aliases:
           type: object
           additionalProperties:
-            $ref: '#/components/schemas/Alias'
+            $ref: "#/components/schemas/Alias"
         dbCreateDate:
           type: integer
           format: int64
@@ -9978,7 +10194,7 @@ components:
         entries:
           type: array
           items:
-            $ref: '#/components/schemas/CollectionEntry'
+            $ref: "#/components/schemas/CollectionEntry"
         organizationName:
           type: string
       description: "Collection in an organization, collects entries"
@@ -9994,17 +10210,17 @@ components:
           uniqueItems: true
           type: array
           items:
-            $ref: '#/components/schemas/Label'
+            $ref: "#/components/schemas/Label"
         users:
           uniqueItems: true
           type: array
           items:
-            $ref: '#/components/schemas/User'
+            $ref: "#/components/schemas/User"
         starredUsers:
           uniqueItems: true
           type: array
           items:
-            $ref: '#/components/schemas/User'
+            $ref: "#/components/schemas/User"
         lastUpdated:
           type: integer
           format: int64
@@ -10013,7 +10229,7 @@ components:
         aliases:
           type: object
           additionalProperties:
-            $ref: '#/components/schemas/Alias'
+            $ref: "#/components/schemas/Alias"
         dbCreateDate:
           type: integer
           format: int64
@@ -10031,7 +10247,7 @@ components:
         conceptDois:
           type: object
           additionalProperties:
-            $ref: '#/components/schemas/Doi'
+            $ref: "#/components/schemas/Doi"
           description: The Digital Object Identifier (DOI) representing all of the
             versions of your workflow
         doiSelection:
@@ -10042,11 +10258,11 @@ components:
           - DOCKSTORE
           - GITHUB
         licenseInformation:
-          $ref: '#/components/schemas/LicenseInformation'
+          $ref: "#/components/schemas/LicenseInformation"
         userIdToOrcidPutCode:
           type: object
           additionalProperties:
-            $ref: '#/components/schemas/OrcidPutCode'
+            $ref: "#/components/schemas/OrcidPutCode"
           description: The presence of the put code for a userid indicates the entry
             was exported to ORCID for the corresponding Dockstore user.
         topicAutomatic:
@@ -10078,14 +10294,14 @@ components:
             \ version"
           readOnly: true
           items:
-            $ref: '#/components/schemas/Author'
+            $ref: "#/components/schemas/Author"
         orcidAuthors:
           uniqueItems: true
           type: array
           description: "ORCID authors for the entry, retrieved from the default version"
           readOnly: true
           items:
-            $ref: '#/components/schemas/OrcidAuthor'
+            $ref: "#/components/schemas/OrcidAuthor"
         archived:
           type: boolean
         mode:
@@ -10118,25 +10334,25 @@ components:
           uniqueItems: true
           type: array
           items:
-            $ref: '#/components/schemas/Tag'
+            $ref: "#/components/schemas/Tag"
         tags:
           uniqueItems: true
           type: array
           items:
-            $ref: '#/components/schemas/Tag'
+            $ref: "#/components/schemas/Tag"
         path:
           type: string
         entryTypeMetadata:
-          $ref: '#/components/schemas/EntryTypeMetadata'
+          $ref: "#/components/schemas/EntryTypeMetadata"
         customerDockerRegistryPath:
           type: string
           writeOnly: true
         metadataFromVersion:
-          $ref: '#/components/schemas/Version'
+          $ref: "#/components/schemas/Version"
         metadataFromEntry:
-          $ref: '#/components/schemas/DockstoreTool'
+          $ref: "#/components/schemas/DockstoreTool"
         entryType:
-          $ref: '#/components/schemas/EntryType'
+          $ref: "#/components/schemas/EntryType"
         defaultVersion:
           type: string
         topic:
@@ -10154,12 +10370,12 @@ components:
           uniqueItems: true
           type: array
           items:
-            $ref: '#/components/schemas/FileFormat'
+            $ref: "#/components/schemas/FileFormat"
         output_file_formats:
           uniqueItems: true
           type: array
           items:
-            $ref: '#/components/schemas/FileFormat'
+            $ref: "#/components/schemas/FileFormat"
         tool_maintainer_email:
           type: string
         private_access:
@@ -10248,33 +10464,33 @@ components:
         dirtyBit:
           type: boolean
         versionMetadata:
-          $ref: '#/components/schemas/VersionMetadata'
+          $ref: "#/components/schemas/VersionMetadata"
         versionEditor:
-          $ref: '#/components/schemas/User'
+          $ref: "#/components/schemas/User"
         authors:
           uniqueItems: true
           type: array
           items:
-            $ref: '#/components/schemas/Author'
+            $ref: "#/components/schemas/Author"
         orcidAuthors:
           uniqueItems: true
           type: array
           items:
-            $ref: '#/components/schemas/OrcidAuthor'
+            $ref: "#/components/schemas/OrcidAuthor"
         validations:
           uniqueItems: true
           type: array
           items:
-            $ref: '#/components/schemas/Validation'
+            $ref: "#/components/schemas/Validation"
         images:
           uniqueItems: true
           type: array
           items:
-            $ref: '#/components/schemas/Image'
+            $ref: "#/components/schemas/Image"
         metricsByPlatform:
           type: object
           additionalProperties:
-            $ref: '#/components/schemas/Metrics'
+            $ref: "#/components/schemas/Metrics"
         userFiles:
           type: array
           items:
@@ -10319,7 +10535,7 @@ components:
         dois:
           type: object
           additionalProperties:
-            $ref: '#/components/schemas/Doi'
+            $ref: "#/components/schemas/Doi"
           description: The DOIs for the version of the entry
         author:
           type: string
@@ -10334,7 +10550,7 @@ components:
           type: array
           writeOnly: true
           items:
-            $ref: '#/components/schemas/SourceFile'
+            $ref: "#/components/schemas/SourceFile"
         dbUpdateDate:
           type: integer
           format: int64
@@ -10342,12 +10558,12 @@ components:
           uniqueItems: true
           type: array
           items:
-            $ref: '#/components/schemas/FileFormat'
+            $ref: "#/components/schemas/FileFormat"
         output_file_formats:
           uniqueItems: true
           type: array
           items:
-            $ref: '#/components/schemas/FileFormat'
+            $ref: "#/components/schemas/FileFormat"
         last_built:
           type: integer
           format: int64
@@ -10395,33 +10611,33 @@ components:
         dirtyBit:
           type: boolean
         versionMetadata:
-          $ref: '#/components/schemas/VersionMetadata'
+          $ref: "#/components/schemas/VersionMetadata"
         versionEditor:
-          $ref: '#/components/schemas/User'
+          $ref: "#/components/schemas/User"
         authors:
           uniqueItems: true
           type: array
           items:
-            $ref: '#/components/schemas/Author'
+            $ref: "#/components/schemas/Author"
         orcidAuthors:
           uniqueItems: true
           type: array
           items:
-            $ref: '#/components/schemas/OrcidAuthor'
+            $ref: "#/components/schemas/OrcidAuthor"
         validations:
           uniqueItems: true
           type: array
           items:
-            $ref: '#/components/schemas/Validation'
+            $ref: "#/components/schemas/Validation"
         images:
           uniqueItems: true
           type: array
           items:
-            $ref: '#/components/schemas/Image'
+            $ref: "#/components/schemas/Image"
         metricsByPlatform:
           type: object
           additionalProperties:
-            $ref: '#/components/schemas/Metrics'
+            $ref: "#/components/schemas/Metrics"
         userFiles:
           type: array
           items:
@@ -10461,7 +10677,7 @@ components:
         dois:
           type: object
           additionalProperties:
-            $ref: '#/components/schemas/Doi'
+            $ref: "#/components/schemas/Doi"
           description: The DOIs for the version of the entry
         author:
           type: string
@@ -10476,7 +10692,7 @@ components:
           type: array
           writeOnly: true
           items:
-            $ref: '#/components/schemas/SourceFile'
+            $ref: "#/components/schemas/SourceFile"
         dbUpdateDate:
           type: integer
           format: int64
@@ -10484,12 +10700,12 @@ components:
           uniqueItems: true
           type: array
           items:
-            $ref: '#/components/schemas/FileFormat'
+            $ref: "#/components/schemas/FileFormat"
         output_file_formats:
           uniqueItems: true
           type: array
           items:
-            $ref: '#/components/schemas/FileFormat'
+            $ref: "#/components/schemas/FileFormat"
       description: This describes a version of an entry in Dockstore
     PublishRequest:
       type: object
@@ -10513,17 +10729,17 @@ components:
           uniqueItems: true
           type: array
           items:
-            $ref: '#/components/schemas/Label'
+            $ref: "#/components/schemas/Label"
         users:
           uniqueItems: true
           type: array
           items:
-            $ref: '#/components/schemas/User'
+            $ref: "#/components/schemas/User"
         starredUsers:
           uniqueItems: true
           type: array
           items:
-            $ref: '#/components/schemas/User'
+            $ref: "#/components/schemas/User"
         lastUpdated:
           type: integer
           format: int64
@@ -10532,7 +10748,7 @@ components:
         aliases:
           type: object
           additionalProperties:
-            $ref: '#/components/schemas/Alias'
+            $ref: "#/components/schemas/Alias"
         dbCreateDate:
           type: integer
           format: int64
@@ -10550,7 +10766,7 @@ components:
         conceptDois:
           type: object
           additionalProperties:
-            $ref: '#/components/schemas/Doi'
+            $ref: "#/components/schemas/Doi"
           description: The Digital Object Identifier (DOI) representing all of the
             versions of your workflow
         doiSelection:
@@ -10561,11 +10777,11 @@ components:
           - DOCKSTORE
           - GITHUB
         licenseInformation:
-          $ref: '#/components/schemas/LicenseInformation'
+          $ref: "#/components/schemas/LicenseInformation"
         userIdToOrcidPutCode:
           type: object
           additionalProperties:
-            $ref: '#/components/schemas/OrcidPutCode'
+            $ref: "#/components/schemas/OrcidPutCode"
           description: The presence of the put code for a userid indicates the entry
             was exported to ORCID for the corresponding Dockstore user.
         topicAutomatic:
@@ -10597,29 +10813,29 @@ components:
             \ version"
           readOnly: true
           items:
-            $ref: '#/components/schemas/Author'
+            $ref: "#/components/schemas/Author"
         orcidAuthors:
           uniqueItems: true
           type: array
           description: "ORCID authors for the entry, retrieved from the default version"
           readOnly: true
           items:
-            $ref: '#/components/schemas/OrcidAuthor'
+            $ref: "#/components/schemas/OrcidAuthor"
         archived:
           type: boolean
         workflowVersions:
           uniqueItems: true
           type: array
           items:
-            $ref: '#/components/schemas/Version'
+            $ref: "#/components/schemas/Version"
         entryTypeMetadata:
-          $ref: '#/components/schemas/EntryTypeMetadata'
+          $ref: "#/components/schemas/EntryTypeMetadata"
         metadataFromVersion:
-          $ref: '#/components/schemas/Version'
+          $ref: "#/components/schemas/Version"
         metadataFromEntry:
-          $ref: '#/components/schemas/Entry'
+          $ref: "#/components/schemas/Entry"
         entryType:
-          $ref: '#/components/schemas/EntryType'
+          $ref: "#/components/schemas/EntryType"
         defaultVersion:
           type: string
         topic:
@@ -10637,12 +10853,12 @@ components:
           uniqueItems: true
           type: array
           items:
-            $ref: '#/components/schemas/FileFormat'
+            $ref: "#/components/schemas/FileFormat"
         output_file_formats:
           uniqueItems: true
           type: array
           items:
-            $ref: '#/components/schemas/FileFormat'
+            $ref: "#/components/schemas/FileFormat"
         last_modified_date:
           type: integer
           format: int64
@@ -10712,12 +10928,12 @@ components:
       description: This describes one app tool in dockstore as a special degenerate
         case of a workflow
       allOf:
-      - $ref: '#/components/schemas/Workflow'
+      - $ref: "#/components/schemas/Workflow"
     BioWorkflow:
       type: object
       description: This describes one workflow in the dockstore
       allOf:
-      - $ref: '#/components/schemas/Workflow'
+      - $ref: "#/components/schemas/Workflow"
       - type: object
         properties:
           parent_id:
@@ -10730,25 +10946,25 @@ components:
           type: integer
           format: int64
         user:
-          $ref: '#/components/schemas/User'
+          $ref: "#/components/schemas/User"
         organization:
-          $ref: '#/components/schemas/Organization'
+          $ref: "#/components/schemas/Organization"
         tool:
-          $ref: '#/components/schemas/DockstoreTool'
+          $ref: "#/components/schemas/DockstoreTool"
         workflow:
-          $ref: '#/components/schemas/Workflow'
+          $ref: "#/components/schemas/Workflow"
         apptool:
-          $ref: '#/components/schemas/AppTool'
+          $ref: "#/components/schemas/AppTool"
         service:
-          $ref: '#/components/schemas/Service'
+          $ref: "#/components/schemas/Service"
         notebook:
-          $ref: '#/components/schemas/Notebook'
+          $ref: "#/components/schemas/Notebook"
         collection:
-          $ref: '#/components/schemas/Collection'
+          $ref: "#/components/schemas/Collection"
         initiatorUser:
-          $ref: '#/components/schemas/User'
+          $ref: "#/components/schemas/User"
         version:
-          $ref: '#/components/schemas/Version'
+          $ref: "#/components/schemas/Version"
         type:
           type: string
           enum:
@@ -10784,7 +11000,7 @@ components:
       description: This describes one notebook in the dockstore as a special degenerate
         case of a workflow
       allOf:
-      - $ref: '#/components/schemas/Workflow'
+      - $ref: "#/components/schemas/Workflow"
     Organization:
       type: object
       properties:
@@ -10815,7 +11031,7 @@ components:
           uniqueItems: true
           type: array
           items:
-            $ref: '#/components/schemas/OrganizationUser'
+            $ref: "#/components/schemas/OrganizationUser"
         topic:
           type: string
         displayName:
@@ -10827,11 +11043,11 @@ components:
           uniqueItems: true
           type: array
           items:
-            $ref: '#/components/schemas/User'
+            $ref: "#/components/schemas/User"
         aliases:
           type: object
           additionalProperties:
-            $ref: '#/components/schemas/Alias'
+            $ref: "#/components/schemas/Alias"
         dbCreateDate:
           type: integer
           format: int64
@@ -10852,11 +11068,11 @@ components:
       type: object
       properties:
         id:
-          $ref: '#/components/schemas/OrganizationUserId'
+          $ref: "#/components/schemas/OrganizationUserId"
         user:
-          $ref: '#/components/schemas/User'
+          $ref: "#/components/schemas/User"
         organization:
-          $ref: '#/components/schemas/Organization'
+          $ref: "#/components/schemas/Organization"
         role:
           type: string
           enum:
@@ -10890,7 +11106,7 @@ components:
       description: This describes one service in the dockstore as a special degenerate
         case of a workflow
       allOf:
-      - $ref: '#/components/schemas/Workflow'
+      - $ref: "#/components/schemas/Workflow"
     Workflow:
       required:
       - type
@@ -10916,17 +11132,17 @@ components:
           uniqueItems: true
           type: array
           items:
-            $ref: '#/components/schemas/Label'
+            $ref: "#/components/schemas/Label"
         users:
           uniqueItems: true
           type: array
           items:
-            $ref: '#/components/schemas/User'
+            $ref: "#/components/schemas/User"
         starredUsers:
           uniqueItems: true
           type: array
           items:
-            $ref: '#/components/schemas/User'
+            $ref: "#/components/schemas/User"
         lastUpdated:
           type: integer
           format: int64
@@ -10935,7 +11151,7 @@ components:
         aliases:
           type: object
           additionalProperties:
-            $ref: '#/components/schemas/Alias'
+            $ref: "#/components/schemas/Alias"
         dbCreateDate:
           type: integer
           format: int64
@@ -10953,7 +11169,7 @@ components:
         conceptDois:
           type: object
           additionalProperties:
-            $ref: '#/components/schemas/Doi'
+            $ref: "#/components/schemas/Doi"
           description: The Digital Object Identifier (DOI) representing all of the
             versions of your workflow
         doiSelection:
@@ -10964,11 +11180,11 @@ components:
           - DOCKSTORE
           - GITHUB
         licenseInformation:
-          $ref: '#/components/schemas/LicenseInformation'
+          $ref: "#/components/schemas/LicenseInformation"
         userIdToOrcidPutCode:
           type: object
           additionalProperties:
-            $ref: '#/components/schemas/OrcidPutCode'
+            $ref: "#/components/schemas/OrcidPutCode"
           description: The presence of the put code for a userid indicates the entry
             was exported to ORCID for the corresponding Dockstore user.
         topicAutomatic:
@@ -11000,14 +11216,14 @@ components:
             \ version"
           readOnly: true
           items:
-            $ref: '#/components/schemas/Author'
+            $ref: "#/components/schemas/Author"
         orcidAuthors:
           uniqueItems: true
           type: array
           description: "ORCID authors for the entry, retrieved from the default version"
           readOnly: true
           items:
-            $ref: '#/components/schemas/OrcidAuthor'
+            $ref: "#/components/schemas/OrcidAuthor"
         archived:
           type: boolean
         mode:
@@ -11054,7 +11270,7 @@ components:
           uniqueItems: true
           type: array
           items:
-            $ref: '#/components/schemas/WorkflowVersion'
+            $ref: "#/components/schemas/WorkflowVersion"
         latestReleaseDate:
           type: integer
           description: "The timestamp of the most recent version control release,\
@@ -11070,13 +11286,13 @@ components:
         deletable:
           type: boolean
         entryTypeMetadata:
-          $ref: '#/components/schemas/EntryTypeMetadata'
+          $ref: "#/components/schemas/EntryTypeMetadata"
         metadataFromVersion:
-          $ref: '#/components/schemas/Version'
+          $ref: "#/components/schemas/Version"
         metadataFromEntry:
-          $ref: '#/components/schemas/Workflow'
+          $ref: "#/components/schemas/Workflow"
         entryType:
-          $ref: '#/components/schemas/EntryType'
+          $ref: "#/components/schemas/EntryType"
         defaultVersion:
           type: string
         topic:
@@ -11092,12 +11308,12 @@ components:
           uniqueItems: true
           type: array
           items:
-            $ref: '#/components/schemas/FileFormat'
+            $ref: "#/components/schemas/FileFormat"
         output_file_formats:
           uniqueItems: true
           type: array
           items:
-            $ref: '#/components/schemas/FileFormat'
+            $ref: "#/components/schemas/FileFormat"
         defaultTestParameterFilePath:
           type: string
         full_workflow_path:
@@ -11450,7 +11666,7 @@ components:
         prettyPath:
           type: string
         entryType:
-          $ref: '#/components/schemas/EntryType'
+          $ref: "#/components/schemas/EntryType"
         lastUpdateDate:
           type: integer
           format: int64
@@ -11504,6 +11720,24 @@ components:
           - NEXTFLOW_TOWER
           - ELWAZI
           - AGC
+          - TOIL
+          - OTHER
+          - ALL
+        metricsRobotPartner:
+          type: string
+          enum:
+          - GALAXY
+          - TERRA
+          - DNA_STACK
+          - DNA_NEXUS
+          - CGC
+          - NHLBI_BIODATA_CATALYST
+          - ANVIL
+          - CAVATICA
+          - NEXTFLOW_TOWER
+          - ELWAZI
+          - AGC
+          - TOIL
           - OTHER
           - ALL
     Permission:
@@ -11541,6 +11775,13 @@ components:
           - edit
         token:
           type: string
+    WorkflowAndVersion:
+      type: object
+      properties:
+        workflow:
+          $ref: "#/components/schemas/Workflow"
+        version:
+          $ref: "#/components/schemas/Version"
     OrcidAuthorInformation:
       type: object
       properties:
@@ -11558,9 +11799,9 @@ components:
       type: object
       properties:
         author:
-          $ref: '#/components/schemas/GitHubUser'
+          $ref: "#/components/schemas/GitHubUser"
         committer:
-          $ref: '#/components/schemas/GitHubUser'
+          $ref: "#/components/schemas/GitHubUser"
       description: "Information about a commit on a GitHub push event. See https://docs.github.com/en/webhooks/webhook-events-and-payloads#push,\
         \ under commits and head_commit"
     GitHubUser:
@@ -11609,7 +11850,7 @@ components:
           ]
         }
       allOf:
-      - $ref: '#/components/schemas/Payload'
+      - $ref: "#/components/schemas/Payload"
       - type: object
         properties:
           action:
@@ -11620,13 +11861,13 @@ components:
             description: "An array of repository objects, which were added to the\
               \ installation"
             items:
-              $ref: '#/components/schemas/WebhookRepository'
+              $ref: "#/components/schemas/WebhookRepository"
           repositories_removed:
             type: array
             description: "An array of repository objects, which were removed from\
               \ the installation"
             items:
-              $ref: '#/components/schemas/WebhookRepository'
+              $ref: "#/components/schemas/WebhookRepository"
     Payload:
       required:
       - installation
@@ -11634,11 +11875,11 @@ components:
       type: object
       properties:
         repository:
-          $ref: '#/components/schemas/WebhookRepository'
+          $ref: "#/components/schemas/WebhookRepository"
         sender:
-          $ref: '#/components/schemas/Sender'
+          $ref: "#/components/schemas/Sender"
         installation:
-          $ref: '#/components/schemas/Installation'
+          $ref: "#/components/schemas/Installation"
       description: Describes the common fields of all GitHub webhook payloads
     PushPayload:
       required:
@@ -11649,7 +11890,7 @@ components:
       type: object
       description: A model for a GitHub webhook push event
       allOf:
-      - $ref: '#/components/schemas/Payload'
+      - $ref: "#/components/schemas/Payload"
       - type: object
         properties:
           ref:
@@ -11664,9 +11905,9 @@ components:
             type: array
             description: An array of commit objects describing the pushed commits
             items:
-              $ref: '#/components/schemas/GitCommit'
+              $ref: "#/components/schemas/GitCommit"
           head_commit:
-            $ref: '#/components/schemas/GitCommit'
+            $ref: "#/components/schemas/GitCommit"
     Sender:
       required:
       - login
@@ -11696,13 +11937,13 @@ components:
       type: object
       properties:
         repository:
-          $ref: '#/components/schemas/WebhookRepository'
+          $ref: "#/components/schemas/WebhookRepository"
         sender:
-          $ref: '#/components/schemas/Sender'
+          $ref: "#/components/schemas/Sender"
         installation:
-          $ref: '#/components/schemas/Installation'
+          $ref: "#/components/schemas/Installation"
         release:
-          $ref: '#/components/schemas/WebhookRelease'
+          $ref: "#/components/schemas/WebhookRelease"
         action:
           type: string
           description: The action which the event describes
@@ -11754,7 +11995,7 @@ components:
           description: List of SourceFiles that will be required for parsing hosted
             entries from Dockstore
           items:
-            $ref: '#/components/schemas/SourceFile'
+            $ref: "#/components/schemas/SourceFile"
         descriptorLanguage:
           type: string
           description: The language of the workflow
@@ -11774,13 +12015,13 @@ components:
         clonedRepositoryAbsolutePath:
           type: string
         versionTypeValidation:
-          $ref: '#/components/schemas/VersionTypeValidation'
+          $ref: "#/components/schemas/VersionTypeValidation"
         secondaryFilePaths:
           type: array
           items:
             type: string
         languageParsingRequest:
-          $ref: '#/components/schemas/LanguageParsingRequest'
+          $ref: "#/components/schemas/LanguageParsingRequest"
         author:
           type: string
           description: Author found from parsing the version (may possibly be different
@@ -11794,12 +12035,12 @@ components:
           description: Description found from parsing the version (may possibly be
             different from what will be stored in Dockstore)
         parsedInformation:
-          $ref: '#/components/schemas/ParsedInformation'
+          $ref: "#/components/schemas/ParsedInformation"
         sourceFiles:
           type: array
           description: List of SourceFiles returned after parsing a non-hosted entry
           items:
-            $ref: '#/components/schemas/SourceFile'
+            $ref: "#/components/schemas/SourceFile"
         orcidID:
           type: string
           description: ORCID ID found from parsing the version (may possibly be different
@@ -11826,7 +12067,7 @@ components:
         workflows:
           type: array
           items:
-            $ref: '#/components/schemas/Workflow'
+            $ref: "#/components/schemas/Workflow"
     AutoDoiRequest:
       required:
       - autoGenerateDois
@@ -11867,7 +12108,7 @@ components:
         toolname:
           type: string
         toolclass:
-          $ref: '#/components/schemas/ToolClassV20beta'
+          $ref: "#/components/schemas/ToolClassV20beta"
         description:
           type: string
         author:
@@ -11887,7 +12128,7 @@ components:
         versions:
           type: array
           items:
-            $ref: '#/components/schemas/ToolVersionV1'
+            $ref: "#/components/schemas/ToolVersionV1"
     ToolVersionV1:
       type: object
       properties:
@@ -11974,18 +12215,18 @@ components:
           type: array
           description: List of workflow run executions to submit
           items:
-            $ref: '#/components/schemas/RunExecution'
+            $ref: "#/components/schemas/RunExecution"
         taskExecutions:
           type: array
           description: List of task run executions to submit. Each TaskExecution represents
             the tasks executed during a workflow execution.
           items:
-            $ref: '#/components/schemas/TaskExecutions'
+            $ref: "#/components/schemas/TaskExecutions"
         validationExecutions:
           type: array
           description: List of workflow validation executions to submit
           items:
-            $ref: '#/components/schemas/ValidationExecution'
+            $ref: "#/components/schemas/ValidationExecution"
       description: Request body model for executionMetricsPost
     RunExecution:
       required:
@@ -11995,7 +12236,7 @@ components:
       type: object
       description: Metrics of an execution on a platform
       allOf:
-      - $ref: '#/components/schemas/Execution'
+      - $ref: "#/components/schemas/Execution"
       - type: object
         properties:
           executionStatus:
@@ -12032,7 +12273,7 @@ components:
             format: int32
             example: 2
           cost:
-            $ref: '#/components/schemas/Cost'
+            $ref: "#/components/schemas/Cost"
           region:
             type: string
             description: The region the workflow was executed in
@@ -12045,7 +12286,7 @@ components:
       description: Metrics of individual tasks that were executed during the workflow
         execution.
       allOf:
-      - $ref: '#/components/schemas/Execution'
+      - $ref: "#/components/schemas/Execution"
       - type: object
         properties:
           taskExecutions:
@@ -12053,7 +12294,7 @@ components:
             description: Metrics of individual tasks that were executed during the
               workflow execution.
             items:
-              $ref: '#/components/schemas/RunExecution'
+              $ref: "#/components/schemas/RunExecution"
     ValidationExecution:
       required:
       - dateExecuted
@@ -12064,7 +12305,7 @@ components:
       type: object
       description: Metrics of a workflow validated on a platform
       allOf:
-      - $ref: '#/components/schemas/Execution'
+      - $ref: "#/components/schemas/Execution"
       - type: object
         properties:
           validatorTool:
@@ -12112,7 +12353,7 @@ components:
           type: array
           description: A list of responses for the executions submitted
           items:
-            $ref: '#/components/schemas/ExecutionResponse'
+            $ref: "#/components/schemas/ExecutionResponse"
       description: Response body model for execution metric APIs
     EntryLite:
       type: object
@@ -12121,20 +12362,20 @@ components:
           type: string
           format: date-time
         entryTypeMetadata:
-          $ref: '#/components/schemas/EntryTypeMetadata'
+          $ref: "#/components/schemas/EntryTypeMetadata"
         entryPath:
           type: string
         trsId:
           type: string
         entryType:
-          $ref: '#/components/schemas/EntryType'
+          $ref: "#/components/schemas/EntryType"
         prettyPath:
           type: string
     EntryLiteAndVersionName:
       type: object
       properties:
         entryLite:
-          $ref: '#/components/schemas/EntryLite'
+          $ref: "#/components/schemas/EntryLite"
         versionName:
           type: string
     UpdateAITopicRequest:
@@ -12194,14 +12435,14 @@ components:
           description: Name of this service. Should be human readable.
           example: My project
         type:
-          $ref: '#/components/schemas/ServiceType'
+          $ref: "#/components/schemas/ServiceType"
         description:
           type: string
           description: Description of the service. Should be human readable and provide
             information about the service.
           example: This service provides...
         organization:
-          $ref: '#/components/schemas/TRSServiceOrganization'
+          $ref: "#/components/schemas/TRSServiceOrganization"
         contactUrl:
           type: string
           description: "URL of the contact for the provider of this service, e.g.\
@@ -12301,7 +12542,7 @@ components:
           - checksum: 77af4d6b9913e693e8d0b4b294fa62ade6054e6b2f1ffb617ac955dd63fb0182
             type: sha256
           items:
-            $ref: '#/components/schemas/Checksum'
+            $ref: "#/components/schemas/Checksum"
         image_type:
           type: string
           enum:
@@ -12347,7 +12588,7 @@ components:
           type: string
           description: The name of the tool.
         toolclass:
-          $ref: '#/components/schemas/ToolClass'
+          $ref: "#/components/schemas/ToolClass"
         description:
           type: string
           description: The description of the tool.
@@ -12366,7 +12607,7 @@ components:
           type: array
           description: A list of versions for this tool.
           items:
-            $ref: '#/components/schemas/ToolVersion'
+            $ref: "#/components/schemas/ToolVersion"
       description: "A tool (or described tool) is defined as a tuple of a descriptor\
         \ file (which potentially consists of multiple files), a set of container\
         \ images, and a set of instructions for creating those images."
@@ -12409,7 +12650,7 @@ components:
             \ tool. If the tool has to evaluate any of the docker images strings at\
             \ runtime, those ones cannot be reported here."
           items:
-            $ref: '#/components/schemas/ImageData'
+            $ref: "#/components/schemas/ImageData"
         descriptor_type:
           type: array
           description: The type (or types) of descriptors available.
@@ -12517,9 +12758,9 @@ components:
           - checksum: ea2a5db69bd20a42976838790bc29294df3af02b
             type: sha1
           items:
-            $ref: '#/components/schemas/Checksum'
+            $ref: "#/components/schemas/Checksum"
         image_type:
-          $ref: '#/components/schemas/OneOfFileWrapperImageType'
+          $ref: "#/components/schemas/OneOfFileWrapperImageType"
         url:
           type: string
           description: "Optional url to the underlying content, should include version\
@@ -12529,6 +12770,15 @@ components:
           example: "{\"descriptorfile\":{\"url\":\"https://raw.githubusercontent.com/ICGC-TCGA-PanCancer/pcawg_delly_workflow/ea2a5db69bd20a42976838790bc29294df3af02b/delly_docker/Delly.cwl\"\
             },\"containerfile\":{\"url\":\"https://raw.githubusercontent.com/ICGC-TCGA-PanCancer/pcawg_delly_workflow/c83478829802b4d36374870843821abe1b625a71/delly_docker/Dockerfile\"\
             }}"
+        dockstore_self_url:
+          type: string
+          description: Self URL to this file in the toolsIdVersionsVersionIdTypeDescriptorRelativePathGet
+            endpoint
+        dockstore_absolute_path:
+          type: string
+          description: Absolute path of the file.  A descriptor's path can be used
+            with zip from toolsIdVersionsVersionIdTypeFilesGet when format=zip is
+            specified
       description: 'A file provides content for one of - A tool descriptor is a metadata
         document that describes one or more tools. - A tool document that describes
         how to test with one or more sample test JSON. - A containerfile is a document
@@ -12546,6 +12796,11 @@ components:
           type: string
           description: "Relative path of the file.  A descriptor's path can be used\
             \ with the GA4GH .../{type}/descriptor/{relative_path : .+} endpoint."
+        dockstore_absolute_path:
+          type: string
+          description: Absolute path of the file.  A descriptor's path can be used
+            with zip from toolsIdVersionsVersionIdTypeFilesGet when format=zip is
+            specified
         file_type:
           type: string
           enum:
@@ -12555,7 +12810,7 @@ components:
           - CONTAINERFILE
           - OTHER
         checksum:
-          $ref: '#/components/schemas/Checksum'
+          $ref: "#/components/schemas/Checksum"
     MetadataV20beta:
       required:
       - api_version
@@ -12593,7 +12848,7 @@ components:
         toolname:
           type: string
         toolclass:
-          $ref: '#/components/schemas/ToolClassV20beta'
+          $ref: "#/components/schemas/ToolClassV20beta"
         description:
           type: string
         author:
@@ -12617,7 +12872,7 @@ components:
         versions:
           type: array
           items:
-            $ref: '#/components/schemas/ToolVersionV20beta'
+            $ref: "#/components/schemas/ToolVersionV20beta"
     ToolVersionV20beta:
       required:
       - id
