@@ -13,7 +13,7 @@ info:
   license:
     name: Apache License Version 2.0
     url: https://github.com/dockstore/dockstore/blob/develop/LICENSE
-  version: 1.17.1
+  version: 1.17.2
 servers:
 - url: /api
   description: Current server when hosted on AWS
