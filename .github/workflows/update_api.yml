@@ -1,11 +1,17 @@
 name: Update to Dockstore API
 
-on: workflow_dispatch
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'checkout branch'
+        required: true
+        default: 'RELEASE_3_21'
 
 jobs:
   apiUpdate:
     runs-on: ubuntu-latest
-    container: bioconductor/bioconductor_docker:devel
+    container: bioconductor/bioconductor_docker:${{ github.event.inputs.branch }}
 
     env:
       R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
@@ -13,9 +19,9 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          ref: ${{ github.event.inputs.branch }}
 
       - name: Install Dependencies
         run: Rscript -e "install.packages('yaml')"
@@ -29,7 +35,7 @@ jobs:
         run: npm install -g api-spec-converter
 
       - name: Add safe directory
-        run: git config --global --add safe.directory /__w/AnVIL/AnVIL
+        run: git config --global --add safe.directory /__w/${{ github.event.repository.name }}/${{ github.event.repository.name }}
 
       - name: Download API and write MD5
         run: Rscript -e "source('./inst/scripts/update_dockstore_api.R')"
@@ -45,4 +51,3 @@ jobs:
         uses: ad-m/github-push-action@master
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
