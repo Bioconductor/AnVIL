@@ -13,7 +13,7 @@
     },
     "termsOfService": "https://github.com/dockstore/dockstore-ui2/raw/develop/src/assets/docs/Dockstore_Terms_of_Service.pdf",
     "title": "Dockstore API",
-    "version": "1.17.2"
+    "version": "1.18.0"
   },
   "basePath": "/api",
   "paths": {
@@ -4094,7 +4094,7 @@
             "description": "default response",
             "schema": {
               "items": {
-                "$ref": "#/definitions/Notification"
+                "$ref": "#/definitions/PublicNotification"
               },
               "type": "array"
             }
@@ -4120,7 +4120,7 @@
             "name": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/Notification"
+              "$ref": "#/definitions/PublicNotification"
             }
           }
         ],
@@ -4128,7 +4128,7 @@
           "default": {
             "description": "default response",
             "schema": {
-              "$ref": "#/definitions/Notification"
+              "$ref": "#/definitions/PublicNotification"
             }
           }
         },
@@ -4142,6 +4142,136 @@
         ],
         "description": "Create a notification",
         "operationId": "createNotification"
+      }
+    },
+    "/curation/notifications/user": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "default": 0,
+            "description": "Start index of paging. Pagination results can be based on numbers or other values chosen by the registry implementor (for example, SHA values). If this exceeds the current result set return an empty set.  If not specified in the request, this will start at the beginning of the results.",
+            "format": "int32",
+            "in": "query",
+            "minimum": 0,
+            "name": "offset",
+            "type": "integer"
+          },
+          {
+            "default": 100,
+            "description": "Amount of records to return in a given page, limited to 100",
+            "format": "int32",
+            "in": "query",
+            "maximum": 100,
+            "minimum": 1,
+            "name": "limit",
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "default response",
+            "schema": {
+              "items": {
+                "$ref": "#/definitions/UserNotification"
+              },
+              "type": "array"
+            }
+          }
+        },
+        "security": [
+          {
+            "BEARER": []
+          }
+        ],
+        "tags": [
+          "curation"
+        ],
+        "description": "Return all notifications for a user",
+        "operationId": "getUserNotifications"
+      }
+    },
+    "/curation/notifications/user/githubapp": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "default": 0,
+            "description": "Start index of paging. Pagination results can be based on numbers or other values chosen by the registry implementor (for example, SHA values). If this exceeds the current result set return an empty set.  If not specified in the request, this will start at the beginning of the results.",
+            "format": "int32",
+            "in": "query",
+            "minimum": 0,
+            "name": "offset",
+            "type": "integer"
+          },
+          {
+            "default": 100,
+            "description": "Amount of records to return in a given page, limited to 100",
+            "format": "int32",
+            "in": "query",
+            "maximum": 100,
+            "minimum": 1,
+            "name": "limit",
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "default response",
+            "schema": {
+              "items": {
+                "$ref": "#/definitions/GitHubAppNotification"
+              },
+              "type": "array"
+            }
+          }
+        },
+        "security": [
+          {
+            "BEARER": []
+          }
+        ],
+        "tags": [
+          "curation"
+        ],
+        "description": "Return all GitHub App notifications for a user",
+        "operationId": "getGitHubAppNotifications"
+      }
+    },
+    "/curation/notifications/user/{id}": {
+      "delete": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "Notification to delete",
+            "format": "int64",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "default response"
+          }
+        },
+        "security": [
+          {
+            "BEARER": []
+          }
+        ],
+        "tags": [
+          "curation"
+        ],
+        "description": "Delete a user notification",
+        "operationId": "deleteUserNotification"
       }
     },
     "/curation/notifications/{id}": {
@@ -4191,7 +4321,7 @@
           "default": {
             "description": "default response",
             "schema": {
-              "$ref": "#/definitions/Notification"
+              "$ref": "#/definitions/PublicNotification"
             }
           }
         },
@@ -4220,7 +4350,7 @@
             "in": "body",
             "name": "body",
             "schema": {
-              "$ref": "#/definitions/Notification"
+              "$ref": "#/definitions/PublicNotification"
             }
           }
         ],
@@ -4228,7 +4358,7 @@
           "default": {
             "description": "default response",
             "schema": {
-              "$ref": "#/definitions/Notification"
+              "$ref": "#/definitions/PublicNotification"
             }
           }
         },
@@ -9621,39 +9751,38 @@
         "operationId": "handleGitHubBranchDeletion"
       }
     },
-    "/workflows/github/infer/{owner}/{repo}/{ref}": {
+    "/workflows/github/infer/organizations/{organization}/repositories/{repository}": {
       "get": {
         "produces": [
           "application/json"
         ],
         "parameters": [
           {
-            "description": "repo owner",
+            "description": "GitHub organization",
             "in": "path",
-            "name": "owner",
+            "name": "organization",
             "required": true,
             "type": "string"
           },
           {
-            "description": "repo name",
+            "description": "GitHub repository",
             "in": "path",
-            "name": "repo",
+            "name": "repository",
             "required": true,
             "type": "string"
           },
           {
             "description": "reference, could contain slashes which need to be urlencoded",
-            "in": "path",
+            "in": "query",
             "name": "ref",
-            "required": true,
             "type": "string"
           }
         ],
         "responses": {
-          "default": {
-            "description": "default response",
+          "200": {
+            "description": "Information about the inferred .dockstore.yml",
             "schema": {
-              "type": "string"
+              "$ref": "#/definitions/InferredDockstoreYml"
             }
           }
         },
@@ -9665,7 +9794,6 @@
         "tags": [
           "workflows"
         ],
-        "deprecated": true,
         "description": "Infer the entries in the file tree of a GitHub repository reference.",
         "operationId": "inferEntries"
       }
@@ -11490,6 +11618,55 @@
         ],
         "description": "Update the labels linked to a workflow.",
         "operationId": "updateLabels_1"
+      }
+    },
+    "/workflows/{workflowId}/maxWeeklyExecutionCountForAnyVersion": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "id of the workflow",
+            "format": "int64",
+            "in": "path",
+            "name": "workflowId",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "description": "include counts on or after this time, expressed in UTC Java epoch seconds",
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "format": "int64",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "default response",
+            "schema": {
+              "format": "int64",
+              "type": "integer"
+            }
+          }
+        },
+        "security": [
+          {
+            "BEARER": []
+          }
+        ],
+        "tags": [
+          "workflows"
+        ],
+        "description": "Determine the maximum weekly execution count for all workflow versions over the specified time range.",
+        "operationId": "getMaxWeeklyExecutionCountForAnyVersion"
       }
     },
     "/workflows/{workflowId}/primaryDescriptor": {
@@ -14486,6 +14663,61 @@
       },
       "type": "object"
     },
+    "GitHubAppNotification": {
+      "description": "Notifications for a GitHub App repository",
+      "properties": {
+        "action": {
+          "description": "The recommended action for the repository",
+          "enum": [
+            "INFER_DOCKSTORE_YML"
+          ],
+          "type": "string"
+        },
+        "dbCreateDate": {
+          "description": "Timestamp at which the notification was created",
+          "format": "int64",
+          "type": "integer"
+        },
+        "dbUpdateDate": {
+          "description": "Timestamp at which the notification was last updated",
+          "format": "int64",
+          "type": "integer"
+        },
+        "id": {
+          "description": "ID for the notification",
+          "format": "int64",
+          "type": "integer"
+        },
+        "organization": {
+          "description": "The git organization name",
+          "type": "string"
+        },
+        "repository": {
+          "description": "The git repository name",
+          "type": "string"
+        },
+        "sourceControl": {
+          "description": "The source control provider",
+          "enum": [
+            "dockstore.org",
+            "github.com",
+            "bitbucket.org",
+            "gitlab.com"
+          ],
+          "type": "string"
+        },
+        "user": {
+          "$ref": "#/definitions/User"
+        }
+      },
+      "required": [
+        "action",
+        "organization",
+        "repository",
+        "sourceControl"
+      ],
+      "type": "object"
+    },
     "GitHubUser": {
       "properties": {
         "email": {
@@ -14615,6 +14847,24 @@
       },
       "type": "object"
     },
+    "InferredDockstoreYml": {
+      "description": "Response for an inferred .dockstore.yml",
+      "properties": {
+        "dockstoreYml": {
+          "description": "The inferred .dockstore.yml",
+          "type": "string"
+        },
+        "gitReference": {
+          "description": "The GitHub branch reference used for the inference",
+          "type": "string"
+        }
+      },
+      "required": [
+        "dockstoreYml",
+        "gitReference"
+      ],
+      "type": "object"
+    },
     "Installation": {
       "description": "The GitHub App installation",
       "properties": {
@@ -14638,6 +14888,7 @@
           "properties": {
             "action": {
               "description": "The action which the event describes",
+              "example": "added",
               "type": "string"
             },
             "repositories_added": {
@@ -14659,7 +14910,6 @@
         }
       ],
       "description": "A model for a GitHub webhook installation event",
-      "example": "{\n  \"sender\": {\n    \"login\": \"string\"\n  },\n  \"action\": \"added\",\n  \"installation\": {\n    \"id\": 0\n  },\n  \"repositories_added\": [\n    {\n      \"full_name\": \"dockstore/dockstore-ui2\"\n    }\n  ]\n  \"repositories_removed\": [\n  ]\n}\n",
       "required": [
         "action",
         "installation",
@@ -14993,6 +15243,9 @@
         "cpu": {
           "$ref": "#/definitions/CpuMetric"
         },
+        "dailyExecutionCounts": {
+          "$ref": "#/definitions/TimeSeriesMetric"
+        },
         "executionStatusCount": {
           "description": "The number of executions for the status",
           "format": "int32",
@@ -15008,6 +15261,9 @@
         },
         "memory": {
           "$ref": "#/definitions/MemoryMetric"
+        },
+        "weeklyExecutionCounts": {
+          "$ref": "#/definitions/TimeSeriesMetric"
         }
       },
       "required": [
@@ -15022,47 +15278,6 @@
         }
       ],
       "description": "This describes one notebook in the dockstore as a special degenerate case of a workflow",
-      "type": "object"
-    },
-    "Notification": {
-      "properties": {
-        "dbCreateDate": {
-          "format": "int64",
-          "type": "integer"
-        },
-        "dbUpdateDate": {
-          "format": "int64",
-          "type": "integer"
-        },
-        "expiration": {
-          "format": "int64",
-          "type": "integer"
-        },
-        "id": {
-          "format": "int64",
-          "type": "integer"
-        },
-        "message": {
-          "maxLength": 1024,
-          "minLength": 0,
-          "type": "string"
-        },
-        "priority": {
-          "enum": [
-            "LOW",
-            "MEDIUM",
-            "CRITICAL"
-          ],
-          "type": "string"
-        },
-        "type": {
-          "enum": [
-            "SITEWIDE",
-            "NEWSBODY"
-          ],
-          "type": "string"
-        }
-      },
       "type": "object"
     },
     "OneOfFileWrapperImageType": {
@@ -15393,6 +15608,52 @@
           "type": "string"
         },
         "username": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "PublicNotification": {
+      "properties": {
+        "dbCreateDate": {
+          "description": "Timestamp at which the notification was created",
+          "format": "int64",
+          "type": "integer"
+        },
+        "dbUpdateDate": {
+          "description": "Timestamp at which the notification was last updated",
+          "format": "int64",
+          "type": "integer"
+        },
+        "expiration": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "id": {
+          "description": "ID for the notification",
+          "format": "int64",
+          "type": "integer"
+        },
+        "message": {
+          "maxLength": 1024,
+          "minLength": 0,
+          "type": "string"
+        },
+        "priority": {
+          "enum": [
+            "LOW",
+            "MEDIUM",
+            "CRITICAL"
+          ],
+          "type": "string"
+        },
+        "type": {
+          "description": "Type of notification",
+          "enum": [
+            "SITEWIDE",
+            "NEWSBODY"
+          ],
+          "example": "SITEWIDE",
           "type": "string"
         }
       },
@@ -16100,6 +16361,62 @@
       "required": [
         "dateExecuted",
         "executionId"
+      ],
+      "type": "object"
+    },
+    "TimeSeriesMetric": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/Metric"
+        },
+        {
+          "properties": {
+            "begins": {
+              "description": "Time that the first point was sampled at",
+              "format": "date-time",
+              "type": "string"
+            },
+            "id": {
+              "description": "Implementation specific ID for metrics in this webservice",
+              "format": "int64",
+              "type": "integer"
+            },
+            "interval": {
+              "description": "Time between samples",
+              "enum": [
+                "SECOND",
+                "MINUTE",
+                "HOUR",
+                "DAY",
+                "WEEK",
+                "MONTH"
+              ],
+              "type": "string"
+            },
+            "numberOfSkippedExecutions": {
+              "default": 0,
+              "description": "The number of executions that were skipped during aggregation because they were invalid",
+              "format": "int32",
+              "type": "integer"
+            },
+            "values": {
+              "description": "List of sample values, oldest values first",
+              "items": {
+                "description": "Sample value",
+                "format": "double",
+                "type": "number"
+              },
+              "type": "array"
+            }
+          },
+          "type": "object"
+        }
+      ],
+      "description": "Describes a metric that consists of a series of data values sampled at evenly-spaced points in time",
+      "required": [
+        "begins",
+        "interval",
+        "values"
       ],
       "type": "object"
     },
@@ -16888,6 +17205,40 @@
           "type": "string"
         }
       },
+      "type": "object"
+    },
+    "UserNotification": {
+      "description": "Notifications for a user",
+      "properties": {
+        "action": {
+          "description": "The recommended action for the repository",
+          "enum": [
+            "INFER_DOCKSTORE_YML"
+          ],
+          "type": "string"
+        },
+        "dbCreateDate": {
+          "description": "Timestamp at which the notification was created",
+          "format": "int64",
+          "type": "integer"
+        },
+        "dbUpdateDate": {
+          "description": "Timestamp at which the notification was last updated",
+          "format": "int64",
+          "type": "integer"
+        },
+        "id": {
+          "description": "ID for the notification",
+          "format": "int64",
+          "type": "integer"
+        },
+        "user": {
+          "$ref": "#/definitions/User"
+        }
+      },
+      "required": [
+        "action"
+      ],
       "type": "object"
     },
     "Validation": {
