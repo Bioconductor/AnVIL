@@ -44,6 +44,6 @@ Collate:
     gadgets.R zzz.R
 VignetteBuilder: knitr
 biocViews: Infrastructure
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.3
 Roxygen: list(markdown = TRUE)
 Date: 2025-07-31
