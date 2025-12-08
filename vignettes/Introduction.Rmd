@@ -381,7 +381,7 @@ for illustration is
 ```{r, eval = FALSE}
 (job_status <- avtable_import(my_cars, pageSize = 10))
 ## pageSize = 10 rows (4 pages)
-##   |======================================================================| 100%
+##   |===================================================================| 100%
 ## # A tibble: 4 × 5
 ##    page from_row to_row job_id                               status
 ##   <int>    <int>  <int> <chr>                                <chr>
@@ -391,7 +391,7 @@ for illustration is
 ## 4     4       31     32 d14efb89-e2dd-4937-b80a-169520b5f563 Uploaded
 (job_status <- avtable_import_status(job_status))
 ## checking status of 4 avtable import jobs
-##   |======================================================================| 100%
+##   |===================================================================| 100%
 ## # A tibble: 4 × 5
 ##    page from_row to_row job_id                               status
 ##   <int>    <int>  <int> <chr>                                <chr>
@@ -401,7 +401,7 @@ for illustration is
 ## 4     4       31     32 d14efb89-e2dd-4937-b80a-169520b5f563 ReadyForUpsert
 (job_status <- avtable_import_status(job_status))
 ## checking status of 4 avtable import jobs
-##   |======================================================================| 100%
+##   |===================================================================| 100%
 ## # A tibble: 4 × 5
 ##    page from_row to_row job_id                               status
 ##   <int>    <int>  <int> <chr>                                <chr>
@@ -546,7 +546,8 @@ workspace.
 
 The Data Repository Service (DRS) is a GA4GH standard that separates a
 resource location (e.g., google bucket of a VCF file) from the URI
-that identifies the resource. A URI with the form `drs://...` is submitted to the Terra / AnVIL DRS, and translated to bucket (e.g., `gs://...`) or
+that identifies the resource. A URI with the form `drs://...` is submitted to
+the Terra / AnVIL DRS, and translated to bucket (e.g., `gs://...`) or
 `https://...` URIs. One use case for DRS is when the location (e.g.,
 google bucket) of the resouce moves. In this case the DRS identifier
 does not change, so no changes are needed to code or data resources
