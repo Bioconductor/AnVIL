@@ -16,8 +16,8 @@ abstract: |
   Terra / AnVIL workflow from within their R session. The configuration of the
   workflow can be retrieved and edited. Then this new configuration can be
   sent back to the Terra / AnVIL workspace for future use. With the new
-  configuration defined by the user will then be able to run the workflow as well
-  as stop any jobs from running.
+  configuration defined by the user will then be able to run the workflow as
+  well as stop any jobs from running.
 vignette: |
   %\VignetteIndexEntry{Running an AnVIL workflow within R}
   %\VignetteEngine{knitr::rmarkdown}
@@ -273,7 +273,8 @@ info_1 <- avworkflow_info(submissionId)
 Read the saved version of this result in to *R*.
 
 ```{r, message=FALSE, warning=FALSE}
-info_file_1 <- system.file(package = "AnVIL", "extdata", "avworkflow_info_1.rds")
+info_file_1 <-
+    system.file(package = "AnVIL", "extdata", "avworkflow_info_1.rds")
 info_1 <- readRDS(info_file_1)
 
 ## view result of avworkflow_info()
@@ -327,7 +328,8 @@ info_2 <- avworkflow_info(submissionId)
 Reading the result from the stored version:
 
 ```{r, message=FALSE, warning=FALSE}
-info_file_2 <- system.file(package = "AnVIL", "extdata", "avworkflow_info_2.rds")
+info_file_2 <-
+    system.file(package = "AnVIL", "extdata", "avworkflow_info_2.rds")
 info_2 <- readRDS(info_file_2)
 info_2
 ```
