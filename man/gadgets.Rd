@@ -58,11 +58,10 @@ available workflows, and \code{avworkflow_configuration_get()} for
 retrieving the workflow.
 }
 \examples{
-\dontrun{
+\dontshow{if (has_avworkspace(TRUE, platform = AnVILGCP::gcp())) withAutoprint(\{ # examplesIf}
 workspace()
 browse_workspace(use_avworkspace = FALSE)
 tbl <- table()
 wkflw <- avworkflow_gadget()
-}
-
+\dontshow{\}) # examplesIf}
 }

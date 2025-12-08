@@ -137,13 +137,11 @@ tags <-
 #'     `.__body__=` argument, as illustrated for
 #'     `createBillingProjectFull()`, below.
 #'
-#' @examples
-#' library(GCPtools)
-#' if (gcloud_exists()) {
-#'     ## Arguments to be used as the 'body' (`.__body__=`) of a REST query
-#'     Terra()$createBillingProjectFull       # 6 arguments...
-#'     args(Terra()$createBillingProjectFull) # ... passed as `.__body__ = list(...)`
-#' }
+#' @examplesIf GCPtools::gcloud_exists()
+#' ## Arguments to be used as the 'body' (`.__body__=`) of a REST query
+#' Terra()$createBillingProjectFull       # 6 arguments...
+#' ## ... passed as `.__body__ = list(...)`
+#' args(Terra()$createBillingProjectFull)
 #' @export
 setMethod(
     "$", "Service",
