@@ -10,9 +10,8 @@
 #'
 #' @return `add_libpaths()`: updated .libPaths(), invisibly.
 #'
-#' @examples
-#' \dontrun{add_libpaths("/tmp/host-site-library")}
-#'
+#' @examplesIf interactive()
+#' add_libpaths("/tmp/host-site-library")
 #' @export
 add_libpaths <-
     function(paths)

@@ -35,12 +35,12 @@ tibble-navigating gadget, returning the value of \code{DONE_FUN} if
 a row of the tibble is selected, or NULL.
 }
 \examples{
-\dontrun{
-tibble <- avworkspaces()
+\dontshow{if (has_avworkspace(TRUE, platform = AnVILGCP::gcp())) withAutoprint(\{ # examplesIf}
+tibble <- avworkspaces(platform = AnVILGCP::gcp())
 DONE_FUN <- function(tibble, row_selected) {
     selected <- slice(tibble, row_selected)
     with(selected, paste0(namespace, "/", name))
 }
 .gadget_run("AnVIL Example", tibble, DONE_FUN)
-}
+\dontshow{\}) # examplesIf}
 }

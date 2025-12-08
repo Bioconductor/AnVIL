@@ -116,12 +116,12 @@ in 'body' of the REST request. Specify these using the
 \examples{
 empty_object
 
-library(GCPtools)
-if (gcloud_exists()) {
-    ## Arguments to be used as the 'body' (`.__body__=`) of a REST query
-    Terra()$createBillingProjectFull       # 6 arguments...
-    args(Terra()$createBillingProjectFull) # ... passed as `.__body__ = list(...)`
-}
+\dontshow{if (GCPtools::gcloud_exists()) withAutoprint(\{ # examplesIf}
+## Arguments to be used as the 'body' (`.__body__=`) of a REST query
+Terra()$createBillingProjectFull       # 6 arguments...
+## ... passed as `.__body__ = list(...)`
+args(Terra()$createBillingProjectFull)
+\dontshow{\}) # examplesIf}
 library(GCPtools)
 if (gcloud_exists())
     Leonardo()

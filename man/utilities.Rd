@@ -19,6 +19,7 @@ add_libpaths(paths)
 \code{.libPaths()}.
 }
 \examples{
-\dontrun{add_libpaths("/tmp/host-site-library")}
-
+\dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
+add_libpaths("/tmp/host-site-library")
+\dontshow{\}) # examplesIf}
 }

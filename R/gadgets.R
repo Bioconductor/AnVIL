@@ -100,17 +100,15 @@
 #'     (the user presses `Cancel`, or `Done` prior to selecting any
 #'     row).
 #'
-#' @examples
-#' \dontrun{
-#' tibble <- avworkspaces()
+#' @importFrom shiny runGadget
+#'
+#' @examplesIf has_avworkspace(TRUE, platform = AnVILGCP::gcp())
+#' tibble <- avworkspaces(platform = AnVILGCP::gcp())
 #' DONE_FUN <- function(tibble, row_selected) {
 #'     selected <- slice(tibble, row_selected)
 #'     with(selected, paste0(namespace, "/", name))
 #' }
 #' .gadget_run("AnVIL Example", tibble, DONE_FUN)
-#' }
-#' @importFrom shiny runGadget
-#'
 #' @export
 .gadget_run <-
     function(title, tibble, DONE_FUN)
@@ -141,14 +139,11 @@
 #'     character(1) using the format namespace/name, or character(0)
 #'     if no workspace is selected.
 #'
-#' @examples
-#' \dontrun{
+#' @examplesIf has_avworkspace(TRUE, platform = AnVILGCP::gcp())
 #' workspace()
 #' browse_workspace(use_avworkspace = FALSE)
 #' tbl <- table()
 #' wkflw <- avworkflow_gadget()
-#' }
-#'
 #' @export
 avworkspace_gadget <-
     function()
