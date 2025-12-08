@@ -8,6 +8,14 @@
 \description{
 The AnVIL is a cloud computing resource developed in part by the National Human Genome Research Institute. The AnVIL package provides programatic access to the Dockstore, Leonardo, Rawls, TDR, and Terra RESTful programming interfaces. For platform-specific user-level functionality, see either the AnVILGCP or AnVILAz package.
 }
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://github.com/Bioconductor/AnVIL}
+  \item Report bugs at \url{https://github.com/Bioconductor/AnVIL/issues}
+}
+
+}
 \author{
 \strong{Maintainer}: Marcel Ramos \email{marcel.ramos@sph.cuny.edu} (\href{https://orcid.org/0000-0002-3242-0582}{ORCID})
 
