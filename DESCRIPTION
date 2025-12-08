@@ -42,6 +42,8 @@ Collate:
     utilities.R authenticate.R api.R AnVIL-package.R
     Service.R Services.R Leonardo.R Terra.R Rawls.R Dockstore.R TDR.R
     gadgets.R zzz.R
+URL: https://github.com/Bioconductor/AnVIL
+BugReports: https://github.com/Bioconductor/AnVIL/issues
 VignetteBuilder: knitr
 biocViews: Infrastructure
 RoxygenNote: 7.3.3
