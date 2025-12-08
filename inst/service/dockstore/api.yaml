@@ -13,7 +13,7 @@
     },
     "termsOfService": "https://github.com/dockstore/dockstore-ui2/raw/develop/src/assets/docs/Dockstore_Terms_of_Service.pdf",
     "title": "Dockstore API",
-    "version": "1.18.0"
+    "version": "1.18.2"
   },
   "basePath": "/api",
   "paths": {
@@ -4272,6 +4272,47 @@
         ],
         "description": "Delete a user notification",
         "operationId": "deleteUserNotification"
+      }
+    },
+    "/curation/notifications/user/{id}/hide": {
+      "patch": {
+        "consumes": [],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "description": "Notification to hide",
+            "format": "int64",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "description": "This is here to appease Swagger. It requires PATCH methods to have a body, even if it is empty. Please leave it empty.",
+            "in": "body",
+            "name": "body",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "default response"
+          }
+        },
+        "security": [
+          {
+            "BEARER": []
+          }
+        ],
+        "tags": [
+          "curation"
+        ],
+        "description": "Hide a user notification",
+        "operationId": "hideUserNotification"
       }
     },
     "/curation/notifications/{id}": {
@@ -11068,6 +11109,45 @@
         "operationId": "tags_1"
       }
     },
+    "/workflows/versionsMissingAutomaticDoi": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "default": 100,
+            "format": "int32",
+            "in": "query",
+            "maximum": 1000,
+            "minimum": 1,
+            "name": "limit",
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "default response",
+            "schema": {
+              "items": {
+                "$ref": "#/definitions/WorkflowAndVersion"
+              },
+              "type": "array"
+            }
+          }
+        },
+        "security": [
+          {
+            "BEARER": []
+          }
+        ],
+        "tags": [
+          "workflows"
+        ],
+        "description": "Calculates a list of workflow versions that are missing an automatic DOI",
+        "operationId": "getVersionsMissingAutomaticDoi"
+      }
+    },
     "/workflows/versionsNeedingRetroactiveDoi": {
       "get": {
         "produces": [
@@ -14683,6 +14763,10 @@
           "format": "int64",
           "type": "integer"
         },
+        "hidden": {
+          "description": "Is the notification hidden?",
+          "type": "boolean"
+        },
         "id": {
           "description": "ID for the notification",
           "format": "int64",
@@ -14712,6 +14796,7 @@
       },
       "required": [
         "action",
+        "hidden",
         "organization",
         "repository",
         "sourceControl"
@@ -17227,6 +17312,10 @@
           "format": "int64",
           "type": "integer"
         },
+        "hidden": {
+          "description": "Is the notification hidden?",
+          "type": "boolean"
+        },
         "id": {
           "description": "ID for the notification",
           "format": "int64",
@@ -17237,7 +17326,8 @@
         }
       },
       "required": [
-        "action"
+        "action",
+        "hidden"
       ],
       "type": "object"
     },
