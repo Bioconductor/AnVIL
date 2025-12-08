@@ -6,7 +6,7 @@
 \alias{AnVIL-package}
 \title{AnVIL: Bioconductor on the AnVIL compute environment}
 \description{
-The AnVIL is a cloud computing resource developed in part by the National Human Genome Research Institute. The AnVIL package provides end-user and developer functionality. For the end-user, AnVIL provides fast binary package installation, utitlities for working with Terra / AnVIL table and data resources, and convenient functions for file movement to and from Google cloud storage. For developers, AnVIL provides programatic access to the Terra, Leonardo, Rawls, and Dockstore RESTful programming interface, including helper functions to transform JSON responses to formats more amenable to manipulation in R.
+The AnVIL is a cloud computing resource developed in part by the National Human Genome Research Institute. The AnVIL package provides programatic access to the Dockstore, Leonardo, Rawls, TDR, and Terra RESTful programming interfaces. For platform-specific user-level functionality, see either the AnVILGCP or AnVILAz package.
 }
 \author{
 \strong{Maintainer}: Marcel Ramos \email{marcel.ramos@sph.cuny.edu} (\href{https://orcid.org/0000-0002-3242-0582}{ORCID})
