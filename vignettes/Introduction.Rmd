@@ -186,9 +186,9 @@ gcloud_project() # billing project information
 A convenient way to access _any_ `gcloud` SDK command is to use
 `gcloud_cmd()`, e.g.,
 
-gcloud_cmd("projects", "list") %>%
-    readr::read_table() %>%
 ```{r gcloud-projects-list, eval = has_gcloud}
+gcloud_cmd("projects", "list") |>
+    readr::read_table() |>
     filter(startsWith(PROJECT_ID, "anvil"))
 ```
 
@@ -242,7 +242,7 @@ intermediate disk storage.
 
 ```{r gsutil-pipe, eval = has_gcloud}
 pipe <- gsutil_pipe(fl, "rb")
-readr::read_csv(pipe, guess_max = 5000L, col_types = readr::cols()) %>%
+readr::read_csv(pipe, guess_max = 5000L, col_types = readr::cols()) |>
     dplyr::select("Sample", "Family_ID", "Population", "Gender")
 ```
 
@@ -348,9 +348,9 @@ The data in the table can then be manipulated using standard _R_
 commands, e.g., to identify SRA samples for which a final assembly
 fasta file is available.
 
-sample %>%
-    select("sample_id", contains("fasta")) %>%
 ```{r avtable-manipulation, eval = has_gcloud}
+sample |>
+    select("sample_id", contains("fasta")) |>
     filter(!is.na(final_assembly_fasta))
 ```
 
@@ -419,11 +419,11 @@ corresponding 'origin' table.
 ## editable copy of '1000G-high-coverage-2019' workspace
 avworkspace("anvil-datastorage/1000G-high-coverage-2019")
 sample <-
-    avtable("sample") %>%                               # existing table
+    avtable("sample") |>                               # existing table
     mutate(set = sample(head(LETTERS), nrow(.), TRUE))  # arbitrary groups
-sample %>%                                   # new 'participant_set' table
+sample |>                                   # new 'participant_set' table
     avtable_import_set("participant", "set", "participant")
-sample %>%                                   # new 'sample_set' table
+sample |>                                   # new 'sample_set' table
     avtable_import_set("sample", "set", "name")
 ```
 
@@ -667,8 +667,8 @@ providing some level of organization when exploring the service. Tags
 display consists of endpoints (available as a tibble with
 `tags(terra)`).
 
-terra %>% tags("Status")
 ```{r terra-tags, eval = has_gcloud}
+terra |> tags("Status")
 ```
 
 ### Invoke endpoints {.unnumbered}
@@ -742,8 +742,8 @@ attempts to transform the list into a tibble. `flatten()` is effective
 when the response is in fact a JSON row-wise representation of
 tibble-like data.
 
-lst <- status %>% as.list()
 ```{r terra-status-flatten-example, eval = has_gcloud}
+lst <- status |> as.list()
 lengths(lst)
 lengths(lst$systems)
 str(lst$systems)
