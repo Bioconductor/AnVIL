@@ -2,13 +2,12 @@
 title: "Introduction to the AnVIL package"
 author:
 - name: Nitesh Turaga
-  affiliation: Roswell Park Comprehensive Cancer Center
 - name: Vincent Carey
 - name: BJ Stubbs
 - name: Marcel Ramos
+  affiliation: CUNY Graduate School of Public Health and Health Policy
+  email: marcel.ramos@sph.cuny.edu
 - name: Martin Morgan
-  affiliation: Roswell Park Comprehensive Cancer Center
-  email: Martin.Morgan@RoswellPark.org
 package: AnVIL
 output:
   BiocStyle::html_document
