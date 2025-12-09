@@ -26,7 +26,7 @@ Description: The AnVIL is a cloud computing resource developed in part
     user-level functionality, see either the AnVILGCP or AnVILAz package.
 License: Artistic-2.0
 Encoding: UTF-8
-Depends: R (>= 4.5.0), dplyr, AnVILBase
+Depends: R (>= 4.6.0), dplyr, AnVILBase
 Imports:
     stats, utils, methods,
     futile.logger,
