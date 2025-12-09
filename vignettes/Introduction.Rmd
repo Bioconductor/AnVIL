@@ -749,8 +749,6 @@ lengths(lst$systems)
 str(lst$systems)
 ```
 
-<!-- FIXME: good flatten() example -->
-
 ### Test endpoints {.unnumbered}
 
 Testing endpoints is challenging. Endpoints cannot be evaluated
