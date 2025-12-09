@@ -24,7 +24,7 @@ vignette: |
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r, include = FALSE}
+```{r setup, include = FALSE}
 has_gcloud <- AnVILBase::has_avworkspace(
     strict = TRUE, platform = AnVILGCP::gcp()
 )
@@ -38,7 +38,7 @@ options(width=75)
 
 Install the _AnVIL_ package with
 
-```{r, eval = FALSE}
+```{r install-anvil, eval = FALSE}
 if (!requireNamespace("BiocManager", quietly = TRUE))
     install.packages("BiocManager", repos = "https://cran.r-project.org")
 BiocManager::install("AnVIL")
@@ -46,7 +46,7 @@ BiocManager::install("AnVIL")
 
 Once installed, load the package with
 
-```{r, message = FALSE, eval = TRUE, cache = FALSE}
+```{r load-packages, message = FALSE, eval = TRUE, cache = FALSE}
 library(AnVILGCP)
 library(AnVIL)
 ```
@@ -112,7 +112,7 @@ inputs and outputs, they are `avworkflow_configuration_inputs` and
 information in a `tibble` structure which users are most likely
 familiar with.
 
-```{r inputs_outputs, eval = has_gcloud}
+```{r inputs-outputs, eval = has_gcloud}
 inputs <- avworkflow_configuration_inputs(config)
 inputs
 
@@ -123,7 +123,7 @@ outputs
 Let's change the `salmon.transcriptome_index_name` field; this is an
 arbitrary string identifier in our workflow.
 
-```{r change_input, eval = has_gcloud}
+```{r change-input, eval = has_gcloud}
 inputs <-
     inputs |>
     mutate(
@@ -144,7 +144,7 @@ the configuration of the workflow. We can do this with
 inputs and outputs of the original configuration, just in case there were no
 changes to one of them (like in our example our outputs weren't changed).
 
-```{r update_config, eval = has_gcloud}
+```{r update-config, eval = has_gcloud}
 new_config <- avworkflow_configuration_update(config, inputs)
 new_config
 ```
@@ -154,7 +154,7 @@ new_config
 Use `avworkflow_configuration_set()` to permanently update the
 workflow to new parameter values.
 
-```{r set_config, eval = has_gcloud}
+```{r set-config, eval = has_gcloud}
 avworkflow_configuration_set(new_config)
 ```
 
@@ -162,7 +162,7 @@ Actually, the previous command validates `new_config` only; to update
 the configuration in AnVIL (i.e., replacing the values in the
 workspace workflow graphical user interface), add the argument `dry = FALSE`.
 
-```{r set_config_not_dry}
+```{r set-config-not-dry}
 ## avworkflow_configuration_set(new_config, dry = FALSE)
 ```
 
@@ -184,7 +184,7 @@ avworkflow_run(new_config, entityName)
 Again, actually running the new configuration requires the argument
 `dry = FALSE`.
 
-```{r run_not_dry}
+```{r run-not-dry}
 ## avworkflow_run(new_config, entityName, dry = FALSE)
 ```
 
@@ -200,7 +200,7 @@ function. The elements of the table are ordered chronologically, with
 the most recent submission (most likely the job we just started!)
 listed first.
 
-```{r checking_workflow, eval = has_gcloud}
+```{r checking-workflow, eval = has_gcloud}
 avworkflow_jobs()
 ```
 
@@ -210,7 +210,7 @@ Use `avworkflow_stop()` to stop a currently running workflow. This
 will change the status of the job, reported by `avworkflow_jobs()`,
 from 'Submitted' to 'Aborted'.
 
-```{r stop_workflow, eval = has_gcloud}
+```{r stop-workflow, eval = has_gcloud}
 avworkflow_stop() # dry = FALSE to stop
 
 avworkflow_jobs()
@@ -264,7 +264,7 @@ ways of storing single-cell expression data (an in-memory `dgCMatrix`
 or an on-disk representation). Thus a single job submission started
 four workflows.  This example was retrieved with
 
-```{r, eval = FALSE}
+```{r workflow-info-example1-retrieval, eval = FALSE}
 avworkspace("bioconductor-rpci-yubo/Rcollectlworkflowh5ad")
 submissionId <- "9385fd75-4cb7-470f-9e07-1979e2c8f193"
 info_1 <- avworkflow_info(submissionId)
@@ -272,7 +272,7 @@ info_1 <- avworkflow_info(submissionId)
 
 Read the saved version of this result in to *R*.
 
-```{r, message=FALSE, warning=FALSE}
+```{r workflow-info-1-read, message=FALSE, warning=FALSE}
 info_file_1 <-
     system.file(package = "AnVIL", "extdata", "avworkflow_info_1.rds")
 info_1 <- readRDS(info_file_1)
@@ -283,7 +283,7 @@ info_1
 
 Three of the workflows were successful, one failed.
 
-```{r}
+```{r workflow-info-1-select}
 info_1 |>
     select(workflowId, status, inputs, outputs)
 ```
@@ -296,7 +296,7 @@ data representation `dgCMatrix = FALSE`.
 
 [r4ds]: https://r4ds.hadley.nz/rectangling
 
-```{r}
+```{r workflow-info-1-inputs-unnested}
 info_1 |>
     select(workflowId, status, inputs) |>
     tidyr::unnest_wider(inputs)
@@ -309,7 +309,7 @@ levels of nesting; following the strategy outlined in
 
 [r4ds]: https://r4ds.hadley.nz/rectangling
 
-```{r}
+```{r workflow-info-1-outputs-unnested}
 info_1 |>
     select(workflowId, outputs) |>
     tidyr::unnest_wider(outputs) |>
@@ -320,14 +320,14 @@ In the example used so far, each workflow produces a single file. A
 different examples is a workflow that produces multiple output
 files. This corresponds to the following submissionId:
 
-```{r, eval = FALSE, eval = has_gcloud}
+```{r workflow-info-example2-retrieval, eval = FALSE, eval = has_gcloud}
 submissionId <- "35280de1-42d8-492b-aa8c-5feff984bffa"
 info_2 <- avworkflow_info(submissionId)
 ```
 
 Reading the result from the stored version:
 
-```{r, message=FALSE, warning=FALSE}
+```{r workflow-info-2-read, message=FALSE, warning=FALSE}
 info_file_2 <-
     system.file(package = "AnVIL", "extdata", "avworkflow_info_2.rds")
 info_2 <- readRDS(info_file_2)
@@ -337,7 +337,7 @@ info_2
 Inputs and outputs are manipulated in the same way as before, but this
 time there are multiple output files.
 
-```{r, message=FALSE, warning=FALSE}
+```{r workflow-info-2-outputs-unnested, message=FALSE, warning=FALSE}
 info_2 |>
     select(workflowId, outputs) |>
     tidyr::unnest_wider(outputs)
@@ -345,7 +345,7 @@ info_2 |>
 
 To see the output files, expand the outputs column using `unnest_longer()`.
 
-```{r}
+```{r workflow-info-2-output-files}
 output_files <-
     info_2 |>
     select(workflowId, outputs) |>
@@ -359,7 +359,7 @@ output_files
 
 The full file paths are available using `pull()` or `as.vector()`.
 
-```{r}
+```{r workflow-info-2-output-paths}
 output_files |>
     as.vector()
 ```
