@@ -44,7 +44,7 @@ jobs:
         if: ${{ success() }}
         uses: EndBug/add-and-commit@v9
         with:
-          add: '["inst/service/dockstore/api.yaml", "R/Dockstore.R"]'
+          add: '["inst/service/dockstore/openapi.yaml", "R/Dockstore.R"]'
           message: 'Update API'
 
       - name: Push action
