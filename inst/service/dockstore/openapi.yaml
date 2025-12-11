@@ -13,7 +13,7 @@ info:
   license:
     name: Apache License Version 2.0
     url: https://github.com/dockstore/dockstore/blob/develop/LICENSE
-  version: 1.18.0
+  version: 1.18.2
 servers:
 - url: /api
   description: Current server when hosted on AWS
@@ -2956,6 +2956,34 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/UserNotification"
+      security:
+      - BEARER: []
+  /curation/notifications/user/{id}/hide:
+    patch:
+      tags:
+      - curation
+      description: Hide a user notification
+      operationId: hideUserNotification
+      parameters:
+      - name: id
+        in: path
+        description: Notification to hide
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        description: "This is here to appease Swagger. It requires PATCH methods to\
+          \ have a body, even if it is empty. Please leave it empty."
+        content:
+          '*/*':
+            schema:
+              type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json: {}
       security:
       - BEARER: []
   /organizations/{organizationId}/invitation:
@@ -5912,6 +5940,33 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/User"
+      security:
+      - BEARER: []
+  /workflows/versionsMissingAutomaticDoi:
+    get:
+      tags:
+      - workflows
+      description: Calculates a list of workflow versions that are missing an automatic
+        DOI
+      operationId: getVersionsMissingAutomaticDoi
+      parameters:
+      - name: limit
+        in: query
+        schema:
+          maximum: 1000
+          minimum: 1
+          type: integer
+          format: int32
+          default: 100
+      responses:
+        default:
+          description: default response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/WorkflowAndVersion"
       security:
       - BEARER: []
   /workflows/versionsNeedingRetroactiveDoi:
@@ -11736,6 +11791,7 @@ components:
     GitHubAppNotification:
       required:
       - action
+      - hidden
       - organization
       - repository
       - sourceControl
@@ -11760,6 +11816,9 @@ components:
           description: The recommended action for the repository
           enum:
           - INFER_DOCKSTORE_YML
+        hidden:
+          type: boolean
+          description: Is the notification hidden?
         sourceControl:
           type: string
           description: The source control provider
@@ -11778,6 +11837,7 @@ components:
     UserNotification:
       required:
       - action
+      - hidden
       type: object
       properties:
         id:
@@ -11799,6 +11859,9 @@ components:
           description: The recommended action for the repository
           enum:
           - INFER_DOCKSTORE_YML
+        hidden:
+          type: boolean
+          description: Is the notification hidden?
       description: Notifications for a user
     Token_User:
       type: object
