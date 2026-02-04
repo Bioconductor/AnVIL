@@ -28,7 +28,7 @@
 TDR <-
     function()
 {
-    access_token <- gcloud_access_token("tdr")
+    access_token <- GCPtools::gcloud_access_token("tdr")
     api_header <- c(
         Authorization = paste("Bearer", access_token)
     )
