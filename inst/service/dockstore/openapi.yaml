@@ -13,7 +13,7 @@ info:
   license:
     name: Apache License Version 2.0
     url: https://github.com/dockstore/dockstore/blob/develop/LICENSE
-  version: 1.18.2
+  version: 1.19.0
 servers:
 - url: /api
   description: Current server when hosted on AWS
@@ -1611,6 +1611,7 @@ paths:
             - CWL_TEST_JSON
             - DOCKSTORE_WDL
             - WDL_TEST_JSON
+            - DOCKSTORE_WORKFLOW_OTHER
             - DOCKERFILE
             - NEXTFLOW
             - NEXTFLOW_CONFIG
@@ -1941,6 +1942,7 @@ paths:
                   - CWL_TEST_JSON
                   - DOCKSTORE_WDL
                   - WDL_TEST_JSON
+                  - DOCKSTORE_WORKFLOW_OTHER
                   - DOCKERFILE
                   - NEXTFLOW
                   - NEXTFLOW_CONFIG
@@ -5673,6 +5675,58 @@ paths:
                 $ref: "#/components/schemas/Entry"
       security:
       - BEARER: []
+  /workflows/{workflowId}/maxExecutionCountForAllVersions:
+    get:
+      tags:
+      - workflows
+      description: Determine the maximum execution count for all workflow versions.
+      operationId: getMaxExecutionCountForAllVersions
+      parameters:
+      - name: workflowId
+        in: path
+        description: ID of the workflow
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: interval
+        in: query
+        description: Type of time series to include
+        required: true
+        schema:
+          type: string
+          enum:
+          - SECOND
+          - MINUTE
+          - HOUR
+          - DAY
+          - WEEK
+          - MONTH
+          - YEAR
+      - name: valueCount
+        in: query
+        description: Number of most recent values to include
+        required: true
+        schema:
+          type: integer
+          format: int32
+      - name: now
+        in: query
+        description: "Current client time, expressed in UTC Java epoch seconds"
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        default:
+          description: default response
+          content:
+            application/json:
+              schema:
+                type: integer
+                format: int64
+      security:
+      - BEARER: []
   /workflows/{workflowId}/maxWeeklyExecutionCountForAnyVersion:
     post:
       tags:
@@ -5705,6 +5759,7 @@ paths:
               schema:
                 type: integer
                 format: int64
+      deprecated: true
       security:
       - BEARER: []
   /workflows/published/{workflowId}/workflowVersions:
@@ -6379,6 +6434,7 @@ paths:
             - CWL_TEST_JSON
             - DOCKSTORE_WDL
             - WDL_TEST_JSON
+            - DOCKSTORE_WORKFLOW_OTHER
             - DOCKERFILE
             - NEXTFLOW
             - NEXTFLOW_CONFIG
@@ -7275,6 +7331,79 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Workflow"
+      security:
+      - BEARER: []
+  /api/ga4gh/v2/extended/{id}/aggregatedMetrics:
+    get:
+      tags:
+      - extendedGA4GH
+      description: This endpoint retrieves aggregated metrics for a tool from all
+        platforms
+      operationId: aggregatedMetricsGetEntry
+      parameters:
+      - name: id
+        in: path
+        description: "A unique identifier of the tool, scoped to this registry, for\
+          \ example `123456`"
+        required: true
+        schema:
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  $ref: "#/components/schemas/Metrics"
+      security:
+      - BEARER: []
+    put:
+      tags:
+      - extendedGA4GH
+      summary: Add aggregated execution metrics for a workflow that was executed on
+        a platform.
+      description: This endpoint adds aggregated metrics for a workflow that was executed
+        on a platform
+      operationId: aggregatedMetricsPutEntry
+      parameters:
+      - name: id
+        in: path
+        description: "A unique identifier of the tool, scoped to this registry, for\
+          \ example `123456`"
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: A map of aggregated metrics for platforms to set as the version's
+          metrics
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties:
+                $ref: "#/components/schemas/Metrics"
+        required: true
+      responses:
+        "200":
+          description: Aggregated metrics added successfully.
+          content:
+            application/json:
+              schema:
+                type: string
+        "401":
+          description: Credentials not provided or incorrect.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: The tool cannot be found to add aggregated metrics.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
       security:
       - BEARER: []
   /api/ga4gh/v2/extended/{id}/versions/{version_id}/aggregatedMetrics:
@@ -8240,6 +8369,7 @@ paths:
           - PLAIN_WDL
           - PLAIN_NFL
           - PLAIN_GALAXY
+          - PLAIN_GXFORMAT2
           - PLAIN_SMK
           - PLAIN_JUPYTER
       - name: version_id
@@ -8311,6 +8441,7 @@ paths:
           - PLAIN_WDL
           - PLAIN_NFL
           - PLAIN_GALAXY
+          - PLAIN_GXFORMAT2
           - PLAIN_SMK
           - PLAIN_JUPYTER
       - name: version_id
@@ -8459,6 +8590,7 @@ paths:
           - PLAIN_WDL
           - PLAIN_NFL
           - PLAIN_GALAXY
+          - PLAIN_GXFORMAT2
           - PLAIN_SMK
           - PLAIN_JUPYTER
       - name: version_id
@@ -9266,8 +9398,11 @@ components:
       required:
       - average
       - maximum
+      - median
       - minimum
       - numberOfDataPointsForAverage
+      - percentile05th
+      - percentile95th
       type: object
       description: This describes aggregated cost metrics for workflow executions
         in USD.
@@ -9296,12 +9431,27 @@ components:
             description: The unit of the data points
             readOnly: true
             default: USD
+          median:
+            type: number
+            description: The 50th percentile value from the data points
+            format: double
+          percentile05th:
+            type: number
+            description: The 05th percentile value from the data points
+            format: double
+          percentile95th:
+            type: number
+            description: The 95th percentile value from the data points
+            format: double
     CpuMetric:
       required:
       - average
       - maximum
+      - median
       - minimum
       - numberOfDataPointsForAverage
+      - percentile05th
+      - percentile95th
       type: object
       description: This describes aggregated CPU metrics for workflow executions.
       allOf:
@@ -9328,6 +9478,18 @@ components:
             type: string
             description: The unit of the data points
             readOnly: true
+          median:
+            type: number
+            description: The 50th percentile value from the data points
+            format: double
+          percentile05th:
+            type: number
+            description: The 05th percentile value from the data points
+            format: double
+          percentile95th:
+            type: number
+            description: The 95th percentile value from the data points
+            format: double
     Doi:
       required:
       - initiator
@@ -9397,8 +9559,11 @@ components:
       required:
       - average
       - maximum
+      - median
       - minimum
       - numberOfDataPointsForAverage
+      - percentile05th
+      - percentile95th
       type: object
       description: This describes aggregated execution time metrics in seconds for
         workflow executions.
@@ -9410,13 +9575,25 @@ components:
             type: number
             description: The minimum value from the data points
             format: double
-          maximum:
+          percentile05th:
             type: number
-            description: The maximum value from the data points
+            description: The 05th percentile value from the data points
+            format: double
+          median:
+            type: number
+            description: The 50th percentile value from the data points
             format: double
           average:
             type: number
             description: The average value from the data points
+            format: double
+          percentile95th:
+            type: number
+            description: The 95th percentile value from the data points
+            format: double
+          maximum:
+            type: number
+            description: The maximum value from the data points
             format: double
           numberOfDataPointsForAverage:
             type: integer
@@ -9432,6 +9609,41 @@ components:
       properties:
         value:
           type: string
+    HistogramMetric:
+      required:
+      - edges
+      - frequencies
+      type: object
+      description: Describes a metric that consists of a histogram
+      allOf:
+      - $ref: "#/components/schemas/Metric"
+      - type: object
+        properties:
+          id:
+            type: integer
+            description: Implementation specific ID for metrics in this webservice
+            format: int64
+          numberOfSkippedExecutions:
+            type: integer
+            description: The number of executions that were skipped during aggregation
+              because they were invalid
+            format: int32
+            default: 0
+          frequencies:
+            type: array
+            description: "List of frequencies, one per bin."
+            items:
+              type: number
+              description: Frequency
+              format: double
+          edges:
+            type: array
+            description: "List of edge values. Bin number i includes all data values\
+              \ within the interval [edges[i], edges[i + 1])"
+            items:
+              type: number
+              description: Edge value
+              format: double
     Image:
       type: object
       properties:
@@ -9478,8 +9690,11 @@ components:
       required:
       - average
       - maximum
+      - median
       - minimum
       - numberOfDataPointsForAverage
+      - percentile05th
+      - percentile95th
       type: object
       description: This describes aggregated memory metrics for workflow executions
         in GB.
@@ -9508,6 +9723,18 @@ components:
             description: The unit of the data points
             readOnly: true
             default: GB
+          median:
+            type: number
+            description: The 50th percentile value from the data points
+            format: double
+          percentile05th:
+            type: number
+            description: The 05th percentile value from the data points
+            format: double
+          percentile95th:
+            type: number
+            description: The 95th percentile value from the data points
+            format: double
     Metric:
       type: object
       properties:
@@ -9561,6 +9788,10 @@ components:
           $ref: "#/components/schemas/TimeSeriesMetric"
         weeklyExecutionCounts:
           $ref: "#/components/schemas/TimeSeriesMetric"
+        monthlyExecutionCounts:
+          $ref: "#/components/schemas/TimeSeriesMetric"
+        executionTimeHistogram:
+          $ref: "#/components/schemas/HistogramMetric"
       description: Aggregated metrics grouped by execution status
     OrcidAuthor:
       type: object
@@ -9632,6 +9863,7 @@ components:
           - CWL_TEST_JSON
           - DOCKSTORE_WDL
           - WDL_TEST_JSON
+          - DOCKSTORE_WORKFLOW_OTHER
           - DOCKERFILE
           - NEXTFLOW
           - NEXTFLOW_CONFIG
@@ -9690,6 +9922,7 @@ components:
     TimeSeriesMetric:
       required:
       - begins
+      - ends
       - interval
       - values
       type: object
@@ -9718,7 +9951,11 @@ components:
               format: double
           begins:
             type: string
-            description: Time that the first point was sampled at
+            description: Earliest time represented by this time series
+            format: date-time
+          ends:
+            type: string
+            description: Latest time represented by this time series
             format: date-time
           interval:
             type: string
@@ -9730,6 +9967,7 @@ components:
             - DAY
             - WEEK
             - MONTH
+            - YEAR
     User:
       type: object
       properties:
@@ -9836,6 +10074,7 @@ components:
           - CWL_TEST_JSON
           - DOCKSTORE_WDL
           - WDL_TEST_JSON
+          - DOCKSTORE_WORKFLOW_OTHER
           - DOCKERFILE
           - NEXTFLOW
           - NEXTFLOW_CONFIG
@@ -10535,6 +10774,10 @@ components:
             $ref: "#/components/schemas/OrcidAuthor"
         archived:
           type: boolean
+        metricsByPlatform:
+          type: object
+          additionalProperties:
+            $ref: "#/components/schemas/Metrics"
         mode:
           type: string
           enum:
@@ -11054,6 +11297,10 @@ components:
             $ref: "#/components/schemas/OrcidAuthor"
         archived:
           type: boolean
+        metricsByPlatform:
+          type: object
+          additionalProperties:
+            $ref: "#/components/schemas/Metrics"
         workflowVersions:
           uniqueItems: true
           type: array
@@ -11457,6 +11704,10 @@ components:
             $ref: "#/components/schemas/OrcidAuthor"
         archived:
           type: boolean
+        metricsByPlatform:
+          type: object
+          additionalProperties:
+            $ref: "#/components/schemas/Metrics"
         mode:
           type: string
           enum:
@@ -11693,6 +11944,8 @@ components:
         featuredNewsUrl:
           type: string
         deployVersion:
+          type: string
+        supportVersion:
           type: string
         cwlParsingLambdaVersion:
           type: string
