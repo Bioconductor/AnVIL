@@ -28,13 +28,14 @@ e.g., \code{"leonardo.dsde-prod.broadinstitute.org"}.}
 \item{config}{httr::config() curl options}
 
 \item{authenticate}{\code{logical(1)} use credentials from authentication
-service file 'auth.json' in the specified package?}
+service? See \code{?anvil_set_auth_json} for the recommended way to
+securely store credentials.}
 
 \item{api_url}{optional \code{character(1)} url location of OpenAPI
 \code{.json} or \code{.yaml} service definition.}
 
 \item{package}{\code{character(1)} (default \code{AnVIL}) The package where
-'api.json' yaml and (optionally) 'auth.json' files are located.}
+'api.json' yaml is located.}
 
 \item{schemes}{\code{character(1)} (default 'https') Specifies the
 transfer protocol supported by the API service.}
@@ -65,11 +66,14 @@ RESTful service constructor
 \details{
 This function creates a RESTful interface to a service
 provided by a host, e.g., "leonardo.dsde-prod.broadinstitute.org".
-The function requires an OpenAPI \code{.json} or \code{.yaml} specifcation
-as well as an (optional) \code{.json} authentication token. These files
-are located in the source directory of a package, at
-\verb{<package>/inst/service/<service>/api.json} and
-\verb{<package>/inst/service/<service>/auth.json}, or at \code{api_url}.
+The function requires an OpenAPI \code{.json} or \code{.yaml} specification.
+The specification file is located in the source directory of a
+package, at \verb{<package>/inst/service/<service>/api.json}, or at
+\code{api_url}.
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{Authentication credentials can be stored securely in the system
+keyring using `anvil_set_auth_json()`.
+}\if{html}{\out{</div>}}
 
 When provided, the \code{api_reference_md5sum} is used to check that
 the file described at \code{api_reference_url} has the same checksum

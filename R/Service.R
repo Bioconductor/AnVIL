@@ -104,13 +104,14 @@ setOldClass("request")
 #' @param config httr::config() curl options
 #'
 #' @param authenticate `logical(1)` use credentials from authentication
-#'     service file 'auth.json' in the specified package?
+#'     service? See `?anvil_set_auth_json` for the recommended way to
+#'     securely store credentials.
 #'
 #' @param api_url optional `character(1)` url location of OpenAPI
 #'     `.json` or `.yaml` service definition.
 #'
 #' @param package `character(1)` (default `AnVIL`) The package where
-#'     'api.json' yaml and (optionally) 'auth.json' files are located.
+#'     'api.json' yaml is located.
 #'
 #' @param schemes `character(1)` (default 'https') Specifies the
 #'     transfer protocol supported by the API service.
@@ -134,11 +135,13 @@ setOldClass("request")
 #'
 #' @details This function creates a RESTful interface to a service
 #'     provided by a host, e.g., "leonardo.dsde-prod.broadinstitute.org".
-#'     The function requires an OpenAPI `.json` or `.yaml` specifcation
-#'     as well as an (optional) `.json` authentication token. These files
-#'     are located in the source directory of a package, at
-#'     `<package>/inst/service/<service>/api.json` and
-#'     `<package>/inst/service/<service>/auth.json`, or at `api_url`.
+#'     The function requires an OpenAPI `.json` or `.yaml` specification.
+#'     The specification file is located in the source directory of a
+#'     package, at `<package>/inst/service/<service>/api.json`, or at
+#'     `api_url`.
+#'
+#'     Authentication credentials can be stored securely in the system
+#'     keyring using `anvil_set_auth_json()`.
 #'
 #' When provided, the `api_reference_md5sum` is used to check that
 #' the file described at `api_reference_url` has the same checksum

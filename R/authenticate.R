@@ -1,11 +1,75 @@
+#' @importFrom keyring key_get key_set_with_value key_list
+.authenticate_get_access <-
+    function(service)
+{
+    access <- NULL
+
+    # Check keyring (service = "AnVIL", username = <service>)
+    tryCatch({
+        kl <- key_list("AnVIL")
+        if (service %in% kl$username) {
+            content <- key_get("AnVIL", service)
+            access <- jsonlite::fromJSON(content)
+        }
+    }, error = function(e) {
+        # ignore keyring errors, fallback to old path
+    })
+
+    # Fallback to insecure path for backward compatibility, with warning
+    if (is.null(access)) {
+        path <- system.file(package="AnVIL", "service", service, "auth.json")
+        if (nzchar(path) && file.exists(path)) {
+             warning(
+                "Reading 'auth.json' from package directory is insecure and",
+                " deprecated.\nUse 'anvil_set_auth_json()' to move credentials",
+                " to a secure keyring.",
+                call. = FALSE
+            )
+            access <- jsonlite::read_json(path)
+        }
+    }
+
+    access
+}
+
+#' @title Store and retrieve authentication credentials using a secure keyring
+#'
+#' @description `anvil_set_auth_json()` stores the content of an `auth.json`
+#'   file in the system keyring. This is the recommended way to store
+#'   credentials safely.
+#'
+#' @param service `character(1)` The name of the service (e.g., `"terra"`,
+#'     `"dockstore"`) for which the credentials are being set.
+#'
+#' @param path `character(1)` The path to the `auth.json` file.
+#'
+#' @return `anvil_set_auth_json()` returns `NULL` invisibly.
+#'
+#' @importFrom keyring key_set_with_value
+#' @export
+anvil_set_auth_json <-
+    function(service, path)
+{
+    stopifnot(
+        isScalarCharacter(service),
+        isScalarCharacter(path),
+        file.exists(path)
+    )
+
+    jsonlite::read_json(path)
+
+    content <- readChar(path, file.info(path)$size)
+    key_set_with_value("AnVIL", service, password = content)
+}
+
 authenticate_path <- function(service)
     system.file(package="AnVIL", "service", service, "auth.json")
 
 authenticate_ok <-
     function(service)
 {
-    path <- authenticate_path(service)
-    test <- file.exists(path)
+    access <- .authenticate_get_access(service)
+    test <- !is.null(access)
     if (!test)
         warning(
             "'", service, "' requires additional configuration; ",
@@ -24,16 +88,15 @@ authenticate <-
     interactive() || return(invisible(NULL))
     stopifnot(isScalarCharacter(service))
 
-    access <- list(
-        client_id = getOption("anvil_client_id"),
-        client_secret = getOption("anvil_client_secret")
-    )
+    access <- .authenticate_get_access(service)
 
-    path <- authenticate_path(service)
-    if (file.exists(path)) {
-        access <- read_json(path)
-        if ("installed" %in% names(access))
-            access <- access$installed
+    if (is.null(access)) {
+        access <- list(
+            client_id = getOption("anvil_client_id"),
+            client_secret = getOption("anvil_client_secret")
+        )
+    } else if ("installed" %in% names(access)) {
+        access <- access$installed
     }
 
     app <- oauth_app(

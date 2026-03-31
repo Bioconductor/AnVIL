@@ -30,9 +30,9 @@ Dockstore <-
     function()
 {
     api_header <- character()
-    path <- authenticate_path("dockstore")
-    if (file.exists(path)) {
-        token <- read_json(path)$token
+    access <- .authenticate_get_access("dockstore")
+    if (!is.null(access)) {
+        token <- access$token
         api_header <- c(Authorization = paste("Bearer", token))
     }
     .Dockstore(

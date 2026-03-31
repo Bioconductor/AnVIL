@@ -33,6 +33,7 @@ Imports:
     GCPtools,
     jsonlite, httr,
     digest,
+    keyring,
     rapiclient, yaml,
     tibble,
     shiny, DT, miniUI, htmltools,
