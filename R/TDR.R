@@ -36,7 +36,6 @@ TDR <-
         Service(
             "tdr",
             host = "data.terra.bio",
-            config = httr::config(ssl_verifypeer = 0L, ssl_verifyhost = 0L),
             api_reference_version = .TDR_API_REFERENCE_VERSION,
             authenticate = FALSE,
             api_reference_url =

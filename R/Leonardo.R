@@ -39,7 +39,6 @@ Leonardo <-
         Service(
             "leonardo",
             host = "leonardo.dsde-prod.broadinstitute.org",
-            config = httr::config(ssl_verifypeer = 0L, ssl_verifyhost = 0L),
             authenticate = FALSE,
             api_reference_version = .LEONARDO_API_REFERENCE_VERSION,
             api_reference_url =

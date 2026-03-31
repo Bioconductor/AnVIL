@@ -18,7 +18,6 @@ test_that("host is captured in Service", {
             Service(
                 "dockstore",
                 host = myHost,
-                config = httr::config(ssl_verifypeer = 0L, ssl_verifyhost = 0L),
                 api_reference_version = api_reference_version,
                 authenticate = FALSE,
                 api_reference_url = "https://dockstore.org/api/openapi.yaml",
