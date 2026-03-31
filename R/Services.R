@@ -34,7 +34,7 @@ empty_object <- setNames(list(), character())
 #'     `operations,Service-method`, to the internal `get_operation()`
 #'     function.
 #'
-#' @param .deprecated optional logical(1) include deprecated operations?
+#' @param .deprecated optional `logical(1)` include deprecated operations?
 #'
 #' @export
 setGeneric(
@@ -46,7 +46,7 @@ setGeneric(
 
 #' @rdname Services
 #'
-#' @param auto_unbox logical(1) If FALSE (default) do not
+#' @param auto_unbox `logical(1)` If FALSE (default) do not
 #'     automatically 'unbox' R scalar values from JSON arrays to JSON
 #'     scalers.
 #'
@@ -95,7 +95,7 @@ setMethod(
 #'     package and documented on this page, e.g., `leonardo` or
 #'     `terra`.
 #'
-#' @param .tags optional character() of tags to use to filter operations.
+#' @param .tags optional `character()` of tags to use to filter operations.
 #'
 #' @importFrom tibble tibble
 #' @importFrom dplyr filter arrange

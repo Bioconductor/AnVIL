@@ -7,7 +7,7 @@
 .gadget_run(title, tibble, DONE_FUN)
 }
 \arguments{
-\item{title}{character(1) (required) title to appear at the base of
+\item{title}{\code{character(1)} (required) title to appear at the base of
 the gadget, e.g., "AnVIL Workspaces".}
 
 \item{tibble}{a \code{tibble} or \code{data.frame} to be displayed in the

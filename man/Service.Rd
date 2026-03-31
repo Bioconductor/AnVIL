@@ -20,37 +20,37 @@ Service(
 )
 }
 \arguments{
-\item{service}{character(1) The \code{Service} class name, e.g., \code{"terra"}.}
+\item{service}{\code{character(1)} The \code{Service} class name, e.g., \code{"terra"}.}
 
-\item{host}{character(1) host name that provides the API resource,
+\item{host}{\code{character(1)} host name that provides the API resource,
 e.g., \code{"leonardo.dsde-prod.broadinstitute.org"}.}
 
 \item{config}{httr::config() curl options}
 
-\item{authenticate}{logical(1) use credentials from authentication
+\item{authenticate}{\code{logical(1)} use credentials from authentication
 service file 'auth.json' in the specified package?}
 
-\item{api_url}{optional character(1) url location of OpenAPI
+\item{api_url}{optional \code{character(1)} url location of OpenAPI
 \code{.json} or \code{.yaml} service definition.}
 
-\item{package}{character(1) (default \code{AnVIL}) The package where
+\item{package}{\code{character(1)} (default \code{AnVIL}) The package where
 'api.json' yaml and (optionally) 'auth.json' files are located.}
 
-\item{schemes}{character(1) (default 'https') Specifies the
+\item{schemes}{\code{character(1)} (default 'https') Specifies the
 transfer protocol supported by the API service.}
 
-\item{api_reference_url}{character(1) path to reference API. See
+\item{api_reference_url}{\code{character(1)} path to reference API. See
 Details.}
 
-\item{api_reference_md5sum}{character(1) the result of
+\item{api_reference_md5sum}{\code{character(1)} the result of
 \code{tools::md5sum()} applied to the reference API.}
 
-\item{api_reference_version}{character(1) the version of the
+\item{api_reference_version}{\code{character(1)} the version of the
 reference API. This is used to check that the version of the
 service matches the version of the reference API. It is usally
 set by the service generation function,. e.g., \code{AnVIL::Rawls()}.}
 
-\item{api_reference_headers}{character() header(s) to be used
+\item{api_reference_headers}{\code{character()} header(s) to be used
 (e.g., \code{c(Authorization = paste("Bearer", token))}) when
 retrieving the API reference for validation.}
 

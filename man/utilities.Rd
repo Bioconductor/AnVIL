@@ -12,7 +12,7 @@ add_libpaths(paths)
 \code{.libPaths()}. Paths that do not exist will be created.}
 }
 \value{
-\code{add_libpaths()}: updated .libPaths(), invisibly.
+\code{add_libpaths()}: updated \code{.libPaths()}, invisibly.
 }
 \description{
 \code{add_libpaths()}: Add local library paths to

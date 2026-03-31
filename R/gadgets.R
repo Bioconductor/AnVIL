@@ -83,7 +83,7 @@
 #'     tibble-navigating gadget, returning the value of `DONE_FUN` if
 #'     a row of the tibble is selected, or NULL.
 #'
-#' @param title character(1) (required) title to appear at the base of
+#' @param title `character(1)` (required) title to appear at the base of
 #'     the gadget, e.g., "AnVIL Workspaces".
 #'
 #' @param tibble a `tibble` or `data.frame` to be displayed in the
@@ -198,7 +198,7 @@ avworkspace_gadget <-
 #' @description `browse_workspace()` uses `browseURL()` to open a
 #'     browser window pointing to the Terra workspace.
 #'
-#' @param use_avworkspace logical(1) when `TRUE` (default), use the
+#' @param use_avworkspace `logical(1)` when `TRUE` (default), use the
 #'     selected workspace (via `workspace()` or `avworkspace()` if
 #'     available. If `FALSE` or no workspace is currently selected,
 #'     use `workspace()` to allow the user to select the workspace.

@@ -16,14 +16,14 @@ avtable_gadget()
 avworkflow_gadget()
 }
 \arguments{
-\item{use_avworkspace}{logical(1) when \code{TRUE} (default), use the
+\item{use_avworkspace}{\code{logical(1)} when \code{TRUE} (default), use the
 selected workspace (via \code{workspace()} or \code{avworkspace()} if
 available. If \code{FALSE} or no workspace is currently selected,
 use \code{workspace()} to allow the user to select the workspace.}
 }
 \value{
 \code{workspace()} returns the selected workspace as a
-character(1) using the format namespace/name, or character(0)
+\code{character(1)} using the format namespace/name, or \code{character(0)}
 if no workspace is selected.
 
 \code{browse_workspace()} returns the status of a \code{system()}

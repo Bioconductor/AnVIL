@@ -98,37 +98,37 @@ setOldClass("request")
 #'
 #' @title RESTful service constructor
 #'
-#' @param service character(1) The `Service` class name, e.g., `"terra"`.
+#' @param service `character(1)` The `Service` class name, e.g., `"terra"`.
 #'
-#' @param host character(1) host name that provides the API resource,
+#' @param host `character(1)` host name that provides the API resource,
 #'     e.g., `"leonardo.dsde-prod.broadinstitute.org"`.
 #'
 #' @param config httr::config() curl options
 #'
-#' @param authenticate logical(1) use credentials from authentication
+#' @param authenticate `logical(1)` use credentials from authentication
 #'     service file 'auth.json' in the specified package?
 #'
-#' @param api_url optional character(1) url location of OpenAPI
+#' @param api_url optional `character(1)` url location of OpenAPI
 #'     `.json` or `.yaml` service definition.
 #'
-#' @param package character(1) (default `AnVIL`) The package where
+#' @param package `character(1)` (default `AnVIL`) The package where
 #'     'api.json' yaml and (optionally) 'auth.json' files are located.
 #'
-#' @param schemes character(1) (default 'https') Specifies the
+#' @param schemes `character(1)` (default 'https') Specifies the
 #'     transfer protocol supported by the API service.
 #'
-#' @param api_reference_url character(1) path to reference API. See
+#' @param api_reference_url `character(1)` path to reference API. See
 #'     Details.
 #'
-#' @param api_reference_md5sum character(1) the result of
+#' @param api_reference_md5sum `character(1)` the result of
 #'     `tools::md5sum()` applied to the reference API.
 #'
-#' @param api_reference_version character(1) the version of the
+#' @param api_reference_version `character(1)` the version of the
 #'    reference API. This is used to check that the version of the
 #'    service matches the version of the reference API. It is usally
 #'    set by the service generation function,. e.g., `AnVIL::Rawls()`.
 #'
-#' @param api_reference_headers character() header(s) to be used
+#' @param api_reference_headers `character()` header(s) to be used
 #'     (e.g., `c(Authorization = paste("Bearer", token))`) when
 #'     retrieving the API reference for validation.
 #'

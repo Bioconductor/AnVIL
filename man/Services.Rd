@@ -67,13 +67,13 @@ package and documented on this page, e.g., \code{leonardo} or
 \verb{operations,Service-method}, to the internal \code{get_operation()}
 function.}
 
-\item{.deprecated}{optional logical(1) include deprecated operations?}
+\item{.deprecated}{optional \code{logical(1)} include deprecated operations?}
 
-\item{auto_unbox}{logical(1) If FALSE (default) do not
+\item{auto_unbox}{\code{logical(1)} If FALSE (default) do not
 automatically 'unbox' R scalar values from JSON arrays to JSON
 scalers.}
 
-\item{.tags}{optional character() of tags to use to filter operations.}
+\item{.tags}{optional \code{character()} of tags to use to filter operations.}
 
 \item{name}{A symbol representing a defined operation, e.g.,
 \code{leonardo$listRuntimes()}.}
