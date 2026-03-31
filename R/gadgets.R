@@ -95,7 +95,7 @@
 #'     selected in the gadget by the user. The function is only
 #'     invoked when the user selects a valid row.
 #'
-#' @return `.gadget_run()` returns the result of `DONE_FUN()` if a row
+#' @returns `.gadget_run()` returns the result of `DONE_FUN()` if a row
 #'     has been selected by the user, or `NULL` if no row is selected
 #'     (the user presses `Cancel`, or `Done` prior to selecting any
 #'     row).
@@ -135,8 +135,8 @@
 #'     with `avworkspaces()`, and setting the selected workspace with
 #'     `avworkspace()`.
 #'
-#' @return `workspace()` returns the selected workspace as a
-#'     character(1) using the format namespace/name, or character(0)
+#' @returns `workspace()` returns the selected workspace as a
+#'     `character(1)` using the format namespace/name, or `character(0)`
 #'     if no workspace is selected.
 #'
 #' @examplesIf has_avworkspace(TRUE, platform = AnVILGCP::gcp())
@@ -203,7 +203,7 @@ avworkspace_gadget <-
 #'     available. If `FALSE` or no workspace is currently selected,
 #'     use `workspace()` to allow the user to select the workspace.
 #'
-#' @return `browse_workspace()` returns the status of a `system()`
+#' @returns `browse_workspace()` returns the status of a `system()`
 #'     call to launch the browser, invisibly.
 #'
 #' @importFrom utils browseURL
@@ -227,7 +227,7 @@ browse_workspace <-
 #'     to show available tables, and `avtable()` to retrieve the
 #'     selected table.
 #'
-#' @return `table()` returns a `tibble` representing the selected
+#' @returns `table()` returns a `tibble` representing the selected
 #'     AnVIL table.
 #'
 #' @importFrom AnVILBase avtable avtables
@@ -257,7 +257,7 @@ avtable_gadget <-
 #'     available workflows, and `avworkflow_configuration_get()` for
 #'     retrieving the workflow.
 #'
-#' @return `workflow()` returns an `avworkflow_configuration` object
+#' @returns `workflow()` returns an `avworkflow_configuration` object
 #'     representing the inputs and outputs of the selected
 #'     workflow. This can be edited and updated as described in the
 #'     "Running an AnVIL workflow within R" vigenette.

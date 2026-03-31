@@ -8,7 +8,7 @@
 #' @param paths `character()`: vector of directories to add to
 #'     `.libPaths()`. Paths that do not exist will be created.
 #'
-#' @return `add_libpaths()`: updated .libPaths(), invisibly.
+#' @returns `add_libpaths()`: updated `.libPaths()`, invisibly.
 #'
 #' @examplesIf interactive()
 #' add_libpaths("/tmp/host-site-library")

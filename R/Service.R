@@ -149,7 +149,7 @@ setOldClass("request")
 #' The service is usually a singleton, created at the package
 #' level during `.onLoad()`.
 #'
-#' @return An object of class \code{Service}.
+#' @returns An object of class \code{Service}.
 #'
 #' @importFrom BiocBaseUtils isScalarCharacter isScalarLogical isCharacter
 #'

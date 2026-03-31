@@ -13,7 +13,7 @@
 #'
 #' @aliases Terra-class operations,Terra-method schemas,Terra-method
 #'
-#' @return `Terra()` creates the API of the Terra cloud computational
+#' @returns `Terra()` creates the API of the Terra cloud computational
 #'     environemnt at \url{https://api.firecloud.org/}.
 #'
 #' @format NULL

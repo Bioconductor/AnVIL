@@ -13,7 +13,7 @@
 #'
 #' @aliases Leonardo-class operations,Leonardo-method
 #'
-#' @return `Leonardo()` creates the API of the Leonardo container
+#' @returns `Leonardo()` creates the API of the Leonardo container
 #'     deployment service at
 #'     \url{https://leonardo.dsde-prod.broadinstitute.org/api-docs.yaml}.
 #'

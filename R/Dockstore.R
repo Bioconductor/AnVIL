@@ -16,7 +16,7 @@
 #'
 #' @aliases Dockstore-class operations,Dockstore-method
 #'
-#' @return `Dockstore()` represents the API of the Dockstore platform to
+#' @returns `Dockstore()` represents the API of the Dockstore platform to
 #'     share Docker-based tools in CWL or WDL or Nextflow at
 #'     \url{https://dockstore.org}
 #'
