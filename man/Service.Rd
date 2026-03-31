@@ -67,7 +67,7 @@ This function creates a RESTful interface to a service
 provided by a host, e.g., "leonardo.dsde-prod.broadinstitute.org".
 The function requires an OpenAPI \code{.json} or \code{.yaml} specifcation
 as well as an (optional) \code{.json} authentication token. These files
-are located in the source directory of a pacakge, at
+are located in the source directory of a package, at
 \verb{<package>/inst/service/<service>/api.json} and
 \verb{<package>/inst/service/<service>/auth.json}, or at \code{api_url}.
 

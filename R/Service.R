@@ -138,7 +138,7 @@ setOldClass("request")
 #'     provided by a host, e.g., "leonardo.dsde-prod.broadinstitute.org".
 #'     The function requires an OpenAPI `.json` or `.yaml` specifcation
 #'     as well as an (optional) `.json` authentication token. These files
-#'     are located in the source directory of a pacakge, at
+#'     are located in the source directory of a package, at
 #'     `<package>/inst/service/<service>/api.json` and
 #'     `<package>/inst/service/<service>/auth.json`, or at `api_url`.
 #'
