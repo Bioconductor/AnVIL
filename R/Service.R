@@ -34,30 +34,28 @@ setOldClass("request")
     fl
 }
 
-.service_validate_md5sum_warn <- new.env(parent = emptyenv())
+.service_validate_sha256_warn <- new.env(parent = emptyenv())
 
-#' @importFrom tools md5sum
-#' @importFrom utils download.file
-.service_validate_md5sum <-
-    function(reference_url, reference_md5sum, reference_headers, api_file)
+.service_validate_sha256 <-
+    function(reference_url, reference_sha256, reference_headers, api_file)
 {
     flog.debug("Service reference url: %s", reference_url)
-    flog.debug("Service reference md5sum: %s", reference_md5sum)
+    flog.debug("Service reference sha256: %s", reference_sha256)
 
-    if (length(reference_md5sum) == 0L)
+    if (length(reference_sha256) == 0L)
         return()
 
-    md5sum <- md5sum(api_file)
+    sha256 <- digest::digest(api_file, algo = "sha256", file = TRUE)
     test <-
-        identical(unname(md5sum), reference_md5sum) ||
-        exists(reference_url, envir = .service_validate_md5sum_warn)
-    .service_validate_md5sum_warn[[reference_url]] <- TRUE
+        identical(unname(sha256), reference_sha256) ||
+        exists(reference_url, envir = .service_validate_sha256_warn)
+    .service_validate_sha256_warn[[reference_url]] <- TRUE
     if (!test)
         warning(
             "service version differs from validated version",
             "\n    service url: ", reference_url,
-            "\n    observed md5sum: ", md5sum,
-            "\n    expected md5sum: ", reference_md5sum
+            "\n    observed sha256: ", sha256,
+            "\n    expected sha256: ", reference_sha256
         )
     test
 }
@@ -188,7 +186,7 @@ Service <-
 
     api_file <- .service_get_api_file(api_reference_url, api_reference_headers)
 
-    .service_validate_md5sum(
+    .service_validate_sha256(
         api_reference_url, api_reference_md5sum,
         api_reference_headers, api_file
     )

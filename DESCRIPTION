@@ -32,6 +32,7 @@ Imports:
     futile.logger,
     GCPtools,
     jsonlite, httr,
+    digest,
     rapiclient, yaml,
     tibble,
     shiny, DT, miniUI, htmltools,
