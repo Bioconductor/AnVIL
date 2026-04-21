@@ -13,7 +13,7 @@ info:
   license:
     name: Apache License Version 2.0
     url: https://github.com/dockstore/dockstore/blob/develop/LICENSE
-  version: 1.19.0
+  version: 1.19.2
 servers:
 - url: /api
   description: Current server when hosted on AWS
@@ -10459,6 +10459,8 @@ components:
           pattern: "[\\w ,_\\-&()']*"
           type: string
         topic:
+          maxLength: 255
+          minLength: 0
           type: string
           description: Short description of the collection
           example: A collection of alignment algorithms
@@ -10629,6 +10631,8 @@ components:
           pattern: "[\\w ,_\\-&()']*"
           type: string
         topic:
+          maxLength: 255
+          minLength: 0
           type: string
           description: Short description of the collection
           example: A collection of alignment algorithms
@@ -11511,6 +11515,8 @@ components:
           items:
             $ref: "#/components/schemas/OrganizationUser"
         topic:
+          maxLength: 255
+          minLength: 0
           type: string
         displayName:
           maxLength: 50
