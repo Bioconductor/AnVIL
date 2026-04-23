@@ -62,9 +62,6 @@ anvil_set_auth_json <-
     key_set_with_value("AnVIL", service, password = content)
 }
 
-authenticate_path <- function(service)
-    system.file(package="AnVIL", "service", service, "auth.json")
-
 authenticate_ok <-
     function(service)
 {
