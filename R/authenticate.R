@@ -110,13 +110,14 @@ authenticate <-
     }
 
     app <- oauth_app(
-        "AnVILBiocPackage",
+        appname = "AnVILBiocPackage",
         key = access$client_id,
         secret = access$client_secret
     )
 
     token <- oauth2.0_token(
-        oauth_endpoints("google"), app,
+        endpoint = oauth_endpoints("google"),
+        app = app,
         scope = "openid email",
         cache = cache
     )
