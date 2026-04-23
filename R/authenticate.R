@@ -46,6 +46,19 @@
 #' @return `anvil_set_auth_json()` returns `NULL` invisibly.
 #'
 #' @importFrom keyring key_set_with_value
+#'
+#' @examplesIf interactive()
+#' jsonlite::write_json(
+#'    list(token = "example_token"),
+#'    "terratcgadata-test-key.json",
+#' )
+#' anvil_set_auth_json(
+#'     "terra",
+#'     "terratcgadata-test-key.json"
+#' )
+#' AnVIL:::.authenticate_get_access("terra")
+#' unlink("terratcgadata-test-key.json")
+#'
 #' @export
 anvil_set_auth_json <-
     function(service, path)

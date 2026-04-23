@@ -16,7 +16,21 @@ anvil_set_auth_json(service, path)
 \code{anvil_set_auth_json()} returns \code{NULL} invisibly.
 }
 \description{
-\code{anvil_set_auth_json()} stores the content of an \code{auth.json} file
-in the system keyring. This is the recommended way to store credentials
-safely.
+\code{anvil_set_auth_json()} stores the content of an \code{auth.json}
+file in the system keyring. This is the recommended way to store
+credentials safely.
+}
+\examples{
+\dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
+jsonlite::write_json(
+   list(token = "example_token"),
+   "terratcgadata-test-key.json",
+)
+anvil_set_auth_json(
+    "terra",
+    "terratcgadata-test-key.json"
+)
+AnVIL:::.authenticate_get_access("terra")
+unlink("terratcgadata-test-key.json")
+\dontshow{\}) # examplesIf}
 }
