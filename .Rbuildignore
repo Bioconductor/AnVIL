@@ -8,3 +8,5 @@ vignettes/.*_cache
 ^doc$
 ^Meta$
 .github
+^\.positai$
+^\.claude$
