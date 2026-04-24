@@ -14,7 +14,7 @@
 #' @aliases Terra-class operations,Terra-method schemas,Terra-method
 #'
 #' @returns `Terra()` creates the API of the Terra cloud computational
-#'     environemnt at \url{https://api.firecloud.org/}. The default
+#'     environment at \url{https://api.firecloud.org/}. The default
 #'     API url value can be changed with the `AnVIL.firecloud_api_url`
 #'     option.
 #'

@@ -90,12 +90,12 @@ The default API url value can be changed with the
 \code{AnVIL.leonardo_api_url} option.
 
 \code{Terra()} creates the API of the Terra cloud computational
-environemnt at \url{https://api.firecloud.org/}. The default
+environment at \url{https://api.firecloud.org/}. The default
 API url value can be changed with the \code{AnVIL.firecloud_api_url}
 option.
 
 \code{Rawls()} creates the API of the Rawls cloud computational
-environemnt at \url{https://rawls.dsde-prod.broadinstitute.org}.
+environment at \url{https://rawls.dsde-prod.broadinstitute.org}.
 The default API url value can be changed with the
 \code{AnVIL.rawls_api_url} option.
 
