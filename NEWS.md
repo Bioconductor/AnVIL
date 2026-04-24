@@ -1,3 +1,69 @@
+# AnVIL 1.24.0
+
+NEW FEATURES
+
+- (v 1.23.13) Add package options to bypass hardcoded URLs.
+
+- (v 1.23.12) Use `keyring` to store `auth.json` file.
+
+USER VISIBLE CHANGES
+
+- (v 1.23.10) Use `sha256` instead of `md5sum` for service validation.
+
+- (v 1.23.4) Use native pipe operator `|>` instead of `magrittr` pipe.
+
+BUG FIXES AND MINOR IMPROVEMENTS
+
+- (v 1.23.11) Update Dockstore API version to 1.19.2.
+
+- (v 1.23.10) Fix typo in `Service` docs and use `rmarkdown` backticks for
+  code in documentation.
+
+- (v 1.23.8) Use qualified `gcloud_access_token` to avoid `NAMESPACE`
+  conflicts.
+
+- (v 1.23.7) Update APIs and track `openapi.yaml` in automatic commits.
+
+- (v 1.23.6) Update Dockstore API version to 1.18.2.
+
+- (v 1.23.5) Update R version dependency to `R-devel`.
+
+- (v 1.23.4) Add code chunk labels to vignettes.
+
+- (v 1.23.3) Add `URL` and `BugReports` fields to documentation and
+  `DESCRIPTION`.
+
+# AnVIL 1.22.0
+
+USER VISIBLE CHANGES
+
+- (v 1.21.6) Use `gcloud_access_token` from the `GCPtools` package.
+
+- (v 1.21.3) Add `...` to `Service` constructor to pass additional arguments
+  to `rapiclient` operations.
+
+- (v 1.21.2) Defunct functions have been removed.
+
+BUG FIXES AND MINOR IMPROVEMENTS
+
+- (v 1.21.10) Update internal API snapshots.
+
+- (v 1.21.9) Update Dockstore API version to 1.17.2.
+
+- (v 1.21.8) Update Dockstore API version to 1.17.1.
+
+- (v 1.21.7) Update Dockstore API version to 1.17.0.
+
+- (v 1.21.6) Import `checkInstalled` for `avworkflow_gadget`.
+
+- (v 1.21.5) Update package `Description`.
+
+- (v 1.21.2) Use `checkInstalled` from `BiocBaseUtils` to manage suggested
+  dependencies.
+
+- (v 1.21.1) Update R version dependency and remove rapiclient version
+  restriction
+
 # AnVIL 1.20.0
 
 USER VISIBLE CHANGES
