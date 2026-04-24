@@ -16,6 +16,8 @@
 #' @returns `Leonardo()` creates the API of the Leonardo container
 #'     deployment service at
 #'     \url{https://leonardo.dsde-prod.broadinstitute.org/api-docs.yaml}.
+#'     The default API url value can be changed with the
+#'     `AnVIL.leonardo_api_url` option.
 #'
 #' @format NULL
 #'
@@ -31,18 +33,18 @@ Leonardo <-
     function()
 {
     access_token <- GCPtools::gcloud_access_token("leonardo")
+    api_reference_url <- getOption("AnVIL.leonardo_api_url")
     api_header <- c(
         Authorization = paste("Bearer", access_token),
-        Referer = "https://leonardo.dsde-prod.broadinstitute.org"
+        Referer = .get_referer(api_reference_url)
     )
     .Leonardo(
         Service(
             "leonardo",
-            host = "leonardo.dsde-prod.broadinstitute.org",
+            host = .get_host(api_reference_url),
             authenticate = FALSE,
             api_reference_version = .LEONARDO_API_REFERENCE_VERSION,
-            api_reference_url =
-                "https://leonardo.dsde-prod.broadinstitute.org/api-docs.yaml",
+            api_reference_url = api_reference_url
         ),
         api_header = api_header
     )

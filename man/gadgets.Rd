@@ -27,7 +27,9 @@ use \code{workspace()} to allow the user to select the workspace.}
 if no workspace is selected.
 
 \code{browse_workspace()} returns the status of a \code{system()}
-call to launch the browser, invisibly.
+call to launch the browser, invisibly. The default app URL
+prefix (\url{https://app.terra.bio}) can be changed with the
+\code{AnVIL.terra_app_url} option.
 
 \code{table()} returns a \code{tibble} representing the selected
 AnVIL table.

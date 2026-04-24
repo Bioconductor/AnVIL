@@ -80,3 +80,12 @@ isScalarCharacter_or_NULL <- function(x, na.ok = FALSE, zchar = FALSE)
     text <- paste(..., collapse = " ")
     paste(strwrap(text, indent = indent, exdent = exdent), collapse = "\n")
 }
+
+.get_host <- function(url) {
+    httr::parse_url(url)$hostname
+}
+
+.get_referer <- function(url) {
+    parsed <- httr::parse_url(url)
+    paste0(parsed$scheme, "://", parsed$hostname)
+}

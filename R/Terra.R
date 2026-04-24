@@ -14,7 +14,9 @@
 #' @aliases Terra-class operations,Terra-method schemas,Terra-method
 #'
 #' @returns `Terra()` creates the API of the Terra cloud computational
-#'     environemnt at \url{https://api.firecloud.org/}.
+#'     environemnt at \url{https://api.firecloud.org/}. The default
+#'     API url value can be changed with the `AnVIL.firecloud_api_url`
+#'     option.
 #'
 #' @format NULL
 #'
@@ -33,14 +35,14 @@ Terra <-
 {
     access_token <- GCPtools::gcloud_access_token("terra")
     api_header <- c(Authorization = paste("Bearer", access_token))
+    api_reference_url <- getOption("AnVIL.firecloud_api_url")
     .Terra(
         Service(
             "terra",
-            host = "api.firecloud.org",
-            ## api_url = "https://api.firecloud.org/api-docs.yaml",
+            host = .get_host(api_reference_url),
             authenticate = FALSE,
             api_reference_version = .TERRA_API_REFERENCE_VERSION,
-            api_reference_url = "https://api.firecloud.org/api-docs.yaml",
+            api_reference_url = api_reference_url
         ),
         api_header = api_header
     )

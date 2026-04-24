@@ -86,19 +86,28 @@ arguments in function calls expecting the empty json object
 \code{Leonardo()} creates the API of the Leonardo container
 deployment service at
 \url{https://leonardo.dsde-prod.broadinstitute.org/api-docs.yaml}.
+The default API url value can be changed with the
+\code{AnVIL.leonardo_api_url} option.
 
 \code{Terra()} creates the API of the Terra cloud computational
-environemnt at \url{https://api.firecloud.org/}.
+environemnt at \url{https://api.firecloud.org/}. The default
+API url value can be changed with the \code{AnVIL.firecloud_api_url}
+option.
 
 \code{Rawls()} creates the API of the Rawls cloud computational
 environemnt at \url{https://rawls.dsde-prod.broadinstitute.org}.
+The default API url value can be changed with the
+\code{AnVIL.rawls_api_url} option.
 
 \code{Dockstore()} represents the API of the Dockstore platform to
 share Docker-based tools in CWL or WDL or Nextflow at
-\url{https://dockstore.org}
+\url{https://dockstore.org}. The default API url value can be
+changed with the \code{AnVIL.dockstore_api_url} option.
 
 \code{TDR()} creates the API of the Terra Data Repository to work with
 snapshot data in the Terra Data Repository at \url{https://data.terra.bio}.
+The default API url value can be changed with the
+\code{AnVIL.tdr_api_url} option.
 }
 \description{
 RESTful services useful for AnVIL developers

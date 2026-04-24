@@ -204,7 +204,9 @@ avworkspace_gadget <-
 #'     use `workspace()` to allow the user to select the workspace.
 #'
 #' @returns `browse_workspace()` returns the status of a `system()`
-#'     call to launch the browser, invisibly.
+#'     call to launch the browser, invisibly. The default app URL
+#'     prefix (\url{https://app.terra.bio}) can be changed with the
+#'     `AnVIL.terra_app_url` option.
 #'
 #' @importFrom utils browseURL
 #'
@@ -215,7 +217,7 @@ browse_workspace <-
     stopifnot(isScalarLogical(use_avworkspace))
 
     workspace <- .workspace_get(use_avworkspace)
-    url <- paste0("https://app.terra.bio/#workspaces/", workspace)
+    url <- paste0(getOption("AnVIL.terra_app_url"), "/#workspaces/", workspace)
     browseURL(url)
 }
 

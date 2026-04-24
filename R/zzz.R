@@ -11,7 +11,16 @@
             "com",
             sep = "."
         ),
-        anvil_client_secret = oauth_secret
+        anvil_client_secret = oauth_secret,
+        AnVIL.firecloud_api_url = "https://api.firecloud.org/api-docs.yaml",
+        AnVIL.rawls_api_url =
+            "https://rawls.dsde-prod.broadinstitute.org/api-docs.yaml",
+        AnVIL.leonardo_api_url =
+            "https://leonardo.dsde-prod.broadinstitute.org/api-docs.yaml",
+        AnVIL.tdr_api_url =
+            "https://data.terra.bio/data-repository-openapi.yaml",
+        AnVIL.dockstore_api_url = "https://dockstore.org/api/openapi.yaml",
+        AnVIL.terra_app_url = "https://app.terra.bio"
     )
     opts <- opts[!names(opts) %in% names(options())]
     options(opts)

@@ -15,6 +15,8 @@
 #'
 #' @returns `Rawls()` creates the API of the Rawls cloud computational
 #'     environemnt at \url{https://rawls.dsde-prod.broadinstitute.org}.
+#'     The default API url value can be changed with the
+#'     `AnVIL.rawls_api_url` option.
 #'
 #' @format NULL
 #'
@@ -33,14 +35,14 @@ Rawls <-
 {
     access_token <- GCPtools::gcloud_access_token("rawls")
     api_header <- c(Authorization = paste("Bearer", access_token))
+    api_reference_url <- getOption("AnVIL.rawls_api_url")
     .Rawls(
         Service(
             "rawls",
-            host = "rawls.dsde-prod.broadinstitute.org",
+            host = .get_host(api_reference_url),
             authenticate = FALSE,
             api_reference_version = .RAWLS_API_REFERENCE_VERSION,
-            api_reference_url =
-                "https://rawls.dsde-prod.broadinstitute.org/api-docs.yaml"
+            api_reference_url = api_reference_url
         ),
         api_header = api_header
     )
