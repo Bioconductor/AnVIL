@@ -113,6 +113,12 @@ cloud. For local use, one must
 - [Install][install-gcloud-sdk] the gcloud sdk (for Linux and Windows,
   `cloudml::gcloud_install()` provides an alternative way to install
   gcloud).
+
+- Find the path to the `gcloud` SDK installation, e.g., with
+  `Sys.which("gcloud")` in R or either `which gcloud` or
+  `gcloud info --format="value(installation.sdk_root)"`
+  on the command line.
+
 - Define an environment variable or `option()` named `GCLOUD_SDK_PATH`
   pointing to the root of the SDK installation, e.g,
 
