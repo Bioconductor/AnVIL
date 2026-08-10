@@ -13,7 +13,7 @@ info:
   license:
     name: Apache License Version 2.0
     url: https://github.com/dockstore/dockstore/blob/develop/LICENSE
-  version: 1.19.2
+  version: 1.20.0
 servers:
 - url: /api
   description: Current server when hosted on AWS
@@ -122,6 +122,88 @@ paths:
                 $ref: "#/components/schemas/WorkflowVersionPathInfo"
       security:
       - BEARER: []
+  /categories/{categoryId}/entry:
+    put:
+      tags:
+      - categories
+      summary: Approve an AI-curated entry in a category.
+      description: "Approve an AI-curated entry in a category, changing its curator\
+        \ from AI to human. The entry must have been added to the category by AI.\
+        \ Only the owner of the entry may perform this action."
+      operationId: approveAiCuratedEntryInCategory
+      parameters:
+      - name: categoryId
+        in: path
+        description: Category ID.
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: entryId
+        in: query
+        description: Entry ID.
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        description: "This is here to appease Swagger. It requires PUT methods to\
+          \ have a body, even if it is empty. Please leave it empty."
+        content:
+          '*/*':
+            schema:
+              type: string
+      responses:
+        "200":
+          description: Successfully approved AI-curated entry in category
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Category"
+        "404":
+          description: Category or entry not found
+        "403":
+          description: "User is not an owner of the entry, or the entry was not added\
+            \ to the category by AI"
+      security:
+      - BEARER: []
+    delete:
+      tags:
+      - categories
+      summary: Delete an AI-curated entry from a category.
+      description: Delete an AI-curated entry from a category. The entry must have
+        been added to the category by AI. Only the owner of the entry may perform
+        this action.
+      operationId: removeAiCuratedEntryFromCategory
+      parameters:
+      - name: categoryId
+        in: path
+        description: Category ID.
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: entryId
+        in: query
+        description: Entry ID.
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: Successfully deleted AI-curated entry from category
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Category"
+        "404":
+          description: Category or entry not found
+        "403":
+          description: "User is not an owner of the entry, or the entry was not added\
+            \ to the category by AI"
+      security:
+      - BEARER: []
   /categories:
     get:
       tags:
@@ -140,6 +222,23 @@ paths:
         description: "Comma-delimited list of fields to include: entries"
         schema:
           type: string
+      - name: limit
+        in: query
+        description: Maximum number of results to return
+        schema:
+          maximum: 100
+          minimum: 1
+          type: integer
+          format: int32
+          default: 10
+      - name: offset
+        in: query
+        description: Offset of the first result to return
+        schema:
+          minimum: 0
+          type: integer
+          format: int32
+          default: 0
       responses:
         "200":
           description: Successfully retrieved categories
@@ -298,6 +397,22 @@ paths:
         schema:
           type: integer
           format: int64
+      - name: curator
+        in: query
+        description: Curator type.
+        schema:
+          type: string
+          enum:
+          - USER
+          - DOCKSTORE
+          - AI
+      - name: reindex
+        in: query
+        description: Reindex entry if necessary. Only admins and curators may set
+          this to false.
+        schema:
+          type: boolean
+          default: true
       responses:
         default:
           description: default response
@@ -340,6 +455,13 @@ paths:
         description: Version Name.
         schema:
           type: string
+      - name: reindex
+        in: query
+        description: Reindex entry if necessary. Only admins and curators may set
+          this to false.
+        schema:
+          type: boolean
+          default: true
       responses:
         default:
           description: default response
@@ -502,6 +624,13 @@ paths:
         schema:
           type: integer
           format: int64
+      - name: reindex
+        in: query
+        description: Reindex entries as necessary. Only admins and curators may set
+          this to false.
+        schema:
+          type: boolean
+          default: true
       responses:
         "204":
           description: Successfully deleted the collection
@@ -1799,6 +1928,31 @@ paths:
                   $ref: "#/components/schemas/Category"
         "400":
           description: Entry must be published
+  /entries/{id}/categorySummaries:
+    get:
+      tags:
+      - entries
+      description: Get the category summaries for the entry
+      operationId: entryCategorySummaries
+      parameters:
+      - name: id
+        in: path
+        description: Entry ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: Successfully retrieved category summaries
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CategorySummary"
+        "400":
+          description: Entry must by published
   /entries/{id}/collections:
     get:
       tags:
@@ -1857,6 +2011,48 @@ paths:
           description: Bad Request
       security:
       - BEARER: []
+  /entries/toCategorize:
+    get:
+      tags:
+      - entries
+      description: "Get published entries that are new and uncategorized, or that\
+        \ have changed since last categorization and were last categorized at least\
+        \ intervalSeconds seconds ago."
+      operationId: findEntriesToCategorize
+      parameters:
+      - name: intervalSeconds
+        in: query
+        description: Interval in seconds; entries last categorized at least this many
+          seconds ago are eligible for re-categorization if changed
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: offset
+        in: query
+        description: Pagination offset
+        schema:
+          type: integer
+          format: int32
+          default: 0
+      - name: limit
+        in: query
+        description: Pagination limit
+        schema:
+          type: integer
+          format: int32
+          default: 100
+      responses:
+        "200":
+          description: Successfully retrieved entries
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/EntryLiteAndVersionName"
+      security:
+      - BEARER: []
   /entries/{alias}/aliases:
     get:
       tags:
@@ -1877,6 +2073,66 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Entry"
+      security:
+      - BEARER: []
+  /entries/{id}/lastCategorizedDate:
+    get:
+      tags:
+      - entries
+      description: Get the date of the last categorization of an entry.
+      operationId: getLastCategorizedDate
+      parameters:
+      - name: id
+        in: path
+        description: Entry ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: Successfully retrieved the last categorized date
+          content:
+            application/json:
+              schema:
+                type: string
+                format: date-time
+      security:
+      - BEARER: []
+    put:
+      tags:
+      - entries
+      description: Set the date of the last categorization of an entry.
+      operationId: setLastCategorizedDate
+      parameters:
+      - name: id
+        in: path
+        description: Entry ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: whenSeconds
+        in: query
+        description: Date in UTC epoch seconds; defaults to now
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        description: "This is here to appease Swagger. It requires PUT methods to\
+          \ have a body, even if it is empty. Please leave it empty."
+        content:
+          '*/*':
+            schema:
+              type: string
+      responses:
+        "200":
+          description: Successfully set the last categorized date
+          content:
+            application/json:
+              schema:
+                type: string
+                format: date-time
       security:
       - BEARER: []
   /entries/{entryId}/verifiedPlatforms:
@@ -3691,6 +3947,10 @@ paths:
         in: query
         schema:
           type: string
+      - name: state
+        in: query
+        schema:
+          type: string
       responses:
         "200":
           description: Successfully added a new github.com token
@@ -3822,8 +4082,8 @@ paths:
     post:
       tags:
       - tokens
-      description: "Allow satellizer to post a new GitHub token to dockstore, used\
-        \ by login, can create new users."
+      description: "Allow n2-oauth-client (fork) to post a new GitHub token to dockstore,\
+        \ used by login, can create new users."
       operationId: addToken
       requestBody:
         content:
@@ -3832,7 +4092,8 @@ paths:
               type: string
       responses:
         "200":
-          description: Satellizer successfully posted a new GitHub token to Dockstore
+          description: Allow n2-oauth-client (fork) successfully posted a new GitHub
+            token to Dockstore
           content:
             application/json:
               schema:
@@ -3916,6 +4177,25 @@ paths:
           description: Token not found
       security:
       - BEARER: []
+  /auth/tokens/github/codeChallenge:
+    get:
+      tags:
+      - tokens
+      description: Get a PKCE code challenge value and store the verifier.
+      operationId: getGitHubCodeChallenge
+      responses:
+        "200":
+          description: Get a PKCE code challenge value
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClientPKCE"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "409":
+          description: Conflict
   /toolTester/logs:
     get:
       tags:
@@ -7842,6 +8122,40 @@ paths:
                 $ref: "#/components/schemas/Error"
       security:
       - BEARER: []
+  /api/ga4gh/v2/extended/entries:
+    get:
+      tags:
+      - extendedGA4GH
+      description: Retrieve an abbreviated description and the default version name
+        of each published entry.
+      operationId: getAllEntries
+      parameters:
+      - name: offset
+        in: query
+        description: Pagination offset
+        schema:
+          minimum: 0
+          type: integer
+          format: int32
+          default: 0
+      - name: limit
+        in: query
+        description: Pagination limit
+        schema:
+          maximum: 100
+          minimum: 1
+          type: integer
+          format: int32
+          default: 100
+      responses:
+        "200":
+          description: Successfully retrieved entries
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/EntryLiteAndVersionName"
   /api/ga4gh/v2/extended/entryVersionsToAggregate:
     get:
       tags:
@@ -10444,20 +10758,15 @@ components:
           description: Implementation specific ID for the collection in this web service
           format: int64
         name:
-          maxLength: 39
+          maxLength: 90
           minLength: 3
-          pattern: "[a-zA-Z](-?[a-zA-Z\\d]){0,38}"
+          pattern: "[a-zA-Z](-?[a-zA-Z\\d]){0,89}"
           type: string
           description: Name of the collection
           example: alignment
         description:
           type: string
           description: Description of the collection
-        displayName:
-          maxLength: 50
-          minLength: 3
-          pattern: "[\\w ,_\\-&()']*"
-          type: string
         topic:
           maxLength: 255
           minLength: 0
@@ -10493,6 +10802,19 @@ components:
         dbUpdateDate:
           type: integer
           format: int64
+        metadata:
+          type: object
+          additionalProperties:
+            type: string
+            description: "Arbitrary metadata for this collection, settable only by\
+              \ admins and curators"
+          description: "Arbitrary metadata for this collection, settable only by admins\
+            \ and curators"
+        displayName:
+          maxLength: 90
+          minLength: 3
+          pattern: "[\\w ,_\\-&()']*"
+          type: string
         entries:
           type: array
           items:
@@ -10514,6 +10836,18 @@ components:
           type: string
         topic:
           type: string
+        curator:
+          type: string
+          enum:
+          - USER
+          - DOCKSTORE
+          - AI
+        aiManaged:
+          type: boolean
+        metadata:
+          type: object
+          additionalProperties:
+            type: string
     CollectionEntry:
       type: object
       properties:
@@ -10549,6 +10883,12 @@ components:
           type: array
           items:
             type: string
+        curator:
+          type: string
+          enum:
+          - USER
+          - DOCKSTORE
+          - AI
         categories:
           type: array
           items:
@@ -10616,20 +10956,15 @@ components:
           description: Implementation specific ID for the collection in this web service
           format: int64
         name:
-          maxLength: 39
+          maxLength: 90
           minLength: 3
-          pattern: "[a-zA-Z](-?[a-zA-Z\\d]){0,38}"
+          pattern: "[a-zA-Z](-?[a-zA-Z\\d]){0,89}"
           type: string
           description: Name of the collection
           example: alignment
         description:
           type: string
           description: Description of the collection
-        displayName:
-          maxLength: 50
-          minLength: 3
-          pattern: "[\\w ,_\\-&()']*"
-          type: string
         topic:
           maxLength: 255
           minLength: 0
@@ -10665,6 +11000,19 @@ components:
         dbUpdateDate:
           type: integer
           format: int64
+        metadata:
+          type: object
+          additionalProperties:
+            type: string
+            description: "Arbitrary metadata for this collection, settable only by\
+              \ admins and curators"
+          description: "Arbitrary metadata for this collection, settable only by admins\
+            \ and curators"
+        displayName:
+          maxLength: 90
+          minLength: 3
+          pattern: "[\\w ,_\\-&()']*"
+          type: string
         entries:
           type: array
           items:
@@ -11381,6 +11729,29 @@ components:
           type: string
         organizationAvatarUrl:
           type: string
+    EntryLite:
+      type: object
+      properties:
+        lastUpdated:
+          type: string
+          format: date-time
+        entryTypeMetadata:
+          $ref: "#/components/schemas/EntryTypeMetadata"
+        entryPath:
+          type: string
+        trsId:
+          type: string
+        entryType:
+          $ref: "#/components/schemas/EntryType"
+        prettyPath:
+          type: string
+    EntryLiteAndVersionName:
+      type: object
+      properties:
+        entryLite:
+          $ref: "#/components/schemas/EntryLite"
+        versionName:
+          type: string
     VersionVerifiedPlatform:
       type: object
       properties:
@@ -11443,6 +11814,8 @@ components:
           $ref: "#/components/schemas/Notebook"
         collection:
           $ref: "#/components/schemas/Collection"
+        category:
+          $ref: "#/components/schemas/Category"
         initiatorUser:
           $ref: "#/components/schemas/User"
         version:
@@ -11471,6 +11844,8 @@ components:
           - UNPUBLISH_ENTRY
           - ARCHIVE_ENTRY
           - UNARCHIVE_ENTRY
+          - APPROVE_IN_CATEGORY
+          - REMOVE_FROM_CATEGORY
         dbCreateDate:
           type: integer
           format: int64
@@ -12183,6 +12558,13 @@ components:
           type: integer
           format: int64
         token:
+          type: string
+    ClientPKCE:
+      type: object
+      properties:
+        hashedValue:
+          type: string
+        state:
           type: string
     ToolTesterLog:
       type: object
@@ -12922,29 +13304,6 @@ components:
           items:
             $ref: "#/components/schemas/ExecutionResponse"
       description: Response body model for execution metric APIs
-    EntryLite:
-      type: object
-      properties:
-        lastUpdated:
-          type: string
-          format: date-time
-        entryTypeMetadata:
-          $ref: "#/components/schemas/EntryTypeMetadata"
-        entryPath:
-          type: string
-        trsId:
-          type: string
-        entryType:
-          $ref: "#/components/schemas/EntryType"
-        prettyPath:
-          type: string
-    EntryLiteAndVersionName:
-      type: object
-      properties:
-        entryLite:
-          $ref: "#/components/schemas/EntryLite"
-        versionName:
-          type: string
     UpdateAITopicRequest:
       required:
       - aiTopic
