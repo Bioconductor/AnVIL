@@ -6,7 +6,7 @@ the released version, follow instructions in the package vignette
         install.packages("BiocManager")
     BiocManager::install("AnVIL")
 
-To install the development (github master) version in a recent _R_,
+To install the development (GitHub devel branch) version in a recent _R_,
 use
 
     if (!requireNamespace("BiocManager", quietly = TRUE))
@@ -23,4 +23,4 @@ for more information.
 
 [landing page]: https://bioconductor.org/packages/AnVIL
 [bioc-vignette]: https://bioconductor.org/packages/devel/bioc/vignettes/AnVIL/inst/doc/Introduction.html
-[github-vignette]: https://github.com/Bioconductor/AnVIL/blob/master/vignettes/Introduction.Rmd
+[github-vignette]: https://github.com/Bioconductor/AnVIL/blob/devel/vignettes/Introduction.Rmd

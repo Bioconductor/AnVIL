@@ -48,7 +48,7 @@ jobs:
           message: 'Update API'
 
       - name: Push action
-        uses: ad-m/github-push-action@master
+        uses: ad-m/github-push-action@v1.3.0
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           branch: ${{ github.event.inputs.branch }}
