@@ -1,3 +1,5 @@
+[![R CMD check](https://github.com/Bioconductor/AnVIL/actions/workflows/ci.yml/badge.svg)](https://github.com/Bioconductor/AnVIL/actions/workflows/ci.yml)
+
 This archive contains an interface to AnVIL web services. The AnVIL
 package has been available since Bioconductor version 3.11. To install
 the released version, follow instructions in the package vignette
