@@ -85,7 +85,9 @@ keyring using `anvil_set_auth_json()`.
 When provided, the \code{api_reference_md5sum} and / or
 \code{api_reference_sha256} are used to check that the file described at
 \code{api_reference_url} has the same checksum as an author-validated
-version.
+version. The file at \code{api_reference_url} is only retrieved when at
+least one of \code{api_reference_md5sum}, \code{api_reference_sha256}, or
+\code{api_reference_version} is provided.
 
 The service is usually a singleton, created at the package
 level during \code{.onLoad()}.

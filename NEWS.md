@@ -7,6 +7,10 @@ USER VISIBLE CHANGES
   `api_reference_md5sum` validates with an MD5 digest again. For backward
   compatibility, a 64-character `api_reference_md5sum` is treated as a
   SHA-256 digest.
+- `Service()` only retrieves the API reference at
+  `api_reference_url` when `api_reference_md5sum`,
+  `api_reference_sha256`, or `api_reference_version` is provided,
+  avoiding an unnecessary download when there is nothing to validate.
 
 # AnVIL 1.24.0
 

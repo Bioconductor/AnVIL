@@ -164,3 +164,46 @@ test_that("Service validates api_reference_md5sum and api_reference_sha256", {
     ## backward compatibility: sha256 digest supplied as md5sum
     expect_silent(service(api_reference_md5sum = sha256))
 })
+
+test_that("Service() skips the API reference when nothing is validated", {
+    api_url <- tempfile(fileext = ".json")
+    writeLines(
+        '{"swagger": "2.0", "info": {"title": "t", "version": "1"},
+         "paths": {}}',
+        api_url
+    )
+    calls <- 0L
+    local_mocked_bindings(
+        .service_get_api_file = function(reference_url, reference_headers) {
+            calls <<- calls + 1L
+            api_url
+        }
+    )
+
+    service <- Service(
+        "my_service", host = "my.api.org", authenticate = FALSE,
+        api_url = api_url
+    )
+    expect_s4_class(service, "Service")
+    expect_identical(calls, 0L)
+
+    sha256 <- digest::digest(api_url, algo = "sha256", file = TRUE)
+    expect_silent(
+        Service(
+            "my_service", host = "my.api.org", authenticate = FALSE,
+            api_url = api_url, api_reference_sha256 = sha256
+        )
+    )
+    expect_identical(calls, 1L)
+
+    expect_warning(
+        Service(
+            "my_service", host = "my.api.org", authenticate = FALSE,
+            api_url = api_url,
+            api_reference_url = "https://my.api.org/sha256-mismatch",
+            api_reference_sha256 = strrep("0", 64L)
+        ),
+        "service version differs from validated version"
+    )
+    expect_identical(calls, 2L)
+})

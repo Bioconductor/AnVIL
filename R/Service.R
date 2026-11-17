@@ -157,7 +157,9 @@ setOldClass("request")
 #' When provided, the `api_reference_md5sum` and / or
 #' `api_reference_sha256` are used to check that the file described at
 #' `api_reference_url` has the same checksum as an author-validated
-#' version.
+#' version. The file at `api_reference_url` is only retrieved when at
+#' least one of `api_reference_md5sum`, `api_reference_sha256`, or
+#' `api_reference_version` is provided.
 #'
 #' The service is usually a singleton, created at the package
 #' level during `.onLoad()`.
@@ -202,8 +204,6 @@ Service <-
     )
     flog.debug("Service(): %s", service)
 
-    api_file <- .service_get_api_file(api_reference_url, api_reference_headers)
-
     ## backward compatibility: AnVIL (v 1.23.10) used SHA-256 digests in
     ## 'api_reference_md5sum'
     if (length(api_reference_md5sum) && nchar(api_reference_md5sum) == 64L) {
@@ -212,20 +212,30 @@ Service <-
         api_reference_md5sum <- character()
     }
 
-    .service_validate_digest(
-        api_reference_url, api_reference_md5sum,
-        api_reference_headers, api_file, algo = "md5"
-    )
+    ## only retrieve the API reference when there is something to validate
+    validate_reference <-
+        length(api_reference_md5sum) || length(api_reference_sha256) ||
+        length(api_reference_version)
 
-    .service_validate_digest(
-        api_reference_url, api_reference_sha256,
-        api_reference_headers, api_file, algo = "sha256"
-    )
+    if (validate_reference) {
+        api_file <-
+            .service_get_api_file(api_reference_url, api_reference_headers)
 
-    .service_validate_version(
-        api_reference_url, api_reference_version,
-        api_reference_headers, api_file
-    )
+        .service_validate_digest(
+            api_reference_url, api_reference_md5sum,
+            api_reference_headers, api_file, algo = "md5"
+        )
+
+        .service_validate_digest(
+            api_reference_url, api_reference_sha256,
+            api_reference_headers, api_file, algo = "sha256"
+        )
+
+        .service_validate_version(
+            api_reference_url, api_reference_version,
+            api_reference_headers, api_file
+        )
+    }
 
     if (authenticate)
         config <- c(authenticate_config(service), config)
