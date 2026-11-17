@@ -206,4 +206,12 @@ test_that("Service() skips the API reference when nothing is validated", {
         "service version differs from validated version"
     )
     expect_identical(calls, 2L)
+
+    expect_silent(
+        Service(
+            "my_service", host = "my.api.org", authenticate = FALSE,
+            api_url = api_url, api_reference_version = "1"
+        )
+    )
+    expect_identical(calls, 3L)
 })

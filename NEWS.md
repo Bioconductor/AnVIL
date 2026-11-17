@@ -11,6 +11,7 @@ USER VISIBLE CHANGES
   `api_reference_url` when `api_reference_md5sum`,
   `api_reference_sha256`, or `api_reference_version` is provided,
   avoiding an unnecessary download when there is nothing to validate.
+  An unreachable `api_reference_url` is then no longer an error.
 
 # AnVIL 1.24.0
 
