@@ -558,7 +558,7 @@ resource location (e.g., google bucket of a VCF file) from the URI
 that identifies the resource. A URI with the form `drs://...` is submitted to
 the Terra / AnVIL DRS, and translated to bucket (e.g., `gs://...`) or
 `https://...` URIs. One use case for DRS is when the location (e.g.,
-google bucket) of the resouce moves. In this case the DRS identifier
+google bucket) of the resource moves. In this case the DRS identifier
 does not change, so no changes are needed to code or data resources
 that referenced the object. A second use case is when access to a
 resource is restricted. The DRS URI in conjunction with appropriate
@@ -590,11 +590,11 @@ tbl <- drs_stat(uri)
 ## 2 drs://d… NA21144… 4.08e6 gs:/… NA        2020-07-08… <named list> fc-56… CCDG…
 ```
 
-Column names indicate the information that is avaialable, e.g., the
+Column names indicate the information that is available, e.g., the
 google object (`gsUri`) and size (`size`) of the object, and the
 object's file name (`fileName`)
 
-`drs_cp()` provides a convient way to translate DRS URIs to `gs://`
+`drs_cp()` provides a convenient way to translate DRS URIs to `gs://`
 URIs, and to copy files from their cloud location to the local disk or
 another bucket, e.g.,
 
@@ -711,7 +711,7 @@ args(terra$overwriteWorkspaceMethodConfig)
 where the same argument name appears in both the URL and the
 body. Again, the specification of the body arguments should be in
 `.__body__ = list()`. As a convenience, arguments appearing _only_ in
-the body can also be specified in the `...` argument of the reqeust.
+the body can also be specified in the `...` argument of the request.
 
 `operations()` and `schemas()` return a named list of endpoints, and
 of argument and return value schemas. `operations(terra)$XXX()` can be
@@ -855,7 +855,7 @@ packages,
 
     ```
     importFrom AnVIL, Service
-    importMethodsFrom AnVIL, "$"   # pehaps also `tags()`, etc
+    importMethodsFrom AnVIL, "$"   # perhaps also `tags()`, etc
     importClassesFrom AnVIL, Service
     ```
 

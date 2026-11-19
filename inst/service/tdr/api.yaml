@@ -2852,7 +2852,7 @@
             }
           },
           "403": {
-            "description": "No permission to read transaction from this datasset",
+            "description": "No permission to read transaction from this dataset",
             "schema": {
               "$ref": "#/definitions/ErrorModel"
             }
@@ -2930,13 +2930,13 @@
             }
           },
           "400": {
-            "description": "Bad request - invalid transaction terminat request, badly formed or unrecognized state",
+            "description": "Bad request - invalid transaction terminate request, badly formed or unrecognized state",
             "schema": {
               "$ref": "#/definitions/ErrorModel"
             }
           },
           "403": {
-            "description": "No permission to terminate the transaction for this datasset",
+            "description": "No permission to terminate the transaction for this dataset",
             "schema": {
               "$ref": "#/definitions/ErrorModel"
             }
@@ -7015,7 +7015,7 @@
           "type": "string"
         },
         "name": {
-          "description": "A name declared by the bundle author that must be used when materialising this object, overriding any name directly associated with the object itself. The name must be unique with the containing bundle. This string is made up of uppercase and lowercase letters, decimal digits, hypen, period, and underscore [A-Za-z0-9.-_]. See http://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap03.html#tag_03_282[portable filenames].",
+          "description": "A name declared by the bundle author that must be used when materialising this object, overriding any name directly associated with the object itself. The name must be unique with the containing bundle. This string is made up of uppercase and lowercase letters, decimal digits, hyphen, period, and underscore [A-Za-z0-9.-_]. See http://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap03.html#tag_03_282[portable filenames].",
           "type": "string"
         }
       },
@@ -7088,7 +7088,7 @@
           "type": "string"
         },
         "name": {
-          "description": "A string that can be used to name an `Object`. This string is made up of uppercase and lowercase letters, decimal digits, hypen, period, and underscore [A-Za-z0-9.-_]. See http://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap03.html#tag_03_282[portable filenames].",
+          "description": "A string that can be used to name an `Object`. This string is made up of uppercase and lowercase letters, decimal digits, hyphen, period, and underscore [A-Za-z0-9.-_]. See http://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap03.html#tag_03_282[portable filenames].",
           "type": "string"
         },
         "self_uri": {
@@ -7122,7 +7122,7 @@
       "properties": {
         "expand": {
           "default": false,
-          "description": "If false and the object_id refers to a bundle, then the ContentsObject array contains only those objects directly contained in the bundle. That is, if the bundle contains other bundles, those other bundles are not recursively included in the result.\nIf true and the object_id refers to a bundle, then the entire set of objects in the bundle is expanded. That is, if the bundle contains aother bundles, then those other bundles are recursively expanded and included in the result. Recursion continues through the entire sub-tree of the bundle.\nIf the object_id refers to a blob, then the query parameter is ignored.",
+          "description": "If false and the object_id refers to a bundle, then the ContentsObject array contains only those objects directly contained in the bundle. That is, if the bundle contains other bundles, those other bundles are not recursively included in the result.\nIf true and the object_id refers to a bundle, then the entire set of objects in the bundle is expanded. That is, if the bundle contains another bundles, then those other bundles are recursively expanded and included in the result. Recursion continues through the entire sub-tree of the bundle.\nIf the object_id refers to a blob, then the query parameter is ignored.",
           "example": false,
           "type": "boolean"
         },
@@ -8328,7 +8328,7 @@
       "type": "string"
     },
     "PhsId": {
-      "description": "PHS ID (DbGap Phenotype Study Identifer) associated with dataset",
+      "description": "PHS ID (DbGap Phenotype Study Identifier) associated with dataset",
       "example": "phs123456",
       "type": "string"
     },
@@ -9670,7 +9670,7 @@
       "type": "string"
     },
     "StorageResourceModel": {
-      "description": "A model representing the cloud platform, region, and resource of a dataset's infrastructure asset. This is only ever returned to the user, and at this point, is not parsed or pased in as a post body.",
+      "description": "A model representing the cloud platform, region, and resource of a dataset's infrastructure asset. This is only ever returned to the user, and at this point, is not parsed or passed in as a post body.",
       "properties": {
         "cloudPlatform": {
           "$ref": "#/definitions/CloudPlatform"

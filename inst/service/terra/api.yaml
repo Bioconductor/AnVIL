@@ -4991,7 +4991,7 @@
         "tags": [
           "Workspaces"
         ],
-        "description": "Set catalog permisisons for a workspace",
+        "description": "Set catalog permissions for a workspace",
         "operationId": "updateCatalog",
         "summary": "Update catalog permission",
         "x-codegen-request-body-name": "catalogUpdates",
@@ -5243,7 +5243,7 @@
             "description": "Source Workspace or source entities does not exist"
           },
           "409": {
-            "description": "There are conflicts in your copy operation. Retry with the paramater linkExistingEntities=true to link all soft conflicts to the entities that already exist in your workspace.",
+            "description": "There are conflicts in your copy operation. Retry with the parameter linkExistingEntities=true to link all soft conflicts to the entities that already exist in your workspace.",
             "schema": {
               "$ref": "#/definitions/EntityCopyResponse"
             }
@@ -7433,7 +7433,7 @@
             "description": "Success"
           },
           "403": {
-            "description": "Insufficient permisions to send notification on this workspace"
+            "description": "Insufficient permissions to send notification on this workspace"
           }
         },
         "tags": [
@@ -9576,7 +9576,7 @@
     "BagitRequest": {
       "properties": {
         "bagitURL": {
-          "description": "link to publically accessible zipped BagIt directory",
+          "description": "link to publicly accessible zipped BagIt directory",
           "type": "string"
         },
         "format": {
@@ -10192,7 +10192,7 @@
           "type": "boolean"
         },
         "sortDate": {
-          "description": "The lastest modification date in date-time milliseconds",
+          "description": "The latest modification date in date-time milliseconds",
           "format": "int64",
           "type": "integer"
         },
@@ -10833,7 +10833,7 @@
           "type": "string"
         },
         "url": {
-          "description": "link to publically accessible file to import",
+          "description": "link to publicly accessible file to import",
           "type": "string"
         }
       },
@@ -11589,7 +11589,7 @@
     "PFBRequest": {
       "properties": {
         "url": {
-          "description": "link to publically accessible PFB/Avro",
+          "description": "link to publicly accessible PFB/Avro",
           "type": "string"
         }
       },
