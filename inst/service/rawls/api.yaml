@@ -2371,7 +2371,7 @@
             }
           },
           "409": {
-            "description": "There are conflicts in your copy operation. Retry with the paramater linkExistingEntities=true to link all soft conflicts to the entities that already exist in your workspace.",
+            "description": "There are conflicts in your copy operation. Retry with the parameter linkExistingEntities=true to link all soft conflicts to the entities that already exist in your workspace.",
             "schema": {
               "$ref": "#/definitions/EntityCopyResponse"
             }

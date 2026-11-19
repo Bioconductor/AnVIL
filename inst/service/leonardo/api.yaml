@@ -1493,7 +1493,7 @@
         ],
         "description": "deletes a runtime",
         "operationId": "deleteAzureRuntime",
-        "summary": "Deletes an Azure runtime instance in the given workspce"
+        "summary": "Deletes an Azure runtime instance in the given workspace"
       },
       "get": {
         "produces": [
@@ -1900,7 +1900,7 @@
           "notebooks"
         ],
         "deprecated": true,
-        "description": "Sends a command to a Jupyter notebook server to localize files to/from the server. Supports GCS paths and [Data URIs](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Data_URIs).\nOutput, including any errors, will appear in `localization.log` in the working directory of the Jupyter notebook server.\nBy default this operation will happen synchronously and the response status will reflect any errors encountered in the copy.\nHowever, if the `async` parameter is specfied then the localization will happen asynchronously to the request, and the API will always return 200.\n",
+        "description": "Sends a command to a Jupyter notebook server to localize files to/from the server. Supports GCS paths and [Data URIs](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Data_URIs).\nOutput, including any errors, will appear in `localization.log` in the working directory of the Jupyter notebook server.\nBy default this operation will happen synchronously and the response status will reflect any errors encountered in the copy.\nHowever, if the `async` parameter is specified then the localization will happen asynchronously to the request, and the API will always return 200.\n",
         "operationId": "proxyLocalize",
         "summary": "Localize files to/from a Jupyter notebook server"
       }
@@ -3824,7 +3824,7 @@
       "type": "object"
     },
     "SourceDisk": {
-      "description": "opitonal location of a disk to clone",
+      "description": "optional location of a disk to clone",
       "properties": {
         "googleProject": {
           "description": "google project containing the source disk to be cloned",

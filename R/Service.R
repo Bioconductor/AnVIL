@@ -135,7 +135,7 @@ setOldClass("request")
 #'
 #' @param api_reference_version `character(1)` the version of the
 #'    reference API. This is used to check that the version of the
-#'    service matches the version of the reference API. It is usally
+#'    service matches the version of the reference API. It is usually
 #'    set by the service generation function,. e.g., `AnVIL::Rawls()`.
 #'
 #' @param api_reference_headers `character()` header(s) to be used

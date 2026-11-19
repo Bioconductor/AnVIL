@@ -33,7 +33,7 @@ tags:
 - name: organizations
   description: Operations on Dockstore organizations
 - name: NIHdatacommons
-  description: "Needed for SmartAPI compatibility apparantly, might be cargo cult\
+  description: "Needed for SmartAPI compatibility apparently, might be cargo cult\
     \ behaviour"
 - name: entries
   description: Interact with entries in Dockstore regardless of whether they are containers
